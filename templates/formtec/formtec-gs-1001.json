@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-gs-1001",
+  "brand": "Formtec",
+  "productCode": "GS-1001",
+  "name": "Formtec GS-1001 — General label, 1-up (full A4)",
+  "categories": ["General","Packaging","Custom"],
+  "page": { "size": "A4", "widthMm": 210.0, "heightMm": 297.0 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 0.0, "right": 0.0, "bottom": 0.0, "left": 0.0 },
+  "grid": {
+    "columns": 1,
+    "rows": 1,
+    "labelWidthMm": 210.0,
+    "labelHeightMm": 297.0,
+    "marginTopMm": 0,
+    "marginLeftMm": 0,
+    "hGapMm": 0.0,
+    "vGapMm": 0.0,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "Formtec GS general-purpose A4 label sheet (1x1).",
+  "source": "Formtec GS series catalogue (approximate geometry)"
+}
