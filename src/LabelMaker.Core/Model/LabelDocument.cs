@@ -25,6 +25,9 @@ public sealed class LabelDocument
     /// <summary>Objects from back (index 0) to front.</summary>
     public List<LabelObject> Objects { get; set; } = new();
 
+    /// <summary>User ruler guides that objects snap to (spec §2 "guides", "snap-to-object").</summary>
+    public GuideCollection Guides { get; set; } = new();
+
     public RectMm Bounds => new(0, 0, SizeMm.Width, SizeMm.Height);
 
     public LabelObject? FindObject(string id) => Objects.FirstOrDefault(o => o.Id == id);
@@ -41,6 +44,35 @@ public sealed class LabelDocument
         SizeMm = SizeMm,
         Background = Background.Clone(),
         Objects = Objects.Select(o => o.Clone()).ToList(),
+        Guides = Guides.Clone(),
+    };
+}
+
+/// <summary>Draggable ruler guides on a label. Positions are document millimetres.</summary>
+public sealed class GuideCollection
+{
+    /// <summary>X positions of vertical guide lines.</summary>
+    public List<double> VerticalMm { get; set; } = new();
+
+    /// <summary>Y positions of horizontal guide lines.</summary>
+    public List<double> HorizontalMm { get; set; } = new();
+
+    /// <summary>When true, guides cannot be moved or deleted on the canvas.</summary>
+    public bool Locked { get; set; }
+
+    public bool IsEmpty => VerticalMm.Count == 0 && HorizontalMm.Count == 0;
+
+    public void Clear()
+    {
+        VerticalMm.Clear();
+        HorizontalMm.Clear();
+    }
+
+    public GuideCollection Clone() => new()
+    {
+        VerticalMm = new List<double>(VerticalMm),
+        HorizontalMm = new List<double>(HorizontalMm),
+        Locked = Locked,
     };
 }
 

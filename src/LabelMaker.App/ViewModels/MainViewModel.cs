@@ -126,6 +126,7 @@ public sealed class MainViewModel : ObservableObject
         RefreshSearch();
         OnDocumentChanged();
         OnPropertyChanged(nameof(TemplateSummary));
+        OnPropertyChanged(nameof(LockGuides));
         OnPropertyChanged(nameof(RecordText));
     }
 
@@ -187,6 +188,41 @@ public sealed class MainViewModel : ObservableObject
     {
         get => _env.Settings.SnapToGrid;
         set { _env.Settings.SnapToGrid = value; OnPropertyChanged(); }
+    }
+
+    public bool ShowRulers
+    {
+        get => _env.Settings.ShowRulers;
+        set { _env.Settings.ShowRulers = value; OnPropertyChanged(); _canvas?.FitToView(); RefreshCanvas(); }
+    }
+
+    public bool ShowGuides
+    {
+        get => _env.Settings.ShowGuides;
+        set { _env.Settings.ShowGuides = value; OnPropertyChanged(); RefreshCanvas(); }
+    }
+
+    public bool SnapToGuides
+    {
+        get => _env.Settings.SnapToGuides;
+        set { _env.Settings.SnapToGuides = value; OnPropertyChanged(); }
+    }
+
+    public bool SnapToObjects
+    {
+        get => _env.Settings.SnapToObjects;
+        set { _env.Settings.SnapToObjects = value; OnPropertyChanged(); }
+    }
+
+    public bool LockGuides
+    {
+        get => _session.ActiveLabel.Guides.Locked;
+        set
+        {
+            _session.ActiveLabel.Guides.Locked = value;
+            _session.MarkDirty();
+            OnPropertyChanged();
+        }
     }
 
     public ObservableCollection<RecentEntry> RecentProjects { get; } = new();
@@ -274,6 +310,7 @@ public sealed class MainViewModel : ObservableObject
     public RelayCommand ZoomOutCommand { get; private set; } = null!;
     public RelayCommand ZoomFitCommand { get; private set; } = null!;
     public RelayCommand ZoomActualCommand { get; private set; } = null!;
+    public RelayCommand ClearGuidesCommand { get; private set; } = null!;
     public RelayCommand FirstRecordCommand { get; private set; } = null!;
     public RelayCommand PrevRecordCommand { get; private set; } = null!;
     public RelayCommand NextRecordCommand { get; private set; } = null!;
@@ -340,6 +377,7 @@ public sealed class MainViewModel : ObservableObject
         ZoomOutCommand = new RelayCommand(() => _canvas?.ZoomOut());
         ZoomFitCommand = new RelayCommand(() => _canvas?.FitToView());
         ZoomActualCommand = new RelayCommand(() => _canvas?.ZoomToActualSize());
+        ClearGuidesCommand = new RelayCommand(() => _canvas?.ClearGuides());
 
         FirstRecordCommand = new RelayCommand(() => _session.RecordIndex = 0);
         PrevRecordCommand = new RelayCommand(() => _session.RecordIndex--);

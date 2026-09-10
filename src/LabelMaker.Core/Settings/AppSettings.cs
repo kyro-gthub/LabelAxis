@@ -23,6 +23,13 @@ public sealed class AppSettings
     public bool SnapToObjects { get; set; } = true;
     public double GridSizeMm { get; set; } = 1.0;
 
+    public bool ShowRulers { get; set; } = true;
+    public bool ShowGuides { get; set; } = true;
+    public bool SnapToGuides { get; set; } = true;
+
+    /// <summary>Snap tolerance in screen pixels for guide / object / edge snapping.</summary>
+    public double SnapPixels { get; set; } = 7.0;
+
     public bool AutoSaveEnabled { get; set; } = true;
     public int AutoSaveSeconds { get; set; } = 120;
     public int BackupCount { get; set; } = 3;

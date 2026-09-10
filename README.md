@@ -30,7 +30,9 @@ so what you see is what prints. Text boxes (with `{Field}` tokens), rich-ish tex
 images (with fit modes, brightness/contrast, flip, crop), shapes (rect, rounded
 rect, ellipse, line, arrow, polygon/star), barcodes, QR codes, simple tables,
 date/time fields, page/record fields. Move / resize (8 handles) / rotate / lock /
-hide / group / reorder, grid + snap, wheel zoom, and a **property grid where you
+hide / group / reorder. **Rulers with draggable guides** (drag from a ruler to
+drop one, drag it back to delete), **snap-to-guide / snap-to-object / snap-to-grid**
+with live snap lines, wheel-zoom, drag-to-pan, and a **property grid where you
 type exact millimetre X/Y/W/H/rotation**. Full undo/redo (command stack, coalesced
 drags).
 
