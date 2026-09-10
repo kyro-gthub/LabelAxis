@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "avery-L7160",
+  "brand": "Avery",
+  "productCode": "L7160",
+  "name": "Avery L7160 — Address label, 21-up",
+  "categories": ["Address"],
+  "page": { "size": "A4", "widthMm": 210.0, "heightMm": 297.0 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 3,
+    "rows": 7,
+    "labelWidthMm": 63.5,
+    "labelHeightMm": 38.1,
+    "marginTopMm": 15.15,
+    "marginLeftMm": 7.25,
+    "hGapMm": 2.5,
+    "vGapMm": 0.0,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "Bundled to demonstrate that the schema is brand-agnostic (spec §3).",
+  "source": "Avery datasheet (approximate geometry)"
+}

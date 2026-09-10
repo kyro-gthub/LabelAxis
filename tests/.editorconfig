@@ -1,0 +1,7 @@
+[*.cs]
+# Test method names use Given_When_Then style with underscores.
+dotnet_diagnostic.CA1707.severity = none
+# Test data / sample strings frequently repeat.
+dotnet_diagnostic.CA1861.severity = none
+dotnet_diagnostic.CA1859.severity = none
+dotnet_diagnostic.CA5394.severity = none

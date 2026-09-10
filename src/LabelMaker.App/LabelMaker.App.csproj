@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <RootNamespace>LabelMaker.App</RootNamespace>
+    <AssemblyName>LabelMaker</AssemblyName>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>false</UseWindowsForms>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>..\..\installer\assets\icon.ico</ApplicationIcon>
+    <Description>Label Maker desktop application (WPF, Windows).</Description>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LabelMaker.Core\LabelMaker.Core.csproj" />
+    <ProjectReference Include="..\LabelMaker.Export\LabelMaker.Export.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\installer\assets\icon.ico" Condition="Exists('..\..\installer\assets\icon.ico')" />
+  </ItemGroup>
+
+</Project>

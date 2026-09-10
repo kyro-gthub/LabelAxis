@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-3200",
+  "brand": "Formtec",
+  "productCode": "3200",
+  "name": "Formtec 3200 — Mini label, 65-up",
+  "categories": ["Product", "Inventory", "Asset tags", "Price labels"],
+  "page": { "size": "A4", "widthMm": 210.0, "heightMm": 297.0 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 5,
+    "rows": 13,
+    "labelWidthMm": 38.1,
+    "labelHeightMm": 21.2,
+    "marginTopMm": 10.7,
+    "marginLeftMm": 4.75,
+    "hGapMm": 2.5,
+    "vGapMm": 0.0,
+    "cornerRadiusMm": 2.0,
+    "labelShape": "RoundRectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "65 small rounded labels — the common barcode / price grid.",
+  "source": "Formtec catalogue (approximate geometry)"
+}

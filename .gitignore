@@ -1,0 +1,36 @@
+bin/
+obj/
+## Build output
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+publish/
+artifacts/
+*.user
+*.suo
+.vs/
+
+## Rider / VS Code
+.idea/
+.vscode/
+
+## Test / coverage
+[Tt]est[Rr]esults/
+coverage/
+*.coverage
+*.trx
+
+## Installer output
+installer/Output/
+*.exe
+!installer/assets/*.exe
+
+## OS
+Thumbs.db
+.DS_Store
+
+## App runtime data (never commit)
+*.labelproj
+*.labelproj.bak
+*.labelproj.tmp

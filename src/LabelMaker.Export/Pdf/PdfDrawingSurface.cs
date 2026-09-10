@@ -1,0 +1,382 @@
+using LabelMaker.Core.Model;
+using LabelMaker.Core.Model.Objects;
+using LabelMaker.Core.Model.Text;
+using LabelMaker.Core.Rendering;
+using LabelMaker.Core.Units;
+using PdfSharp.Drawing;
+
+namespace LabelMaker.Export.Pdf;
+
+/// <summary>
+/// An <see cref="IDrawingSurface"/> backed by PdfSharp's <see cref="XGraphics"/>.
+/// Text, shapes and barcode bars are written as PDF vector operators — no
+/// rasterisation (spec §17). Millimetres are converted to points here; the page
+/// is sized to the true physical media so 40 mm prints 40 mm.
+/// </summary>
+public sealed class PdfDrawingSurface : IDrawingSurface
+{
+    private const double MmToPt = 72.0 / 25.4;
+
+    private readonly XGraphics _gfx;
+    private readonly Func<string, (byte[] Bytes, int Width, int Height)?> _assetResolver;
+    private readonly Stack<XGraphicsState> _states = new();
+    private readonly Stack<double> _opacity = new();
+
+    public PdfDrawingSurface(
+        XGraphics gfx,
+        Func<string, (byte[] Bytes, int Width, int Height)?> assetResolver,
+        ITextMeasurer? measurer = null)
+    {
+        _gfx = gfx;
+        _assetResolver = assetResolver;
+        _opacity.Push(1.0);
+        TextMeasurer = measurer ?? new PdfTextMeasurer(gfx);
+        Images = new AssetDimensionSource(assetResolver);
+    }
+
+    public ITextMeasurer TextMeasurer { get; }
+
+    public IImageSource Images { get; }
+
+    private double Opacity => _opacity.Peek();
+
+    public void PushTransform(double tx, double ty, double rot, double sx, double sy)
+    {
+        _states.Push(_gfx.Save());
+        _opacity.Push(Opacity);
+        _gfx.TranslateTransform(tx * MmToPt, ty * MmToPt);
+        if (Math.Abs(rot) > 1e-9)
+        {
+            _gfx.RotateTransform(rot);
+        }
+
+        if (Math.Abs(sx - 1) > 1e-9 || Math.Abs(sy - 1) > 1e-9)
+        {
+            _gfx.ScaleTransform(sx, sy);
+        }
+    }
+
+    public void Pop()
+    {
+        if (_states.Count > 0)
+        {
+            _gfx.Restore(_states.Pop());
+            _opacity.Pop();
+        }
+    }
+
+    public void PushOpacity(double opacity)
+    {
+        _states.Push(_gfx.Save());
+        _opacity.Push(Math.Clamp(Opacity * opacity, 0, 1));
+    }
+
+    public void PushClipRectangle(RectMm r, double cornerRadiusMm = 0)
+    {
+        _states.Push(_gfx.Save());
+        _opacity.Push(Opacity);
+        _gfx.IntersectClip(Pt(r));
+    }
+
+    public void PushClipEllipse(RectMm r)
+    {
+        _states.Push(_gfx.Save());
+        _opacity.Push(Opacity);
+        var path = new XGraphicsPath();
+        path.AddEllipse(Pt(r));
+        _gfx.IntersectClip(path);
+    }
+
+    public void FillRectangle(RectMm r, ColorRgba fill, double cornerRadiusMm = 0)
+    {
+        if (fill.IsTransparent)
+        {
+            return;
+        }
+
+        if (cornerRadiusMm > 0)
+        {
+            _gfx.DrawRoundedRectangle(Brush(fill), Pt(r),
+                new XSize(cornerRadiusMm * MmToPt * 2, cornerRadiusMm * MmToPt * 2));
+        }
+        else
+        {
+            _gfx.DrawRectangle(Brush(fill), Pt(r));
+        }
+    }
+
+    public void StrokeRectangle(RectMm r, ColorRgba stroke, double w, DashStyle dash = DashStyle.Solid, double cornerRadiusMm = 0)
+    {
+        if (stroke.IsTransparent || w <= 0)
+        {
+            return;
+        }
+
+        if (cornerRadiusMm > 0)
+        {
+            _gfx.DrawRoundedRectangle(Pen(stroke, w, dash), Pt(r),
+                new XSize(cornerRadiusMm * MmToPt * 2, cornerRadiusMm * MmToPt * 2));
+        }
+        else
+        {
+            _gfx.DrawRectangle(Pen(stroke, w, dash), Pt(r));
+        }
+    }
+
+    public void FillEllipse(RectMm r, ColorRgba fill)
+    {
+        if (!fill.IsTransparent)
+        {
+            _gfx.DrawEllipse(Brush(fill), Pt(r));
+        }
+    }
+
+    public void StrokeEllipse(RectMm r, ColorRgba stroke, double w, DashStyle dash = DashStyle.Solid)
+    {
+        if (!stroke.IsTransparent && w > 0)
+        {
+            _gfx.DrawEllipse(Pen(stroke, w, dash), Pt(r));
+        }
+    }
+
+    public void StrokeLine(PointMm a, PointMm b, ColorRgba stroke, double w, DashStyle dash = DashStyle.Solid)
+    {
+        if (!stroke.IsTransparent && w > 0)
+        {
+            _gfx.DrawLine(Pen(stroke, w, dash), a.X * MmToPt, a.Y * MmToPt, b.X * MmToPt, b.Y * MmToPt);
+        }
+    }
+
+    public void FillPolygon(IReadOnlyList<PointMm> points, ColorRgba fill, ColorRgba stroke, double w)
+    {
+        if (points.Count < 2)
+        {
+            return;
+        }
+
+        XPoint[] xs = points.Select(p => new XPoint(p.X * MmToPt, p.Y * MmToPt)).ToArray();
+        if (!fill.IsTransparent && !stroke.IsTransparent && w > 0)
+        {
+            _gfx.DrawPolygon(Pen(stroke, w, DashStyle.Solid), Brush(fill), xs, XFillMode.Alternate);
+        }
+        else if (!fill.IsTransparent)
+        {
+            _gfx.DrawPolygon(Brush(fill), xs, XFillMode.Alternate);
+        }
+        else if (!stroke.IsTransparent && w > 0)
+        {
+            _gfx.DrawPolygon(Pen(stroke, w, DashStyle.Solid), xs);
+        }
+    }
+
+    public void DrawImage(IDecodedImage image, RectMm destRectMm, ImageAdjustments adjustments, double opacity)
+    {
+        if (image is not AssetImageHandle handle)
+        {
+            return;
+        }
+
+        var payload = _assetResolver(handle.AssetId);
+        if (payload is not { } data)
+        {
+            return;
+        }
+
+        try
+        {
+            using var ms = new MemoryStream(data.Bytes, writable: false);
+            using XImage ximage = XImage.FromStream(ms);
+            _gfx.DrawImage(ximage, Pt(destRectMm));
+        }
+        catch (Exception)
+        {
+            _gfx.DrawRectangle(Pen(new ColorRgba(200, 60, 60), 0.2, DashStyle.Dash), Pt(destRectMm));
+        }
+    }
+
+    public void DrawTextBlock(TextBlock block, RectMm rect, VerticalAlignment verticalAlignment)
+    {
+        double y = rect.Y + verticalAlignment switch
+        {
+            VerticalAlignment.Middle => Math.Max(0, (rect.Height - block.TotalHeightMm) / 2.0),
+            VerticalAlignment.Bottom => Math.Max(0, rect.Height - block.TotalHeightMm),
+            _ => 0,
+        };
+
+        foreach (TextLine line in block.Lines)
+        {
+            double lineTop = y;
+            y += line.HeightMm;
+            if (line.Spans.Count == 0)
+            {
+                continue;
+            }
+
+            double x = line.Alignment switch
+            {
+                HorizontalAlignment.Center => rect.X + Math.Max(0, (rect.Width - line.WidthMm) / 2.0),
+                HorizontalAlignment.Right => rect.X + Math.Max(0, rect.Width - line.WidthMm),
+                _ => rect.X,
+            };
+            double baseline = lineTop + line.BaselineOffsetMm;
+
+            foreach (TextSpan span in line.Spans)
+            {
+                XFont font = MakeFont(span);
+                var brush = Brush(span.Foreground);
+                _gfx.DrawString(span.Text, font, brush, x * MmToPt, baseline * MmToPt, XStringFormats.BaseLineLeft);
+                double advance = TextMeasurer.MeasureWidthMm(span.Text, span.FontFamily, span.FontSizePt, span.Bold, span.Italic);
+
+                if (span.Underline)
+                {
+                    _gfx.DrawLine(Pen(span.Foreground, span.FontSizePt * 0.06, DashStyle.Solid),
+                        x * MmToPt, (baseline + 0.6) * MmToPt, (x + advance) * MmToPt, (baseline + 0.6) * MmToPt);
+                }
+
+                if (span.Strikethrough)
+                {
+                    double strike = baseline - (UnitConverter.PointsToMm(span.FontSizePt) * 0.3);
+                    _gfx.DrawLine(Pen(span.Foreground, span.FontSizePt * 0.06, DashStyle.Solid),
+                        x * MmToPt, strike * MmToPt, (x + advance) * MmToPt, strike * MmToPt);
+                }
+
+                x += advance;
+            }
+        }
+    }
+
+    public void FillRectangles(IReadOnlyList<RectMm> rects, ColorRgba fill)
+    {
+        if (rects.Count == 0 || fill.IsTransparent)
+        {
+            return;
+        }
+
+        XSolidBrush brush = Brush(fill);
+        foreach (RectMm r in rects)
+        {
+            _gfx.DrawRectangle(brush, Pt(r));
+        }
+    }
+
+    private XRect Pt(RectMm r) => new(r.X * MmToPt, r.Y * MmToPt, r.Width * MmToPt, r.Height * MmToPt);
+
+    private XSolidBrush Brush(ColorRgba c) => new(ApplyOpacity(c));
+
+    private XPen Pen(ColorRgba c, double widthMm, DashStyle dash)
+    {
+        var pen = new XPen(ApplyOpacity(c), Math.Max(0.05, widthMm * MmToPt))
+        {
+            DashStyle = dash switch
+            {
+                DashStyle.Dash => XDashStyle.Dash,
+                DashStyle.Dot => XDashStyle.Dot,
+                DashStyle.DashDot => XDashStyle.DashDot,
+                _ => XDashStyle.Solid,
+            },
+        };
+        return pen;
+    }
+
+    private XColor ApplyOpacity(ColorRgba c)
+    {
+        double a = c.A / 255.0 * Opacity;
+        return XColor.FromArgb((int)Math.Round(a * 255), c.R, c.G, c.B);
+    }
+
+    private static XFont MakeFont(TextSpan span)
+    {
+        XFontStyleEx style = XFontStyleEx.Regular;
+        if (span.Bold)
+        {
+            style |= XFontStyleEx.Bold;
+        }
+
+        if (span.Italic)
+        {
+            style |= XFontStyleEx.Italic;
+        }
+
+        try
+        {
+            return new XFont(span.FontFamily, span.FontSizePt, style);
+        }
+        catch (Exception)
+        {
+            return new XFont("Arial", span.FontSizePt, style);
+        }
+    }
+
+    private sealed class AssetImageHandle : IDecodedImage
+    {
+        public required string AssetId { get; init; }
+        public int PixelWidth { get; init; }
+        public int PixelHeight { get; init; }
+    }
+
+    private sealed class AssetDimensionSource : IImageSource
+    {
+        private readonly Func<string, (byte[] Bytes, int Width, int Height)?> _resolver;
+
+        public AssetDimensionSource(Func<string, (byte[] Bytes, int Width, int Height)?> resolver) => _resolver = resolver;
+
+        public IDecodedImage? Get(string assetId)
+        {
+            var data = _resolver(assetId);
+            return data is { } d
+                ? new AssetImageHandle { AssetId = assetId, PixelWidth = d.Width, PixelHeight = d.Height }
+                : null;
+        }
+    }
+
+    private sealed class PdfTextMeasurer : ITextMeasurer
+    {
+        private readonly XGraphics _gfx;
+        private readonly ApproxTextMeasurer _fallback = new();
+
+        public PdfTextMeasurer(XGraphics gfx) => _gfx = gfx;
+
+        public double MeasureWidthMm(string text, string fontFamily, double fontSizePt, bool bold, bool italic)
+        {
+            if (string.IsNullOrEmpty(text))
+            {
+                return 0;
+            }
+
+            try
+            {
+                XFontStyleEx style = XFontStyleEx.Regular;
+                if (bold)
+                {
+                    style |= XFontStyleEx.Bold;
+                }
+
+                if (italic)
+                {
+                    style |= XFontStyleEx.Italic;
+                }
+
+                var font = new XFont(fontFamily, fontSizePt, style);
+                double widthPt = _gfx.MeasureString(text, font).Width;
+                return widthPt / MmToPt;
+            }
+            catch (Exception)
+            {
+                return _fallback.MeasureWidthMm(text, fontFamily, fontSizePt, bold, italic);
+            }
+        }
+
+        public double LineHeightMm(string fontFamily, double fontSizePt)
+        {
+            try
+            {
+                var font = new XFont(fontFamily, fontSizePt);
+                return font.GetHeight() / MmToPt;
+            }
+            catch (Exception)
+            {
+                return _fallback.LineHeightMm(fontFamily, fontSizePt);
+            }
+        }
+    }
+}
