@@ -35,11 +35,13 @@ type exact millimetre X/Y/W/H/rotation**. Full undo/redo (command stack, coalesc
 drags).
 
 ### Formtec templates
-14 built-in Formtec sheets (address, shipping, mini, round, CD, name badge,
-binder spine, square, full-page, US-Letter) plus an Avery sheet to prove the
-schema is brand-agnostic. Search by product code / dimensions / category, sheet
-preview, duplicate / edit, and **import hundreds more by dropping JSON or CSV
-files** — geometry is never hard-coded (see [`docs/TEMPLATE-SCHEMA.md`](docs/TEMPLATE-SCHEMA.md)).
+36 built-in Formtec sheets — the **3000-series** (address, shipping, mini, round,
+CD, name badge, binder spine, square, full-page, US-Letter) **and the full
+GS-1xxx general-label family** (GS-1001 … GS-1100: 1-up through 100-up on A4) —
+plus an Avery sheet to prove the schema is brand-agnostic. Search by product code
+/ dimensions / category, sheet preview, duplicate / edit, and **import hundreds
+more by dropping JSON or CSV files** — geometry is never hard-coded (see
+[`docs/TEMPLATE-SCHEMA.md`](docs/TEMPLATE-SCHEMA.md)).
 
 ### Barcodes
 `Code 128` (auto A/B/C set optimisation), `Code 128 A/B/C`, `GS1-128`, `Code 39`,

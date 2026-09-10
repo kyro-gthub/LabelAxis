@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-gs-1010",
+  "brand": "Formtec",
+  "productCode": "GS-1010",
+  "name": "Formtec GS-1010 — General label, 10-up",
+  "categories": ["General","Product"],
+  "page": { "size": "A4", "widthMm": 210.0, "heightMm": 297.0 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 2,
+    "rows": 5,
+    "labelWidthMm": 99.1,
+    "labelHeightMm": 57.3,
+    "marginTopMm": 5.25,
+    "marginLeftMm": 4.65,
+    "hGapMm": 2.5,
+    "vGapMm": 0.0,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "Formtec GS general-purpose A4 label sheet (2x5).",
+  "source": "Formtec GS series catalogue (approximate geometry)"
+}

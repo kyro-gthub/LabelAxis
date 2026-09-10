@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-gs-1040",
+  "brand": "Formtec",
+  "productCode": "GS-1040",
+  "name": "Formtec GS-1040 — General label, 40-up",
+  "categories": ["General","Inventory","Price labels"],
+  "page": { "size": "A4", "widthMm": 210.0, "heightMm": 297.0 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 4,
+    "rows": 10,
+    "labelWidthMm": 48.5,
+    "labelHeightMm": 27.9,
+    "marginTopMm": 9,
+    "marginLeftMm": 4.25,
+    "hGapMm": 2.5,
+    "vGapMm": 0.0,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "Formtec GS general-purpose A4 label sheet (4x10).",
+  "source": "Formtec GS series catalogue (approximate geometry)"
+}

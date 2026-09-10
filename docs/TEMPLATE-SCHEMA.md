@@ -9,7 +9,12 @@ Templates are **data**. The application ships them as JSON files under
 ```
 
 Adding a new Formtec (or Avery, or any brand) sheet is **dropping a `.json`
-file** — no code change, no rebuild. Hundreds can be added this way. The Formtec
+file** — no code change, no rebuild. Hundreds can be added this way.
+
+The shipped set covers the Formtec **3000-series** and the complete Formtec
+**GS-1xxx general-label family** (`formtec-gs-1001` … `formtec-gs-1100`, i.e. 1-up
+through 100-up on A4), plus one Avery sheet to demonstrate the schema is
+brand-agnostic. The Formtec
 Template Manager (Tools → Formtec template manager) also imports/exports single
 templates as JSON and batches as CSV.
 
