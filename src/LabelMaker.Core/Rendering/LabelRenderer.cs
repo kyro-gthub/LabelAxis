@@ -1,0 +1,429 @@
+using LabelMaker.Core.Barcodes;
+using LabelMaker.Core.Formtec;
+using LabelMaker.Core.Model;
+using LabelMaker.Core.Model.Objects;
+using LabelMaker.Core.Model.Text;
+using LabelMaker.Core.Units;
+using LabelMaker.Core.Variables;
+
+namespace LabelMaker.Core.Rendering;
+
+/// <summary>Options that vary between screen preview, PDF and print output.</summary>
+public sealed class LabelRenderOptions
+{
+    public LabelShape LabelShape { get; init; } = LabelShape.Rectangle;
+    public double CornerRadiusMm { get; init; }
+    public LabelOutlineStyle Outline { get; init; } = LabelOutlineStyle.None;
+    public bool ClipToLabel { get; init; } = true;
+
+    /// <summary>Draw a light checkerboard where a background image is transparent (preview only).</summary>
+    public bool ShowTransparencyPattern { get; init; }
+}
+
+/// <summary>
+/// The one renderer. Walks a <see cref="LabelDocument"/> in z-order, resolves
+/// <c>{tokens}</c> against a <see cref="ResolveContext"/>, and issues vector
+/// primitives to an <see cref="IDrawingSurface"/>. The designer canvas, PDF
+/// export and the printer all call this — "what you see is what prints"
+/// (spec §29, §30).
+/// </summary>
+public sealed class LabelRenderer
+{
+    public void Render(
+        LabelDocument document,
+        ResolveContext context,
+        IDrawingSurface surface,
+        LabelRenderOptions? options = null)
+    {
+        ArgumentNullException.ThrowIfNull(document);
+        ArgumentNullException.ThrowIfNull(context);
+        ArgumentNullException.ThrowIfNull(surface);
+        options ??= new LabelRenderOptions();
+
+        var resolver = new VariableResolver(context);
+        RectMm labelRect = document.Bounds;
+
+        if (options.ClipToLabel)
+        {
+            PushLabelClip(surface, labelRect, options);
+        }
+
+        DrawBackground(document.Background, labelRect, surface);
+
+        foreach (LabelObject obj in document.Objects)
+        {
+            if (!obj.Visible)
+            {
+                continue;
+            }
+
+            RenderObject(obj, resolver, surface);
+        }
+
+        if (options.ClipToLabel)
+        {
+            surface.Pop();
+        }
+
+        DrawOutline(surface, labelRect, options);
+    }
+
+    private static void PushLabelClip(IDrawingSurface surface, RectMm labelRect, LabelRenderOptions options)
+    {
+        if (options.LabelShape == LabelShape.Ellipse)
+        {
+            surface.PushClipEllipse(labelRect);
+        }
+        else
+        {
+            double radius = options.LabelShape == LabelShape.RoundRectangle ? options.CornerRadiusMm : 0;
+            surface.PushClipRectangle(labelRect, radius);
+        }
+    }
+
+    private static void DrawOutline(IDrawingSurface surface, RectMm labelRect, LabelRenderOptions options)
+    {
+        switch (options.Outline)
+        {
+            case LabelOutlineStyle.Hairline:
+                surface.StrokeRectangle(labelRect, new ColorRgba(180, 180, 180), 0.1, DashStyle.Dash,
+                    options.LabelShape == LabelShape.RoundRectangle ? options.CornerRadiusMm : 0);
+                break;
+            case LabelOutlineStyle.Crop:
+                DrawCropMarks(surface, labelRect);
+                break;
+        }
+    }
+
+    private static void DrawCropMarks(IDrawingSurface surface, RectMm r)
+    {
+        const double len = 3.0;
+        const double gap = 1.5;
+        var c = new ColorRgba(0, 0, 0);
+        void Mark(PointMm from, PointMm to) => surface.StrokeLine(from, to, c, 0.12);
+
+        Mark(new PointMm(r.Left - gap - len, r.Top), new PointMm(r.Left - gap, r.Top));
+        Mark(new PointMm(r.Left, r.Top - gap - len), new PointMm(r.Left, r.Top - gap));
+        Mark(new PointMm(r.Right + gap, r.Top), new PointMm(r.Right + gap + len, r.Top));
+        Mark(new PointMm(r.Right, r.Top - gap - len), new PointMm(r.Right, r.Top - gap));
+        Mark(new PointMm(r.Left - gap - len, r.Bottom), new PointMm(r.Left - gap, r.Bottom));
+        Mark(new PointMm(r.Left, r.Bottom + gap), new PointMm(r.Left, r.Bottom + gap + len));
+        Mark(new PointMm(r.Right + gap, r.Bottom), new PointMm(r.Right + gap + len, r.Bottom));
+        Mark(new PointMm(r.Right, r.Bottom + gap), new PointMm(r.Right, r.Bottom + gap + len));
+    }
+
+    private void DrawBackground(BackgroundSpec background, RectMm labelRect, IDrawingSurface surface)
+    {
+        if (!background.Enabled)
+        {
+            return;
+        }
+
+        if (!background.FillColor.IsTransparent)
+        {
+            surface.FillRectangle(labelRect, background.FillColor);
+        }
+
+        if (background.HasImage && background.AssetId is { } assetId)
+        {
+            IDecodedImage? image = surface.Images.Get(assetId);
+            if (image is not null)
+            {
+                RectMm dest = ImageFit.Compute(background.FitMode, labelRect, image.PixelWidth, image.PixelHeight);
+                surface.PushOpacity(Math.Clamp(background.Opacity, 0, 1));
+                if (Math.Abs(background.RotationDegrees) > 0.01)
+                {
+                    surface.PushTransform(labelRect.Center.X, labelRect.Center.Y, background.RotationDegrees, 1, 1);
+                    surface.DrawImage(image, dest.Offset(-labelRect.Center.X, -labelRect.Center.Y), background.Adjustments, 1.0);
+                    surface.Pop();
+                }
+                else
+                {
+                    surface.DrawImage(image, dest, background.Adjustments, 1.0);
+                }
+
+                surface.Pop();
+            }
+        }
+    }
+
+    private void RenderObject(LabelObject obj, VariableResolver resolver, IDrawingSurface surface)
+    {
+        RectMm b = obj.Bounds;
+        PointMm center = b.Center;
+        var local = new RectMm(-b.Width / 2.0, -b.Height / 2.0, b.Width, b.Height);
+
+        surface.PushTransform(center.X, center.Y, obj.RotationDegrees, 1, 1);
+        surface.PushOpacity(Math.Clamp(obj.Opacity, 0, 1));
+
+        try
+        {
+            switch (obj)
+            {
+                case TextObject text:
+                    RenderText(text, local, resolver, surface);
+                    break;
+                case ImageObject image:
+                    RenderImage(image, local, surface);
+                    break;
+                case ShapeObject shape:
+                    RenderShape(shape, local, surface);
+                    break;
+                case BarcodeObject barcode:
+                    RenderBarcode(barcode, local, resolver, surface);
+                    break;
+                case TableObject table:
+                    RenderTable(table, local, resolver, surface);
+                    break;
+            }
+        }
+        finally
+        {
+            surface.Pop(); // opacity
+            surface.Pop(); // transform
+        }
+    }
+
+    private static void RenderText(TextObject text, RectMm local, VariableResolver resolver, IDrawingSurface surface)
+    {
+        if (!text.Background.IsTransparent)
+        {
+            surface.FillRectangle(local, text.Background);
+        }
+
+        RichTextContent resolved = ResolveContentTokens(text.Content, resolver);
+        RectMm contentRect = new(
+            local.X + text.PaddingMm.Left,
+            local.Y + text.PaddingMm.Top,
+            Math.Max(0.5, local.Width - text.PaddingMm.Horizontal),
+            Math.Max(0.5, local.Height - text.PaddingMm.Vertical));
+
+        TextBlock block = TextLayouter.Layout(resolved, text, contentRect, surface.TextMeasurer);
+        surface.DrawTextBlock(block, contentRect, text.VerticalAlignment);
+    }
+
+    private static RichTextContent ResolveContentTokens(RichTextContent source, VariableResolver resolver)
+    {
+        var clone = source.Clone();
+        foreach (Paragraph paragraph in clone.Paragraphs)
+        {
+            foreach (TextRun run in paragraph.Runs)
+            {
+                if (run.Text.IndexOf('{') >= 0)
+                {
+                    run.Text = resolver.Resolve(run.Text);
+                }
+            }
+        }
+
+        return clone;
+    }
+
+    private static void RenderImage(ImageObject image, RectMm local, IDrawingSurface surface)
+    {
+        IDecodedImage? decoded = surface.Images.Get(image.AssetId);
+        if (decoded is null)
+        {
+            surface.StrokeRectangle(local, new ColorRgba(200, 60, 60), 0.2, DashStyle.Dash);
+            return;
+        }
+
+        RectMm dest = ImageFit.Compute(image.FitMode, local, decoded.PixelWidth, decoded.PixelHeight);
+        double opacity = image.IsWatermark ? 0.25 : 1.0;
+        surface.DrawImage(decoded, dest, image.Adjustments, opacity);
+    }
+
+    private static void RenderShape(ShapeObject shape, RectMm local, IDrawingSurface surface)
+    {
+        double sw = shape.StrokeWidthMm;
+        switch (shape.Shape)
+        {
+            case ShapeKind.Rectangle:
+                surface.FillRectangle(local, shape.Fill);
+                if (sw > 0)
+                {
+                    surface.StrokeRectangle(local, shape.Stroke, sw, shape.DashStyle);
+                }
+
+                break;
+
+            case ShapeKind.RoundRectangle:
+                surface.FillRectangle(local, shape.Fill, shape.CornerRadiusMm);
+                if (sw > 0)
+                {
+                    surface.StrokeRectangle(local, shape.Stroke, sw, shape.DashStyle, shape.CornerRadiusMm);
+                }
+
+                break;
+
+            case ShapeKind.Ellipse:
+                surface.FillEllipse(local, shape.Fill);
+                if (sw > 0)
+                {
+                    surface.StrokeEllipse(local, shape.Stroke, sw, shape.DashStyle);
+                }
+
+                break;
+
+            case ShapeKind.Line:
+                surface.StrokeLine(
+                    new PointMm(local.Left, local.Center.Y),
+                    new PointMm(local.Right, local.Center.Y),
+                    shape.Stroke, Math.Max(0.05, sw), shape.DashStyle);
+                break;
+
+            case ShapeKind.Arrow:
+                DrawArrow(surface, local, shape);
+                break;
+
+            case ShapeKind.Polygon:
+                DrawPolygon(surface, local, shape);
+                break;
+        }
+    }
+
+    private static void DrawArrow(IDrawingSurface surface, RectMm local, ShapeObject shape)
+    {
+        var start = new PointMm(local.Left, local.Center.Y);
+        var end = new PointMm(local.Right, local.Center.Y);
+        double sw = Math.Max(0.05, shape.StrokeWidthMm);
+        surface.StrokeLine(start, end, shape.Stroke, sw, shape.DashStyle);
+
+        double head = Math.Max(1.0, shape.ArrowHeadSizeMm);
+        var p1 = new PointMm(end.X - head, end.Y - (head * 0.6));
+        var p2 = new PointMm(end.X - head, end.Y + (head * 0.6));
+        surface.FillPolygon(new[] { end, p1, p2 }, shape.Stroke, shape.Stroke, 0);
+    }
+
+    private static void DrawPolygon(IDrawingSurface surface, RectMm local, ShapeObject shape)
+    {
+        int n = Math.Clamp(shape.PolygonPoints, 3, 64);
+        var points = new List<PointMm>();
+        double cx = local.Center.X;
+        double cy = local.Center.Y;
+        double rx = local.Width / 2.0;
+        double ry = local.Height / 2.0;
+        bool star = shape.StarInnerRatio is > 0 and < 1;
+        int steps = star ? n * 2 : n;
+
+        for (int i = 0; i < steps; i++)
+        {
+            double angle = (-Math.PI / 2.0) + (i * 2 * Math.PI / steps);
+            double factor = star && i % 2 == 1 ? shape.StarInnerRatio : 1.0;
+            points.Add(new PointMm(cx + (Math.Cos(angle) * rx * factor), cy + (Math.Sin(angle) * ry * factor)));
+        }
+
+        surface.FillPolygon(points, shape.Fill, shape.Stroke, shape.StrokeWidthMm);
+    }
+
+    private static void RenderBarcode(BarcodeObject barcode, RectMm local, VariableResolver resolver, IDrawingSurface surface)
+    {
+        string value = resolver.Resolve(barcode.Spec.Data);
+        if (!BarcodeEngine.TryEncode(barcode.Spec, value, out BarcodeSymbol? symbol, out _) || symbol is null)
+        {
+            surface.StrokeRectangle(local, new ColorRgba(200, 60, 60), 0.2, DashStyle.Dash);
+            return;
+        }
+
+        PlacedBarcode placed = barcode.AutoSize
+            ? BarcodeLayout.PlaceNatural(symbol, barcode.Spec)
+            : BarcodeLayout.PlaceFit(symbol, barcode.Spec, local.Size);
+
+        // Centre the placement within the object's local rect.
+        double dx = barcode.AutoSize ? local.X + ((local.Width - placed.NaturalSizeMm.Width) / 2.0) : local.X;
+        double dy = barcode.AutoSize ? local.Y + ((local.Height - placed.NaturalSizeMm.Height) / 2.0) : local.Y;
+
+        if (!barcode.Spec.Background.IsTransparent)
+        {
+            surface.FillRectangle(
+                new RectMm(dx + placed.SymbolRect.X, dy + placed.SymbolRect.Y, placed.SymbolRect.Width, placed.SymbolRect.Height),
+                barcode.Spec.Background);
+        }
+
+        var shifted = new List<RectMm>(placed.DarkRects.Count);
+        foreach (RectMm r in placed.DarkRects)
+        {
+            shifted.Add(r.Offset(dx, dy));
+        }
+
+        surface.FillRectangles(shifted, barcode.Spec.Foreground);
+
+        if (placed.HriRect is { } hri && placed.HriText.Length > 0)
+        {
+            var hriStyle = new TextObject
+            {
+                FontFamily = barcode.Spec.HumanReadableFontFamily,
+                FontSizePt = barcode.Spec.HumanReadableFontSizePt,
+                Foreground = barcode.Spec.Foreground,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Middle,
+                WordWrap = false,
+                PaddingMm = Thickness.Zero,
+            };
+            RectMm hriRect = hri.Offset(dx, dy);
+            TextBlock block = TextLayouter.Layout(RichTextContent.FromPlainText(placed.HriText), hriStyle, hriRect, surface.TextMeasurer);
+            surface.DrawTextBlock(block, hriRect, VerticalAlignment.Middle);
+        }
+    }
+
+    private static void RenderTable(TableObject table, RectMm local, VariableResolver resolver, IDrawingSurface surface)
+    {
+        table.Normalize();
+        double totalColWeight = table.ColumnWeights.Sum();
+        double totalRowWeight = table.RowWeights.Sum();
+        if (totalColWeight <= 0 || totalRowWeight <= 0)
+        {
+            return;
+        }
+
+        var colX = new double[table.Columns + 1];
+        colX[0] = local.X;
+        for (int c = 0; c < table.Columns; c++)
+        {
+            colX[c + 1] = colX[c] + (local.Width * table.ColumnWeights[c] / totalColWeight);
+        }
+
+        var rowY = new double[table.Rows + 1];
+        rowY[0] = local.Y;
+        for (int r = 0; r < table.Rows; r++)
+        {
+            rowY[r + 1] = rowY[r] + (local.Height * table.RowWeights[r] / totalRowWeight);
+        }
+
+        for (int r = 0; r < table.Rows; r++)
+        {
+            for (int c = 0; c < table.Columns; c++)
+            {
+                var cellRect = RectMm.FromLtrb(colX[c], rowY[r], colX[c + 1], rowY[r + 1]);
+                if (r == 0 && table.FirstRowIsHeader && !table.HeaderFill.IsTransparent)
+                {
+                    surface.FillRectangle(cellRect, table.HeaderFill);
+                }
+
+                if (table.BorderWidthMm > 0)
+                {
+                    surface.StrokeRectangle(cellRect, table.BorderColor, table.BorderWidthMm);
+                }
+
+                string cellText = resolver.Resolve(table.CellAt(r, c));
+                if (cellText.Length == 0)
+                {
+                    continue;
+                }
+
+                var cellStyle = new TextObject
+                {
+                    FontFamily = table.FontFamily,
+                    FontSizePt = table.FontSizePt,
+                    HorizontalAlignment = table.CellAlignment,
+                    VerticalAlignment = VerticalAlignment.Middle,
+                    WordWrap = true,
+                    PaddingMm = new Thickness(table.CellPaddingMm),
+                };
+                RectMm padded = cellRect.Deflate(table.CellPaddingMm);
+                TextBlock block = TextLayouter.Layout(RichTextContent.FromPlainText(cellText), cellStyle, padded, surface.TextMeasurer);
+                surface.DrawTextBlock(block, padded, VerticalAlignment.Middle);
+            }
+        }
+    }
+}

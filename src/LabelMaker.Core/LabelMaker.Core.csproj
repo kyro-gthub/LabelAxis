@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>LabelMaker.Core</RootNamespace>
+    <AssemblyName>LabelMaker.Core</AssemblyName>
+    <Description>Label Maker engine: units, document model, Formtec templates, barcodes, data, sequences, search, preflight, printing math, serialization. No UI dependency.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ZXing.Net" />
+    <PackageReference Include="CsvHelper" />
+    <PackageReference Include="ClosedXML" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Ship the built-in Formtec templates alongside the engine -->
+    <EmbeddedResource Include="..\..\templates\formtec\*.json" LinkBase="Formtec\BuiltIn" />
+  </ItemGroup>
+
+</Project>

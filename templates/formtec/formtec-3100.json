@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-3100",
+  "brand": "Formtec",
+  "productCode": "3100",
+  "name": "Formtec 3100 — Shipping label, 14-up",
+  "categories": ["Shipping", "Address"],
+  "page": { "size": "A4", "widthMm": 210.0, "heightMm": 297.0 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 2,
+    "rows": 7,
+    "labelWidthMm": 99.1,
+    "labelHeightMm": 38.1,
+    "marginTopMm": 15.15,
+    "marginLeftMm": 4.65,
+    "hGapMm": 2.5,
+    "vGapMm": 0.0,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "General purpose A4 shipping / address sheet.",
+  "source": "Formtec catalogue (approximate geometry)"
+}

@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-3106",
+  "brand": "Formtec",
+  "productCode": "3106",
+  "name": "Formtec 3106 — Full sheet, 1-up",
+  "categories": ["Packaging", "Custom"],
+  "page": { "size": "A4", "widthMm": 210.0, "heightMm": 297.0 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 1,
+    "rows": 1,
+    "labelWidthMm": 199.0,
+    "labelHeightMm": 289.0,
+    "marginTopMm": 4.0,
+    "marginLeftMm": 5.5,
+    "hGapMm": 0.0,
+    "vGapMm": 0.0,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "One large label covering most of the sheet.",
+  "source": "Formtec catalogue (approximate geometry)"
+}

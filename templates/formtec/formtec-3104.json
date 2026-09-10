@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-3104",
+  "brand": "Formtec",
+  "productCode": "3104",
+  "name": "Formtec 3104 — Large label, 8-up",
+  "categories": ["Shipping", "Packaging"],
+  "page": { "size": "A4", "widthMm": 210.0, "heightMm": 297.0 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 2,
+    "rows": 4,
+    "labelWidthMm": 99.1,
+    "labelHeightMm": 67.7,
+    "marginTopMm": 13.1,
+    "marginLeftMm": 4.65,
+    "hGapMm": 2.5,
+    "vGapMm": 0.0,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "Eight large labels per A4 sheet.",
+  "source": "Formtec catalogue (approximate geometry)"
+}

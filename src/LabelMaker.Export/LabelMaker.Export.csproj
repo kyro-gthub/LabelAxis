@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>LabelMaker.Export</RootNamespace>
+    <AssemblyName>LabelMaker.Export</AssemblyName>
+    <Description>Vector PDF and SVG export surfaces for the Label Maker renderer.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="PdfSharp" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LabelMaker.Core\LabelMaker.Core.csproj" />
+  </ItemGroup>
+
+</Project>

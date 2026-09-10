@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-L3100-letter",
+  "brand": "Formtec",
+  "productCode": "L3100",
+  "name": "Formtec L3100 — US Letter address, 30-up",
+  "categories": ["Address", "Product"],
+  "page": { "size": "Letter", "widthMm": 215.9, "heightMm": 279.4 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 3,
+    "rows": 10,
+    "labelWidthMm": 66.7,
+    "labelHeightMm": 25.4,
+    "marginTopMm": 12.7,
+    "marginLeftMm": 4.9,
+    "hGapMm": 3.0,
+    "vGapMm": 0.0,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "US Letter 30-up address grid (1\" x 2-5/8\").",
+  "source": "Formtec catalogue (approximate geometry)"
+}

@@ -1,0 +1,43 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = crlf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+
+[*.{cs,csx}]
+indent_size = 4
+dotnet_sort_system_directives_first = true
+csharp_new_line_before_open_brace = all
+csharp_prefer_braces = true:suggestion
+dotnet_style_namespace_match_folder = true:suggestion
+csharp_style_namespace_declarations = file_scoped:suggestion
+
+# Platform-compat: the App/Export targets are Windows-first by design.
+dotnet_diagnostic.CA1416.severity = none
+# Opinionated style/perf rules we consciously don't enforce (not correctness):
+dotnet_diagnostic.CA1725.severity = none   # interface impls use concise param names
+dotnet_diagnostic.CA1822.severity = none   # "mark member static"
+dotnet_diagnostic.CA1834.severity = none   # StringBuilder.Append(char) micro-opt
+dotnet_diagnostic.CA1859.severity = none   # concrete-type-for-perf
+dotnet_diagnostic.CA1826.severity = none   # use property instead of LINQ First()
+dotnet_diagnostic.CA1720.severity = none   # identifier contains type name
+dotnet_diagnostic.CA1716.severity = none   # identifier clashes with a keyword in some language
+dotnet_diagnostic.CA1711.severity = none
+dotnet_diagnostic.CA1710.severity = none
+dotnet_diagnostic.CA1845.severity = none
+dotnet_diagnostic.CA2249.severity = none
+dotnet_diagnostic.CA1305.severity = suggestion
+dotnet_diagnostic.CA1304.severity = suggestion
+dotnet_diagnostic.CA1707.severity = none   # standard names like GS1_128 keep their underscores
+
+[*.{xml,csproj,props,targets,config,iss}]
+indent_size = 2
+
+[*.{json,jsonc}]
+indent_size = 2
+
+[*.md]
+trim_trailing_whitespace = false

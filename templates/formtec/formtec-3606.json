@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-3606",
+  "brand": "Formtec",
+  "productCode": "3606",
+  "name": "Formtec 3606 — Round label Ø40, 24-up",
+  "categories": ["Stickers", "Product", "Packaging"],
+  "page": { "size": "A4", "widthMm": 210.0, "heightMm": 297.0 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 4,
+    "rows": 6,
+    "labelWidthMm": 40.0,
+    "labelHeightMm": 40.0,
+    "marginTopMm": 16.0,
+    "marginLeftMm": 17.5,
+    "hGapMm": 5.0,
+    "vGapMm": 5.0,
+    "cornerRadiusMm": 20.0,
+    "labelShape": "Ellipse"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "Circular 40 mm stickers.",
+  "source": "Formtec catalogue (approximate geometry)"
+}

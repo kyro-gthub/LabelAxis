@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-3103",
+  "brand": "Formtec",
+  "productCode": "3103",
+  "name": "Formtec 3103 — Address label, 24-up",
+  "categories": ["Address", "Product"],
+  "page": { "size": "A4", "widthMm": 210.0, "heightMm": 297.0 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 3,
+    "rows": 8,
+    "labelWidthMm": 63.5,
+    "labelHeightMm": 33.9,
+    "marginTopMm": 12.9,
+    "marginLeftMm": 7.25,
+    "hGapMm": 2.5,
+    "vGapMm": 0.0,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "Classic 24-up address grid.",
+  "source": "Formtec catalogue (approximate geometry)"
+}

@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-3800",
+  "brand": "Formtec",
+  "productCode": "3800",
+  "name": "Formtec 3800 — Quarter sheet, 4-up",
+  "categories": ["Shipping", "Packaging"],
+  "page": { "size": "A4", "widthMm": 210.0, "heightMm": 297.0 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 2,
+    "rows": 2,
+    "labelWidthMm": 99.1,
+    "labelHeightMm": 139.5,
+    "marginTopMm": 7.75,
+    "marginLeftMm": 4.65,
+    "hGapMm": 2.5,
+    "vGapMm": 2.5,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "Four large parcel labels per sheet.",
+  "source": "Formtec catalogue (approximate geometry)"
+}

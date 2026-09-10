@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-3010",
+  "brand": "Formtec",
+  "productCode": "3010",
+  "name": "Formtec 3010 — Name badge, 8-up",
+  "categories": ["Name badge", "Custom"],
+  "page": { "size": "A4", "widthMm": 210.0, "heightMm": 297.0 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 2,
+    "rows": 4,
+    "labelWidthMm": 88.9,
+    "labelHeightMm": 55.9,
+    "marginTopMm": 32.2,
+    "marginLeftMm": 14.6,
+    "hGapMm": 3.0,
+    "vGapMm": 3.0,
+    "cornerRadiusMm": 3.0,
+    "labelShape": "RoundRectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "Conference / visitor badge insert.",
+  "source": "Formtec catalogue (approximate geometry)"
+}

@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>LabelMaker.Cli</RootNamespace>
+    <AssemblyName>labelmaker</AssemblyName>
+    <Description>Headless Label Maker tools: barcode image export, sequence generation, bulk export, project inspection.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LabelMaker.Core\LabelMaker.Core.csproj" />
+    <ProjectReference Include="..\LabelMaker.Export\LabelMaker.Export.csproj" />
+  </ItemGroup>
+
+</Project>

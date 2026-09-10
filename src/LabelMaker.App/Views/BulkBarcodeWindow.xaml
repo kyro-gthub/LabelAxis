@@ -1,0 +1,57 @@
+<Window x:Class="LabelMaker.App.Views.BulkBarcodeWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Bulk Barcode Generator" Height="520" Width="600" WindowStartupLocation="CenterOwner">
+  <Grid Margin="12">
+    <Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="*" /><RowDefinition Height="Auto" />
+    </Grid.RowDefinitions>
+
+    <TextBlock Grid.Row="0" Grid.Column="0" Text="Symbology" Margin="0,4,8,4" VerticalAlignment="Center" />
+    <ComboBox  Grid.Row="0" Grid.Column="1" x:Name="SymbologyBox" Margin="0,4" />
+    <TextBlock Grid.Row="0" Grid.Column="2" Text="Format" Margin="12,4,8,4" VerticalAlignment="Center" />
+    <ComboBox  Grid.Row="0" Grid.Column="3" x:Name="FormatBox" Margin="0,4" SelectedIndex="0">
+      <ComboBoxItem>SVG (vector)</ComboBoxItem><ComboBoxItem>PDF (vector)</ComboBoxItem>
+    </ComboBox>
+
+    <TextBlock Grid.Row="1" Grid.Column="0" Text="Prefix" Margin="0,4,8,4" VerticalAlignment="Center" />
+    <TextBox   Grid.Row="1" Grid.Column="1" x:Name="PrefixBox" Margin="0,4" Text="ABC" />
+    <TextBlock Grid.Row="1" Grid.Column="2" Text="Suffix" Margin="12,4,8,4" VerticalAlignment="Center" />
+    <TextBox   Grid.Row="1" Grid.Column="3" x:Name="SuffixBox" Margin="0,4" />
+
+    <TextBlock Grid.Row="2" Grid.Column="0" Text="Start" Margin="0,4,8,4" VerticalAlignment="Center" />
+    <TextBox   Grid.Row="2" Grid.Column="1" x:Name="StartBox" Margin="0,4" Text="1" />
+    <TextBlock Grid.Row="2" Grid.Column="2" Text="End" Margin="12,4,8,4" VerticalAlignment="Center" />
+    <TextBox   Grid.Row="2" Grid.Column="3" x:Name="EndBox" Margin="0,4" Text="1000" />
+
+    <TextBlock Grid.Row="3" Grid.Column="0" Text="Padding" Margin="0,4,8,4" VerticalAlignment="Center" />
+    <TextBox   Grid.Row="3" Grid.Column="1" x:Name="PaddingBox" Margin="0,4" Text="6" />
+    <TextBlock Grid.Row="3" Grid.Column="2" Text="Step" Margin="12,4,8,4" VerticalAlignment="Center" />
+    <TextBox   Grid.Row="3" Grid.Column="3" x:Name="StepBox" Margin="0,4" Text="1" />
+
+    <TextBlock Grid.Row="4" Grid.Column="0" Text="Module (mm)" Margin="0,4,8,4" VerticalAlignment="Center" />
+    <TextBox   Grid.Row="4" Grid.Column="1" x:Name="ModuleBox" Margin="0,4" Text="0.33" />
+    <TextBlock Grid.Row="4" Grid.Column="2" Text="Bar ht (mm)" Margin="12,4,8,4" VerticalAlignment="Center" />
+    <TextBox   Grid.Row="4" Grid.Column="3" x:Name="HeightBox" Margin="0,4" Text="15" />
+
+    <TextBlock Grid.Row="5" Grid.Column="0" Text="File name" Margin="0,4,8,4" VerticalAlignment="Center" />
+    <TextBox   Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3" x:Name="FileNameBox" Margin="0,4" Text="{}{value}" />
+
+    <StackPanel Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="4" Orientation="Horizontal" Margin="0,6">
+      <CheckBox x:Name="HriBox" Content="Human-readable text" IsChecked="True" Margin="0,0,12,0" />
+      <CheckBox x:Name="TransparentBox" Content="Transparent background" />
+    </StackPanel>
+
+    <Border Grid.Row="7" Grid.ColumnSpan="4" Margin="0,6" BorderBrush="#CCC" BorderThickness="1" Background="White">
+      <TextBlock x:Name="StatusText" Margin="8" TextWrapping="Wrap" Foreground="#555" />
+    </Border>
+
+    <StackPanel Grid.Row="8" Grid.ColumnSpan="4" Orientation="Horizontal" HorizontalAlignment="Right">
+      <Button Content="Preview" Padding="16,4" Click="OnPreview" />
+      <Button Content="Generate to folder…" Padding="16,4" Margin="8,0,0,0" Click="OnGenerate" />
+      <Button Content="Close" Padding="16,4" Margin="8,0,0,0" IsCancel="True" />
+    </StackPanel>
+  </Grid>
+</Window>
