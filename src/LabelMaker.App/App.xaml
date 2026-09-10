@@ -15,7 +15,7 @@
       <!-- Aliases kept for MainWindow.xaml -->
       <SolidColorBrush x:Key="PanelBackground" Color="{StaticResource Clr.Surface}" />
       <SolidColorBrush x:Key="PanelBorder" Color="{StaticResource Clr.Border}" />
-      <SolidColorBrush x:Key="CanvasBackground" Color="#2B2E33" />
+      <SolidColorBrush x:Key="CanvasBackground" Color="#E9EBF5" />
 
       <Style x:Key="FieldLabel" TargetType="TextBlock">
         <Setter Property="VerticalAlignment" Value="Center" />
@@ -29,13 +29,18 @@
         <Setter Property="HorizontalContentAlignment" Value="Right" />
       </Style>
 
+      <!-- Small neutral pill for the (white) status bar -->
       <Style x:Key="ToolButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
         <Setter Property="Margin" Value="1,0" />
-        <Setter Property="Padding" Value="10,5" />
-        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="Padding" Value="8,3" />
+        <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="MinWidth" Value="32" />
+        <Setter Property="Foreground" Value="{StaticResource Br.Text}" />
+        <Setter Property="MinWidth" Value="26" />
       </Style>
+
+      <!-- White ghost pill for the purple header toolbar -->
+      <Style x:Key="HeaderPillButton" TargetType="Button" BasedOn="{StaticResource HeaderButton}" />
     </ResourceDictionary>
   </Application.Resources>
 </Application>

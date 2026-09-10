@@ -4,17 +4,19 @@
 
   <!-- ============================ palette ============================ -->
   <Color x:Key="Clr.Bg">#FFFFFFFF</Color>
-  <Color x:Key="Clr.Surface">#FFF4F5F7</Color>
-  <Color x:Key="Clr.Surface2">#FFFAFAFB</Color>
-  <Color x:Key="Clr.Border">#FFE1E3E6</Color>
-  <Color x:Key="Clr.BorderStrong">#FFC9CDD3</Color>
-  <Color x:Key="Clr.Text">#FF1E2329</Color>
-  <Color x:Key="Clr.TextMuted">#FF6B7280</Color>
-  <Color x:Key="Clr.Accent">#FF2F6FEB</Color>
-  <Color x:Key="Clr.AccentHover">#FF2A62CF</Color>
-  <Color x:Key="Clr.AccentSoft">#FFE8F0FE</Color>
-  <Color x:Key="Clr.Hover">#FFEDF0F3</Color>
-  <Color x:Key="Clr.Danger">#FFC0392B</Color>
+  <Color x:Key="Clr.Surface">#FFEEF0F7</Color>
+  <Color x:Key="Clr.Surface2">#FFF5F6FB</Color>
+  <Color x:Key="Clr.Border">#FFE4E5EF</Color>
+  <Color x:Key="Clr.BorderStrong">#FFCBCEDD</Color>
+  <Color x:Key="Clr.Text">#FF22243A</Color>
+  <Color x:Key="Clr.TextMuted">#FF8A8FA8</Color>
+  <Color x:Key="Clr.Accent">#FF5A4FE0</Color>
+  <Color x:Key="Clr.AccentHover">#FF4A3FC7</Color>
+  <Color x:Key="Clr.AccentSoft">#FFECEBFB</Color>
+  <Color x:Key="Clr.Hover">#FFF0EFFB</Color>
+  <Color x:Key="Clr.Danger">#FFE0555F</Color>
+  <Color x:Key="Clr.HeaderA">#FF6C63FF</Color>
+  <Color x:Key="Clr.HeaderB">#FF4B3FD1</Color>
 
   <SolidColorBrush x:Key="Br.Bg"            Color="{StaticResource Clr.Bg}" />
   <SolidColorBrush x:Key="Br.Surface"       Color="{StaticResource Clr.Surface}" />
@@ -28,11 +30,35 @@
   <SolidColorBrush x:Key="Br.AccentSoft"    Color="{StaticResource Clr.AccentSoft}" />
   <SolidColorBrush x:Key="Br.Hover"         Color="{StaticResource Clr.Hover}" />
   <SolidColorBrush x:Key="Br.Danger"        Color="{StaticResource Clr.Danger}" />
+  <SolidColorBrush x:Key="Br.GhostWhite"    Color="#26FFFFFF" />
+  <SolidColorBrush x:Key="Br.GhostWhiteHi"  Color="#3DFFFFFF" />
+
+  <LinearGradientBrush x:Key="Br.HeaderGradient" StartPoint="0,0" EndPoint="1,1">
+    <GradientStop Color="{StaticResource Clr.HeaderA}" Offset="0" />
+    <GradientStop Color="{StaticResource Clr.HeaderB}" Offset="1" />
+  </LinearGradientBrush>
+
+  <LinearGradientBrush x:Key="Br.AccentGradient" StartPoint="0,0" EndPoint="1,1">
+    <GradientStop Color="{StaticResource Clr.HeaderA}" Offset="0" />
+    <GradientStop Color="{StaticResource Clr.Accent}" Offset="1" />
+  </LinearGradientBrush>
 
   <FontFamily x:Key="Font.Ui">Segoe UI Variable Text, Segoe UI</FontFamily>
   <sys:Double x:Key="Font.Size">13</sys:Double>
 
   <BooleanToVisibilityConverter x:Key="BoolVisConv" />
+
+  <!-- Reusable soft card -->
+  <Style x:Key="Card" TargetType="Border">
+    <Setter Property="Background" Value="{StaticResource Br.Bg}" />
+    <Setter Property="CornerRadius" Value="16" />
+    <Setter Property="Padding" Value="14" />
+    <Setter Property="Effect">
+      <Setter.Value>
+        <DropShadowEffect BlurRadius="24" ShadowDepth="3" Direction="270" Opacity="0.12" Color="#3B2E9C" />
+      </Setter.Value>
+    </Setter>
+  </Style>
 
   <!-- ============================ Window ============================ -->
   <Style TargetType="Window">
@@ -56,13 +82,13 @@
     <Setter Property="Background" Value="{StaticResource Br.Bg}" />
     <Setter Property="BorderBrush" Value="{StaticResource Br.BorderStrong}" />
     <Setter Property="BorderThickness" Value="1" />
-    <Setter Property="Padding" Value="12,5" />
+    <Setter Property="Padding" Value="14,7" />
     <Setter Property="SnapsToDevicePixels" Value="True" />
     <Setter Property="Cursor" Value="Hand" />
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="Button">
-          <Border x:Name="bd" CornerRadius="6" Background="{TemplateBinding Background}"
+          <Border x:Name="bd" CornerRadius="14" Background="{TemplateBinding Background}"
                   BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
                   SnapsToDevicePixels="True">
             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
@@ -87,14 +113,45 @@
   </Style>
 
   <Style x:Key="AccentButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-    <Setter Property="Background" Value="{StaticResource Br.Accent}" />
+    <Setter Property="Background" Value="{StaticResource Br.AccentGradient}" />
     <Setter Property="Foreground" Value="White" />
-    <Setter Property="BorderBrush" Value="{StaticResource Br.Accent}" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="Padding" Value="18,8" />
     <Style.Triggers>
       <Trigger Property="IsMouseOver" Value="True">
         <Setter Property="Background" Value="{StaticResource Br.AccentHover}" />
       </Trigger>
     </Style.Triggers>
+  </Style>
+
+  <!-- Ghost pill button for the purple header toolbar -->
+  <Style x:Key="HeaderButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+    <Setter Property="Foreground" Value="White" />
+    <Setter Property="Background" Value="{StaticResource Br.GhostWhite}" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="Padding" Value="12,6" />
+    <Setter Property="Margin" Value="2,0" />
+    <Setter Property="MinWidth" Value="34" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="Button">
+          <Border x:Name="bd" CornerRadius="12" Background="{TemplateBinding Background}">
+            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" />
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="bd" Property="Background" Value="{StaticResource Br.GhostWhiteHi}" />
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+              <Setter TargetName="bd" Property="Background" Value="#59FFFFFF" />
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter TargetName="bd" Property="Opacity" Value="0.4" />
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
   </Style>
 
   <!-- ============================ ToggleButton ============================ -->
@@ -298,9 +355,12 @@
       <Setter.Value>
         <ControlTemplate TargetType="GroupBox">
           <Border Background="{StaticResource Br.Bg}" BorderBrush="{StaticResource Br.Border}"
-                  BorderThickness="1" CornerRadius="8">
+                  BorderThickness="1" CornerRadius="14">
+            <Border.Effect>
+              <DropShadowEffect BlurRadius="18" ShadowDepth="2" Direction="270" Opacity="0.08" Color="#3B2E9C" />
+            </Border.Effect>
             <DockPanel>
-              <TextBlock DockPanel.Dock="Top" Margin="12,9,12,4" FontWeight="SemiBold" FontSize="12"
+              <TextBlock DockPanel.Dock="Top" Margin="14,10,14,2" FontWeight="SemiBold" FontSize="12"
                          Foreground="{StaticResource Br.TextMuted}"
                          Text="{Binding Header, RelativeSource={RelativeSource TemplatedParent}}" />
               <ContentPresenter Margin="{TemplateBinding Padding}" />
@@ -313,15 +373,15 @@
 
   <!-- ============================ Menu ============================ -->
   <Style TargetType="Menu">
-    <Setter Property="Background" Value="{StaticResource Br.Bg}" />
-    <Setter Property="Foreground" Value="{StaticResource Br.Text}" />
+    <Setter Property="Background" Value="{StaticResource Br.HeaderGradient}" />
+    <Setter Property="Foreground" Value="White" />
     <Setter Property="FontFamily" Value="{StaticResource Font.Ui}" />
     <Setter Property="FontSize" Value="{StaticResource Font.Size}" />
-    <Setter Property="Padding" Value="4,2" />
+    <Setter Property="Padding" Value="8,4" />
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="Menu">
-          <Border Background="{TemplateBinding Background}" BorderBrush="{StaticResource Br.Border}" BorderThickness="0,0,0,1">
+          <Border Background="{TemplateBinding Background}">
             <ItemsPresenter Margin="{TemplateBinding Padding}" />
           </Border>
         </ControlTemplate>
@@ -364,9 +424,6 @@
             </Grid>
           </Border>
           <ControlTemplate.Triggers>
-            <Trigger Property="Role" Value="TopLevelHeader">
-              <Setter TargetName="bd" Property="Padding" Value="10,6" />
-            </Trigger>
             <Trigger Property="Role" Value="SubmenuHeader">
               <Setter TargetName="arrow" Property="Visibility" Value="Visible" />
             </Trigger>
@@ -379,6 +436,25 @@
             <Trigger Property="IsChecked" Value="True">
               <Setter TargetName="check" Property="Visibility" Value="Visible" />
             </Trigger>
+            <Trigger Property="Role" Value="TopLevelHeader">
+              <Setter Property="Foreground" Value="White" />
+              <Setter TargetName="bd" Property="Padding" Value="12,7" />
+              <Setter TargetName="bd" Property="CornerRadius" Value="10" />
+            </Trigger>
+            <MultiTrigger>
+              <MultiTrigger.Conditions>
+                <Condition Property="Role" Value="TopLevelHeader" />
+                <Condition Property="IsHighlighted" Value="True" />
+              </MultiTrigger.Conditions>
+              <Setter TargetName="bd" Property="Background" Value="{StaticResource Br.GhostWhiteHi}" />
+            </MultiTrigger>
+            <MultiTrigger>
+              <MultiTrigger.Conditions>
+                <Condition Property="Role" Value="TopLevelHeader" />
+                <Condition Property="IsSubmenuOpen" Value="True" />
+              </MultiTrigger.Conditions>
+              <Setter TargetName="bd" Property="Background" Value="{StaticResource Br.GhostWhiteHi}" />
+            </MultiTrigger>
             <Trigger Property="IsEnabled" Value="False">
               <Setter Property="Opacity" Value="0.4" />
             </Trigger>
@@ -390,24 +466,23 @@
 
   <!-- ============================ ToolBar ============================ -->
   <Style TargetType="ToolBarTray">
-    <Setter Property="Background" Value="{StaticResource Br.Surface2}" />
+    <Setter Property="Background" Value="{StaticResource Br.HeaderGradient}" />
   </Style>
 
   <Style TargetType="ToolBar">
-    <Setter Property="Background" Value="{StaticResource Br.Surface2}" />
-    <Setter Property="Foreground" Value="{StaticResource Br.Text}" />
+    <Setter Property="Background" Value="{StaticResource Br.HeaderGradient}" />
+    <Setter Property="Foreground" Value="White" />
     <Setter Property="OverflowMode" Value="AsNeeded" />
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="ToolBar">
-          <Border Background="{TemplateBinding Background}" BorderBrush="{StaticResource Br.Border}"
-                  BorderThickness="0,0,0,1" Padding="6,4">
+          <Border Background="{TemplateBinding Background}" Padding="8,6">
             <DockPanel>
               <ToggleButton x:Name="OverflowButton" DockPanel.Dock="Right" Focusable="False" MinWidth="18"
                             IsChecked="{Binding IsOverflowOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
                             IsEnabled="{TemplateBinding HasOverflowItems}"
                             Visibility="{TemplateBinding HasOverflowItems, Converter={StaticResource BoolVisConv}}">
-                <Path Data="M 0,0 L 7,0 L 3.5,4 Z" Fill="{StaticResource Br.TextMuted}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                <Path Data="M 0,0 L 7,0 L 3.5,4 Z" Fill="White" HorizontalAlignment="Center" VerticalAlignment="Center" />
               </ToggleButton>
               <Popup x:Name="OverflowPopup" AllowsTransparency="True" Placement="Bottom" StaysOpen="False"
                      Focusable="False" PopupAnimation="Fade"
@@ -426,21 +501,14 @@
     </Setter>
   </Style>
 
-  <!-- Buttons inside a ToolBar: compact, borderless until hover -->
-  <Style TargetType="Button" x:Key="{x:Static ToolBar.ButtonStyleKey}" BasedOn="{StaticResource {x:Type Button}}">
-    <Setter Property="BorderThickness" Value="1" />
-    <Setter Property="BorderBrush" Value="Transparent" />
-    <Setter Property="Background" Value="Transparent" />
-    <Setter Property="Padding" Value="9,5" />
-    <Setter Property="Margin" Value="1,0" />
-    <Setter Property="MinHeight" Value="30" />
-  </Style>
+  <!-- Buttons inside the purple header toolbar: ghost-white pills -->
+  <Style TargetType="Button" x:Key="{x:Static ToolBar.ButtonStyleKey}" BasedOn="{StaticResource HeaderButton}" />
 
   <Style TargetType="Separator" x:Key="{x:Static ToolBar.SeparatorStyleKey}">
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="Separator">
-          <Border Width="1" Margin="6,4" Background="{StaticResource Br.Border}" />
+          <Border Width="1" Margin="7,5" Background="#40FFFFFF" />
         </ControlTemplate>
       </Setter.Value>
     </Setter>

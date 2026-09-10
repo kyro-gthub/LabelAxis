@@ -167,6 +167,41 @@ public sealed class SetPropertyCommand<T> : IUndoableCommand
     }
 }
 
+/// <summary>Add / move / delete ruler guides as one undoable step (snapshots both lists).</summary>
+public sealed class GuideEditCommand : IUndoableCommand
+{
+    private readonly GuideCollection _target;
+    private readonly List<double> _beforeV;
+    private readonly List<double> _beforeH;
+    private readonly List<double> _afterV;
+    private readonly List<double> _afterH;
+
+    public GuideEditCommand(GuideCollection target, string label, Action mutate)
+    {
+        _target = target;
+        _beforeV = new List<double>(target.VerticalMm);
+        _beforeH = new List<double>(target.HorizontalMm);
+        mutate();
+        _afterV = new List<double>(target.VerticalMm);
+        _afterH = new List<double>(target.HorizontalMm);
+        Label = label;
+    }
+
+    public string Label { get; }
+
+    public void Do()
+    {
+        _target.VerticalMm = new List<double>(_afterV);
+        _target.HorizontalMm = new List<double>(_afterH);
+    }
+
+    public void Undo()
+    {
+        _target.VerticalMm = new List<double>(_beforeV);
+        _target.HorizontalMm = new List<double>(_beforeH);
+    }
+}
+
 public sealed class ReorderObjectCommand : IUndoableCommand
 {
     private readonly LabelDocument _document;

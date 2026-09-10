@@ -100,8 +100,15 @@
         <MenuItem Header="Fit label" Command="{Binding ZoomFitCommand}" />
         <MenuItem Header="Actual size (100%)" Command="{Binding ZoomActualCommand}" />
         <Separator />
+        <MenuItem Header="_Rulers" IsCheckable="True" IsChecked="{Binding ShowRulers}" />
+        <MenuItem Header="_Guides" IsCheckable="True" IsChecked="{Binding ShowGuides}" />
+        <MenuItem Header="_Lock guides" IsCheckable="True" IsChecked="{Binding LockGuides}" />
+        <MenuItem Header="Clear guides" Command="{Binding ClearGuidesCommand}" />
+        <Separator />
         <MenuItem Header="Show grid" IsCheckable="True" IsChecked="{Binding ShowGrid}" />
         <MenuItem Header="Snap to grid" IsCheckable="True" IsChecked="{Binding SnapToGrid}" />
+        <MenuItem Header="Snap to guides" IsCheckable="True" IsChecked="{Binding SnapToGuides}" />
+        <MenuItem Header="Snap to objects" IsCheckable="True" IsChecked="{Binding SnapToObjects}" />
       </MenuItem>
       <MenuItem Header="_Help">
         <MenuItem Header="_About Label Maker" Command="{Binding AboutCommand}" />
@@ -110,25 +117,25 @@
 
     <ToolBarTray DockPanel.Dock="Top">
       <ToolBar>
-        <Button Content="New" Style="{StaticResource ToolButton}" Command="{Binding NewCommand}" />
-        <Button Content="Open" Style="{StaticResource ToolButton}" Command="{Binding OpenCommand}" />
-        <Button Content="Save" Style="{StaticResource ToolButton}" Command="{Binding SaveCommand}" />
+        <Button Content="New" Command="{Binding NewCommand}" />
+        <Button Content="Open" Command="{Binding OpenCommand}" />
+        <Button Content="Save" Command="{Binding SaveCommand}" />
         <Separator />
-        <Button Content="Undo" Style="{StaticResource ToolButton}" Command="{Binding UndoCommand}" />
-        <Button Content="Redo" Style="{StaticResource ToolButton}" Command="{Binding RedoCommand}" />
+        <Button Content="Undo" Command="{Binding UndoCommand}" />
+        <Button Content="Redo" Command="{Binding RedoCommand}" />
         <Separator />
-        <Button Content="Text" Style="{StaticResource ToolButton}" Command="{Binding AddTextCommand}" />
-        <Button Content="Barcode" Style="{StaticResource ToolButton}" Command="{Binding AddBarcodeCommand}" />
-        <Button Content="Image" Style="{StaticResource ToolButton}" Command="{Binding AddImageCommand}" />
-        <Button Content="Rect" Style="{StaticResource ToolButton}" Command="{Binding AddRectangleCommand}" />
-        <Button Content="Ellipse" Style="{StaticResource ToolButton}" Command="{Binding AddEllipseCommand}" />
-        <Button Content="Line" Style="{StaticResource ToolButton}" Command="{Binding AddLineCommand}" />
+        <Button Content="Text" Command="{Binding AddTextCommand}" />
+        <Button Content="Barcode" Command="{Binding AddBarcodeCommand}" />
+        <Button Content="Image" Command="{Binding AddImageCommand}" />
+        <Button Content="Rect" Command="{Binding AddRectangleCommand}" />
+        <Button Content="Ellipse" Command="{Binding AddEllipseCommand}" />
+        <Button Content="Line" Command="{Binding AddLineCommand}" />
         <Separator />
-        <Button Content="Import data" Style="{StaticResource ToolButton}" Command="{Binding ImportDataCommand}" />
-        <Button Content="Bulk barcodes" Style="{StaticResource ToolButton}" Command="{Binding BulkBarcodeCommand}" />
-        <Button Content="Preflight" Style="{StaticResource ToolButton}" Command="{Binding PreflightCommand}" />
+        <Button Content="Import data" Command="{Binding ImportDataCommand}" />
+        <Button Content="Bulk barcodes" Command="{Binding BulkBarcodeCommand}" />
+        <Button Content="Preflight" Command="{Binding PreflightCommand}" />
         <Separator />
-        <Button Content="Print" Style="{StaticResource ToolButton}" Command="{Binding PrintCommand}" />
+        <Button Content="Print" Command="{Binding PrintCommand}" />
       </ToolBar>
     </ToolBarTray>
 
