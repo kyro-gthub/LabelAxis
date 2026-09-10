@@ -5,33 +5,36 @@
              ShutdownMode="OnMainWindowClose">
   <Application.Resources>
     <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="Theme.xaml" />
+      </ResourceDictionary.MergedDictionaries>
+
       <conv:BoolToVisibilityConverter x:Key="BoolToVis" />
       <conv:InverseBoolToVisibilityConverter x:Key="InverseBool" />
-      <SolidColorBrush x:Key="PanelBackground" Color="#F3F3F3" />
-      <SolidColorBrush x:Key="PanelBorder" Color="#D0D0D0" />
-      <SolidColorBrush x:Key="CanvasBackground" Color="#3A3D41" />
 
-      <Style TargetType="GroupBox">
-        <Setter Property="Margin" Value="4" />
-        <Setter Property="Padding" Value="4" />
-      </Style>
+      <!-- Aliases kept for MainWindow.xaml -->
+      <SolidColorBrush x:Key="PanelBackground" Color="{StaticResource Clr.Surface}" />
+      <SolidColorBrush x:Key="PanelBorder" Color="{StaticResource Clr.Border}" />
+      <SolidColorBrush x:Key="CanvasBackground" Color="#2B2E33" />
 
       <Style x:Key="FieldLabel" TargetType="TextBlock">
         <Setter Property="VerticalAlignment" Value="Center" />
-        <Setter Property="Margin" Value="0,0,6,0" />
-        <Setter Property="Foreground" Value="#404040" />
+        <Setter Property="Margin" Value="0,0,8,0" />
+        <Setter Property="Foreground" Value="{StaticResource Br.TextMuted}" />
+        <Setter Property="FontSize" Value="12" />
       </Style>
 
-      <Style x:Key="NumberBox" TargetType="TextBox">
-        <Setter Property="Margin" Value="0,2" />
-        <Setter Property="Padding" Value="2,1" />
+      <Style x:Key="NumberBox" TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+        <Setter Property="Margin" Value="0,3" />
         <Setter Property="HorizontalContentAlignment" Value="Right" />
       </Style>
 
-      <Style x:Key="ToolButton" TargetType="Button">
+      <Style x:Key="ToolButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
         <Setter Property="Margin" Value="1,0" />
-        <Setter Property="Padding" Value="8,4" />
-        <Setter Property="MinWidth" Value="30" />
+        <Setter Property="Padding" Value="10,5" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="MinWidth" Value="32" />
       </Style>
     </ResourceDictionary>
   </Application.Resources>

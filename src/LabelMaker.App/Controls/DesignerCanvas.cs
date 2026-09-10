@@ -4,8 +4,8 @@ using System.Windows.Media;
 using LabelMaker.App.Rendering;
 using LabelMaker.App.Services;
 using LabelMaker.Core.Editing;
-using LabelMaker.Core.Settings;
 using LabelMaker.Core.Model;
+using LabelMaker.Core.Settings;
 using LabelMaker.Core.Units;
 
 namespace LabelMaker.App.Controls;
@@ -13,22 +13,37 @@ namespace LabelMaker.App.Controls;
 /// <summary>
 /// The WYSIWYG design surface. Renders the active label through the shared
 /// <see cref="LabelMaker.Core.Rendering.LabelRenderer"/> (so it matches print),
-/// then overlays selection handles, grid and snap guides. Supports click-select,
-/// marquee-free multi-select with Shift, drag-move, 8-handle resize, wheel zoom
-/// and keyboard nudge (spec §2, §21).
+/// then overlays selection handles, grid and guides.
+///
+/// Navigation (spec §2):
+///   • mouse wheel            — zoom toward the cursor
+///   • middle-drag            — pan
+///   • Space + left-drag      — pan
+///   • left-drag on empty     — pan
+///   • Ctrl+0 / Ctrl+1        — actual size / fit
+///   • arrow keys             — nudge selection (Shift = ×10), or pan when nothing selected
+/// <c>_zoom</c> is a true scale factor: 1.0 == 100 % (physical size at a 96-DPI
+/// baseline); the "Actual size" command sets it from the calibrated screen DPI.
 /// </summary>
 public sealed class DesignerCanvas : FrameworkElement
 {
-    private const double K = UnitConverter.DiuPerInch / UnitConverter.MmPerInch;
-    private const double HandleSize = 7.0;
-    private const double OriginMarginDiu = 40.0;
+    private const double K = UnitConverter.DiuPerInch / UnitConverter.MmPerInch; // DIU per mm
+    private const double HandleSize = 8.0;
+    private const double MinZoom = 0.05;
+    private const double MaxZoom = 60.0;
 
     private readonly SheetVisualRenderer _renderer;
     private DocumentSession? _session;
 
-    private double _zoom = 3.0;
-    private Point _originDiu = new(OriginMarginDiu, OriginMarginDiu);
+    private double _zoom = 1.0;
+    private Vector _pan;                 // extra translation in DIU, on top of centring
+    private bool _viewInitialised;
 
+    // interaction state
+    private bool _spaceDown;
+    private bool _panning;
+    private Point _panStartScreen;
+    private Vector _panStartValue;
     private bool _dragging;
     private bool _resizing;
     private Handle _activeHandle = Handle.None;
@@ -41,22 +56,15 @@ public sealed class DesignerCanvas : FrameworkElement
         Focusable = true;
         FocusVisualStyle = null;
         ClipToBounds = true;
+        SnapsToDevicePixels = true;
     }
 
     public event EventHandler? ZoomChanged;
 
-    public double Zoom
-    {
-        get => _zoom;
-        set
-        {
-            _zoom = Math.Clamp(value, 0.5, 20.0);
-            InvalidateVisual();
-            ZoomChanged?.Invoke(this, EventArgs.Empty);
-        }
-    }
-
     public AppSettings? Settings { get; set; }
+
+    /// <summary>Current scale factor (1.0 == 100 %).</summary>
+    public double Zoom => _zoom;
 
     public void Attach(DocumentSession session)
     {
@@ -71,16 +79,107 @@ public sealed class DesignerCanvas : FrameworkElement
         _session.DocumentChanged += OnSessionChanged;
         _session.SelectionChanged += OnSessionChanged;
         _session.RecordChanged += OnSessionChanged;
+
+        _viewInitialised = false;
+        if (ActualWidth > 0 && ActualHeight > 0)
+        {
+            FitToView();
+        }
+
         InvalidateVisual();
     }
 
     private void OnSessionChanged(object? sender, EventArgs e) => InvalidateVisual();
 
-    // ---- rendering ----
+    // ---- view transform -------------------------------------------------------
+
+    private double LabelWidthMm => _session?.ActiveLabel.SizeMm.Width ?? 100;
+    private double LabelHeightMm => _session?.ActiveLabel.SizeMm.Height ?? 60;
+
+    /// <summary>DIU per document millimetre at the current zoom.</summary>
+    private double Scale => _zoom * K;
+
+    /// <summary>Control-space position of the label's top-left corner.</summary>
+    private Point ContentOrigin => new(
+        ((ActualWidth - (LabelWidthMm * Scale)) / 2.0) + _pan.X,
+        ((ActualHeight - (LabelHeightMm * Scale)) / 2.0) + _pan.Y);
+
+    private Point ScreenToMm(Point p)
+    {
+        Point o = ContentOrigin;
+        return new Point((p.X - o.X) / Scale, (p.Y - o.Y) / Scale);
+    }
+
+    protected override void OnRenderSizeChanged(SizeChangedInfo info)
+    {
+        base.OnRenderSizeChanged(info);
+        if (!_viewInitialised && ActualWidth > 0 && ActualHeight > 0)
+        {
+            FitToView();
+        }
+    }
+
+    public void FitToView()
+    {
+        if (ActualWidth <= 0 || ActualHeight <= 0)
+        {
+            return;
+        }
+
+        const double margin = 56;
+        double sx = (ActualWidth - (margin * 2)) / (LabelWidthMm * K);
+        double sy = (ActualHeight - (margin * 2)) / (LabelHeightMm * K);
+        _zoom = Math.Clamp(Math.Min(sx, sy), MinZoom, MaxZoom);
+        _pan = default;
+        _viewInitialised = true;
+        InvalidateVisual();
+        ZoomChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    public void ZoomToActualSize()
+    {
+        double screenDpi = Settings?.ScreenDpiCalibration ?? UnitConverter.DiuPerInch;
+        SetZoomKeepingCentre(Math.Clamp(screenDpi / UnitConverter.DiuPerInch, MinZoom, MaxZoom));
+    }
+
+    public void ZoomIn() => ZoomAt(1.2, Centre);
+
+    public void ZoomOut() => ZoomAt(1 / 1.2, Centre);
+
+    private Point Centre => new(ActualWidth / 2.0, ActualHeight / 2.0);
+
+    private void SetZoomKeepingCentre(double newZoom) => ZoomToward(newZoom, Centre);
+
+    private void ZoomAt(double factor, Point anchorScreen) =>
+        ZoomToward(Math.Clamp(_zoom * factor, MinZoom, MaxZoom), anchorScreen);
+
+    private void ZoomToward(double newZoom, Point anchorScreen)
+    {
+        if (Math.Abs(newZoom - _zoom) < 1e-6)
+        {
+            return;
+        }
+
+        Point mmUnderCursor = ScreenToMm(anchorScreen);
+        _zoom = newZoom;
+
+        // Solve for _pan so the same document point stays under the anchor:
+        //   anchor = origin + mm * Scale
+        //   origin = (Avail - Label*Scale)/2 + pan
+        _pan = new Vector(
+            anchorScreen.X - (mmUnderCursor.X * Scale) - ((ActualWidth - (LabelWidthMm * Scale)) / 2.0),
+            anchorScreen.Y - (mmUnderCursor.Y * Scale) - ((ActualHeight - (LabelHeightMm * Scale)) / 2.0));
+
+        _viewInitialised = true;
+        InvalidateVisual();
+        ZoomChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    // ---- rendering ----------------------------------------------------------
 
     protected override void OnRender(DrawingContext dc)
     {
-        dc.DrawRectangle(new SolidColorBrush(Color.FromRgb(0x3A, 0x3D, 0x41)), null, new Rect(RenderSize));
+        dc.DrawRectangle(new SolidColorBrush(Color.FromRgb(0x2B, 0x2E, 0x33)), null, new Rect(RenderSize));
         if (_session is null)
         {
             return;
@@ -93,12 +192,18 @@ public sealed class DesignerCanvas : FrameworkElement
             _renderer.OptionsFor(_session.Project.Template ?? Fallback(), LabelMaker.Core.Rendering.LabelOutlineStyle.Hairline),
             ColorRgba.White);
 
-        dc.PushTransform(new TranslateTransform(_originDiu.X, _originDiu.Y));
+        Point origin = ContentOrigin;
+        dc.PushTransform(new TranslateTransform(origin.X, origin.Y));
         dc.PushTransform(new ScaleTransform(_zoom, _zoom));
 
-        // Drop shadow / paper edge.
         var paperRect = new Rect(0, 0, label.SizeMm.Width * K, label.SizeMm.Height * K);
-        dc.DrawRectangle(Brushes.White, new Pen(Brushes.Black, 0.3 / _zoom), paperRect);
+
+        // soft drop shadow
+        double s = 6 / _zoom;
+        dc.DrawRectangle(new SolidColorBrush(Color.FromArgb(40, 0, 0, 0)), null,
+            new Rect(paperRect.X + s, paperRect.Y + s, paperRect.Width, paperRect.Height));
+
+        dc.DrawRectangle(Brushes.White, new Pen(new SolidColorBrush(Color.FromRgb(0xC9, 0xCD, 0xD3)), 1.0 / _zoom), paperRect);
         dc.DrawDrawing(visual.Drawing);
 
         if (Settings?.ShowGrid == true)
@@ -114,12 +219,12 @@ public sealed class DesignerCanvas : FrameworkElement
 
     private void DrawGrid(DrawingContext dc, LabelDocument label, double stepMm)
     {
-        if (stepMm <= 0)
+        if (stepMm <= 0 || stepMm * Scale < 4)
         {
-            return;
+            return; // don't draw an unreadably dense grid
         }
 
-        var pen = new Pen(new SolidColorBrush(Color.FromArgb(40, 0, 120, 215)), 0.2 / _zoom);
+        var pen = new Pen(new SolidColorBrush(Color.FromArgb(36, 47, 111, 235)), 0.6 / _zoom);
         pen.Freeze();
         for (double x = 0; x <= label.SizeMm.Width + 1e-6; x += stepMm)
         {
@@ -139,10 +244,10 @@ public sealed class DesignerCanvas : FrameworkElement
             return;
         }
 
-        var stroke = new Pen(new SolidColorBrush(Color.FromRgb(0, 120, 215)), 1.0 / _zoom);
+        var accent = Color.FromRgb(0x2F, 0x6F, 0xEB);
+        var stroke = new Pen(new SolidColorBrush(accent), 1.2 / _zoom);
         stroke.Freeze();
-        var handleFill = Brushes.White;
-        var handlePen = new Pen(new SolidColorBrush(Color.FromRgb(0, 120, 215)), 1.0 / _zoom);
+        var handlePen = new Pen(new SolidColorBrush(accent), 1.2 / _zoom);
         handlePen.Freeze();
 
         foreach (LabelObject obj in _session.Selection)
@@ -153,10 +258,13 @@ public sealed class DesignerCanvas : FrameworkElement
             dc.PushTransform(new RotateTransform(obj.RotationDegrees, rect.X + (rect.Width / 2), rect.Y + (rect.Height / 2)));
             dc.DrawRectangle(null, stroke, rect);
 
-            double hs = HandleSize / _zoom;
-            foreach (Point p in HandlePoints(rect))
+            if (!obj.Locked)
             {
-                dc.DrawRectangle(handleFill, handlePen, new Rect(p.X - (hs / 2), p.Y - (hs / 2), hs, hs));
+                double hs = HandleSize / _zoom;
+                foreach (Point p in HandlePoints(rect))
+                {
+                    dc.DrawRectangle(Brushes.White, handlePen, new Rect(p.X - (hs / 2), p.Y - (hs / 2), hs, hs));
+                }
             }
 
             dc.Pop();
@@ -175,23 +283,16 @@ public sealed class DesignerCanvas : FrameworkElement
         yield return new Point(r.Left, r.Top + (r.Height / 2));
     }
 
-    // ---- interaction ----
+    // ---- interaction ------------------------------------------------------
 
     protected override void OnMouseWheel(MouseWheelEventArgs e)
     {
-        if (Keyboard.Modifiers.HasFlag(ModifierKeys.Control))
-        {
-            Point before = ScreenToMm(e.GetPosition(this));
-            Zoom *= e.Delta > 0 ? 1.1 : 1 / 1.1;
-            Point after = ScreenToMm(e.GetPosition(this));
-            _originDiu.X += (after.X - before.X) * K * _zoom;
-            _originDiu.Y += (after.Y - before.Y) * K * _zoom;
-            InvalidateVisual();
-            e.Handled = true;
-        }
+        double factor = e.Delta > 0 ? 1.15 : 1 / 1.15;
+        ZoomAt(factor, e.GetPosition(this));
+        e.Handled = true;
     }
 
-    protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
+    protected override void OnMouseDown(MouseButtonEventArgs e)
     {
         Focus();
         if (_session is null)
@@ -199,13 +300,27 @@ public sealed class DesignerCanvas : FrameworkElement
             return;
         }
 
+        bool wantsPan = e.ChangedButton == MouseButton.Middle ||
+                        (e.ChangedButton == MouseButton.Left && _spaceDown);
+
+        if (wantsPan)
+        {
+            BeginPan(e.GetPosition(this));
+            e.Handled = true;
+            return;
+        }
+
+        if (e.ChangedButton != MouseButton.Left)
+        {
+            return;
+        }
+
         Point mm = ScreenToMm(e.GetPosition(this));
         _dragStartMm = mm;
 
-        // Resize handle hit-test first, on the current selection.
         foreach (LabelObject obj in _session.Selection)
         {
-            Handle h = HitHandle(obj, mm);
+            Handle h = obj.Locked ? Handle.None : HitHandle(obj, mm);
             if (h != Handle.None)
             {
                 _resizing = true;
@@ -221,6 +336,8 @@ public sealed class DesignerCanvas : FrameworkElement
         if (hit is null)
         {
             _session.ClearSelection();
+            BeginPan(e.GetPosition(this)); // drag empty space = pan
+            e.Handled = true;
             return;
         }
 
@@ -251,7 +368,22 @@ public sealed class DesignerCanvas : FrameworkElement
 
     protected override void OnMouseMove(MouseEventArgs e)
     {
-        if (_session is null || (!_dragging && !_resizing))
+        if (_session is null)
+        {
+            return;
+        }
+
+        if (_panning)
+        {
+            Point now = e.GetPosition(this);
+            _pan = _panStartValue + (now - _panStartScreen);
+            InvalidateVisual();
+            return;
+        }
+
+        UpdateCursor(e.GetPosition(this));
+
+        if (!_dragging && !_resizing)
         {
             return;
         }
@@ -270,25 +402,30 @@ public sealed class DesignerCanvas : FrameworkElement
             obj.Bounds = _resizing ? ResizeRect(start, _activeHandle, dx, dy) : start.Offset(dx, dy);
         }
 
-        if (Settings?.SnapToGrid == true && !_resizing && _session.Selection.Count == 1)
+        if (Settings is { SnapToGrid: true, GridSizeMm: > 0 } s && !_resizing && _session.Selection.Count == 1)
         {
             LabelObject only = _session.Selection[0];
-            double g = Settings.GridSizeMm;
-            if (g > 0)
+            double g = s.GridSizeMm;
+            only.Bounds = only.Bounds with
             {
-                only.Bounds = only.Bounds with
-                {
-                    X = Math.Round(only.Bounds.X / g) * g,
-                    Y = Math.Round(only.Bounds.Y / g) * g,
-                };
-            }
+                X = Math.Round(only.Bounds.X / g) * g,
+                Y = Math.Round(only.Bounds.Y / g) * g,
+            };
         }
 
         InvalidateVisual();
     }
 
-    protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
+    protected override void OnMouseUp(MouseButtonEventArgs e)
     {
+        if (_panning)
+        {
+            _panning = false;
+            ReleaseMouseCapture();
+            UpdateCursor(e.GetPosition(this));
+            return;
+        }
+
         if (_session is not null && (_dragging || _resizing))
         {
             var commands = new List<IUndoableCommand>();
@@ -318,10 +455,141 @@ public sealed class DesignerCanvas : FrameworkElement
         ReleaseMouseCapture();
     }
 
-    private void CaptureStart()
+    protected override void OnLostMouseCapture(MouseEventArgs e)
     {
-        _dragStartBounds = _session!.Selection.ToDictionary(o => o.Id, o => o.Bounds);
+        _panning = _dragging = _resizing = false;
     }
+
+    protected override void OnKeyDown(KeyEventArgs e)
+    {
+        if (e.Key is Key.Space)
+        {
+            _spaceDown = true;
+            Cursor = Cursors.SizeAll;
+            e.Handled = true;
+            return;
+        }
+
+        bool ctrl = Keyboard.Modifiers.HasFlag(ModifierKeys.Control);
+        switch (e.Key)
+        {
+            case Key.D0 when ctrl:
+                ZoomToActualSize();
+                e.Handled = true;
+                return;
+            case Key.D1 when ctrl:
+                FitToView();
+                e.Handled = true;
+                return;
+            case Key.OemPlus or Key.Add:
+                ZoomIn();
+                e.Handled = true;
+                return;
+            case Key.OemMinus or Key.Subtract:
+                ZoomOut();
+                e.Handled = true;
+                return;
+        }
+
+        if (_session is null)
+        {
+            return;
+        }
+
+        double step = (Settings?.GridSizeMm ?? 1.0) is var g && g > 0 ? g : 1.0;
+        if (Keyboard.Modifiers.HasFlag(ModifierKeys.Shift))
+        {
+            step *= 10;
+        }
+
+        Vector delta = e.Key switch
+        {
+            Key.Left => new Vector(-step, 0),
+            Key.Right => new Vector(step, 0),
+            Key.Up => new Vector(0, -step),
+            Key.Down => new Vector(0, step),
+            _ => default,
+        };
+
+        if (delta == default)
+        {
+            return;
+        }
+
+        e.Handled = true;
+
+        if (_session.Selection.Count == 0)
+        {
+            _pan -= delta * Scale;   // pan the view
+            InvalidateVisual();
+            return;
+        }
+
+        var commands = new List<IUndoableCommand>();
+        foreach (LabelObject obj in _session.Selection.Where(o => !o.Locked))
+        {
+            RectMm target = obj.Bounds.Offset(delta.X, delta.Y);
+            commands.Add(new TransformObjectCommand(obj, target, obj.RotationDegrees));
+        }
+
+        if (commands.Count > 0)
+        {
+            _session.Execute(commands.Count == 1 ? commands[0] : new CompositeCommand("Nudge", commands));
+        }
+    }
+
+    protected override void OnKeyUp(KeyEventArgs e)
+    {
+        if (e.Key == Key.Space)
+        {
+            _spaceDown = false;
+            Cursor = null;
+            e.Handled = true;
+        }
+    }
+
+    private void BeginPan(Point screen)
+    {
+        _panning = true;
+        _panStartScreen = screen;
+        _panStartValue = _pan;
+        Cursor = Cursors.SizeAll;
+        CaptureMouse();
+    }
+
+    private void UpdateCursor(Point screen)
+    {
+        if (_panning || _spaceDown)
+        {
+            Cursor = Cursors.SizeAll;
+            return;
+        }
+
+        if (_session is not null)
+        {
+            foreach (LabelObject obj in _session.Selection)
+            {
+                if (!obj.Locked && HitHandle(obj, ScreenToMm(screen)) is var h and not Handle.None)
+                {
+                    Cursor = h switch
+                    {
+                        Handle.Top or Handle.Bottom => Cursors.SizeNS,
+                        Handle.Left or Handle.Right => Cursors.SizeWE,
+                        Handle.TopLeft or Handle.BottomRight => Cursors.SizeNWSE,
+                        _ => Cursors.SizeNESW,
+                    };
+                    return;
+                }
+            }
+
+            Cursor = HitObject(ScreenToMm(screen)) is not null ? Cursors.SizeAll : Cursors.Arrow;
+            return;
+        }
+
+        Cursor = Cursors.Arrow;
+    }
+
+    private void CaptureStart() => _dragStartBounds = _session!.Selection.ToDictionary(o => o.Id, o => o.Bounds);
 
     private LabelObject? HitObject(Point mm)
     {
@@ -331,10 +599,11 @@ public sealed class DesignerCanvas : FrameworkElement
         }
 
         var point = new PointMm(mm.X, mm.Y);
+        double tol = 6 / Scale;
         for (int i = _session.ActiveLabel.Objects.Count - 1; i >= 0; i--)
         {
             LabelObject obj = _session.ActiveLabel.Objects[i];
-            if (obj.Visible && obj.RotatedBounds.Inflate(0.5, 0.5).Contains(point))
+            if (obj.Visible && obj.RotatedBounds.Inflate(tol, tol).Contains(point))
             {
                 return obj;
             }
@@ -348,7 +617,7 @@ public sealed class DesignerCanvas : FrameworkElement
         RectMm b = obj.Bounds;
         var rect = new Rect(b.X * K, b.Y * K, b.Width * K, b.Height * K);
         var p = new Point(mm.X * K, mm.Y * K);
-        double tol = (HandleSize + 3) / _zoom;
+        double tol = (HandleSize + 4) / _zoom;
 
         Handle[] order = { Handle.TopLeft, Handle.Top, Handle.TopRight, Handle.Right, Handle.BottomRight, Handle.Bottom, Handle.BottomLeft, Handle.Left };
         int idx = 0;
@@ -380,37 +649,33 @@ public sealed class DesignerCanvas : FrameworkElement
             case Handle.Left: l += dx; break;
         }
 
-        double minSize = 1.0;
-        if (r - l < minSize)
+        const double min = 1.0;
+        if (r - l < min)
         {
             if (handle is Handle.Left or Handle.TopLeft or Handle.BottomLeft)
             {
-                l = r - minSize;
+                l = r - min;
             }
             else
             {
-                r = l + minSize;
+                r = l + min;
             }
         }
 
-        if (b - t < minSize)
+        if (b - t < min)
         {
             if (handle is Handle.Top or Handle.TopLeft or Handle.TopRight)
             {
-                t = b - minSize;
+                t = b - min;
             }
             else
             {
-                b = t + minSize;
+                b = t + min;
             }
         }
 
         return RectMm.FromLtrb(l, t, r, b);
     }
-
-    private Point ScreenToMm(Point screen) => new(
-        (screen.X - _originDiu.X) / (_zoom * K),
-        (screen.Y - _originDiu.Y) / (_zoom * K));
 
     private static LabelMaker.Core.Formtec.LabelTemplate Fallback() => new()
     {

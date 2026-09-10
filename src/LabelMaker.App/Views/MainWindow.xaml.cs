@@ -28,6 +28,14 @@ public partial class MainWindow : Window
         _canvas = new DesignerCanvas(_vm.SheetRenderer);
         CanvasHost.Child = _canvas;
         _vm.AttachCanvas(_canvas);
+        Loaded += (_, _) => _canvas.Focus();
+        _canvas.MouseEnter += (_, _) =>
+        {
+            if (!_canvas.IsKeyboardFocusWithin)
+            {
+                _canvas.Focus();
+            }
+        };
 
         _vm.PropertyChanged += (_, e) =>
         {
