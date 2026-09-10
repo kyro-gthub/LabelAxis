@@ -138,60 +138,72 @@
       <Separator />
       <StatusBarItem><TextBlock Text="{Binding SelectionInfo}" /></StatusBarItem>
       <StatusBarItem HorizontalAlignment="Right">
-        <StackPanel Orientation="Horizontal">
-          <TextBlock Text="Record " />
-          <Button Content="⏮" Command="{Binding FirstRecordCommand}" Padding="4,0" />
-          <Button Content="◀" Command="{Binding PrevRecordCommand}" Padding="4,0" />
-          <TextBlock Text="{Binding RecordText}" Margin="6,0" VerticalAlignment="Center" />
-          <Button Content="▶" Command="{Binding NextRecordCommand}" Padding="4,0" />
-          <Button Content="⏭" Command="{Binding LastRecordCommand}" Padding="4,0" />
-          <Separator Margin="8,0" />
-          <TextBlock Text="{Binding ZoomText}" VerticalAlignment="Center" />
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+          <Border Background="{StaticResource Br.Bg}" BorderBrush="{StaticResource Br.Border}" BorderThickness="1" CornerRadius="6" Padding="2">
+            <StackPanel Orientation="Horizontal">
+              <TextBlock Text="Record" Margin="6,0,4,0" VerticalAlignment="Center" Foreground="{StaticResource Br.TextMuted}" />
+              <Button Content="⏮" Command="{Binding FirstRecordCommand}" Style="{StaticResource ToolButton}" MinWidth="26" Padding="4,2" />
+              <Button Content="◀" Command="{Binding PrevRecordCommand}" Style="{StaticResource ToolButton}" MinWidth="26" Padding="4,2" />
+              <TextBlock Text="{Binding RecordText}" Margin="8,0" VerticalAlignment="Center" MinWidth="56" TextAlignment="Center" />
+              <Button Content="▶" Command="{Binding NextRecordCommand}" Style="{StaticResource ToolButton}" MinWidth="26" Padding="4,2" />
+              <Button Content="⏭" Command="{Binding LastRecordCommand}" Style="{StaticResource ToolButton}" MinWidth="26" Padding="4,2" />
+            </StackPanel>
+          </Border>
+          <Border Background="{StaticResource Br.Bg}" BorderBrush="{StaticResource Br.Border}" BorderThickness="1" CornerRadius="6" Padding="2" Margin="8,0,0,0">
+            <StackPanel Orientation="Horizontal">
+              <Button Content="−" Command="{Binding ZoomOutCommand}" Style="{StaticResource ToolButton}" MinWidth="26" Padding="4,2" />
+              <TextBlock Text="{Binding ZoomText}" VerticalAlignment="Center" MinWidth="46" TextAlignment="Center" />
+              <Button Content="+" Command="{Binding ZoomInCommand}" Style="{StaticResource ToolButton}" MinWidth="26" Padding="4,2" />
+              <Button Content="Fit" Command="{Binding ZoomFitCommand}" Style="{StaticResource ToolButton}" Padding="8,2" />
+            </StackPanel>
+          </Border>
         </StackPanel>
       </StatusBarItem>
     </StatusBar>
 
     <!-- Main body -->
-    <Grid>
+    <Grid Background="{StaticResource Br.Surface}">
       <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="230" MinWidth="180" />
-        <ColumnDefinition Width="5" />
+        <ColumnDefinition Width="248" MinWidth="190" />
+        <ColumnDefinition Width="6" />
         <ColumnDefinition Width="*" />
-        <ColumnDefinition Width="5" />
-        <ColumnDefinition Width="300" MinWidth="240" />
+        <ColumnDefinition Width="6" />
+        <ColumnDefinition Width="312" MinWidth="248" />
       </Grid.ColumnDefinitions>
 
       <!-- Left: pages + objects -->
       <Border Grid.Column="0" Background="{StaticResource PanelBackground}" BorderBrush="{StaticResource PanelBorder}" BorderThickness="0,0,1,0">
-        <DockPanel>
-          <TextBlock DockPanel.Dock="Top" Text="LABEL / OBJECTS" FontWeight="Bold" Margin="8,6" Foreground="#606060" />
-          <TextBlock DockPanel.Dock="Top" Text="{Binding TemplateSummary}" Margin="8,0,8,6" TextWrapping="Wrap" Foreground="#707070" />
-          <GroupBox DockPanel.Dock="Bottom" Header="Search (page / barcode / text)">
-            <DockPanel>
-              <TextBox DockPanel.Dock="Top" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" />
-              <ListBox ItemsSource="{Binding SearchResults}" SelectedItem="{Binding SelectedSearchResult}" Height="140"
-                       DisplayMemberPath="Display" />
-            </DockPanel>
-          </GroupBox>
-          <ListBox ItemsSource="{Binding ObjectList}" SelectedItem="{Binding SelectedObjectItem}"
-                   DisplayMemberPath="Display" />
+        <DockPanel Margin="10,10,10,8">
+          <TextBlock DockPanel.Dock="Top" Text="LABEL SHEET" FontWeight="SemiBold" FontSize="11" Margin="2,0,0,4" Foreground="{StaticResource Br.TextMuted}" />
+          <Border DockPanel.Dock="Top" Background="{StaticResource Br.Bg}" BorderBrush="{StaticResource Br.Border}" BorderThickness="1" CornerRadius="8" Padding="10,8" Margin="0,0,0,10">
+            <TextBlock Text="{Binding TemplateSummary}" TextWrapping="Wrap" Foreground="{StaticResource Br.Text}" FontSize="12" />
+          </Border>
+          <TextBlock DockPanel.Dock="Top" Text="SEARCH" FontWeight="SemiBold" FontSize="11" Margin="2,0,0,4" Foreground="{StaticResource Br.TextMuted}" />
+          <TextBox DockPanel.Dock="Top" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,4" />
+          <ListBox DockPanel.Dock="Top" ItemsSource="{Binding SearchResults}" SelectedItem="{Binding SelectedSearchResult}"
+                   Height="150" DisplayMemberPath="Display" Margin="0,0,0,10" />
+          <TextBlock DockPanel.Dock="Top" Text="OBJECTS" FontWeight="SemiBold" FontSize="11" Margin="2,0,0,4" Foreground="{StaticResource Br.TextMuted}" />
+          <ListBox ItemsSource="{Binding ObjectList}" SelectedItem="{Binding SelectedObjectItem}" DisplayMemberPath="Display" />
         </DockPanel>
       </Border>
 
-      <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" Background="Transparent" />
+      <GridSplitter Grid.Column="1" Width="6" HorizontalAlignment="Stretch" />
 
       <!-- Center: designer canvas host -->
-      <Border Grid.Column="2" x:Name="CanvasHost" Background="{StaticResource CanvasBackground}" ClipToBounds="True" />
+      <Border Grid.Column="2" Margin="8" CornerRadius="10" ClipToBounds="True"
+              BorderBrush="{StaticResource Br.Border}" BorderThickness="1">
+        <Border x:Name="CanvasHost" Background="{StaticResource CanvasBackground}" ClipToBounds="True" />
+      </Border>
 
-      <GridSplitter Grid.Column="3" Width="5" HorizontalAlignment="Stretch" Background="Transparent" />
+      <GridSplitter Grid.Column="3" Width="6" HorizontalAlignment="Stretch" />
 
       <!-- Right: properties -->
       <Border Grid.Column="4" Background="{StaticResource PanelBackground}" BorderBrush="{StaticResource PanelBorder}" BorderThickness="1,0,0,0">
         <ScrollViewer VerticalScrollBarVisibility="Auto">
-          <StackPanel Margin="6" DataContext="{Binding Properties}">
-            <TextBlock Text="PROPERTIES" FontWeight="Bold" Foreground="#606060" Margin="2,4" />
-            <TextBlock Text="Select an object to edit its exact size and position."
-                       TextWrapping="Wrap" Foreground="#808080" Margin="2"
+          <StackPanel Margin="10" DataContext="{Binding Properties}">
+            <TextBlock Text="PROPERTIES" FontWeight="SemiBold" FontSize="11" Foreground="{StaticResource Br.TextMuted}" Margin="2,0,0,6" />
+            <TextBlock Text="Select an object on the canvas to edit its exact size and position, or use the mouse wheel to zoom and drag empty space to pan."
+                       TextWrapping="Wrap" Foreground="{StaticResource Br.TextMuted}" Margin="2" FontSize="12"
                        Visibility="{Binding HasSelection, Converter={StaticResource InverseBool}}" />
 
             <GroupBox Header="Position &amp; size (mm)" Visibility="{Binding HasSelection, Converter={StaticResource BoolToVis}}">

@@ -94,7 +94,7 @@ public sealed class MainViewModel : ObservableObject
         {
             Name = "Title",
             Bounds = new RectMm(2, 2, Math.Max(10, w - 4), Math.Min(8, h / 3)),
-            Content = RichTextContent.FromPlainText("{Product}"),
+            Content = RichTextContent.FromPlainText("Product name"),
             FontSizePt = 10,
             Bold = true,
         });
@@ -103,7 +103,7 @@ public sealed class MainViewModel : ObservableObject
             Name = "Barcode",
             Bounds = new RectMm(2, Math.Min(11, h / 2), Math.Max(20, w - 4), Math.Min(12, h / 2)),
             AutoSize = false,
-            Spec = new BarcodeSpec { Symbology = BarcodeSymbology.Code128, Data = "{Barcode}", ModuleWidthMm = 0.3, BarHeightMm = Math.Min(10, h / 3) },
+            Spec = new BarcodeSpec { Symbology = BarcodeSymbology.Code128, Data = "1234567890", ModuleWidthMm = 0.3, BarHeightMm = Math.Min(10, h / 3) },
         });
     }
 
@@ -160,7 +160,7 @@ public sealed class MainViewModel : ObservableObject
         ? $"{_session.RecordIndex + 1} / {_session.RecordCount}"
         : "— / —";
 
-    public string ZoomText => _canvas is null ? "100%" : $"{_canvas.Zoom * 100 / 3.7795:0}%".Replace(",", ".");
+    public string ZoomText => _canvas is null ? "100%" : $"{Math.Round(_canvas.Zoom * 100)}%";
 
     public string TemplateSummary
     {
@@ -336,10 +336,10 @@ public sealed class MainViewModel : ObservableObject
         ExportLabelPngCommand = new RelayCommand(ExportLabelPng);
         ExportLabelSvgCommand = new RelayCommand(ExportLabelSvg);
 
-        ZoomInCommand = new RelayCommand(() => { if (_canvas is not null) _canvas.Zoom *= 1.2; });
-        ZoomOutCommand = new RelayCommand(() => { if (_canvas is not null) _canvas.Zoom /= 1.2; });
-        ZoomFitCommand = new RelayCommand(() => { if (_canvas is not null) _canvas.Zoom = 3.0; });
-        ZoomActualCommand = new RelayCommand(() => { if (_canvas is not null) _canvas.Zoom = _env.Settings.ScreenDpiCalibration / UnitConverter.DiuPerInch * (UnitConverter.DiuPerInch / UnitConverter.MmPerInch) / (UnitConverter.DiuPerInch / UnitConverter.MmPerInch) * 3.7795; });
+        ZoomInCommand = new RelayCommand(() => _canvas?.ZoomIn());
+        ZoomOutCommand = new RelayCommand(() => _canvas?.ZoomOut());
+        ZoomFitCommand = new RelayCommand(() => _canvas?.FitToView());
+        ZoomActualCommand = new RelayCommand(() => _canvas?.ZoomToActualSize());
 
         FirstRecordCommand = new RelayCommand(() => _session.RecordIndex = 0);
         PrevRecordCommand = new RelayCommand(() => _session.RecordIndex--);
