@@ -73,6 +73,9 @@ public sealed class DesignerCanvas : FrameworkElement
 
     public double Zoom => _zoom;
 
+    /// <summary>Document-mm position of the last right-click, for the context menu (paste / add guide).</summary>
+    public PointMm? ContextMm { get; private set; }
+
     public void Attach(DocumentSession session)
     {
         if (_session is not null)
@@ -106,6 +109,54 @@ public sealed class DesignerCanvas : FrameworkElement
         var guides = _session.ActiveLabel.Guides;
         _session.Execute(new GuideEditCommand(guides, "Clear guides", guides.Clear));
         InvalidateVisual();
+    }
+
+    /// <summary>Add a guide at the last right-click position (used by the canvas context menu).</summary>
+    public void InsertGuideAtContext(bool vertical)
+    {
+        if (_session is null || ContextMm is not { } at || _session.ActiveLabel.Guides.Locked)
+        {
+            return;
+        }
+
+        var guides = _session.ActiveLabel.Guides;
+        double max = vertical ? LabelWidthMm : LabelHeightMm;
+        double value = Math.Round(Math.Clamp(vertical ? at.X : at.Y, 0, max), 2);
+        _session.Execute(new GuideEditCommand(guides, "Add guide", () =>
+        {
+            (vertical ? guides.VerticalMm : guides.HorizontalMm).Add(value);
+            (vertical ? guides.VerticalMm : guides.HorizontalMm).Sort();
+        }));
+        InvalidateVisual();
+    }
+
+    protected override void OnMouseRightButtonDown(MouseButtonEventArgs e)
+    {
+        Focus();
+        if (_session is null)
+        {
+            base.OnMouseRightButtonDown(e);
+            return;
+        }
+
+        Point screen = e.GetPosition(this);
+        if (screen.X > RulerPad && screen.Y > RulerPad)
+        {
+            Point mm = ScreenToMm(screen);
+            ContextMm = new PointMm(mm.X, mm.Y);
+
+            LabelObject? hit = HitObject(mm);
+            if (hit is not null && !_session.Selection.Contains(hit))
+            {
+                _session.SetSelection(new[] { hit });
+            }
+        }
+        else
+        {
+            ContextMm = null;
+        }
+
+        base.OnMouseRightButtonDown(e);
     }
 
     private void OnSessionChanged(object? sender, EventArgs e) => InvalidateVisual();

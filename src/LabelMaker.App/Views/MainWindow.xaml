@@ -14,13 +14,22 @@
     <KeyBinding Key="Z" Modifiers="Control" Command="{Binding UndoCommand}" />
     <KeyBinding Key="Y" Modifiers="Control" Command="{Binding RedoCommand}" />
     <KeyBinding Key="D" Modifiers="Control" Command="{Binding DuplicateCommand}" />
+    <KeyBinding Key="C" Modifiers="Control" Command="{Binding CopyCommand}" />
+    <KeyBinding Key="X" Modifiers="Control" Command="{Binding CutCommand}" />
+    <KeyBinding Key="V" Modifiers="Control" Command="{Binding PasteCommand}" />
     <KeyBinding Key="G" Modifiers="Control" Command="{Binding GroupCommand}" />
     <KeyBinding Key="G" Modifiers="Control+Shift" Command="{Binding UngroupCommand}" />
     <KeyBinding Key="Delete" Command="{Binding DeleteCommand}" />
   </Window.InputBindings>
 
   <DockPanel>
-    <Menu DockPanel.Dock="Top">
+    <!-- Purple header band: menu + toolbar, with a soft shadow so it sits above the canvas -->
+    <Border DockPanel.Dock="Top" Background="{StaticResource Br.HeaderGradient}" Panel.ZIndex="10">
+      <Border.Effect>
+        <DropShadowEffect BlurRadius="14" ShadowDepth="3" Direction="270" Opacity="0.22" Color="#2A1E7A" />
+      </Border.Effect>
+      <StackPanel>
+        <Menu>
       <MenuItem Header="_File">
         <MenuItem Header="_New Project…" InputGestureText="Ctrl+N" Command="{Binding NewCommand}" />
         <MenuItem Header="_Open…" InputGestureText="Ctrl+O" Command="{Binding OpenCommand}" />
@@ -53,11 +62,20 @@
         <MenuItem Header="_Undo" InputGestureText="Ctrl+Z" Command="{Binding UndoCommand}" />
         <MenuItem Header="_Redo" InputGestureText="Ctrl+Y" Command="{Binding RedoCommand}" />
         <Separator />
+        <MenuItem Header="Cu_t" InputGestureText="Ctrl+X" Command="{Binding CutCommand}" />
+        <MenuItem Header="_Copy" InputGestureText="Ctrl+C" Command="{Binding CopyCommand}" />
+        <MenuItem Header="_Paste" InputGestureText="Ctrl+V" Command="{Binding PasteCommand}" />
         <MenuItem Header="_Duplicate" InputGestureText="Ctrl+D" Command="{Binding DuplicateCommand}" />
         <MenuItem Header="_Delete" InputGestureText="Del" Command="{Binding DeleteCommand}" />
         <Separator />
         <MenuItem Header="_Group" InputGestureText="Ctrl+G" Command="{Binding GroupCommand}" />
         <MenuItem Header="_Ungroup" InputGestureText="Ctrl+Shift+G" Command="{Binding UngroupCommand}" />
+      </MenuItem>
+      <MenuItem Header="_Page">
+        <MenuItem Header="_Add page" Command="{Binding AddPageCommand}" />
+        <MenuItem Header="D_uplicate page" Command="{Binding DuplicatePageCommand}" />
+        <MenuItem Header="_Remove page" Command="{Binding RemovePageCommand}" />
+        <MenuItem Header="Re_name page…" Command="{Binding RenamePageCommand}" />
       </MenuItem>
       <MenuItem Header="_Insert">
         <MenuItem Header="_Text box" Command="{Binding AddTextCommand}" />
@@ -113,9 +131,9 @@
       <MenuItem Header="_Help">
         <MenuItem Header="_About Label Maker" Command="{Binding AboutCommand}" />
       </MenuItem>
-    </Menu>
+        </Menu>
 
-    <ToolBarTray DockPanel.Dock="Top">
+        <ToolBarTray>
       <ToolBar>
         <Button Content="New" Command="{Binding NewCommand}" />
         <Button Content="Open" Command="{Binding OpenCommand}" />
@@ -137,7 +155,9 @@
         <Separator />
         <Button Content="Print" Command="{Binding PrintCommand}" />
       </ToolBar>
-    </ToolBarTray>
+        </ToolBarTray>
+      </StackPanel>
+    </Border>
 
     <!-- Status bar -->
     <StatusBar DockPanel.Dock="Bottom">
@@ -185,10 +205,28 @@
           <Border DockPanel.Dock="Top" Background="{StaticResource Br.Bg}" BorderBrush="{StaticResource Br.Border}" BorderThickness="1" CornerRadius="8" Padding="10,8" Margin="0,0,0,10">
             <TextBlock Text="{Binding TemplateSummary}" TextWrapping="Wrap" Foreground="{StaticResource Br.Text}" FontSize="12" />
           </Border>
+
+          <Grid DockPanel.Dock="Top" Margin="2,0,0,4">
+            <TextBlock Text="PAGES" FontWeight="SemiBold" FontSize="11" Foreground="{StaticResource Br.TextMuted}" VerticalAlignment="Center" />
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+              <Button Content="+" ToolTip="Add page" Command="{Binding AddPageCommand}" Style="{StaticResource ToolButton}" MinWidth="24" Padding="6,1" />
+              <Button Content="⧉" ToolTip="Duplicate page" Command="{Binding DuplicatePageCommand}" Style="{StaticResource ToolButton}" MinWidth="24" Padding="6,1" />
+              <Button Content="✕" ToolTip="Remove page" Command="{Binding RemovePageCommand}" Style="{StaticResource ToolButton}" MinWidth="24" Padding="6,1" />
+            </StackPanel>
+          </Grid>
+          <Border DockPanel.Dock="Top" Background="{StaticResource Br.Bg}" BorderBrush="{StaticResource Br.Border}" BorderThickness="1" CornerRadius="8" Margin="0,0,0,10">
+            <ListBox ItemsSource="{Binding Pages}" SelectedItem="{Binding SelectedPage}" DisplayMemberPath="Display"
+                     MaxHeight="150" BorderThickness="0" Background="Transparent">
+              <ListBox.InputBindings>
+                <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding RenamePageCommand}" />
+              </ListBox.InputBindings>
+            </ListBox>
+          </Border>
+
           <TextBlock DockPanel.Dock="Top" Text="SEARCH" FontWeight="SemiBold" FontSize="11" Margin="2,0,0,4" Foreground="{StaticResource Br.TextMuted}" />
           <TextBox DockPanel.Dock="Top" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,4" />
           <ListBox DockPanel.Dock="Top" ItemsSource="{Binding SearchResults}" SelectedItem="{Binding SelectedSearchResult}"
-                   Height="150" DisplayMemberPath="Display" Margin="0,0,0,10" />
+                   Height="130" DisplayMemberPath="Display" Margin="0,0,0,10" />
           <TextBlock DockPanel.Dock="Top" Text="OBJECTS" FontWeight="SemiBold" FontSize="11" Margin="2,0,0,4" Foreground="{StaticResource Br.TextMuted}" />
           <ListBox ItemsSource="{Binding ObjectList}" SelectedItem="{Binding SelectedObjectItem}" DisplayMemberPath="Display" />
         </DockPanel>

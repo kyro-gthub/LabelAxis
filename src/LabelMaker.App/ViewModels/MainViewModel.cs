@@ -41,6 +41,8 @@ public sealed class MainViewModel : ObservableObject
     private string _searchText = string.Empty;
     private SearchListItem? _selectedSearchResult;
     private ObjectListItem? _selectedObjectItem;
+    private PageListItem? _selectedPage;
+    private bool _suppressPageSelection;
 
     public MainViewModel(AppEnvironment env, IShellServices shell)
     {
@@ -118,16 +120,48 @@ public sealed class MainViewModel : ObservableObject
         _session.RecordChanged += (_, _) => { RefreshCanvas(); OnPropertyChanged(nameof(RecordText)); };
         _session.DataChanged += (_, _) => { OnPropertyChanged(nameof(RecordText)); RefreshSearch(); };
         _session.HistoryChanged += (_, _) => RaiseAllCanExecute();
+        _session.PagesChanged += (_, _) => RebuildPages();
+        _session.ActivePageChanged += (_, _) => OnActivePageChanged();
 
         Properties = new SelectionProperties(_session);
         _canvas?.Attach(_session);
 
+        RebuildPages();
         RebuildObjectList();
         RefreshSearch();
         OnDocumentChanged();
         OnPropertyChanged(nameof(TemplateSummary));
         OnPropertyChanged(nameof(LockGuides));
         OnPropertyChanged(nameof(RecordText));
+    }
+
+    private void OnActivePageChanged()
+    {
+        RebuildPages();
+        RebuildObjectList();
+        _canvas?.FitToView();
+        RefreshCanvas();
+        RaiseAllCanExecute();
+        OnPropertyChanged(nameof(Title));
+        OnPropertyChanged(nameof(ActivePageName));
+        OnPropertyChanged(nameof(LockGuides));
+        _properties.RefreshAll();
+    }
+
+    private void RebuildPages()
+    {
+        _suppressPageSelection = true;
+        Pages.Clear();
+        Pages.Add(new PageListItem(null, "Master label", 0, IsMaster: true));
+        for (int i = 0; i < _session.Project.Pages.Count; i++)
+        {
+            LabelPage p = _session.Project.Pages[i];
+            Pages.Add(new PageListItem(p.Id, p.Name, i + 1, IsMaster: false));
+        }
+
+        _selectedPage = Pages.FirstOrDefault(p => p.PageId == _session.ActivePageId) ?? Pages[0];
+        OnPropertyChanged(nameof(SelectedPage));
+        _suppressPageSelection = false;
     }
 
     // ---------- bindable state ----------
@@ -231,6 +265,24 @@ public sealed class MainViewModel : ObservableObject
 
     public ObservableCollection<SearchListItem> SearchResults { get; } = new();
 
+    public ObservableCollection<PageListItem> Pages { get; } = new();
+
+    public PageListItem? SelectedPage
+    {
+        get => _selectedPage;
+        set
+        {
+            if (SetField(ref _selectedPage, value) && value is not null && !_suppressPageSelection)
+            {
+                _session.SelectPage(value.PageId);
+            }
+        }
+    }
+
+    public string ActivePageName => _session.IsEditingMaster
+        ? "Master label"
+        : _session.Project.Pages.FirstOrDefault(p => p.Id == _session.ActivePageId)?.Name ?? "Page";
+
     public string SearchText
     {
         get => _searchText;
@@ -273,8 +325,17 @@ public sealed class MainViewModel : ObservableObject
     public RelayCommand RedoCommand { get; private set; } = null!;
     public RelayCommand DeleteCommand { get; private set; } = null!;
     public RelayCommand DuplicateCommand { get; private set; } = null!;
+    public RelayCommand CopyCommand { get; private set; } = null!;
+    public RelayCommand CutCommand { get; private set; } = null!;
+    public RelayCommand PasteCommand { get; private set; } = null!;
     public RelayCommand GroupCommand { get; private set; } = null!;
     public RelayCommand UngroupCommand { get; private set; } = null!;
+    public RelayCommand AddPageCommand { get; private set; } = null!;
+    public RelayCommand DuplicatePageCommand { get; private set; } = null!;
+    public RelayCommand RemovePageCommand { get; private set; } = null!;
+    public RelayCommand RenamePageCommand { get; private set; } = null!;
+    public RelayCommand AddVerticalGuideCommand { get; private set; } = null!;
+    public RelayCommand AddHorizontalGuideCommand { get; private set; } = null!;
     public RelayCommand AddTextCommand { get; private set; } = null!;
     public RelayCommand AddBarcodeCommand { get; private set; } = null!;
     public RelayCommand AddImageCommand { get; private set; } = null!;
@@ -329,8 +390,20 @@ public sealed class MainViewModel : ObservableObject
         RedoCommand = new RelayCommand(() => _session.Redo(), () => _session.History.CanRedo);
         DeleteCommand = new RelayCommand(DeleteSelection, () => _session.Selection.Count > 0);
         DuplicateCommand = new RelayCommand(DuplicateSelection, () => _session.Selection.Count > 0);
+        CopyCommand = new RelayCommand(() => ObjectClipboard.Set(_session.Selection), () => _session.Selection.Count > 0);
+        CutCommand = new RelayCommand(() => { ObjectClipboard.Set(_session.Selection); DeleteSelection(); }, () => _session.Selection.Count > 0);
+        PasteCommand = new RelayCommand(PasteObjects, () => ObjectClipboard.HasContent);
         GroupCommand = new RelayCommand(GroupSelection, () => _session.Selection.Count > 1);
         UngroupCommand = new RelayCommand(UngroupSelection, () => _session.Selection.Any(o => o.GroupId is not null));
+
+        AddPageCommand = new RelayCommand(() => _session.AddPage());
+        DuplicatePageCommand = new RelayCommand(() => _session.DuplicateActivePage());
+        RemovePageCommand = new RelayCommand(
+            () => { if (_shell.Confirm($"Remove page \"{ActivePageName}\"?")) _session.RemoveActivePage(); },
+            () => !_session.IsEditingMaster);
+        RenamePageCommand = new RelayCommand(RenameActivePage, () => !_session.IsEditingMaster);
+        AddVerticalGuideCommand = new RelayCommand(() => _canvas?.InsertGuideAtContext(vertical: true));
+        AddHorizontalGuideCommand = new RelayCommand(() => _canvas?.InsertGuideAtContext(vertical: false));
 
         AddTextCommand = new RelayCommand(() => AddObject(new TextObject { Content = RichTextContent.FromPlainText("Text"), Bounds = NewBounds(40, 8) }));
         AddBarcodeCommand = new RelayCommand(() => AddObject(new BarcodeObject
@@ -475,6 +548,48 @@ public sealed class MainViewModel : ObservableObject
             clones.Select(c => (IUndoableCommand)new AddObjectCommand(_session.ActiveLabel, c)).ToList()));
         _session.SetSelection(clones);
         RebuildObjectList();
+    }
+
+    private void PasteObjects()
+    {
+        var atMm = _canvas?.ContextMm;
+        IReadOnlyList<LabelObject> pasted = atMm is { } p
+            ? ObjectClipboard.PasteAt(new Core.Units.PointMm(p.X, p.Y))
+            : ObjectClipboard.Paste();
+        if (pasted.Count == 0)
+        {
+            return;
+        }
+
+        // keep pasted objects inside the label
+        var size = _session.ActiveLabel.SizeMm;
+        foreach (LabelObject o in pasted)
+        {
+            double x = Math.Clamp(o.Bounds.X, 0, Math.Max(0, size.Width - o.Bounds.Width));
+            double y = Math.Clamp(o.Bounds.Y, 0, Math.Max(0, size.Height - o.Bounds.Height));
+            o.Bounds = o.Bounds with { X = x, Y = y };
+        }
+
+        _session.Execute(new CompositeCommand("Paste",
+            pasted.Select(c => (IUndoableCommand)new AddObjectCommand(_session.ActiveLabel, c)).ToList()));
+        _session.SetSelection(pasted);
+        RebuildObjectList();
+    }
+
+    private void RenameActivePage()
+    {
+        if (_session.IsEditingMaster)
+        {
+            return;
+        }
+
+        string current = ActivePageName;
+        string? name = _shell.Prompt("Rename page", "Page name:", current);
+        if (!string.IsNullOrWhiteSpace(name) && name != current)
+        {
+            _session.RenameActivePage(name.Trim());
+            OnPropertyChanged(nameof(ActivePageName));
+        }
     }
 
     private void GroupSelection()
@@ -927,8 +1042,10 @@ public sealed class MainViewModel : ObservableObject
         foreach (var cmd in new[]
                  {
                      UndoCommand, RedoCommand, DeleteCommand, DuplicateCommand, GroupCommand, UngroupCommand,
+                     CopyCommand, CutCommand, PasteCommand,
                      BringToFrontCommand, BringForwardCommand, SendBackwardCommand, SendToBackCommand,
                      AlignLeftCommand, AlignTopCommand, CenterHorizontalCommand, CenterVerticalCommand, ClearDataCommand,
+                     RemovePageCommand, RenamePageCommand,
                  })
         {
             cmd.RaiseCanExecuteChanged();

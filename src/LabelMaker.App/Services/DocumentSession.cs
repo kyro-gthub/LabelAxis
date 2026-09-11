@@ -31,7 +31,15 @@ public sealed class DocumentSession
 
     public ProjectModel Project => Document.Project;
 
-    public LabelDocument ActiveLabel => Project.MasterLabel;
+    /// <summary>Null = the master label; otherwise the id of the standalone page being edited.</summary>
+    public string? ActivePageId { get; private set; }
+
+    public bool IsEditingMaster => ActivePageId is null;
+
+    public LabelDocument ActiveLabel =>
+        ActivePageId is { } id && Project.Pages.FirstOrDefault(p => p.Id == id) is { } page
+            ? page.Document
+            : Project.MasterLabel;
 
     public CommandStack History { get; }
 
@@ -62,6 +70,104 @@ public sealed class DocumentSession
     public event EventHandler? RecordChanged;
     public event EventHandler? DataChanged;
     public event EventHandler? HistoryChanged;
+    public event EventHandler? ActivePageChanged;
+    public event EventHandler? PagesChanged;
+
+    // ---- pages (MS Publisher-style page navigator) ----
+
+    public void SelectPage(string? pageId)
+    {
+        if (pageId is not null && Project.Pages.All(p => p.Id != pageId))
+        {
+            pageId = null;
+        }
+
+        if (ActivePageId == pageId)
+        {
+            return;
+        }
+
+        ActivePageId = pageId;
+        ClearSelection();
+        ActivePageChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    public LabelPage AddPage(string? name = null)
+    {
+        var page = new LabelPage
+        {
+            Name = name ?? $"Page {Project.Pages.Count + 1}",
+            Document = new LabelDocument
+            {
+                Name = name ?? $"Page {Project.Pages.Count + 1}",
+                SizeMm = ActiveLabel.SizeMm,
+            },
+        };
+        Project.Pages.Add(page);
+        PagesChanged?.Invoke(this, EventArgs.Empty);
+        MarkDirty();
+        SelectPage(page.Id);
+        return page;
+    }
+
+    public LabelPage? DuplicateActivePage()
+    {
+        LabelPage source;
+        if (ActivePageId is { } id && Project.Pages.FirstOrDefault(p => p.Id == id) is { } existing)
+        {
+            source = existing;
+        }
+        else
+        {
+            // Duplicating the master creates the first real page from it.
+            source = new LabelPage { Name = "Master copy", Document = Project.MasterLabel.Clone() };
+        }
+
+        LabelPage copy = source.Clone();
+        copy.Id = Guid.NewGuid().ToString("N");
+        copy.Document.Id = Guid.NewGuid().ToString("N");
+        copy.Name = source.Name + " copy";
+        copy.Document.Name = copy.Name;
+
+        int index = ActivePageId is null ? Project.Pages.Count : Project.Pages.FindIndex(p => p.Id == ActivePageId) + 1;
+        Project.Pages.Insert(Math.Clamp(index, 0, Project.Pages.Count), copy);
+        PagesChanged?.Invoke(this, EventArgs.Empty);
+        MarkDirty();
+        SelectPage(copy.Id);
+        return copy;
+    }
+
+    public bool RemoveActivePage()
+    {
+        if (ActivePageId is not { } id || Project.Pages.FirstOrDefault(p => p.Id == id) is not { } page)
+        {
+            return false; // the master label cannot be removed
+        }
+
+        int idx = Project.Pages.IndexOf(page);
+        Project.Pages.Remove(page);
+        string? next = Project.Pages.Count == 0
+            ? null
+            : Project.Pages[Math.Clamp(idx, 0, Project.Pages.Count - 1)].Id;
+
+        ActivePageId = null; // force a change event even if next is null
+        PagesChanged?.Invoke(this, EventArgs.Empty);
+        MarkDirty();
+        SelectPage(next);
+        ActivePageChanged?.Invoke(this, EventArgs.Empty);
+        return true;
+    }
+
+    public void RenameActivePage(string name)
+    {
+        if (ActivePageId is { } id && Project.Pages.FirstOrDefault(p => p.Id == id) is { } page)
+        {
+            page.Name = name;
+            page.Document.Name = name;
+            PagesChanged?.Invoke(this, EventArgs.Empty);
+            MarkDirty();
+        }
+    }
 
     public void MarkDirty()
     {
