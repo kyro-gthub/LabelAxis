@@ -2,21 +2,27 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:sys="clr-namespace:System;assembly=System.Runtime">
 
-  <!-- ============================ palette ============================ -->
+  <!-- ============================ palette (LabelAxis design tokens) ============================ -->
+  <!-- surface: white cards/panels/fields · app-bg: workspace behind the artboard · panel-bg: ribbon/status/inset fields -->
   <Color x:Key="Clr.Bg">#FFFFFFFF</Color>
   <Color x:Key="Clr.Surface">#FFEEF0F7</Color>
-  <Color x:Key="Clr.Surface2">#FFF5F6FB</Color>
-  <Color x:Key="Clr.Border">#FFE4E5EF</Color>
-  <Color x:Key="Clr.BorderStrong">#FFCBCEDD</Color>
-  <Color x:Key="Clr.Text">#FF22243A</Color>
-  <Color x:Key="Clr.TextMuted">#FF8A8FA8</Color>
-  <Color x:Key="Clr.Accent">#FF5A4FE0</Color>
-  <Color x:Key="Clr.AccentHover">#FF4A3FC7</Color>
-  <Color x:Key="Clr.AccentSoft">#FFECEBFB</Color>
-  <Color x:Key="Clr.Hover">#FFF0EFFB</Color>
+  <Color x:Key="Clr.Surface2">#FFF4F5FB</Color>
+  <Color x:Key="Clr.Border">#14202659</Color>
+  <Color x:Key="Clr.BorderStrong">#26202659</Color>
+  <Color x:Key="Clr.Text">#FF2A2F45</Color>
+  <Color x:Key="Clr.TextMuted">#FF8A8FB5</Color>
+  <Color x:Key="Clr.Text2">#FF5A5F70</Color>
+  <Color x:Key="Clr.Accent">#FF5A4FE3</Color>
+  <Color x:Key="Clr.AccentHover">#FF4B3BC7</Color>
+  <Color x:Key="Clr.AccentSoft">#FFEFECFE</Color>
+  <Color x:Key="Clr.Hover">#FFF4F5FB</Color>
   <Color x:Key="Clr.Danger">#FFE0555F</Color>
-  <Color x:Key="Clr.HeaderA">#FF6C63FF</Color>
-  <Color x:Key="Clr.HeaderB">#FF4B3FD1</Color>
+  <Color x:Key="Clr.Ok">#FF2FAE6A</Color>
+  <Color x:Key="Clr.SelectionBlue">#FF2E7BFF</Color>
+  <Color x:Key="Clr.HeaderA">#FF7C5CFF</Color>
+  <Color x:Key="Clr.HeaderB">#FF5A4FE3</Color>
+  <Color x:Key="Clr.TitleBarA">#FFEEF0FC</Color>
+  <Color x:Key="Clr.TitleBarB">#FFDFE0FB</Color>
 
   <SolidColorBrush x:Key="Br.Bg"            Color="{StaticResource Clr.Bg}" />
   <SolidColorBrush x:Key="Br.Surface"       Color="{StaticResource Clr.Surface}" />
@@ -25,15 +31,20 @@
   <SolidColorBrush x:Key="Br.BorderStrong"  Color="{StaticResource Clr.BorderStrong}" />
   <SolidColorBrush x:Key="Br.Text"          Color="{StaticResource Clr.Text}" />
   <SolidColorBrush x:Key="Br.TextMuted"     Color="{StaticResource Clr.TextMuted}" />
+  <SolidColorBrush x:Key="Br.Text2"         Color="{StaticResource Clr.Text2}" />
   <SolidColorBrush x:Key="Br.Accent"        Color="{StaticResource Clr.Accent}" />
   <SolidColorBrush x:Key="Br.AccentHover"   Color="{StaticResource Clr.AccentHover}" />
   <SolidColorBrush x:Key="Br.AccentSoft"    Color="{StaticResource Clr.AccentSoft}" />
   <SolidColorBrush x:Key="Br.Hover"         Color="{StaticResource Clr.Hover}" />
   <SolidColorBrush x:Key="Br.Danger"        Color="{StaticResource Clr.Danger}" />
+  <SolidColorBrush x:Key="Br.Ok"            Color="{StaticResource Clr.Ok}" />
+  <SolidColorBrush x:Key="Br.SelectionBlue" Color="{StaticResource Clr.SelectionBlue}" />
   <SolidColorBrush x:Key="Br.GhostWhite"    Color="#33FFFFFF" />
   <SolidColorBrush x:Key="Br.GhostWhiteHi"  Color="#55FFFFFF" />
   <SolidColorBrush x:Key="Br.GhostBorder"   Color="#40FFFFFF" />
 
+  <!-- brand-grad: the ONE bold accent — active tab pill, primary buttons, badges, "Import Data" icon fill.
+       Most chrome stays light; purple is used sparingly, as in the reference. -->
   <LinearGradientBrush x:Key="Br.HeaderGradient" StartPoint="0,0" EndPoint="1,1">
     <GradientStop Color="{StaticResource Clr.HeaderA}" Offset="0" />
     <GradientStop Color="{StaticResource Clr.HeaderB}" Offset="1" />
@@ -44,7 +55,19 @@
     <GradientStop Color="{StaticResource Clr.Accent}" Offset="1" />
   </LinearGradientBrush>
 
-  <FontFamily x:Key="Font.Ui">Segoe UI Variable Text, Segoe UI</FontFamily>
+  <LinearGradientBrush x:Key="Br.TitleBarGradient" StartPoint="0,0" EndPoint="1,0.4">
+    <GradientStop Color="{StaticResource Clr.TitleBarA}" Offset="0" />
+    <GradientStop Color="#FFE7EAFB" Offset="0.4" />
+    <GradientStop Color="#FFE3E7FD" Offset="0.62" />
+    <GradientStop Color="{StaticResource Clr.TitleBarB}" Offset="1" />
+  </LinearGradientBrush>
+
+  <FontFamily x:Key="Font.Ui">./Assets/Fonts/#Plus Jakarta Sans, Segoe UI, sans-serif</FontFamily>
+  <FontFamily x:Key="Font.UiMedium">./Assets/Fonts/#Plus Jakarta Sans Medium, Segoe UI, sans-serif</FontFamily>
+  <FontFamily x:Key="Font.UiSemiBold">./Assets/Fonts/#Plus Jakarta Sans SemiBold, Segoe UI Semibold, Segoe UI, sans-serif</FontFamily>
+  <FontFamily x:Key="Font.UiExtraBold">./Assets/Fonts/#Plus Jakarta Sans ExtraBold, Segoe UI Black, Segoe UI, sans-serif</FontFamily>
+  <FontFamily x:Key="Font.Mono">./Assets/Fonts/#DM Mono, Consolas, monospace</FontFamily>
+  <FontFamily x:Key="Font.MonoMedium">./Assets/Fonts/#DM Mono Medium, Consolas, monospace</FontFamily>
   <sys:Double x:Key="Font.Size">13</sys:Double>
 
   <BooleanToVisibilityConverter x:Key="BoolVisConv" />
@@ -374,17 +397,17 @@
     </Setter>
   </Style>
 
-  <!-- ============================ Menu ============================ -->
+  <!-- ============================ Menu (styled as the ribbon tab strip) ============================ -->
   <Style TargetType="Menu">
-    <Setter Property="Background" Value="{StaticResource Br.HeaderGradient}" />
-    <Setter Property="Foreground" Value="White" />
-    <Setter Property="FontFamily" Value="{StaticResource Font.Ui}" />
-    <Setter Property="FontSize" Value="{StaticResource Font.Size}" />
-    <Setter Property="Padding" Value="8,4" />
+    <Setter Property="Background" Value="{StaticResource Br.Surface2}" />
+    <Setter Property="Foreground" Value="{StaticResource Br.Text}" />
+    <Setter Property="FontFamily" Value="{StaticResource Font.UiSemiBold}" />
+    <Setter Property="FontSize" Value="14" />
+    <Setter Property="Padding" Value="16,0,16,0" />
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="Menu">
-          <Border Background="{TemplateBinding Background}">
+          <Border Background="{TemplateBinding Background}" BorderBrush="{StaticResource Br.Border}" BorderThickness="0,0,0,1">
             <ItemsPresenter Margin="{TemplateBinding Padding}" />
           </Border>
         </ControlTemplate>
@@ -393,12 +416,13 @@
   </Style>
 
   <Style TargetType="MenuItem">
-    <Setter Property="Foreground" Value="{StaticResource Br.Text}" />
+    <Setter Property="Foreground" Value="{StaticResource Br.Text2}" />
     <Setter Property="FontSize" Value="{StaticResource Font.Size}" />
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="MenuItem">
-          <Border x:Name="bd" CornerRadius="5" Padding="9,5" Margin="1,0" Background="Transparent">
+          <Border x:Name="bd" CornerRadius="10,10,0,0" Padding="9,5" Margin="1,4,1,0" Background="Transparent"
+                  BorderBrush="{StaticResource Br.Accent}" BorderThickness="0,0,0,0">
             <Grid>
               <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" SharedSizeGroup="chk" />
@@ -410,16 +434,16 @@
                     StrokeThickness="2" Visibility="Collapsed" VerticalAlignment="Center" Margin="0,0,6,0" />
               <ContentPresenter Grid.Column="1" ContentSource="Header" RecognizesAccessKey="True" VerticalAlignment="Center" />
               <TextBlock Grid.Column="2" Text="{TemplateBinding InputGestureText}" Margin="24,0,0,0"
-                         Foreground="{StaticResource Br.TextMuted}" VerticalAlignment="Center" />
+                         Foreground="{StaticResource Br.TextMuted}" VerticalAlignment="Center" FontFamily="{StaticResource Font.Ui}" />
               <Path x:Name="arrow" Grid.Column="3" Data="M 0,0 L 4,4 L 0,8 Z" Fill="{StaticResource Br.TextMuted}"
                     Margin="10,0,0,0" VerticalAlignment="Center" Visibility="Collapsed" />
-              <Popup x:Name="PART_Popup" Placement="Right" HorizontalOffset="-2" AllowsTransparency="True"
+              <Popup x:Name="PART_Popup" Placement="Bottom" HorizontalOffset="-9" VerticalOffset="2" AllowsTransparency="True"
                      Focusable="False" IsOpen="{TemplateBinding IsSubmenuOpen}" PopupAnimation="Fade">
                 <Border Background="{StaticResource Br.Bg}" BorderBrush="{StaticResource Br.BorderStrong}"
-                        BorderThickness="1" CornerRadius="8" Padding="4"
-                        Grid.IsSharedSizeScope="True">
+                        BorderThickness="1" CornerRadius="10" Padding="4"
+                        Grid.IsSharedSizeScope="True" MinWidth="190">
                   <Border.Effect>
-                    <DropShadowEffect BlurRadius="16" ShadowDepth="3" Opacity="0.2" />
+                    <DropShadowEffect BlurRadius="18" ShadowDepth="4" Opacity="0.18" Color="#2A1E7A" />
                   </Border.Effect>
                   <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Cycle" />
                 </Border>
@@ -440,23 +464,25 @@
               <Setter TargetName="check" Property="Visibility" Value="Visible" />
             </Trigger>
             <Trigger Property="Role" Value="TopLevelHeader">
-              <Setter Property="Foreground" Value="White" />
-              <Setter TargetName="bd" Property="Padding" Value="12,7" />
-              <Setter TargetName="bd" Property="CornerRadius" Value="10" />
+              <Setter Property="Foreground" Value="{StaticResource Br.Text}" />
+              <Setter Property="FontFamily" Value="{StaticResource Font.UiSemiBold}" />
+              <Setter TargetName="bd" Property="Padding" Value="16,9" />
             </Trigger>
             <MultiTrigger>
               <MultiTrigger.Conditions>
                 <Condition Property="Role" Value="TopLevelHeader" />
                 <Condition Property="IsHighlighted" Value="True" />
               </MultiTrigger.Conditions>
-              <Setter TargetName="bd" Property="Background" Value="{StaticResource Br.GhostWhiteHi}" />
+              <Setter TargetName="bd" Property="Background" Value="{StaticResource Br.Bg}" />
+              <Setter TargetName="bd" Property="BorderThickness" Value="0,0,0,2.5" />
             </MultiTrigger>
             <MultiTrigger>
               <MultiTrigger.Conditions>
                 <Condition Property="Role" Value="TopLevelHeader" />
                 <Condition Property="IsSubmenuOpen" Value="True" />
               </MultiTrigger.Conditions>
-              <Setter TargetName="bd" Property="Background" Value="{StaticResource Br.GhostWhiteHi}" />
+              <Setter TargetName="bd" Property="Background" Value="{StaticResource Br.Bg}" />
+              <Setter TargetName="bd" Property="BorderThickness" Value="0,0,0,2.5" />
             </MultiTrigger>
             <Trigger Property="IsEnabled" Value="False">
               <Setter Property="Opacity" Value="0.4" />
@@ -487,51 +513,115 @@
     </Setter>
   </Style>
 
-  <!-- ============================ ToolBar ============================ -->
+  <!-- ============================ ToolBar (the ribbon strip: light, one white card inside) ============================ -->
   <Style TargetType="ToolBarTray">
-    <Setter Property="Background" Value="{StaticResource Br.HeaderGradient}" />
+    <Setter Property="Background" Value="{StaticResource Br.Surface2}" />
   </Style>
 
   <Style TargetType="ToolBar">
-    <Setter Property="Background" Value="{StaticResource Br.HeaderGradient}" />
-    <Setter Property="Foreground" Value="White" />
+    <Setter Property="Background" Value="{StaticResource Br.Surface2}" />
+    <Setter Property="Foreground" Value="{StaticResource Br.Text}" />
     <Setter Property="OverflowMode" Value="AsNeeded" />
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="ToolBar">
-          <Border Background="{TemplateBinding Background}" Padding="8,6">
-            <DockPanel>
-              <ToggleButton x:Name="OverflowButton" DockPanel.Dock="Right" Focusable="False" MinWidth="18"
-                            IsChecked="{Binding IsOverflowOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
-                            IsEnabled="{TemplateBinding HasOverflowItems}"
-                            Visibility="{TemplateBinding HasOverflowItems, Converter={StaticResource BoolVisConv}}">
-                <Path Data="M 0,0 L 7,0 L 3.5,4 Z" Fill="White" HorizontalAlignment="Center" VerticalAlignment="Center" />
-              </ToggleButton>
-              <Popup x:Name="OverflowPopup" AllowsTransparency="True" Placement="Bottom" StaysOpen="False"
-                     Focusable="False" PopupAnimation="Fade"
-                     IsOpen="{Binding IsOverflowOpen, RelativeSource={RelativeSource TemplatedParent}}">
-                <Border Background="{StaticResource Br.Bg}" BorderBrush="{StaticResource Br.BorderStrong}" BorderThickness="1" CornerRadius="8" Padding="4">
-                  <Border.Effect><DropShadowEffect BlurRadius="14" ShadowDepth="3" Opacity="0.2" /></Border.Effect>
-                  <ToolBarOverflowPanel x:Name="PART_ToolBarOverflowPanel" WrapWidth="220" Focusable="True"
-                                        KeyboardNavigation.TabNavigation="Cycle" KeyboardNavigation.DirectionalNavigation="Cycle" />
-                </Border>
-              </Popup>
-              <ToolBarPanel x:Name="PART_ToolBarPanel" IsItemsHost="True" Margin="0" />
-            </DockPanel>
+          <Border Background="{TemplateBinding Background}" Padding="12,8" BorderBrush="{StaticResource Br.Border}" BorderThickness="0,0,0,1">
+            <Border Background="{StaticResource Br.Bg}" BorderBrush="{StaticResource Br.Border}" BorderThickness="1" CornerRadius="14" Padding="4,6,4,2">
+              <Border.Effect>
+                <DropShadowEffect BlurRadius="16" ShadowDepth="2" Direction="270" Opacity="0.06" Color="#232656" />
+              </Border.Effect>
+              <DockPanel>
+                <ToggleButton x:Name="OverflowButton" DockPanel.Dock="Right" Focusable="False" MinWidth="18" Margin="4,0"
+                              IsChecked="{Binding IsOverflowOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                              IsEnabled="{TemplateBinding HasOverflowItems}"
+                              Visibility="{TemplateBinding HasOverflowItems, Converter={StaticResource BoolVisConv}}">
+                  <Path Data="M 0,0 L 7,0 L 3.5,4 Z" Fill="{StaticResource Br.TextMuted}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </ToggleButton>
+                <Popup x:Name="OverflowPopup" AllowsTransparency="True" Placement="Bottom" StaysOpen="False"
+                       Focusable="False" PopupAnimation="Fade"
+                       IsOpen="{Binding IsOverflowOpen, RelativeSource={RelativeSource TemplatedParent}}">
+                  <Border Background="{StaticResource Br.Bg}" BorderBrush="{StaticResource Br.BorderStrong}" BorderThickness="1" CornerRadius="8" Padding="4">
+                    <Border.Effect><DropShadowEffect BlurRadius="14" ShadowDepth="3" Opacity="0.2" /></Border.Effect>
+                    <ToolBarOverflowPanel x:Name="PART_ToolBarOverflowPanel" WrapWidth="220" Focusable="True"
+                                          KeyboardNavigation.TabNavigation="Cycle" KeyboardNavigation.DirectionalNavigation="Cycle" />
+                  </Border>
+                </Popup>
+                <ToolBarPanel x:Name="PART_ToolBarPanel" IsItemsHost="True" Margin="0" />
+              </DockPanel>
+            </Border>
           </Border>
         </ControlTemplate>
       </Setter.Value>
     </Setter>
   </Style>
 
-  <!-- Buttons inside the purple header toolbar: ghost-white pills -->
-  <Style TargetType="Button" x:Key="{x:Static ToolBar.ButtonStyleKey}" BasedOn="{StaticResource HeaderButton}" />
+  <!-- Ribbon command button: icon over an 11.5px caption, ~stack layout, rounded hover. -->
+  <Style x:Key="RibbonButton" TargetType="Button">
+    <Setter Property="Foreground" Value="{StaticResource Br.Text2}" />
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="Padding" Value="6,6" />
+    <Setter Property="Margin" Value="0,0" />
+    <Setter Property="MinWidth" Value="48" />
+    <Setter Property="Cursor" Value="Hand" />
+    <Setter Property="FontFamily" Value="{StaticResource Font.Ui}" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="Button">
+          <Border x:Name="bd" CornerRadius="10" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}">
+            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="bd" Property="Background" Value="{StaticResource Br.Hover}" />
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+              <Setter TargetName="bd" Property="Background" Value="{StaticResource Br.AccentSoft}" />
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter Property="Foreground" Value="{StaticResource Br.BorderStrong}" />
+              <Setter Property="Cursor" Value="Arrow" />
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <!-- Emphasized ribbon button (e.g. "Import Data"): soft tinted card with an accent border. -->
+  <Style x:Key="RibbonButtonEmphasized" TargetType="Button" BasedOn="{StaticResource RibbonButton}">
+    <Setter Property="Background">
+      <Setter.Value>
+        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+          <GradientStop Color="#FFF2F0FF" Offset="0" />
+          <GradientStop Color="#FFEAE7FE" Offset="1" />
+        </LinearGradientBrush>
+      </Setter.Value>
+    </Setter>
+    <Setter Property="Foreground" Value="{StaticResource Br.AccentHover}" />
+    <Setter Property="MinWidth" Value="74" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="Button">
+          <Border x:Name="bd" CornerRadius="12" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}"
+                  BorderBrush="#805A4FE3" BorderThickness="1.4">
+            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="bd" Property="BorderBrush" Value="{StaticResource Br.Accent}" />
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
 
   <Style TargetType="Separator" x:Key="{x:Static ToolBar.SeparatorStyleKey}">
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="Separator">
-          <Border Width="1" Height="22" Margin="8,0" VerticalAlignment="Center" Background="#66FFFFFF" />
+          <Border Width="1" Margin="4,4,4,22" VerticalAlignment="Stretch" Background="{StaticResource Br.Border}" />
         </ControlTemplate>
       </Setter.Value>
     </Setter>
@@ -591,7 +681,7 @@
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="GridViewColumnHeader">
-          <Border Background="{StaticResource Br.Surface}" BorderBrush="{StaticResource Br.Border}" BorderThickness="0,0,0,1">
+          <Border Background="{StaticResource Br.Surface2}" BorderBrush="{StaticResource Br.Border}" BorderThickness="0,0,0,1">
             <ContentPresenter Margin="{TemplateBinding Padding}" HorizontalAlignment="Left" />
           </Border>
         </ControlTemplate>
@@ -601,7 +691,7 @@
 
   <!-- ============================ StatusBar ============================ -->
   <Style TargetType="StatusBar">
-    <Setter Property="Background" Value="{StaticResource Br.Surface}" />
+    <Setter Property="Background" Value="{StaticResource Br.Surface2}" />
     <Setter Property="Foreground" Value="{StaticResource Br.TextMuted}" />
     <Setter Property="FontSize" Value="12" />
     <Setter Property="Template">
@@ -718,7 +808,7 @@
     <Setter Property="FontSize" Value="{StaticResource Font.Size}" />
   </Style>
   <Style TargetType="DataGridColumnHeader">
-    <Setter Property="Background" Value="{StaticResource Br.Surface}" />
+    <Setter Property="Background" Value="{StaticResource Br.Surface2}" />
     <Setter Property="Foreground" Value="{StaticResource Br.TextMuted}" />
     <Setter Property="FontWeight" Value="SemiBold" />
     <Setter Property="Padding" Value="8,6" />

@@ -65,9 +65,13 @@ public sealed class DesignerCanvas : FrameworkElement
         FocusVisualStyle = null;
         ClipToBounds = true;
         SnapsToDevicePixels = true;
+        AllowDrop = true;
     }
 
     public event EventHandler? ZoomChanged;
+
+    /// <summary>Raised when one or more image files are dropped onto the canvas from Explorer.</summary>
+    public event EventHandler<ImagesDroppedEventArgs>? ImagesDropped;
 
     public AppSettings? Settings { get; set; }
 
@@ -160,6 +164,49 @@ public sealed class DesignerCanvas : FrameworkElement
     }
 
     private void OnSessionChanged(object? sender, EventArgs e) => InvalidateVisual();
+
+    // ---- drag-and-drop of image files from Explorer -----------------------
+
+    private static readonly string[] DroppableImageExtensions =
+        { ".png", ".jpg", ".jpeg", ".bmp", ".gif", ".tif", ".tiff", ".webp" };
+
+    private static bool HasDroppableFiles(IDataObject data, out string[] paths)
+    {
+        paths = Array.Empty<string>();
+        if (!data.GetDataPresent(DataFormats.FileDrop))
+        {
+            return false;
+        }
+
+        if (data.GetData(DataFormats.FileDrop) is not string[] files)
+        {
+            return false;
+        }
+
+        paths = files.Where(f => DroppableImageExtensions.Contains(System.IO.Path.GetExtension(f).ToLowerInvariant())).ToArray();
+        return paths.Length > 0;
+    }
+
+    protected override void OnDragEnter(DragEventArgs e) => OnDragOver(e);
+
+    protected override void OnDragOver(DragEventArgs e)
+    {
+        e.Effects = _session is not null && HasDroppableFiles(e.Data, out _) ? DragDropEffects.Copy : DragDropEffects.None;
+        e.Handled = true;
+    }
+
+    protected override void OnDrop(DragEventArgs e)
+    {
+        e.Handled = true;
+        if (_session is null || !HasDroppableFiles(e.Data, out string[] paths))
+        {
+            return;
+        }
+
+        Point screen = e.GetPosition(this);
+        Point mm = ScreenToMm(screen);
+        ImagesDropped?.Invoke(this, new ImagesDroppedEventArgs(paths, new PointMm(mm.X, mm.Y)));
+    }
 
     // ---- view transform ---------------------------------------------------
 
@@ -569,7 +616,7 @@ public sealed class DesignerCanvas : FrameworkElement
             return;
         }
 
-        // Ruler drag -> new guide
+        // Ruler drag -> new guide (only the ruler strips themselves; never competes with objects)
         if (RulerPad > 0 && !(_session.ActiveLabel.Guides.Locked))
         {
             if (screen.Y < RulerSize && screen.X > RulerSize)
@@ -589,18 +636,10 @@ public sealed class DesignerCanvas : FrameworkElement
             }
         }
 
-        // Grab an existing guide?
-        if (Settings?.ShowGuides != false && !_session.ActiveLabel.Guides.Locked && TryHitGuide(screen, out GuideDrag existing))
-        {
-            _guideDrag = existing;
-            CaptureMouse();
-            e.Handled = true;
-            return;
-        }
-
         Point mm = ScreenToMm(screen);
         _dragStartMm = mm;
 
+        // Resize handles on the current selection take priority over everything else.
         foreach (LabelObject obj in _session.Selection)
         {
             Handle h = obj.Locked ? Handle.None : HitHandle(obj, mm);
@@ -615,7 +654,20 @@ public sealed class DesignerCanvas : FrameworkElement
             }
         }
 
+        // Object selection/drag beats grabbing a guide that happens to sit on the
+        // object's edge (e.g. right after a successful snap) — otherwise a snapped
+        // object becomes impossible to re-select at its snapped edge.
         LabelObject? hit = HitObject(mm);
+
+        if (hit is null && Settings?.ShowGuides != false && !_session.ActiveLabel.Guides.Locked &&
+            TryHitGuide(screen, out GuideDrag existing))
+        {
+            _guideDrag = existing;
+            CaptureMouse();
+            e.Handled = true;
+            return;
+        }
+
         if (hit is null)
         {
             _session.ClearSelection();
@@ -859,6 +911,9 @@ public sealed class DesignerCanvas : FrameworkElement
 
     // ---- snapping ----------------------------------------------------
 
+    /// <summary>Snap tolerance in document mm, with a small floor so it stays usable at very high zoom.</summary>
+    private double SnapToleranceMm() => Math.Max((Settings?.SnapPixels ?? 10.0) / Scale, 0.12);
+
     private (IReadOnlyList<double> V, IReadOnlyList<double> H) SnapTargets(LabelObject? exclude)
     {
         var v = new List<double>();
@@ -908,7 +963,7 @@ public sealed class DesignerCanvas : FrameworkElement
             return Array.Empty<SnapLine>();
         }
 
-        double tolMm = (Settings?.SnapPixels ?? 7.0) / Scale;
+        double tolMm = SnapToleranceMm();
         (IReadOnlyList<double> v, IReadOnlyList<double> hh) = SnapTargets(_session.Selection[0]);
 
         // Union bounds of the selection, so the group snaps as one.
@@ -948,7 +1003,7 @@ public sealed class DesignerCanvas : FrameworkElement
         }
 
         LabelObject obj = _session.Selection[0];
-        double tolMm = (Settings?.SnapPixels ?? 7.0) / Scale;
+        double tolMm = SnapToleranceMm();
         (IReadOnlyList<double> v, IReadOnlyList<double> hh) = SnapTargets(obj);
         RectMm b = obj.Bounds;
         var lines = new List<SnapLine>(2);
@@ -1059,12 +1114,6 @@ public sealed class DesignerCanvas : FrameworkElement
             return;
         }
 
-        if (Settings?.ShowGuides != false && !_session.ActiveLabel.Guides.Locked && TryHitGuide(screen, out GuideDrag g))
-        {
-            Cursor = g.Vertical ? Cursors.SizeWE : Cursors.SizeNS;
-            return;
-        }
-
         Point mm = ScreenToMm(screen);
         foreach (LabelObject obj in _session.Selection)
         {
@@ -1081,7 +1130,21 @@ public sealed class DesignerCanvas : FrameworkElement
             }
         }
 
-        Cursor = HitObject(mm) is not null ? Cursors.SizeAll : Cursors.Arrow;
+        // Match OnMouseDown's priority: an object under the cursor wins over a
+        // coincident guide line (e.g. right after the object snapped to it).
+        if (HitObject(mm) is not null)
+        {
+            Cursor = Cursors.SizeAll;
+            return;
+        }
+
+        if (Settings?.ShowGuides != false && !_session.ActiveLabel.Guides.Locked && TryHitGuide(screen, out GuideDrag g))
+        {
+            Cursor = g.Vertical ? Cursors.SizeWE : Cursors.SizeNS;
+            return;
+        }
+
+        Cursor = Cursors.Arrow;
     }
 
     private void CaptureStart() => _dragStartBounds = _session!.Selection.ToDictionary(o => o.Id, o => o.Bounds);
@@ -1193,4 +1256,18 @@ public sealed class DesignerCanvas : FrameworkElement
         BottomLeft,
         Left,
     }
+}
+
+/// <summary>Files dropped onto the canvas and the document-mm point they were dropped at.</summary>
+public sealed class ImagesDroppedEventArgs : EventArgs
+{
+    public ImagesDroppedEventArgs(IReadOnlyList<string> paths, PointMm atMm)
+    {
+        Paths = paths;
+        AtMm = atMm;
+    }
+
+    public IReadOnlyList<string> Paths { get; }
+
+    public PointMm AtMm { get; }
 }

@@ -43,6 +43,8 @@ public sealed class MainViewModel : ObservableObject
     private ObjectListItem? _selectedObjectItem;
     private PageListItem? _selectedPage;
     private bool _suppressPageSelection;
+    private bool _hasConfiguredPrintSettings;
+    private int _selectedLeftTab = 1;
 
     public MainViewModel(AppEnvironment env, IShellServices shell)
     {
@@ -76,6 +78,7 @@ public sealed class MainViewModel : ObservableObject
         _canvas.Settings = _env.Settings;
         _canvas.Attach(_session);
         _canvas.ZoomChanged += (_, _) => OnPropertyChanged(nameof(ZoomText));
+        _canvas.ImagesDropped += (_, e) => OnImagesDroppedOnCanvas(e.Paths, e.AtMm);
     }
 
     private ProjectDocument CreateBlankDocument()
@@ -118,7 +121,7 @@ public sealed class MainViewModel : ObservableObject
         _session.DocumentChanged += (_, _) => OnDocumentChanged();
         _session.SelectionChanged += (_, _) => OnSelectionChanged();
         _session.RecordChanged += (_, _) => { RefreshCanvas(); OnPropertyChanged(nameof(RecordText)); };
-        _session.DataChanged += (_, _) => { OnPropertyChanged(nameof(RecordText)); RefreshSearch(); };
+        _session.DataChanged += (_, _) => { OnPropertyChanged(nameof(RecordText)); OnPropertyChanged(nameof(DataSourceSummary)); RefreshSearch(); };
         _session.HistoryChanged += (_, _) => RaiseAllCanExecute();
         _session.PagesChanged += (_, _) => RebuildPages();
         _session.ActivePageChanged += (_, _) => OnActivePageChanged();
@@ -133,6 +136,7 @@ public sealed class MainViewModel : ObservableObject
         OnPropertyChanged(nameof(TemplateSummary));
         OnPropertyChanged(nameof(LockGuides));
         OnPropertyChanged(nameof(RecordText));
+        OnPropertyChanged(nameof(DataSourceSummary));
     }
 
     private void OnActivePageChanged()
@@ -196,6 +200,13 @@ public sealed class MainViewModel : ObservableObject
         : "— / —";
 
     public string ZoomText => _canvas is null ? "100%" : $"{Math.Round(_canvas.Zoom * 100)}%";
+
+    /// <summary>0 = Templates tab, 1 = Pages tab, in the left panel.</summary>
+    public int SelectedLeftTab { get => _selectedLeftTab; set => SetField(ref _selectedLeftTab, value); }
+
+    public string DataSourceSummary => _session.RecordCount > 0
+        ? $"{_session.RecordCount} record{(_session.RecordCount == 1 ? "" : "s")} loaded"
+        : "No data source connected";
 
     public string TemplateSummary
     {
@@ -362,6 +373,7 @@ public sealed class MainViewModel : ObservableObject
     public RelayCommand PreflightCommand { get; private set; } = null!;
     public RelayCommand TemplateManagerCommand { get; private set; } = null!;
     public RelayCommand PrintCommand { get; private set; } = null!;
+    public RelayCommand PrintSettingsCommand { get; private set; } = null!;
     public RelayCommand PrintPreviewCommand { get; private set; } = null!;
     public RelayCommand CalibrationCommand { get; private set; } = null!;
     public RelayCommand ExportSheetPdfCommand { get; private set; } = null!;
@@ -440,6 +452,7 @@ public sealed class MainViewModel : ObservableObject
         TemplateManagerCommand = new RelayCommand(() => _shell.ShowTemplateManager());
 
         PrintCommand = new RelayCommand(Print);
+        PrintSettingsCommand = new RelayCommand(OpenPrintSettingsThenPrint);
         PrintPreviewCommand = new RelayCommand(Print); // system dialog offers preview
         CalibrationCommand = new RelayCommand(() => _shell.ShowCalibrationWizard());
         ExportSheetPdfCommand = new RelayCommand(ExportSheetPdf);
@@ -480,14 +493,20 @@ public sealed class MainViewModel : ObservableObject
         RebuildObjectList();
     }
 
+    private static readonly string[] ImageExtensions = { ".png", ".jpg", ".jpeg", ".bmp", ".gif", ".tif", ".tiff", ".webp" };
+
     private void AddImage()
     {
         string? path = _shell.PickOpenFile("Images|*.png;*.jpg;*.jpeg;*.bmp;*.gif;*.tif;*.tiff;*.webp|All files|*.*", "Add image");
-        if (path is null)
+        if (path is not null)
         {
-            return;
+            AddImageFromFile(path, atMm: null);
         }
+    }
 
+    /// <summary>Shared by the Insert&gt;Image dialog and drag-and-drop onto the canvas.</summary>
+    private void AddImageFromFile(string path, Core.Units.PointMm? atMm)
+    {
         try
         {
             byte[] bytes = File.ReadAllBytes(path);
@@ -495,21 +514,48 @@ public sealed class MainViewModel : ObservableObject
             (int w, int h) = ImageDimensions.Probe(bytes);
             double aspect = h > 0 ? (double)w / h : 1.0;
             double boxW = Math.Min(_session.ActiveLabel.SizeMm.Width - 4, 30);
+            double boxH = aspect > 0 ? boxW / aspect : boxW;
+
+            RectMm bounds = atMm is { } at
+                ? new RectMm(
+                    Math.Clamp(at.X - (boxW / 2), 0, Math.Max(0, _session.ActiveLabel.SizeMm.Width - boxW)),
+                    Math.Clamp(at.Y - (boxH / 2), 0, Math.Max(0, _session.ActiveLabel.SizeMm.Height - boxH)),
+                    boxW, boxH)
+                : NewBounds(boxW, boxH);
+
             var obj = new ImageObject
             {
                 AssetId = id,
                 SourceFileName = Path.GetFileName(path),
                 SourcePixelWidth = w,
                 SourcePixelHeight = h,
-                Bounds = NewBounds(boxW, aspect > 0 ? boxW / aspect : boxW),
+                Bounds = bounds,
             };
             _imageSource.Invalidate();
             AddObject(obj);
         }
         catch (Exception ex)
         {
-            _shell.Warn("Could not load the image: " + ex.Message);
+            _shell.Warn($"Could not load \"{Path.GetFileName(path)}\": {ex.Message}");
         }
+    }
+
+    private void OnImagesDroppedOnCanvas(IReadOnlyList<string> paths, Core.Units.PointMm atMm)
+    {
+        var images = paths.Where(p => ImageExtensions.Contains(Path.GetExtension(p).ToLowerInvariant())).ToList();
+        if (images.Count == 0)
+        {
+            _shell.Warn("Only image files (PNG, JPG, BMP, GIF, TIFF, WEBP) can be dropped onto the canvas.");
+            return;
+        }
+
+        for (int i = 0; i < images.Count; i++)
+        {
+            var at = new Core.Units.PointMm(atMm.X + (i * 4), atMm.Y + (i * 4));
+            AddImageFromFile(images[i], at);
+        }
+
+        StatusText = images.Count == 1 ? $"Added {Path.GetFileName(images[0])}" : $"Added {images.Count} images";
     }
 
     private void AddDataField()
@@ -879,7 +925,11 @@ public sealed class MainViewModel : ObservableObject
         try
         {
             var settings = _session.Project.PrintSettings;
-            settings.Content = _session.Data is { RowCount: > 0 } ? PrintContent.VariableData : PrintContent.SheetFill;
+            if (!_hasConfiguredPrintSettings)
+            {
+                settings.Content = _session.Data is { RowCount: > 0 } ? PrintContent.VariableData : PrintContent.SheetFill;
+            }
+
             if (_printServer.Print(_session.Project, _session.Data, settings))
             {
                 StatusText = "Sent to printer";
@@ -889,6 +939,15 @@ public sealed class MainViewModel : ObservableObject
         catch (Exception ex)
         {
             _shell.Warn("Printing failed:\n\n" + ex.Message);
+        }
+    }
+
+    private void OpenPrintSettingsThenPrint()
+    {
+        if (_shell.ShowPrintSettings())
+        {
+            _hasConfiguredPrintSettings = true;
+            Print();
         }
     }
 

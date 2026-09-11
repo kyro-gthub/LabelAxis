@@ -28,7 +28,7 @@ public sealed class AppSettings
     public bool SnapToGuides { get; set; } = true;
 
     /// <summary>Snap tolerance in screen pixels for guide / object / edge snapping.</summary>
-    public double SnapPixels { get; set; } = 7.0;
+    public double SnapPixels { get; set; } = 10.0;
 
     public bool AutoSaveEnabled { get; set; } = true;
     public int AutoSaveSeconds { get; set; } = 120;

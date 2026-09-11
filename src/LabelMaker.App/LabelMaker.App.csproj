@@ -22,4 +22,10 @@
     <None Include="..\..\installer\assets\icon.ico" Condition="Exists('..\..\installer\assets\icon.ico')" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Resource Include="Assets\icon.ico" />
+    <Resource Include="Assets\logo.png" />
+    <Resource Include="Assets\Fonts\**\*.ttf" Condition="Exists('Assets\Fonts')" />
+  </ItemGroup>
+
 </Project>

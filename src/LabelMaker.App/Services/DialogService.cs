@@ -122,6 +122,17 @@ public sealed class DialogService : IShellServices
         new CalibrationWizardWindow(_env, _vm.Session.Project) { Owner = _owner }.ShowDialog();
     }
 
+    public bool ShowPrintSettings()
+    {
+        if (_vm is null)
+        {
+            return false;
+        }
+
+        var win = new PrintSettingsWindow(_vm.Session, this) { Owner = _owner };
+        return win.ShowDialog() == true;
+    }
+
     public void ShowSequenceManager()
     {
         if (_vm is null)

@@ -28,6 +28,15 @@ public sealed class SelectionProperties : ObservableObject
     private LabelObject? Obj => _session.Selection.Count > 0 ? _session.Selection[0] : null;
 
     public bool HasSelection => Obj is not null;
+
+    private int _selectedTab;
+
+    /// <summary>Local UI state for the General/Style/Position/Data property tab strip (not undoable).</summary>
+    public int SelectedPropertyTab
+    {
+        get => _selectedTab;
+        set { _selectedTab = value; OnPropertyChanged(); }
+    }
     public bool IsText => Obj is TextObject;
     public bool IsBarcode => Obj is BarcodeObject;
     public bool IsShape => Obj is ShapeObject;

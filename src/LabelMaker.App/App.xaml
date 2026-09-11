@@ -11,11 +11,14 @@
 
       <conv:BoolToVisibilityConverter x:Key="BoolToVis" />
       <conv:InverseBoolToVisibilityConverter x:Key="InverseBool" />
+      <conv:IntEqualsConverter x:Key="IntEquals" />
+      <conv:IntEqualsVisibilityConverter x:Key="IntEqualsVis" />
+      <conv:NotNullConverter x:Key="NotNullVis" />
 
       <!-- Aliases kept for MainWindow.xaml -->
-      <SolidColorBrush x:Key="PanelBackground" Color="{StaticResource Clr.Surface}" />
+      <SolidColorBrush x:Key="PanelBackground" Color="{StaticResource Clr.Bg}" />
       <SolidColorBrush x:Key="PanelBorder" Color="{StaticResource Clr.Border}" />
-      <SolidColorBrush x:Key="CanvasBackground" Color="#E9EBF5" />
+      <SolidColorBrush x:Key="CanvasBackground" Color="{StaticResource Clr.Surface}" />
 
       <Style x:Key="FieldLabel" TargetType="TextBlock">
         <Setter Property="VerticalAlignment" Value="Center" />
@@ -27,6 +30,7 @@
       <Style x:Key="NumberBox" TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
         <Setter Property="Margin" Value="0,3" />
         <Setter Property="HorizontalContentAlignment" Value="Right" />
+        <Setter Property="FontFamily" Value="{StaticResource Font.Mono}" />
       </Style>
 
       <!-- Small neutral pill for the (white) status bar -->
@@ -39,8 +43,62 @@
         <Setter Property="MinWidth" Value="26" />
       </Style>
 
-      <!-- White ghost pill for the purple header toolbar -->
+      <!-- White ghost pill (kept for any dark-background surface, e.g. dialogs) -->
       <Style x:Key="HeaderPillButton" TargetType="Button" BasedOn="{StaticResource HeaderButton}" />
+
+      <!-- Segmented toggle strip item, e.g. Templates|Pages, Design|Sheet Preview, General|Style|Position|Data -->
+      <Style x:Key="SegmentTab" TargetType="RadioButton">
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Padding" Value="16,7" />
+        <Setter Property="FontFamily" Value="{StaticResource Font.UiSemiBold}" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Foreground" Value="{StaticResource Br.Text2}" />
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate TargetType="RadioButton">
+              <Border x:Name="bd" CornerRadius="8" Background="Transparent" Padding="{TemplateBinding Padding}">
+                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+              </Border>
+              <ControlTemplate.Triggers>
+                <Trigger Property="IsChecked" Value="True">
+                  <Setter TargetName="bd" Property="Background" Value="{StaticResource Br.AccentGradient}" />
+                  <Setter Property="Foreground" Value="White" />
+                </Trigger>
+                <MultiTrigger>
+                  <MultiTrigger.Conditions>
+                    <Condition Property="IsChecked" Value="False" />
+                    <Condition Property="IsMouseOver" Value="True" />
+                  </MultiTrigger.Conditions>
+                  <Setter TargetName="bd" Property="Background" Value="{StaticResource Br.Bg}" />
+                </MultiTrigger>
+              </ControlTemplate.Triggers>
+            </ControlTemplate>
+          </Setter.Value>
+        </Setter>
+      </Style>
+
+      <!-- Underline-style sub-tab, e.g. the Templates / Pages label row -->
+      <Style x:Key="UnderlineTab" TargetType="RadioButton">
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="FontFamily" Value="{StaticResource Font.UiSemiBold}" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Foreground" Value="{StaticResource Br.TextMuted}" />
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate TargetType="RadioButton">
+              <Border x:Name="bd" BorderThickness="0,0,0,2.5" BorderBrush="Transparent" Padding="0,0,0,8">
+                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+              </Border>
+              <ControlTemplate.Triggers>
+                <Trigger Property="IsChecked" Value="True">
+                  <Setter TargetName="bd" Property="BorderBrush" Value="{StaticResource Br.Accent}" />
+                  <Setter Property="Foreground" Value="{StaticResource Br.Accent}" />
+                </Trigger>
+              </ControlTemplate.Triggers>
+            </ControlTemplate>
+          </Setter.Value>
+        </Setter>
+      </Style>
     </ResourceDictionary>
   </Application.Resources>
 </Application>
