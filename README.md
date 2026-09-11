@@ -16,9 +16,11 @@ variable-data printing, fast search, and **physically accurate output**.
 | Project file | `.labelproj` — ZIP container, atomic save, crash recovery, versioned |
 | Tests | 130 xUnit tests, incl. **ZXing round-trip decoding** of generated barcodes |
 
-See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the full design, and
-[`docs/OMISSIONS.md`](docs/OMISSIONS.md) for features deliberately left out to keep
-the core reliable.
+See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the full design,
+[`docs/DEVELOPER.md`](docs/DEVELOPER.md) for the engine's internal map,
+[`docs/UI-DESIGN.md`](docs/UI-DESIGN.md) for where visual style ends and app
+behavior begins in the WPF desktop app, and [`docs/OMISSIONS.md`](docs/OMISSIONS.md)
+for features deliberately left out to keep the core reliable.
 
 ---
 
