@@ -34,6 +34,9 @@ public sealed class AppSettings
     public int AutoSaveSeconds { get; set; } = 120;
     public int BackupCount { get; set; } = 3;
 
+    /// <summary>Disable hover/transition highlighting (e.g. the top menu's underline) for users sensitive to motion.</summary>
+    public bool ReduceMotion { get; set; }
+
     /// <summary>Assumed screen DPI for the actual-size preview, tuned by the ruler calibration.</summary>
     public double ScreenDpiCalibration { get; set; } = 96.0;
 

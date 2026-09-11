@@ -80,6 +80,8 @@ public sealed class DesignerCanvas : FrameworkElement
     /// <summary>Document-mm position of the last right-click, for the context menu (paste / add guide).</summary>
     public PointMm? ContextMm { get; private set; }
 
+    private Point? _contextScreen;
+
     public void Attach(DocumentSession session)
     {
         if (_session is not null)
@@ -115,6 +117,40 @@ public sealed class DesignerCanvas : FrameworkElement
         InvalidateVisual();
     }
 
+    /// <summary>True when the last right-click landed on an existing guide; reports which one.</summary>
+    public bool TryFindGuideAtContext(out bool vertical, out int index)
+    {
+        vertical = false;
+        index = -1;
+        if (_session is null || _contextScreen is not { } screen || !TryHitGuide(screen, out GuideDrag g))
+        {
+            return false;
+        }
+
+        vertical = g.Vertical;
+        index = g.Index;
+        return true;
+    }
+
+    /// <summary>Remove a single guide line (used by the canvas context menu's "Remove guide").</summary>
+    public void RemoveGuideAt(bool vertical, int index)
+    {
+        if (_session is null || _session.ActiveLabel.Guides.Locked)
+        {
+            return;
+        }
+
+        var guides = _session.ActiveLabel.Guides;
+        List<double> list = vertical ? guides.VerticalMm : guides.HorizontalMm;
+        if (index < 0 || index >= list.Count)
+        {
+            return;
+        }
+
+        _session.Execute(new GuideEditCommand(guides, "Remove guide", () => list.RemoveAt(index)));
+        InvalidateVisual();
+    }
+
     /// <summary>Add a guide at the last right-click position (used by the canvas context menu).</summary>
     public void InsertGuideAtContext(bool vertical)
     {
@@ -144,6 +180,7 @@ public sealed class DesignerCanvas : FrameworkElement
         }
 
         Point screen = e.GetPosition(this);
+        _contextScreen = screen;
         if (screen.X > RulerPad && screen.Y > RulerPad)
         {
             Point mm = ScreenToMm(screen);

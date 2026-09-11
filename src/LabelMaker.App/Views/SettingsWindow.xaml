@@ -1,0 +1,60 @@
+<Window x:Class="LabelMaker.App.Views.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Settings" Height="560" Width="520" WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize">
+  <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="18">
+    <StackPanel>
+      <TextBlock Text="Appearance" FontWeight="SemiBold" FontSize="13" Margin="0,0,0,8" Foreground="{StaticResource Br.TextMuted}" />
+      <GroupBox>
+        <StackPanel>
+          <CheckBox x:Name="ReduceMotionBox" Content="Reduce hover effects (e.g. the top menu's highlight/underline)" Margin="0,4" />
+          <TextBlock Text="Turns off the fade/underline that appears while hovering File, Edit, etc. in the menu bar."
+                     TextWrapping="Wrap" Foreground="{StaticResource Br.TextMuted}" FontSize="11.5" Margin="20,2,0,4" />
+        </StackPanel>
+      </GroupBox>
+
+      <TextBlock Text="Canvas &amp; snapping" FontWeight="SemiBold" FontSize="13" Margin="0,14,0,8" Foreground="{StaticResource Br.TextMuted}" />
+      <GroupBox>
+        <StackPanel>
+          <DockPanel Margin="0,3">
+            <TextBlock Text="Snap tolerance (screen px)" Style="{StaticResource FieldLabel}" Width="190" />
+            <TextBox x:Name="SnapPixelsBox" Width="70" HorizontalAlignment="Left" HorizontalContentAlignment="Right" />
+          </DockPanel>
+          <DockPanel Margin="0,3">
+            <TextBlock Text="Grid size (mm)" Style="{StaticResource FieldLabel}" Width="190" />
+            <TextBox x:Name="GridSizeBox" Width="70" HorizontalAlignment="Left" HorizontalContentAlignment="Right" />
+          </DockPanel>
+        </StackPanel>
+      </GroupBox>
+
+      <TextBlock Text="Auto-save &amp; recovery" FontWeight="SemiBold" FontSize="13" Margin="0,14,0,8" Foreground="{StaticResource Br.TextMuted}" />
+      <GroupBox>
+        <StackPanel>
+          <CheckBox x:Name="AutoSaveEnabledBox" Content="Auto-save a recovery snapshot" Margin="0,4" />
+          <DockPanel Margin="0,3">
+            <TextBlock Text="Interval (seconds, min. 30)" Style="{StaticResource FieldLabel}" Width="190" />
+            <TextBox x:Name="AutoSaveSecondsBox" Width="70" HorizontalAlignment="Left" HorizontalContentAlignment="Right" />
+          </DockPanel>
+        </StackPanel>
+      </GroupBox>
+
+      <TextBlock Text="Files" FontWeight="SemiBold" FontSize="13" Margin="0,14,0,8" Foreground="{StaticResource Br.TextMuted}" />
+      <GroupBox>
+        <StackPanel>
+          <DockPanel Margin="0,3">
+            <TextBlock Text="Remembered recent projects" Style="{StaticResource FieldLabel}" Width="190" />
+            <TextBox x:Name="MaxRecentBox" Width="70" HorizontalAlignment="Left" HorizontalContentAlignment="Right" />
+          </DockPanel>
+        </StackPanel>
+      </GroupBox>
+
+      <TextBlock x:Name="StatusText" TextWrapping="Wrap" Foreground="{StaticResource Br.TextMuted}" Margin="0,10,0,0" />
+
+      <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
+        <Button Content="Cancel" IsCancel="True" Padding="16,6" Margin="0,0,8,0" />
+        <Button Content="Save" Style="{StaticResource AccentButton}" IsDefault="True" Padding="20,6" Click="OnSave" />
+      </StackPanel>
+    </StackPanel>
+  </ScrollViewer>
+</Window>

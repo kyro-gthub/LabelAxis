@@ -58,6 +58,29 @@
       <Setter Property="Foreground" Value="{StaticResource Br.TextMuted}" />
       <Setter Property="Margin" Value="2,0,0,6" />
     </Style>
+    <!-- Clickable "› Appearance" collapsible-section header (spec 3.8's "Collapsible Appearance section"). -->
+    <Style x:Key="CollapsibleHeader" TargetType="ToggleButton">
+      <Setter Property="Cursor" Value="Hand" />
+      <Setter Property="Margin" Value="0,6,0,2" />
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="ToggleButton">
+            <StackPanel Orientation="Horizontal" Background="Transparent">
+              <TextBlock x:Name="chev" Text="›" FontFamily="{StaticResource Font.UiSemiBold}" Foreground="{StaticResource Br.Accent}" Margin="0,0,5,0" />
+              <ContentPresenter />
+            </StackPanel>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsChecked" Value="True">
+                <Setter TargetName="chev" Property="Text" Value="⌄" />
+              </Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+      <Setter Property="FontFamily" Value="{StaticResource Font.UiSemiBold}" />
+      <Setter Property="FontSize" Value="12.5" />
+      <Setter Property="Foreground" Value="{StaticResource Br.Text2}" />
+    </Style>
   </Window.Resources>
 
   <DockPanel>
@@ -162,6 +185,8 @@
             <MenuItem Header="Barcode _image…" Command="{Binding BarcodeImageCommand}" />
             <MenuItem Header="_Preflight check…" Command="{Binding PreflightCommand}" />
             <MenuItem Header="_Formtec template manager…" Command="{Binding TemplateManagerCommand}" />
+            <Separator />
+            <MenuItem Header="_Settings…" Command="{Binding SettingsCommand}" />
           </MenuItem>
           <MenuItem Header="_View">
             <MenuItem Header="Zoom in" Command="{Binding ZoomInCommand}" />
@@ -404,8 +429,22 @@
 
             <TextBlock DockPanel.Dock="Top" Text="OBJECTS ON PAGE" Style="{StaticResource PanelSectionHeader}" />
             <Border Style="{StaticResource Card}" Padding="4">
-              <ListBox ItemsSource="{Binding ObjectList}" SelectedItem="{Binding SelectedObjectItem}" DisplayMemberPath="Display"
-                       BorderThickness="0" Background="Transparent" />
+              <ListBox ItemsSource="{Binding ObjectList}" SelectedItem="{Binding SelectedObjectItem}"
+                       BorderThickness="0" Background="Transparent">
+                <ListBox.ItemTemplate>
+                  <DataTemplate>
+                    <DockPanel>
+                      <Button DockPanel.Dock="Right" Style="{StaticResource ToolButton}" MinWidth="22" Padding="2"
+                              ToolTip="Lock this object so it stays fixed across labels (a simple template-lock section)"
+                              Command="{Binding DataContext.ToggleObjectLockCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
+                              CommandParameter="{Binding}">
+                        <Image Width="13" Height="13" Source="{Binding Object.Locked, Converter={StaticResource LockIcon}}" />
+                      </Button>
+                      <TextBlock Text="{Binding Display}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                    </DockPanel>
+                  </DataTemplate>
+                </ListBox.ItemTemplate>
+              </ListBox>
             </Border>
           </DockPanel>
         </DockPanel>
@@ -440,16 +479,29 @@
                        TextWrapping="Wrap" Foreground="{StaticResource Br.TextMuted}" Margin="2,0,2,0" FontSize="12"
                        Visibility="{Binding HasSelection, Converter={StaticResource InverseBool}}" />
 
-            <StackPanel Orientation="Horizontal" Margin="2,6,2,12" Visibility="{Binding HasSelection, Converter={StaticResource BoolToVis}}">
-              <RadioButton GroupName="PropTab" Content="General" Style="{StaticResource UnderlineTab}" Margin="0,0,14,0"
-                           IsChecked="{Binding SelectedPropertyTab, Converter={StaticResource IntEquals}, ConverterParameter=0}" />
-              <RadioButton GroupName="PropTab" Content="Style" Style="{StaticResource UnderlineTab}" Margin="0,0,14,0"
-                           IsChecked="{Binding SelectedPropertyTab, Converter={StaticResource IntEquals}, ConverterParameter=1}" />
-              <RadioButton GroupName="PropTab" Content="Position" Style="{StaticResource UnderlineTab}" Margin="0,0,14,0"
-                           IsChecked="{Binding SelectedPropertyTab, Converter={StaticResource IntEquals}, ConverterParameter=2}" />
-              <RadioButton GroupName="PropTab" Content="Data" Style="{StaticResource UnderlineTab}"
-                           IsChecked="{Binding SelectedPropertyTab, Converter={StaticResource IntEquals}, ConverterParameter=3}" />
+            <!-- Object-type header: icon + type name (spec 3.8's "barcode icon + Barcode (16/800)"). -->
+            <StackPanel Orientation="Horizontal" Margin="2,0,2,10" Visibility="{Binding HasSelection, Converter={StaticResource BoolToVis}}">
+              <Image Width="18" Height="18" Margin="0,0,8,0" Source="{StaticResource Icon.Text}" Visibility="{Binding IsText, Converter={StaticResource BoolToVis}}" />
+              <Image Width="18" Height="18" Margin="0,0,8,0" Source="{StaticResource Icon.Barcode}" Visibility="{Binding IsBarcode, Converter={StaticResource BoolToVis}}" />
+              <Image Width="18" Height="18" Margin="0,0,8,0" Source="{StaticResource Icon.Rectangle}" Visibility="{Binding IsShape, Converter={StaticResource BoolToVis}}" />
+              <Image Width="18" Height="18" Margin="0,0,8,0" Source="{StaticResource Icon.Image}" Visibility="{Binding IsImage, Converter={StaticResource BoolToVis}}" />
+              <TextBlock Text="{Binding TypeName}" FontFamily="{StaticResource Font.UiExtraBold}" FontSize="16" VerticalAlignment="Center" />
             </StackPanel>
+
+            <!-- Pill tab strip on a track (spec 3.8: "Tabs on a #eef0f7 track: General (active, brand-grad)…"). -->
+            <Border Background="{StaticResource Br.Surface}" CornerRadius="10" Padding="3" Margin="0,0,0,14"
+                    Visibility="{Binding HasSelection, Converter={StaticResource BoolToVis}}">
+              <UniformGrid Rows="1" Columns="4">
+                <RadioButton GroupName="PropTab" Content="General" Style="{StaticResource SegmentTab}" HorizontalContentAlignment="Center" Padding="2,7" FontSize="11.5"
+                             IsChecked="{Binding SelectedPropertyTab, Converter={StaticResource IntEquals}, ConverterParameter=0}" />
+                <RadioButton GroupName="PropTab" Content="Style" Style="{StaticResource SegmentTab}" HorizontalContentAlignment="Center" Padding="2,7" FontSize="11.5"
+                             IsChecked="{Binding SelectedPropertyTab, Converter={StaticResource IntEquals}, ConverterParameter=1}" />
+                <RadioButton GroupName="PropTab" Content="Position" Style="{StaticResource SegmentTab}" HorizontalContentAlignment="Center" Padding="2,7" FontSize="11.5"
+                             IsChecked="{Binding SelectedPropertyTab, Converter={StaticResource IntEquals}, ConverterParameter=2}" />
+                <RadioButton GroupName="PropTab" Content="Data" Style="{StaticResource SegmentTab}" HorizontalContentAlignment="Center" Padding="2,7" FontSize="11.5"
+                             IsChecked="{Binding SelectedPropertyTab, Converter={StaticResource IntEquals}, ConverterParameter=3}" />
+              </UniformGrid>
+            </Border>
 
             <!-- General -->
             <StackPanel Visibility="{Binding SelectedPropertyTab, Converter={StaticResource IntEqualsVis}, ConverterParameter=0}">
@@ -467,7 +519,10 @@
               <GroupBox Header="Text" Visibility="{Binding IsText, Converter={StaticResource BoolToVis}}">
                 <StackPanel>
                   <TextBox Text="{Binding TextContent, UpdateSourceTrigger=LostFocus}" AcceptsReturn="True" MinHeight="52" TextWrapping="Wrap" />
-                  <DockPanel Margin="0,4"><TextBlock Text="Font" Style="{StaticResource FieldLabel}" Width="40" /><TextBox Text="{Binding FontFamily, UpdateSourceTrigger=LostFocus}" /></DockPanel>
+                  <DockPanel Margin="0,4">
+                    <TextBlock Text="Font" Style="{StaticResource FieldLabel}" Width="40" />
+                    <ComboBox IsEditable="True" ItemsSource="{Binding FontFamilies}" Text="{Binding FontFamily, UpdateSourceTrigger=PropertyChanged}" />
+                  </DockPanel>
                   <DockPanel Margin="0,2"><TextBlock Text="Size" Style="{StaticResource FieldLabel}" Width="40" /><TextBox Style="{StaticResource NumberBox}" Text="{Binding FontSizePt, StringFormat=0.#, UpdateSourceTrigger=LostFocus}" /></DockPanel>
                   <StackPanel Orientation="Horizontal" Margin="0,3">
                     <CheckBox Content="Bold" IsChecked="{Binding Bold}" Margin="0,0,10,0" />
@@ -481,10 +536,20 @@
                 <StackPanel>
                   <DockPanel Margin="0,2"><TextBlock Text="Type" Style="{StaticResource FieldLabel}" Width="52" /><ComboBox ItemsSource="{Binding Symbologies}" SelectedItem="{Binding Symbology}" /></DockPanel>
                   <DockPanel Margin="0,2"><TextBlock Text="Value" Style="{StaticResource FieldLabel}" Width="52" /><TextBox Text="{Binding BarcodeData, UpdateSourceTrigger=LostFocus}" /></DockPanel>
-                  <DockPanel Margin="0,2"><TextBlock Text="Module" Style="{StaticResource FieldLabel}" Width="52" /><TextBox Style="{StaticResource NumberBox}" Text="{Binding ModuleWidthMm, StringFormat=0.###, UpdateSourceTrigger=LostFocus}" /></DockPanel>
-                  <DockPanel Margin="0,2"><TextBlock Text="Bar ht" Style="{StaticResource FieldLabel}" Width="52" /><TextBox Style="{StaticResource NumberBox}" Text="{Binding BarHeightMm, StringFormat=0.#, UpdateSourceTrigger=LostFocus}" /></DockPanel>
-                  <CheckBox Content="Auto-size to symbol" IsChecked="{Binding BarcodeAutoSize}" Margin="0,3" />
-                  <TextBlock Text="{Binding BarcodeValidationMessage}" Foreground="#C0392B" TextWrapping="Wrap" Margin="0,2" />
+                  <CheckBox Content="Show human-readable text" IsChecked="{Binding ShowHumanReadable}" Margin="0,5,0,2" />
+                  <DockPanel Margin="0,2" Visibility="{Binding ShowHumanReadable, Converter={StaticResource BoolToVis}}">
+                    <TextBlock Text="Number size" Style="{StaticResource FieldLabel}" Width="90" />
+                    <TextBox Style="{StaticResource NumberBox}" Text="{Binding HriFontSizePt, StringFormat=0.#, UpdateSourceTrigger=LostFocus}" ToolTip="Size of the barcode's human-readable number, independent of the bars" />
+                    <TextBlock Text="pt" Foreground="{StaticResource Br.TextMuted}" VerticalAlignment="Center" Margin="6,0,0,0" />
+                  </DockPanel>
+
+                  <ToggleButton Style="{StaticResource CollapsibleHeader}" Content="Appearance" IsChecked="{Binding ShowBarcodeAppearance}" />
+                  <StackPanel Visibility="{Binding ShowBarcodeAppearance, Converter={StaticResource BoolToVis}}">
+                    <DockPanel Margin="0,2"><TextBlock Text="Module" Style="{StaticResource FieldLabel}" Width="52" /><TextBox Style="{StaticResource NumberBox}" Text="{Binding ModuleWidthMm, StringFormat=0.###, UpdateSourceTrigger=LostFocus}" /></DockPanel>
+                    <DockPanel Margin="0,2"><TextBlock Text="Bar ht" Style="{StaticResource FieldLabel}" Width="52" /><TextBox Style="{StaticResource NumberBox}" Text="{Binding BarHeightMm, StringFormat=0.#, UpdateSourceTrigger=LostFocus}" /></DockPanel>
+                    <CheckBox Content="Auto-size to symbol" IsChecked="{Binding BarcodeAutoSize}" Margin="0,3" />
+                  </StackPanel>
+                  <TextBlock Text="{Binding BarcodeValidationMessage}" Foreground="#C0392B" TextWrapping="Wrap" Margin="0,6,0,2" />
                 </StackPanel>
               </GroupBox>
 
@@ -497,8 +562,23 @@
                 </StackPanel>
               </GroupBox>
 
-              <TextBlock Text="This object type has no style properties." Foreground="{StaticResource Br.TextMuted}" FontSize="12" Margin="2,4,2,0"
-                         Visibility="{Binding IsImage, Converter={StaticResource BoolToVis}}" />
+              <GroupBox Header="Image" Visibility="{Binding IsImage, Converter={StaticResource BoolToVis}}">
+                <StackPanel>
+                  <DockPanel Margin="0,2"><TextBlock Text="Source" Style="{StaticResource FieldLabel}" Width="60" /><TextBlock Text="{Binding ImageSourceFileName}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" /></DockPanel>
+                  <Button Content="Replace image…" HorizontalAlignment="Left" Padding="10,4" Margin="0,4,0,8"
+                          Command="{Binding DataContext.ReplaceImageCommand, RelativeSource={RelativeSource AncestorType=ScrollViewer}}" />
+
+                  <DockPanel Margin="0,2"><TextBlock Text="Fit" Style="{StaticResource FieldLabel}" Width="60" /><ComboBox ItemsSource="{Binding ImageFitModes}" SelectedItem="{Binding FitMode}" /></DockPanel>
+                  <DockPanel Margin="0,2"><TextBlock Text="Opacity" Style="{StaticResource FieldLabel}" Width="60" /><TextBox Style="{StaticResource NumberBox}" Text="{Binding ImageOpacity, StringFormat=0.00, UpdateSourceTrigger=LostFocus}" /></DockPanel>
+                  <DockPanel Margin="0,2"><TextBlock Text="Brightness" Style="{StaticResource FieldLabel}" Width="60" /><TextBox Style="{StaticResource NumberBox}" Text="{Binding Brightness, StringFormat=0.00, UpdateSourceTrigger=LostFocus}" ToolTip="-1.00 .. 1.00" /></DockPanel>
+                  <DockPanel Margin="0,2"><TextBlock Text="Contrast" Style="{StaticResource FieldLabel}" Width="60" /><TextBox Style="{StaticResource NumberBox}" Text="{Binding Contrast, StringFormat=0.00, UpdateSourceTrigger=LostFocus}" ToolTip="-1.00 .. 1.00" /></DockPanel>
+                  <CheckBox Content="Grayscale" IsChecked="{Binding Grayscale}" Margin="0,5,0,3" />
+                  <StackPanel Orientation="Horizontal" Margin="0,3">
+                    <CheckBox Content="Flip horizontal" IsChecked="{Binding FlipHorizontal}" Margin="0,0,14,0" />
+                    <CheckBox Content="Flip vertical" IsChecked="{Binding FlipVertical}" />
+                  </StackPanel>
+                </StackPanel>
+              </GroupBox>
             </StackPanel>
 
             <!-- Position -->

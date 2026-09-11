@@ -145,4 +145,14 @@ public sealed class DialogService : IShellServices
 
     public void ShowTemplateManager() =>
         new TemplateManagerWindow(_env) { Owner = _owner }.ShowDialog();
+
+    public void ShowSettings()
+    {
+        if (_vm is null)
+        {
+            return;
+        }
+
+        new SettingsWindow(_env, _vm) { Owner = _owner }.ShowDialog();
+    }
 }

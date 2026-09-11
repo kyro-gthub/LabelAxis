@@ -259,6 +259,17 @@ public sealed class MainViewModel : ObservableObject
         set { _env.Settings.SnapToObjects = value; OnPropertyChanged(); }
     }
 
+    public bool ReduceMotion
+    {
+        get => _env.Settings.ReduceMotion;
+        set { _env.Settings.ReduceMotion = value; OnPropertyChanged(); }
+    }
+
+    /// <summary>Raised after the Settings dialog changes auto-save preferences, so the running timer can be re-applied.</summary>
+    public event EventHandler? AutoSaveSettingsChanged;
+
+    public void NotifyAutoSaveSettingsChanged() => AutoSaveSettingsChanged?.Invoke(this, EventArgs.Empty);
+
     public bool LockGuides
     {
         get => _session.ActiveLabel.Guides.Locked;
@@ -389,6 +400,9 @@ public sealed class MainViewModel : ObservableObject
     public RelayCommand NextRecordCommand { get; private set; } = null!;
     public RelayCommand LastRecordCommand { get; private set; } = null!;
     public RelayCommand AboutCommand { get; private set; } = null!;
+    public RelayCommand SettingsCommand { get; private set; } = null!;
+    public RelayCommand ReplaceImageCommand { get; private set; } = null!;
+    public RelayCommand ToggleObjectLockCommand { get; private set; } = null!;
 
     private void BuildCommands()
     {
@@ -473,6 +487,9 @@ public sealed class MainViewModel : ObservableObject
         AboutCommand = new RelayCommand(() => _shell.Info(
             "Label Maker 1.0\n\nWindows-first label design & printing.\nFormtec templates · barcodes · variable data · accurate printing.",
             "About Label Maker"));
+        SettingsCommand = new RelayCommand(() => _shell.ShowSettings());
+        ReplaceImageCommand = new RelayCommand(ReplaceSelectedImage, () => Properties.IsImage);
+        ToggleObjectLockCommand = new RelayCommand(p => ToggleObjectLock(p as ObjectListItem));
     }
 
     private bool AnySel() => _session.Selection.Count > 0;
@@ -540,6 +557,58 @@ public sealed class MainViewModel : ObservableObject
         }
     }
 
+    private void ReplaceSelectedImage()
+    {
+        if (_session.Selection.Count != 1 || _session.Selection[0] is not ImageObject img)
+        {
+            return;
+        }
+
+        string? path = _shell.PickOpenFile("Images|*.png;*.jpg;*.jpeg;*.bmp;*.gif;*.tif;*.tiff;*.webp|All files|*.*", "Replace image");
+        if (path is null)
+        {
+            return;
+        }
+
+        try
+        {
+            byte[] bytes = File.ReadAllBytes(path);
+            string id = _session.Document.Assets.Add(bytes, Path.GetExtension(path));
+            (int w, int h) = ImageDimensions.Probe(bytes);
+            string name = Path.GetFileName(path);
+
+            var command = new CompositeCommand("Replace image", new IUndoableCommand[]
+            {
+                new SetPropertyCommand<string>("Replace image", () => img.AssetId, v => img.AssetId = v, id, (img.Id, "assetId")),
+                new SetPropertyCommand<string?>("Replace image", () => img.SourceFileName, v => img.SourceFileName = v, name, (img.Id, "sourceFileName")),
+                new SetPropertyCommand<int>("Replace image", () => img.SourcePixelWidth, v => img.SourcePixelWidth = v, w, (img.Id, "sourcePixelWidth")),
+                new SetPropertyCommand<int>("Replace image", () => img.SourcePixelHeight, v => img.SourcePixelHeight = v, h, (img.Id, "sourcePixelHeight")),
+            });
+            _session.Execute(command);
+            _imageSource.Invalidate();
+            _properties.RefreshAll();
+            RebuildObjectList();
+            StatusText = $"Replaced image with {name}";
+        }
+        catch (Exception ex)
+        {
+            _shell.Warn($"Could not load \"{Path.GetFileName(path)}\": {ex.Message}");
+        }
+    }
+
+    private void ToggleObjectLock(ObjectListItem? item)
+    {
+        if (item is null)
+        {
+            return;
+        }
+
+        LabelObject obj = item.Object;
+        _session.Execute(new SetPropertyCommand<bool>("Toggle lock", () => obj.Locked, v => obj.Locked = v, !obj.Locked, (obj.Id, "locked")));
+        RebuildObjectList();
+        _properties.RefreshAll();
+    }
+
     private void OnImagesDroppedOnCanvas(IReadOnlyList<string> paths, Core.Units.PointMm atMm)
     {
         var images = paths.Where(p => ImageExtensions.Contains(Path.GetExtension(p).ToLowerInvariant())).ToList();
@@ -566,14 +635,26 @@ public sealed class MainViewModel : ObservableObject
 
     private void DeleteSelection()
     {
-        if (_session.Selection.Count == 0)
+        var locked = _session.Selection.Where(o => o.Locked).ToList();
+        var deletable = _session.Selection.Where(o => !o.Locked).ToList();
+        if (deletable.Count == 0)
         {
+            if (locked.Count > 0)
+            {
+                StatusText = locked.Count == 1
+                    ? "That object is locked — unlock it first to delete it."
+                    : $"Those {locked.Count} objects are locked — unlock them first to delete them.";
+            }
+
             return;
         }
 
-        _session.Execute(new RemoveObjectsCommand(_session.ActiveLabel, _session.Selection));
-        _session.ClearSelection();
+        _session.Execute(new RemoveObjectsCommand(_session.ActiveLabel, deletable));
+        _session.SetSelection(locked);
         RebuildObjectList();
+        StatusText = locked.Count > 0
+            ? $"Deleted {deletable.Count} object(s); skipped {locked.Count} locked."
+            : $"Deleted {deletable.Count} object(s).";
     }
 
     private void DuplicateSelection()
@@ -1104,7 +1185,7 @@ public sealed class MainViewModel : ObservableObject
                      CopyCommand, CutCommand, PasteCommand,
                      BringToFrontCommand, BringForwardCommand, SendBackwardCommand, SendToBackCommand,
                      AlignLeftCommand, AlignTopCommand, CenterHorizontalCommand, CenterVerticalCommand, ClearDataCommand,
-                     RemovePageCommand, RenamePageCommand,
+                     RemovePageCommand, RenamePageCommand, ReplaceImageCommand,
                  })
         {
             cmd.RaiseCanExecuteChanged();

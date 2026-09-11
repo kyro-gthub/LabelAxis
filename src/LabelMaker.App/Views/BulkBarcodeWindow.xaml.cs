@@ -1,10 +1,12 @@
 using System.IO;
 using System.Globalization;
 using System.Windows;
+using LabelMaker.App.Rendering;
 using LabelMaker.App.Services;
 using LabelMaker.Core.Barcodes;
 using LabelMaker.Core.Bulk;
 using LabelMaker.Core.Sequences;
+using LabelMaker.Core.Serialization;
 using LabelMaker.Export.Pdf;
 using LabelMaker.Export.Svg;
 using Microsoft.Win32;
@@ -14,11 +16,13 @@ namespace LabelMaker.App.Views;
 public partial class BulkBarcodeWindow : Window
 {
     private readonly AppEnvironment _env;
+    private readonly WpfImageExporter _imageExporter;
 
     public BulkBarcodeWindow(AppEnvironment env)
     {
         InitializeComponent();
         _env = env;
+        _imageExporter = new WpfImageExporter(new SheetVisualRenderer(new WpfTextMeasurer(), new WpfImageSource(new AssetStore())));
         SymbologyBox.ItemsSource = BarcodeEngine.SupportedSymbologies();
         SymbologyBox.SelectedItem = BarcodeSymbology.Code128;
     }
@@ -51,8 +55,16 @@ public partial class BulkBarcodeWindow : Window
                 BarHeightMm = ParseDouble(HeightBox.Text, 15),
                 Gs1Mode = symbology == BarcodeSymbology.GS1_128,
                 HumanReadable = HriBox.IsChecked == true ? HumanReadablePosition.Below : HumanReadablePosition.None,
+                // SVG/PDF never paint a background rect, so this only matters for the PNG path,
+                // whose renderer fills Spec.Background behind the bars unless it's transparent.
+                Background = TransparentBox.IsChecked == true ? Core.Model.ColorRgba.Transparent : Core.Model.ColorRgba.White,
             },
-            Format = FormatBox.SelectedIndex == 1 ? BarcodeImageFormat.Pdf : BarcodeImageFormat.Svg,
+            Format = FormatBox.SelectedIndex switch
+            {
+                1 => BarcodeImageFormat.Pdf,
+                2 => BarcodeImageFormat.Png,
+                _ => BarcodeImageFormat.Svg,
+            },
             HumanReadable = HriBox.IsChecked == true,
             TransparentBackground = TransparentBox.IsChecked == true,
             FileNamePattern = string.IsNullOrWhiteSpace(FileNameBox.Text) ? "{value}" : FileNameBox.Text,
@@ -102,17 +114,26 @@ public partial class BulkBarcodeWindow : Window
         {
             var svg = new SvgExporter();
             int written = 0;
-            string ext = request.Format == BarcodeImageFormat.Pdf ? "pdf" : "svg";
+            string ext = request.Format switch
+            {
+                BarcodeImageFormat.Pdf => "pdf",
+                BarcodeImageFormat.Png => "png",
+                _ => "svg",
+            };
             foreach (BulkBarcodeItem item in BulkBarcodeService.Enumerate(request))
             {
                 string path = Path.Combine(folder.FolderName, item.FileName + "." + ext);
-                if (request.Format == BarcodeImageFormat.Pdf)
+                switch (request.Format)
                 {
-                    File.WriteAllBytes(path, BarcodePdf.Render(item.Spec, item.Value));
-                }
-                else
-                {
-                    File.WriteAllText(path, svg.ExportBarcode(item.Spec, item.Value, transparentBackground: request.TransparentBackground));
+                    case BarcodeImageFormat.Pdf:
+                        File.WriteAllBytes(path, BarcodePdf.Render(item.Spec, item.Value));
+                        break;
+                    case BarcodeImageFormat.Png:
+                        File.WriteAllBytes(path, BarcodeRasterizer.RenderPng(_imageExporter, item.Spec, item.Value, transparent: request.TransparentBackground));
+                        break;
+                    default:
+                        File.WriteAllText(path, svg.ExportBarcode(item.Spec, item.Value, transparentBackground: request.TransparentBackground));
+                        break;
                 }
 
                 written++;
