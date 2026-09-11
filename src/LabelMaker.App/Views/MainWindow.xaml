@@ -32,10 +32,10 @@
       <Setter Property="Background" Value="{StaticResource Br.AccentSoft}" />
       <Setter Property="HorizontalAlignment" Value="Center" />
     </Style>
-    <Style x:Key="RibbonIconGlyph" TargetType="TextBlock">
-      <Setter Property="FontFamily" Value="{StaticResource Font.UiExtraBold}" />
-      <Setter Property="FontSize" Value="11" />
-      <Setter Property="Foreground" Value="{StaticResource Br.Accent}" />
+    <Style x:Key="RibbonIconGlyph" TargetType="Image">
+      <Setter Property="Width" Value="16" />
+      <Setter Property="Height" Value="16" />
+      <Setter Property="Stretch" Value="Uniform" />
       <Setter Property="HorizontalAlignment" Value="Center" />
       <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
@@ -190,13 +190,13 @@
             <StackPanel>
               <StackPanel Orientation="Horizontal">
                 <Button Style="{StaticResource RibbonButton}" Command="{Binding NewCommand}" ToolTip="New Project (Ctrl+N)">
-                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}"><TextBlock Style="{StaticResource RibbonIconGlyph}" Text="N" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="New" /></StackPanel>
+                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}"><Image Style="{StaticResource RibbonIconGlyph}" Source="{StaticResource Icon.New}" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="New" /></StackPanel>
                 </Button>
                 <Button Style="{StaticResource RibbonButton}" Command="{Binding OpenCommand}" ToolTip="Open (Ctrl+O)">
-                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}"><TextBlock Style="{StaticResource RibbonIconGlyph}" Text="O" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="Open" /></StackPanel>
+                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}"><Image Style="{StaticResource RibbonIconGlyph}" Source="{StaticResource Icon.Open}" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="Open" /></StackPanel>
                 </Button>
                 <Button Style="{StaticResource RibbonButton}" Command="{Binding SaveCommand}" ToolTip="Save (Ctrl+S)">
-                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}"><TextBlock Style="{StaticResource RibbonIconGlyph}" Text="S" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="Save" /></StackPanel>
+                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}"><Image Style="{StaticResource RibbonIconGlyph}" Source="{StaticResource Icon.Save}" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="Save" /></StackPanel>
                 </Button>
               </StackPanel>
               <TextBlock Style="{StaticResource GroupCaption}" Text="FILE" />
@@ -207,10 +207,10 @@
             <StackPanel>
               <StackPanel Orientation="Horizontal">
                 <Button Style="{StaticResource RibbonButton}" Command="{Binding UndoCommand}" ToolTip="Undo (Ctrl+Z)">
-                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}"><TextBlock Style="{StaticResource RibbonIconGlyph}" Text="Un" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="Undo" /></StackPanel>
+                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}"><Image Style="{StaticResource RibbonIconGlyph}" Source="{StaticResource Icon.Undo}" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="Undo" /></StackPanel>
                 </Button>
                 <Button Style="{StaticResource RibbonButton}" Command="{Binding RedoCommand}" ToolTip="Redo (Ctrl+Y)">
-                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}"><TextBlock Style="{StaticResource RibbonIconGlyph}" Text="Re" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="Redo" /></StackPanel>
+                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}"><Image Style="{StaticResource RibbonIconGlyph}" Source="{StaticResource Icon.Redo}" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="Redo" /></StackPanel>
                 </Button>
               </StackPanel>
               <TextBlock Style="{StaticResource GroupCaption}" Text="EDIT" />
@@ -221,16 +221,16 @@
             <StackPanel>
               <StackPanel Orientation="Horizontal">
                 <Button Style="{StaticResource RibbonButton}" Command="{Binding CutCommand}" ToolTip="Cut (Ctrl+X)">
-                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}"><TextBlock Style="{StaticResource RibbonIconGlyph}" Text="✕" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="Cut" /></StackPanel>
+                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}"><Image Style="{StaticResource RibbonIconGlyph}" Source="{StaticResource Icon.Cut}" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="Cut" /></StackPanel>
                 </Button>
                 <Button Style="{StaticResource RibbonButton}" Command="{Binding CopyCommand}" ToolTip="Copy (Ctrl+C)">
-                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}"><TextBlock Style="{StaticResource RibbonIconGlyph}" Text="Cp" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="Copy" /></StackPanel>
+                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}"><Image Style="{StaticResource RibbonIconGlyph}" Source="{StaticResource Icon.Copy}" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="Copy" /></StackPanel>
                 </Button>
                 <Button Style="{StaticResource RibbonButton}" Command="{Binding PasteCommand}" ToolTip="Paste (Ctrl+V)">
-                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}"><TextBlock Style="{StaticResource RibbonIconGlyph}" Text="Ps" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="Paste" /></StackPanel>
+                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}"><Image Style="{StaticResource RibbonIconGlyph}" Source="{StaticResource Icon.Paste}" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="Paste" /></StackPanel>
                 </Button>
                 <Button Style="{StaticResource RibbonButton}" Command="{Binding DeleteCommand}" ToolTip="Delete">
-                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}"><TextBlock Style="{StaticResource RibbonIconGlyph}" Text="Del" FontSize="9" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="Delete" /></StackPanel>
+                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}"><Image Style="{StaticResource RibbonIconGlyph}" Source="{StaticResource Icon.Delete}" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="Delete" /></StackPanel>
                 </Button>
               </StackPanel>
               <TextBlock Style="{StaticResource GroupCaption}" Text="CLIPBOARD" />
@@ -241,22 +241,22 @@
             <StackPanel>
               <StackPanel Orientation="Horizontal">
                 <Button Style="{StaticResource RibbonButton}" Command="{Binding AddTextCommand}" ToolTip="Add text box">
-                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}"><TextBlock Style="{StaticResource RibbonIconGlyph}" Text="T" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="Text" /></StackPanel>
+                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}"><Image Style="{StaticResource RibbonIconGlyph}" Source="{StaticResource Icon.Text}" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="Text" /></StackPanel>
                 </Button>
                 <Button Style="{StaticResource RibbonButton}" Command="{Binding AddBarcodeCommand}" ToolTip="Add barcode / QR">
-                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}"><TextBlock Style="{StaticResource RibbonIconGlyph}" Text="Bc" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="Barcode" /></StackPanel>
+                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}"><Image Style="{StaticResource RibbonIconGlyph}" Source="{StaticResource Icon.Barcode}" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="Barcode" /></StackPanel>
                 </Button>
                 <Button Style="{StaticResource RibbonButton}" Command="{Binding AddImageCommand}" ToolTip="Add image">
-                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}"><TextBlock Style="{StaticResource RibbonIconGlyph}" Text="Im" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="Image" /></StackPanel>
+                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}"><Image Style="{StaticResource RibbonIconGlyph}" Source="{StaticResource Icon.Image}" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="Image" /></StackPanel>
                 </Button>
                 <Button Style="{StaticResource RibbonButton}" Command="{Binding AddRectangleCommand}" ToolTip="Add rectangle">
-                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}"><TextBlock Style="{StaticResource RibbonIconGlyph}" Text="Rc" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="Rect" /></StackPanel>
+                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}"><Image Style="{StaticResource RibbonIconGlyph}" Source="{StaticResource Icon.Rectangle}" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="Rect" /></StackPanel>
                 </Button>
                 <Button Style="{StaticResource RibbonButton}" Command="{Binding AddEllipseCommand}" ToolTip="Add ellipse">
-                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}"><TextBlock Style="{StaticResource RibbonIconGlyph}" Text="El" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="Ellipse" /></StackPanel>
+                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}"><Image Style="{StaticResource RibbonIconGlyph}" Source="{StaticResource Icon.Ellipse}" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="Ellipse" /></StackPanel>
                 </Button>
                 <Button Style="{StaticResource RibbonButton}" Command="{Binding AddLineCommand}" ToolTip="Add line">
-                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}"><TextBlock Style="{StaticResource RibbonIconGlyph}" Text="Ln" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="Line" /></StackPanel>
+                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}"><Image Style="{StaticResource RibbonIconGlyph}" Source="{StaticResource Icon.Line}" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="Line" /></StackPanel>
                 </Button>
               </StackPanel>
               <TextBlock Style="{StaticResource GroupCaption}" Text="INSERT" />
@@ -267,13 +267,13 @@
             <StackPanel>
               <StackPanel Orientation="Horizontal">
                 <Button Style="{StaticResource RibbonButtonEmphasized}" Command="{Binding ImportDataCommand}" ToolTip="Import CSV / Excel data source">
-                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}" Background="Transparent"><TextBlock Style="{StaticResource RibbonIconGlyph}" Text="Imp" FontSize="10" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="Import Data" /></StackPanel>
+                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}" Background="Transparent"><Image Style="{StaticResource RibbonIconGlyph}" Source="{StaticResource Icon.Import}" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="Import Data" /></StackPanel>
                 </Button>
                 <Button Style="{StaticResource RibbonButton}" Command="{Binding BulkBarcodeCommand}" ToolTip="Bulk barcode generator">
-                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}"><TextBlock Style="{StaticResource RibbonIconGlyph}" Text="Bk" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="Bulk Codes" /></StackPanel>
+                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}"><Image Style="{StaticResource RibbonIconGlyph}" Source="{StaticResource Icon.Layers}" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="Bulk Codes" /></StackPanel>
                 </Button>
                 <Button Style="{StaticResource RibbonButton}" Command="{Binding PreflightCommand}" ToolTip="Preflight check">
-                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}"><TextBlock Style="{StaticResource RibbonIconGlyph}" Text="Pf" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="Preflight" /></StackPanel>
+                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}"><Image Style="{StaticResource RibbonIconGlyph}" Source="{StaticResource Icon.Checklist}" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="Preflight" /></StackPanel>
                 </Button>
               </StackPanel>
               <TextBlock Style="{StaticResource GroupCaption}" Text="DATA" />
@@ -284,13 +284,13 @@
             <StackPanel>
               <StackPanel Orientation="Horizontal">
                 <Button Style="{StaticResource RibbonButton}" Command="{Binding PrintPreviewCommand}" ToolTip="Print preview">
-                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}"><TextBlock Style="{StaticResource RibbonIconGlyph}" Text="Pv" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="Preview" /></StackPanel>
+                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}"><Image Style="{StaticResource RibbonIconGlyph}" Source="{StaticResource Icon.Eye}" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="Preview" /></StackPanel>
                 </Button>
                 <Button Style="{StaticResource RibbonButton}" Command="{Binding PrintSettingsCommand}" ToolTip="Advanced print settings">
-                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}"><TextBlock Style="{StaticResource RibbonIconGlyph}" Text="Adv" FontSize="9" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="Settings" /></StackPanel>
+                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}"><Image Style="{StaticResource RibbonIconGlyph}" Source="{StaticResource Icon.Sliders}" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="Settings" /></StackPanel>
                 </Button>
                 <Button Style="{StaticResource RibbonButton}" Command="{Binding PrintCommand}" ToolTip="Print (Ctrl+P)">
-                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}"><TextBlock Style="{StaticResource RibbonIconGlyph}" Text="Pr" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="Print" /></StackPanel>
+                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}"><Image Style="{StaticResource RibbonIconGlyph}" Source="{StaticResource Icon.Print}" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="Print" /></StackPanel>
                 </Button>
               </StackPanel>
               <TextBlock Style="{StaticResource GroupCaption}" Text="PRINT" />
