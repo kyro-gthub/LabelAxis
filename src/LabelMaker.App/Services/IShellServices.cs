@@ -9,6 +9,9 @@ public interface IShellServices
 
     string? PickFolder(string? title = null);
 
+    /// <summary>Single-line text prompt. Returns null on cancel.</summary>
+    string? Prompt(string title, string label, string initialValue = "");
+
     void Info(string message, string title = "Label Maker");
 
     void Warn(string message, string title = "Label Maker");

@@ -62,6 +62,12 @@ public sealed class DialogService : IShellServices
         return dlg.ShowDialog(_owner) == true ? dlg.FolderName : null;
     }
 
+    public string? Prompt(string title, string label, string initialValue = "")
+    {
+        var win = new Views.InputWindow(title, label, initialValue) { Owner = _owner };
+        return win.ShowDialog() == true ? win.Value : null;
+    }
+
     public void Info(string message, string title = "Label Maker") =>
         MessageBox.Show(_owner, message, title, MessageBoxButton.OK, MessageBoxImage.Information);
 

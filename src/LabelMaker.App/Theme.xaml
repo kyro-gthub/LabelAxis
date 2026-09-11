@@ -30,8 +30,9 @@
   <SolidColorBrush x:Key="Br.AccentSoft"    Color="{StaticResource Clr.AccentSoft}" />
   <SolidColorBrush x:Key="Br.Hover"         Color="{StaticResource Clr.Hover}" />
   <SolidColorBrush x:Key="Br.Danger"        Color="{StaticResource Clr.Danger}" />
-  <SolidColorBrush x:Key="Br.GhostWhite"    Color="#26FFFFFF" />
-  <SolidColorBrush x:Key="Br.GhostWhiteHi"  Color="#3DFFFFFF" />
+  <SolidColorBrush x:Key="Br.GhostWhite"    Color="#33FFFFFF" />
+  <SolidColorBrush x:Key="Br.GhostWhiteHi"  Color="#55FFFFFF" />
+  <SolidColorBrush x:Key="Br.GhostBorder"   Color="#40FFFFFF" />
 
   <LinearGradientBrush x:Key="Br.HeaderGradient" StartPoint="0,0" EndPoint="1,1">
     <GradientStop Color="{StaticResource Clr.HeaderA}" Offset="0" />
@@ -128,14 +129,16 @@
   <Style x:Key="HeaderButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
     <Setter Property="Foreground" Value="White" />
     <Setter Property="Background" Value="{StaticResource Br.GhostWhite}" />
-    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="BorderBrush" Value="{StaticResource Br.GhostBorder}" />
+    <Setter Property="BorderThickness" Value="1" />
     <Setter Property="Padding" Value="12,6" />
     <Setter Property="Margin" Value="2,0" />
     <Setter Property="MinWidth" Value="34" />
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="Button">
-          <Border x:Name="bd" CornerRadius="12" Background="{TemplateBinding Background}">
+          <Border x:Name="bd" CornerRadius="10" Background="{TemplateBinding Background}"
+                  BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" />
           </Border>
           <ControlTemplate.Triggers>
@@ -464,6 +467,26 @@
     </Setter>
   </Style>
 
+  <!-- ============================ ContextMenu ============================ -->
+  <Style TargetType="ContextMenu">
+    <Setter Property="FontFamily" Value="{StaticResource Font.Ui}" />
+    <Setter Property="FontSize" Value="{StaticResource Font.Size}" />
+    <Setter Property="Foreground" Value="{StaticResource Br.Text}" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="ContextMenu">
+          <Border Background="{StaticResource Br.Bg}" BorderBrush="{StaticResource Br.BorderStrong}"
+                  BorderThickness="1" CornerRadius="10" Padding="4" Grid.IsSharedSizeScope="True">
+            <Border.Effect>
+              <DropShadowEffect BlurRadius="18" ShadowDepth="3" Opacity="0.22" Color="#2A1E7A" />
+            </Border.Effect>
+            <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Cycle" />
+          </Border>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
   <!-- ============================ ToolBar ============================ -->
   <Style TargetType="ToolBarTray">
     <Setter Property="Background" Value="{StaticResource Br.HeaderGradient}" />
@@ -508,7 +531,7 @@
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="Separator">
-          <Border Width="1" Margin="7,5" Background="#40FFFFFF" />
+          <Border Width="1" Height="22" Margin="8,0" VerticalAlignment="Center" Background="#66FFFFFF" />
         </ControlTemplate>
       </Setter.Value>
     </Setter>
