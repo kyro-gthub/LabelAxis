@@ -491,6 +491,11 @@
             <Trigger Property="IsEnabled" Value="False">
               <Setter Property="Opacity" Value="0.4" />
             </Trigger>
+            <!-- "Reduce hover effects" (Settings > Appearance): mute the highlight/underline entirely. -->
+            <DataTrigger Binding="{Binding ReduceMotion}" Value="True">
+              <Setter TargetName="bd" Property="Background" Value="Transparent" />
+              <Setter TargetName="bd" Property="BorderBrush" Value="Transparent" />
+            </DataTrigger>
           </ControlTemplate.Triggers>
         </ControlTemplate>
       </Setter.Value>

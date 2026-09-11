@@ -13,7 +13,7 @@
     <ComboBox  Grid.Row="0" Grid.Column="1" x:Name="SymbologyBox" Margin="0,4" />
     <TextBlock Grid.Row="0" Grid.Column="2" Text="Format" Margin="12,4,8,4" VerticalAlignment="Center" />
     <ComboBox  Grid.Row="0" Grid.Column="3" x:Name="FormatBox" Margin="0,4" SelectedIndex="0">
-      <ComboBoxItem>SVG (vector)</ComboBoxItem><ComboBoxItem>PDF (vector)</ComboBoxItem>
+      <ComboBoxItem>SVG (vector)</ComboBoxItem><ComboBoxItem>PDF (vector)</ComboBoxItem><ComboBoxItem>PNG (raster, 300 DPI)</ComboBoxItem>
     </ComboBox>
 
     <TextBlock Grid.Row="1" Grid.Column="0" Text="Prefix" Margin="0,4,8,4" VerticalAlignment="Center" />

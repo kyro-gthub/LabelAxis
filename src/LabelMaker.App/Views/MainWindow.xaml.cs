@@ -17,6 +17,7 @@ public partial class MainWindow : Window
     private readonly MainViewModel _vm;
     private readonly DesignerCanvas _canvas;
     private readonly DispatcherTimer _autoSaveTimer;
+    private MenuItem _removeGuideItem = null!;
 
     public MainWindow(AppEnvironment env)
     {
@@ -30,6 +31,7 @@ public partial class MainWindow : Window
 
         _canvas = new DesignerCanvas(_vm.SheetRenderer);
         _canvas.ContextMenu = BuildCanvasContextMenu();
+        _canvas.ContextMenu.Opened += OnCanvasContextMenuOpened;
         CanvasHost.Child = _canvas;
         _vm.AttachCanvas(_canvas);
         Loaded += (_, _) => _canvas.Focus();
@@ -56,6 +58,16 @@ public partial class MainWindow : Window
         {
             _autoSaveTimer.Start();
         }
+
+        _vm.AutoSaveSettingsChanged += (_, _) =>
+        {
+            _autoSaveTimer.Stop();
+            _autoSaveTimer.Interval = TimeSpan.FromSeconds(Math.Max(30, env.Settings.AutoSaveSeconds));
+            if (env.Settings.AutoSaveEnabled)
+            {
+                _autoSaveTimer.Start();
+            }
+        };
     }
 
     private ContextMenu BuildCanvasContextMenu()
@@ -92,11 +104,24 @@ public partial class MainWindow : Window
         guides.Items.Add(Item("_Clear guides", _vm.ClearGuidesCommand));
         menu.Items.Add(guides);
 
+        _removeGuideItem = new MenuItem { Header = "_Remove this guide", Visibility = Visibility.Collapsed };
+        _removeGuideItem.Click += (_, _) =>
+        {
+            if (_canvas.TryFindGuideAtContext(out bool vertical, out int index))
+            {
+                _canvas.RemoveGuideAt(vertical, index);
+            }
+        };
+        menu.Items.Insert(menu.Items.IndexOf(guides) + 1, _removeGuideItem);
+
         menu.Items.Add(Item("_Select all", new RelayCommand(() =>
             _vm.Session.SetSelection(_vm.Session.ActiveLabel.Objects))));
 
         return menu;
     }
+
+    private void OnCanvasContextMenuOpened(object? sender, RoutedEventArgs e) =>
+        _removeGuideItem.Visibility = _canvas.TryFindGuideAtContext(out _, out _) ? Visibility.Visible : Visibility.Collapsed;
 
     public void OpenProjectPath(string path) => _vm.OpenProjectPath(path);
 

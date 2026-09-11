@@ -19,9 +19,8 @@ public sealed record ObjectListItem(LabelObject Object)
                 ShapeObject s => s.Shape.ToString(),
                 _ => string.Empty,
             };
-            string lockMark = Object.Locked ? " 🔒" : string.Empty;
             string hideMark = Object.Visible ? string.Empty : " (hidden)";
-            return $"{name} — {detail}{lockMark}{hideMark}";
+            return $"{name} — {detail}{hideMark}";
         }
     }
 

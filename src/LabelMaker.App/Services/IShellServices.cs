@@ -38,4 +38,6 @@ public interface IShellServices
     void ShowSequenceManager();
 
     void ShowTemplateManager();
+
+    void ShowSettings();
 }

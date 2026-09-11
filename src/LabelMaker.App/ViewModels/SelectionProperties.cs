@@ -1,3 +1,4 @@
+using System.Windows.Media;
 using LabelMaker.App.Mvvm;
 using LabelMaker.App.Services;
 using LabelMaker.Core.Barcodes;
@@ -37,10 +38,23 @@ public sealed class SelectionProperties : ObservableObject
         get => _selectedTab;
         set { _selectedTab = value; OnPropertyChanged(); }
     }
+
+    private bool _showBarcodeAppearance = true;
+
+    /// <summary>Local UI state for the collapsible "Appearance" (module/bar height) section under Barcode.</summary>
+    public bool ShowBarcodeAppearance
+    {
+        get => _showBarcodeAppearance;
+        set { _showBarcodeAppearance = value; OnPropertyChanged(); }
+    }
     public bool IsText => Obj is TextObject;
     public bool IsBarcode => Obj is BarcodeObject;
     public bool IsShape => Obj is ShapeObject;
     public bool IsImage => Obj is ImageObject;
+
+    /// <summary>Installed font family names, for the Font picker (spec: choose a font from a list, not free text).</summary>
+    public static IReadOnlyList<string> FontFamilies { get; } =
+        Fonts.SystemFontFamilies.Select(f => f.Source).Distinct().OrderBy(n => n, StringComparer.OrdinalIgnoreCase).ToList();
 
     public string TypeName => Obj?.Kind.ToString() ?? "—";
 
@@ -216,6 +230,32 @@ public sealed class SelectionProperties : ObservableObject
         }
     }
 
+    /// <summary>Size of the human-readable number/text under the bars, independent of the bars themselves.</summary>
+    public double HriFontSizePt
+    {
+        get => (Obj as BarcodeObject)?.Spec.HumanReadableFontSizePt ?? 8;
+        set
+        {
+            if (Obj is BarcodeObject b)
+            {
+                Set(nameof(HriFontSizePt), () => b.Spec.HumanReadableFontSizePt, v => b.Spec.HumanReadableFontSizePt = Math.Clamp(v, 3, 72), value);
+            }
+        }
+    }
+
+    public bool ShowHumanReadable
+    {
+        get => (Obj as BarcodeObject)?.Spec.HumanReadable != HumanReadablePosition.None;
+        set
+        {
+            if (Obj is BarcodeObject b)
+            {
+                Set(nameof(ShowHumanReadable), () => b.Spec.HumanReadable,
+                    v => b.Spec.HumanReadable = v, value ? HumanReadablePosition.Below : HumanReadablePosition.None);
+            }
+        }
+    }
+
     public string? BarcodeValidationMessage
     {
         get
@@ -281,6 +321,90 @@ public sealed class SelectionProperties : ObservableObject
             }
         }
     }
+
+    // ---- Image ----
+    public IReadOnlyList<ImageFitMode> ImageFitModes { get; } = Enum.GetValues<ImageFitMode>();
+
+    public ImageFitMode FitMode
+    {
+        get => (Obj as ImageObject)?.FitMode ?? ImageFitMode.Fit;
+        set
+        {
+            if (Obj is ImageObject i)
+            {
+                Set(nameof(FitMode), () => i.FitMode, v => i.FitMode = v, value);
+            }
+        }
+    }
+
+    /// <summary>0..1 (LabelObject.Opacity is shared by every object type, surfaced here for images).</summary>
+    public double ImageOpacity
+    {
+        get => Round(Obj?.Opacity ?? 1.0);
+        set => Set(nameof(ImageOpacity), () => Obj!.Opacity, v => Obj!.Opacity = v, Math.Clamp(value, 0, 1));
+    }
+
+    public double Brightness
+    {
+        get => Round((Obj as ImageObject)?.Adjustments.Brightness ?? 0);
+        set
+        {
+            if (Obj is ImageObject i)
+            {
+                Set(nameof(Brightness), () => i.Adjustments.Brightness, v => i.Adjustments.Brightness = v, Math.Clamp(value, -1, 1));
+            }
+        }
+    }
+
+    public double Contrast
+    {
+        get => Round((Obj as ImageObject)?.Adjustments.Contrast ?? 0);
+        set
+        {
+            if (Obj is ImageObject i)
+            {
+                Set(nameof(Contrast), () => i.Adjustments.Contrast, v => i.Adjustments.Contrast = v, Math.Clamp(value, -1, 1));
+            }
+        }
+    }
+
+    public bool Grayscale
+    {
+        get => (Obj as ImageObject)?.Adjustments.Grayscale ?? false;
+        set
+        {
+            if (Obj is ImageObject i)
+            {
+                Set(nameof(Grayscale), () => i.Adjustments.Grayscale, v => i.Adjustments.Grayscale = v, value);
+            }
+        }
+    }
+
+    public bool FlipHorizontal
+    {
+        get => (Obj as ImageObject)?.Adjustments.FlipHorizontal ?? false;
+        set
+        {
+            if (Obj is ImageObject i)
+            {
+                Set(nameof(FlipHorizontal), () => i.Adjustments.FlipHorizontal, v => i.Adjustments.FlipHorizontal = v, value);
+            }
+        }
+    }
+
+    public bool FlipVertical
+    {
+        get => (Obj as ImageObject)?.Adjustments.FlipVertical ?? false;
+        set
+        {
+            if (Obj is ImageObject i)
+            {
+                Set(nameof(FlipVertical), () => i.Adjustments.FlipVertical, v => i.Adjustments.FlipVertical = v, value);
+            }
+        }
+    }
+
+    public string? ImageSourceFileName => (Obj as ImageObject)?.SourceFileName;
 
     public void RefreshAll() => OnPropertyChanged(null);
 
