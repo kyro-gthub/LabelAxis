@@ -7,6 +7,7 @@
     <ResourceDictionary>
       <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="Theme.xaml" />
+        <ResourceDictionary Source="Icons.xaml" />
       </ResourceDictionary.MergedDictionaries>
 
       <conv:BoolToVisibilityConverter x:Key="BoolToVis" />

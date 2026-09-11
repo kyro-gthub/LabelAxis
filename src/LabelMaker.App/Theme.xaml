@@ -91,7 +91,10 @@
     <Setter Property="FontSize" Value="{StaticResource Font.Size}" />
     <Setter Property="TextElement.Foreground" Value="{StaticResource Br.Text}" />
     <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
+    <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
+    <Setter Property="RenderOptions.ClearTypeHint" Value="Enabled" />
     <Setter Property="UseLayoutRounding" Value="True" />
+    <Setter Property="SnapsToDevicePixels" Value="True" />
   </Style>
 
   <Style TargetType="TextBlock">
@@ -422,7 +425,7 @@
       <Setter.Value>
         <ControlTemplate TargetType="MenuItem">
           <Border x:Name="bd" CornerRadius="10,10,0,0" Padding="9,5" Margin="1,4,1,0" Background="Transparent"
-                  BorderBrush="{StaticResource Br.Accent}" BorderThickness="0,0,0,0">
+                  BorderBrush="Transparent" BorderThickness="0">
             <Grid>
               <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" SharedSizeGroup="chk" />
@@ -467,14 +470,15 @@
               <Setter Property="Foreground" Value="{StaticResource Br.Text}" />
               <Setter Property="FontFamily" Value="{StaticResource Font.UiSemiBold}" />
               <Setter TargetName="bd" Property="Padding" Value="16,9" />
+              <Setter TargetName="bd" Property="BorderThickness" Value="0,0,0,2.5" />
             </Trigger>
             <MultiTrigger>
               <MultiTrigger.Conditions>
                 <Condition Property="Role" Value="TopLevelHeader" />
                 <Condition Property="IsHighlighted" Value="True" />
               </MultiTrigger.Conditions>
-              <Setter TargetName="bd" Property="Background" Value="{StaticResource Br.Bg}" />
-              <Setter TargetName="bd" Property="BorderThickness" Value="0,0,0,2.5" />
+              <Setter TargetName="bd" Property="Background" Value="{StaticResource Br.AccentSoft}" />
+              <Setter TargetName="bd" Property="BorderBrush" Value="{StaticResource Br.Accent}" />
             </MultiTrigger>
             <MultiTrigger>
               <MultiTrigger.Conditions>
@@ -482,7 +486,7 @@
                 <Condition Property="IsSubmenuOpen" Value="True" />
               </MultiTrigger.Conditions>
               <Setter TargetName="bd" Property="Background" Value="{StaticResource Br.Bg}" />
-              <Setter TargetName="bd" Property="BorderThickness" Value="0,0,0,2.5" />
+              <Setter TargetName="bd" Property="BorderBrush" Value="{StaticResource Br.Accent}" />
             </MultiTrigger>
             <Trigger Property="IsEnabled" Value="False">
               <Setter Property="Opacity" Value="0.4" />
