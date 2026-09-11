@@ -88,4 +88,31 @@ public sealed class SheetVisualRenderer
 
         return visual;
     }
+
+    /// <summary>
+    /// Draw a sheet where every slot shows a <em>different</em> design (spec §15
+    /// "print multiple pages in one sheet") — each <see cref="PlacedDocument"/>
+    /// carries its own <see cref="LabelDocument"/> rather than sharing one master.
+    /// </summary>
+    public DrawingVisual RenderMultiSheet(
+        LabelTemplate template,
+        IReadOnlyList<PlacedDocument> documents,
+        LabelRenderOptions options,
+        PrintCoordinateMapper? mapper = null)
+    {
+        var visual = new DrawingVisual();
+        using (DrawingContext dc = visual.RenderOpen())
+        {
+            var surface = new WpfDrawingSurface(dc, _measurer, Images);
+            foreach (PlacedDocument placed in documents)
+            {
+                RectMm rect = mapper?.PageToCanvas(placed.Slot.RectMm) ?? placed.Slot.RectMm;
+                surface.PushTransform(rect.X, rect.Y, 0, 1, 1);
+                _renderer.Render(placed.Document, placed.ResolveContext, surface, options);
+                surface.Pop();
+            }
+        }
+
+        return visual;
+    }
 }

@@ -31,6 +31,10 @@ public interface IShellServices
 
     void ShowCalibrationWizard();
 
+    /// <summary>Advanced print settings (content mode, start position, skip mask, record range,
+    /// scale, outlines/crop marks). Returns true if the user confirmed (Print…).</summary>
+    bool ShowPrintSettings();
+
     void ShowSequenceManager();
 
     void ShowTemplateManager();
