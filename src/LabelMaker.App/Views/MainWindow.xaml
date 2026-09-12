@@ -269,7 +269,21 @@
           <TextBlock Text="{Binding SheetSummary}" Style="{StaticResource StatusText}" Margin="0,0,16,0" />
           <Rectangle Style="{StaticResource StatusDivider}" />
           <Image Source="{StaticResource Icon.Search}" Width="15" Height="15" Margin="0,0,7,0" />
-          <TextBlock Text="{Binding ZoomText}" Style="{StaticResource StatusText}" />
+          <TextBlock Text="{Binding ZoomText}" Style="{StaticResource StatusText}" Margin="0,0,16,0" />
+          <Rectangle Style="{StaticResource StatusDivider}" />
+
+          <!-- Steps the canvas through the merged records, one at a time. -->
+          <Image Source="{StaticResource Icon.Database}" Width="15" Height="15" Margin="0,0,7,0" />
+          <Button Content="⏮" Style="{StaticResource IconGhost}" MinWidth="24" ToolTip="First record"
+                  Command="{Binding FirstRecordCommand}" />
+          <Button Content="◀" Style="{StaticResource IconGhost}" MinWidth="24" ToolTip="Previous record"
+                  Command="{Binding PrevRecordCommand}" />
+          <TextBlock Text="{Binding RecordText}" Style="{StaticResource StatusText}" VerticalAlignment="Center"
+                     MinWidth="58" TextAlignment="Center" />
+          <Button Content="▶" Style="{StaticResource IconGhost}" MinWidth="24" ToolTip="Next record"
+                  Command="{Binding NextRecordCommand}" />
+          <Button Content="⏭" Style="{StaticResource IconGhost}" MinWidth="24" ToolTip="Last record"
+                  Command="{Binding LastRecordCommand}" />
         </StackPanel>
 
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
