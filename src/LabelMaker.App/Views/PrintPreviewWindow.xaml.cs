@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using LabelMaker.App.Printing;
@@ -263,6 +264,34 @@ public partial class PrintPreviewWindow : Window
     private void OnZoomIn(object sender, RoutedEventArgs e) => SetZoom(_zoom * 1.2);
 
     private void OnZoomOut(object sender, RoutedEventArgs e) => SetZoom(_zoom / 1.2);
+
+    /// <summary>
+    /// Wheel zooms towards the pointer, like the designer canvas. Shift+wheel and
+    /// Ctrl+wheel keep the ScrollViewer's normal scrolling, so a zoomed-in sheet can
+    /// still be panned without reaching for the scrollbars.
+    /// </summary>
+    private void OnScrollerWheel(object sender, MouseWheelEventArgs e)
+    {
+        if (Keyboard.Modifiers is ModifierKeys.Shift or ModifierKeys.Control || _pages.Count == 0)
+        {
+            return;
+        }
+
+        e.Handled = true;
+
+        // Where the pointer sits in un-zoomed content coordinates, before the change.
+        Point pointer = e.GetPosition(Scroller);
+        double contentX = (Scroller.HorizontalOffset + pointer.X) / _zoom;
+        double contentY = (Scroller.VerticalOffset + pointer.Y) / _zoom;
+
+        SetZoom(_zoom * (e.Delta > 0 ? 1.15 : 1 / 1.15));
+
+        // Put that same content point back under the pointer. Layout has to run
+        // first or the ScrollViewer clamps the offsets against the old extent.
+        Scroller.UpdateLayout();
+        Scroller.ScrollToHorizontalOffset((contentX * _zoom) - pointer.X);
+        Scroller.ScrollToVerticalOffset((contentY * _zoom) - pointer.Y);
+    }
 
     private void SetZoom(double value)
     {

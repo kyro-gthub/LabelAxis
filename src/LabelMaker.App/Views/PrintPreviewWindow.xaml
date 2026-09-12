@@ -69,7 +69,7 @@
     <!-- the page -->
     <Border x:Name="ViewHost" Background="{DynamicResource CanvasBackground}" ClipToBounds="True">
       <ScrollViewer x:Name="Scroller" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
-                    Padding="24">
+                    Padding="24" PreviewMouseWheel="OnScrollerWheel">
         <Border x:Name="PageShadow" HorizontalAlignment="Center" VerticalAlignment="Center"
                 Background="White" SnapsToDevicePixels="True" Margin="10">
           <Border.Effect>

@@ -187,6 +187,17 @@ public sealed class DialogService : IShellServices
         }
     }
 
+    public bool ShowPrintDialog()
+    {
+        if (_vm is null)
+        {
+            return false;
+        }
+
+        var win = new PrintWindow(_vm.Session, _vm.PrintServer, this) { Owner = _owner };
+        return win.ShowDialog() == true;
+    }
+
     public bool ShowLabelSize()
     {
         if (_vm is null)
