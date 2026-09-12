@@ -1049,6 +1049,41 @@
     </Setter>
   </Style>
 
+  <!-- Square on/off button for text styles (B / I / U / S) and similar toggles. -->
+  <Style x:Key="StyleToggle" TargetType="ToggleButton">
+    <Setter Property="Width" Value="32" />
+    <Setter Property="Height" Value="28" />
+    <Setter Property="Margin" Value="0,0,6,0" />
+    <Setter Property="FontSize" Value="13.5" />
+    <Setter Property="Foreground" Value="{DynamicResource Br.Text}" />
+    <Setter Property="Background" Value="{DynamicResource Br.Bg}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource Br.BorderStrong}" />
+    <Setter Property="Cursor" Value="Hand" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="ToggleButton">
+          <Border x:Name="bd" CornerRadius="7" BorderThickness="1" Background="{TemplateBinding Background}"
+                  BorderBrush="{TemplateBinding BorderBrush}">
+            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="bd" Property="Background" Value="{DynamicResource Br.Hover}" />
+            </Trigger>
+            <Trigger Property="IsChecked" Value="True">
+              <Setter TargetName="bd" Property="Background" Value="{DynamicResource Br.AccentSoft}" />
+              <Setter TargetName="bd" Property="BorderBrush" Value="{DynamicResource Br.Accent}" />
+              <Setter Property="Foreground" Value="{DynamicResource Br.Accent}" />
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter Property="Opacity" Value="0.4" />
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
   <!-- ==================== panels ==================== -->
 
   <Style x:Key="PanelTab" TargetType="RadioButton">

@@ -676,20 +676,117 @@
               <StackPanel Style="{StaticResource SectionBody}" Visibility="{Binding IsChecked, ElementName=Sec2, Converter={StaticResource BoolToVis}}">
                 <StackPanel Visibility="{Binding IsText, Converter={StaticResource BoolToVis}}">
                   <TextBox Text="{Binding TextContent, UpdateSourceTrigger=LostFocus}" AcceptsReturn="True"
-                           MinHeight="54" TextWrapping="Wrap" Margin="0,0,0,6" />
+                           MinHeight="54" TextWrapping="Wrap" Margin="0,0,0,4" />
+                  <TextBlock FontSize="11.5" Foreground="{DynamicResource Br.TextMuted}" TextWrapping="Wrap" Margin="0,0,0,8"
+                             Text="Double-click the text on the canvas to edit it in place and format single words." />
+                  <TextBlock FontSize="11.5" Foreground="{DynamicResource Br.Accent}" TextWrapping="Wrap" Margin="0,0,0,8"
+                             Visibility="{Binding HasMixedFormatting, Converter={StaticResource BoolToVis}}"
+                             Text="Some words have their own formatting. Changing a style below applies it to the whole box." />
+
                   <DockPanel Margin="0,3">
                     <TextBlock Text="Font" Style="{StaticResource FieldLabel}" Width="86" />
-                    <ComboBox IsEditable="True" ItemsSource="{Binding FontFamilies}"
-                              Text="{Binding FontFamily, UpdateSourceTrigger=PropertyChanged}" />
+                    <ComboBox IsEditable="True" IsTextSearchEnabled="True" ItemsSource="{Binding FontFamilies}"
+                              SelectedItem="{Binding FontFamily}" />
                   </DockPanel>
                   <DockPanel Margin="0,3">
                     <TextBlock Text="Size (pt)" Style="{StaticResource FieldLabel}" Width="86" />
-                    <TextBox Style="{StaticResource NumberBox}" Text="{Binding FontSizePt, StringFormat=0.#, UpdateSourceTrigger=LostFocus}" />
+                    <TextBox DockPanel.Dock="Right" Width="58" Style="{StaticResource NumberBox}"
+                             Text="{Binding FontSizePt, StringFormat=0.#, UpdateSourceTrigger=LostFocus}" />
+                    <Slider Minimum="4" Maximum="72" Value="{Binding FontSizePt, Delay=250}" Margin="0,0,8,0" />
                   </DockPanel>
-                  <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
-                    <CheckBox Content="Bold" IsChecked="{Binding Bold}" Margin="0,0,16,0" />
-                    <CheckBox Content="Italic" IsChecked="{Binding Italic}" />
-                  </StackPanel>
+
+                  <!-- style toggles -->
+                  <WrapPanel Margin="86,6,0,4">
+                    <ToggleButton Content="B" FontFamily="{StaticResource Font.UiSemiBold}" Style="{StaticResource StyleToggle}"
+                                  IsChecked="{Binding Bold}" ToolTip="Bold" />
+                    <ToggleButton Content="I" FontStyle="Italic" Style="{StaticResource StyleToggle}"
+                                  IsChecked="{Binding Italic}" ToolTip="Italic" />
+                    <ToggleButton Style="{StaticResource StyleToggle}" IsChecked="{Binding Underline}" ToolTip="Underline">
+                      <TextBlock Text="U" TextDecorations="Underline" />
+                    </ToggleButton>
+                    <ToggleButton Style="{StaticResource StyleToggle}" IsChecked="{Binding Strikethrough}" ToolTip="Strikethrough">
+                      <TextBlock Text="S" TextDecorations="Strikethrough" />
+                    </ToggleButton>
+                  </WrapPanel>
+
+                  <!-- colours -->
+                  <DockPanel Margin="0,3">
+                    <TextBlock Text="Colour" Style="{StaticResource FieldLabel}" Width="86" />
+                    <Button DockPanel.Dock="Right" Content="…" MinWidth="30" Padding="6,4" Margin="6,0,0,0"
+                            Style="{StaticResource GhostButton}"
+                            Command="{Binding DataContext.PickColorCommand, RelativeSource={RelativeSource AncestorType=ScrollViewer}}"
+                            CommandParameter="text" />
+                    <Border Width="26" Background="{Binding TextColorBrush}" CornerRadius="6" Margin="0,0,6,0"
+                            BorderBrush="{DynamicResource Br.BorderStrong}" BorderThickness="1" />
+                    <TextBox Text="{Binding TextColorHex, UpdateSourceTrigger=LostFocus}" FontFamily="{StaticResource Font.Mono}" />
+                  </DockPanel>
+                  <ItemsControl ItemsSource="{Binding Swatches}" Margin="86,2,0,4">
+                    <ItemsControl.ItemsPanel><ItemsPanelTemplate><WrapPanel /></ItemsPanelTemplate></ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate>
+                        <Button Width="18" Height="18" Margin="0,0,4,4" Padding="0"
+                                Background="{Binding Converter={StaticResource HexBrush}}"
+                                BorderBrush="{DynamicResource Br.BorderStrong}" BorderThickness="1" ToolTip="{Binding}"
+                                Command="{Binding DataContext.ApplySwatchCommand, RelativeSource={RelativeSource AncestorType=ScrollViewer}}"
+                                CommandParameter="{Binding StringFormat=text|{0}}" />
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+                  <DockPanel Margin="0,3">
+                    <TextBlock Text="Highlight" Style="{StaticResource FieldLabel}" Width="86" />
+                    <Button DockPanel.Dock="Right" Content="…" MinWidth="30" Padding="6,4" Margin="6,0,0,0"
+                            Style="{StaticResource GhostButton}"
+                            Command="{Binding DataContext.PickColorCommand, RelativeSource={RelativeSource AncestorType=ScrollViewer}}"
+                            CommandParameter="highlight" />
+                    <Border Width="26" Background="{Binding HighlightBrush}" CornerRadius="6" Margin="0,0,6,0"
+                            BorderBrush="{DynamicResource Br.BorderStrong}" BorderThickness="1" />
+                    <TextBox Text="{Binding HighlightHex, UpdateSourceTrigger=LostFocus}" FontFamily="{StaticResource Font.Mono}" />
+                  </DockPanel>
+
+                  <!-- layout -->
+                  <DockPanel Margin="0,8,0,3">
+                    <TextBlock Text="Align" Style="{StaticResource FieldLabel}" Width="86" />
+                    <ComboBox ItemsSource="{Binding HorizontalAlignments}" SelectedItem="{Binding TextAlign}" />
+                  </DockPanel>
+                  <DockPanel Margin="0,3">
+                    <TextBlock Text="Vertical" Style="{StaticResource FieldLabel}" Width="86" />
+                    <ComboBox ItemsSource="{Binding VerticalAlignments}" SelectedItem="{Binding TextVerticalAlign}" />
+                  </DockPanel>
+                  <DockPanel Margin="0,3">
+                    <TextBlock Text="Line spacing" Style="{StaticResource FieldLabel}" Width="86" />
+                    <TextBlock DockPanel.Dock="Right" Width="38" TextAlignment="Right" FontSize="11.5"
+                               Foreground="{DynamicResource Br.TextMuted}" Text="{Binding LineSpacing, StringFormat=0.00}" />
+                    <Slider Minimum="0.5" Maximum="3" Value="{Binding LineSpacing, Delay=250}" Margin="0,0,8,0" />
+                  </DockPanel>
+                  <DockPanel Margin="0,3">
+                    <TextBlock Text="Letter spacing" Style="{StaticResource FieldLabel}" Width="86" />
+                    <TextBlock DockPanel.Dock="Right" Width="38" TextAlignment="Right" FontSize="11.5"
+                               Foreground="{DynamicResource Br.TextMuted}" Text="{Binding LetterSpacingEm, StringFormat=0.00}" />
+                    <Slider Minimum="-0.2" Maximum="1" Value="{Binding LetterSpacingEm, Delay=250}" Margin="0,0,8,0" />
+                  </DockPanel>
+                  <DockPanel Margin="0,3">
+                    <TextBlock Text="Padding" Style="{StaticResource FieldLabel}" Width="86" />
+                    <TextBlock DockPanel.Dock="Right" Text="{Binding UnitSymbol}" Width="24" Margin="6,0,0,0"
+                               VerticalAlignment="Center" Foreground="{DynamicResource Br.TextMuted}" FontSize="11.5" />
+                    <TextBox Style="{StaticResource NumberBox}" Text="{Binding TextPadding, StringFormat=0.##, UpdateSourceTrigger=LostFocus}" />
+                  </DockPanel>
+                  <DockPanel Margin="0,3">
+                    <TextBlock Text="Direction" Style="{StaticResource FieldLabel}" Width="86" />
+                    <ComboBox ItemsSource="{Binding TextDirections}" SelectedItem="{Binding TextDirectionValue}" />
+                  </DockPanel>
+
+                  <!-- fitting -->
+                  <CheckBox Content="Wrap long lines" IsChecked="{Binding WordWrap}" Margin="0,8,0,3" />
+                  <DockPanel Margin="0,3">
+                    <TextBlock Text="When it overflows" Style="{StaticResource FieldLabel}" Width="86" TextWrapping="Wrap" />
+                    <ComboBox ItemsSource="{Binding AutoFitModes}" SelectedItem="{Binding AutoFit}"
+                              ToolTip="None clips; ShrinkToFit reduces the size; ResizeBox grows the box" />
+                  </DockPanel>
+                  <DockPanel Margin="0,3" Visibility="{Binding IsShrinkToFit, Converter={StaticResource BoolToVis}}">
+                    <TextBlock Text="Smallest (pt)" Style="{StaticResource FieldLabel}" Width="86" />
+                    <TextBox Style="{StaticResource NumberBox}" Text="{Binding MinAutoFitPt, StringFormat=0.#, UpdateSourceTrigger=LostFocus}" />
+                  </DockPanel>
+
                   <TextBlock Text="Use {Field} tokens for variable data." Foreground="{DynamicResource Br.TextMuted}"
                              TextWrapping="Wrap" FontSize="11.5" Margin="0,8,0,0" />
                 </StackPanel>

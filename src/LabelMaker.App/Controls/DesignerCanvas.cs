@@ -6,6 +6,7 @@ using LabelMaker.App.Rendering;
 using LabelMaker.App.Services;
 using LabelMaker.Core.Editing;
 using LabelMaker.Core.Model;
+using LabelMaker.Core.Model.Objects;
 using LabelMaker.Core.Settings;
 using LabelMaker.Core.Units;
 
@@ -262,6 +263,36 @@ public sealed class DesignerCanvas : FrameworkElement
 
     private double Scale => _zoom * K;
 
+    /// <summary>Screen DIU per document millimetre at the current zoom.</summary>
+    public double ScreenScale => Scale;
+
+    /// <summary>An object's un-rotated box in this control's coordinates (for overlays such as the text editor).</summary>
+    public Rect ObjectScreenRect(LabelObject obj)
+    {
+        Point a = MmToScreen(obj.Bounds.X, obj.Bounds.Y);
+        Point b = MmToScreen(obj.Bounds.Right, obj.Bounds.Bottom);
+        return new Rect(a, b);
+    }
+
+    /// <summary>Raised on double-click (or Enter / F2) on a text object.</summary>
+    public event EventHandler<LabelObject>? EditTextRequested;
+
+    /// <summary>Also raised when the view pans, so overlays can follow or close.</summary>
+    public event EventHandler? ViewChanged;
+
+    private string? _hiddenObjectId;
+
+    /// <summary>An object left out of the rendering — the one being edited in place, so it isn't drawn twice.</summary>
+    public string? HiddenObjectId
+    {
+        get => _hiddenObjectId;
+        set
+        {
+            _hiddenObjectId = value;
+            InvalidateVisual();
+        }
+    }
+
     private Point ContentOrigin
     {
         get
@@ -358,8 +389,17 @@ public sealed class DesignerCanvas : FrameworkElement
         }
 
         LabelDocument label = _session.ActiveLabel;
+        LabelDocument rendered = _hiddenObjectId is null
+            ? label
+            : new LabelDocument
+            {
+                SizeMm = label.SizeMm,
+                Background = label.Background,
+                Objects = label.Objects.Where(o => o.Id != _hiddenObjectId).ToList(),
+            };
+
         var visual = _renderer.RenderSingleLabel(
-            label,
+            rendered,
             _session.CurrentResolveContext(),
             _renderer.OptionsFor(_session.Project.Template ?? Fallback(), LabelMaker.Core.Rendering.LabelOutlineStyle.Hairline),
             ColorRgba.White);
@@ -747,6 +787,14 @@ public sealed class DesignerCanvas : FrameworkElement
             return;
         }
 
+        if (e.ClickCount == 2 && hit is TextObject && !hit.Locked)
+        {
+            _session.SetSelection(new[] { hit });
+            EditTextRequested?.Invoke(this, hit);
+            e.Handled = true;
+            return;
+        }
+
         if (Keyboard.Modifiers.HasFlag(ModifierKeys.Shift))
         {
             var sel = _session.Selection.ToList();
@@ -793,6 +841,7 @@ public sealed class DesignerCanvas : FrameworkElement
         if (_panning)
         {
             _pan = _panStartValue + (screen - _panStartScreen);
+            ViewChanged?.Invoke(this, EventArgs.Empty);
             InvalidateVisual();
             return;
         }
@@ -993,6 +1042,15 @@ public sealed class DesignerCanvas : FrameworkElement
 
         if (_session is null)
         {
+            return;
+        }
+
+        // Enter / F2 on a single selected text box edits it in place.
+        if (e.Key is Key.Enter or Key.F2 && Keyboard.Modifiers == ModifierKeys.None &&
+            _session.Selection is [TextObject text] && !text.Locked)
+        {
+            EditTextRequested?.Invoke(this, text);
+            e.Handled = true;
             return;
         }
 
