@@ -27,6 +27,15 @@ public abstract class LabelObject
     /// <summary>Clockwise rotation in degrees about the <see cref="RectMm.Center"/> of <see cref="Bounds"/>.</summary>
     public double RotationDegrees { get; set; }
 
+    /// <summary>
+    /// Horizontal shear in degrees: positive values lean the object's vertical edges
+    /// to the right as they go down. Applied before rotation, about the centre.
+    /// </summary>
+    public double SkewXDegrees { get; set; }
+
+    /// <summary>Vertical shear in degrees: positive values drop the right-hand edge.</summary>
+    public double SkewYDegrees { get; set; }
+
     /// <summary>0..1 multiplier applied to the whole object.</summary>
     public double Opacity { get; set; } = 1.0;
 
@@ -39,8 +48,11 @@ public abstract class LabelObject
 
     public abstract ObjectKind Kind { get; }
 
-    /// <summary>Axis-aligned bounds after rotation — used for selection, snapping, preflight.</summary>
-    public RectMm RotatedBounds => Bounds.RotatedBounds(RotationDegrees);
+    /// <summary>
+    /// Axis-aligned bounds after rotation and skew — used for selection, snapping,
+    /// alignment and preflight. (Named for its original rotation-only meaning.)
+    /// </summary>
+    public RectMm RotatedBounds => ObjectGeometry.Bounds(this);
 
     /// <summary>
     /// Every literal + bound text this object contributes to the search index and
@@ -60,6 +72,8 @@ public abstract class LabelObject
         target.Name = Name;
         target.Bounds = Bounds;
         target.RotationDegrees = RotationDegrees;
+        target.SkewXDegrees = SkewXDegrees;
+        target.SkewYDegrees = SkewYDegrees;
         target.Opacity = Opacity;
         target.Locked = Locked;
         target.Visible = Visible;

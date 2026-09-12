@@ -40,6 +40,15 @@ public sealed class WpfDrawingSurface : IDrawingSurface
     /// <summary>Number of unmatched Push* calls — callers can assert this is 0 after Render.</summary>
     public int OpenPushDepth => _pushCount;
 
+    public void PushMatrix(LabelMaker.Core.Model.Affine m)
+    {
+        // WPF's Matrix uses the same six numbers; only the translation needs mm → DIU.
+        var transform = new MatrixTransform(new Matrix(m.A, m.B, m.C, m.D, m.E * K, m.F * K));
+        transform.Freeze();
+        _dc.PushTransform(transform);
+        _pushCount++;
+    }
+
     public void PushTransform(double tx, double ty, double rot, double sx, double sy)
     {
         var group = new TransformGroup();

@@ -662,6 +662,14 @@ public sealed class MainViewModel : ObservableObject
     public RelayCommand ClearCropCommand { get; private set; } = null!;
     public RelayCommand PickColorCommand { get; private set; } = null!;
     public RelayCommand ApplySwatchCommand { get; private set; } = null!;
+    public RelayCommand AlignRightCommand { get; private set; } = null!;
+    public RelayCommand AlignBottomCommand { get; private set; } = null!;
+    public RelayCommand DistributeHorizontallyCommand { get; private set; } = null!;
+    public RelayCommand DistributeVerticallyCommand { get; private set; } = null!;
+    public RelayCommand MatchWidthCommand { get; private set; } = null!;
+    public RelayCommand MatchHeightCommand { get; private set; } = null!;
+    public RelayCommand MatchSizeCommand { get; private set; } = null!;
+    public RelayCommand FreeTransformCommand { get; private set; } = null!;
     public RelayCommand FindCommand { get; private set; } = null!;
     public RelayCommand FindReplaceCommand { get; private set; } = null!;
     public RelayCommand FlipHorizontalCommand { get; private set; } = null!;
@@ -680,8 +688,8 @@ public sealed class MainViewModel : ObservableObject
         RedoCommand = new RelayCommand(() => _session.Redo(), () => _session.History.CanRedo);
         DeleteCommand = new RelayCommand(DeleteSelection, () => _session.Selection.Count > 0);
         DuplicateCommand = new RelayCommand(DuplicateSelection, () => _session.Selection.Count > 0);
-        CopyCommand = new RelayCommand(() => ObjectClipboard.Set(_session.Selection), () => _session.Selection.Count > 0);
-        CutCommand = new RelayCommand(() => { ObjectClipboard.Set(_session.Selection); DeleteSelection(); }, () => _session.Selection.Count > 0);
+        CopyCommand = new RelayCommand(() => ObjectClipboard.Set(_session.Selection, _session.Document.Assets), () => _session.Selection.Count > 0);
+        CutCommand = new RelayCommand(() => { ObjectClipboard.Set(_session.Selection, _session.Document.Assets); DeleteSelection(); }, () => _session.Selection.Count > 0);
         PasteCommand = new RelayCommand(() => PasteObjects(), () => ObjectClipboard.HasContent);
         PasteHereCommand = new RelayCommand(() => PasteObjects(atContextPoint: true), () => ObjectClipboard.HasContent);
         GroupCommand = new RelayCommand(GroupSelection, () => _session.Selection.Count > 1);
@@ -730,10 +738,27 @@ public sealed class MainViewModel : ObservableObject
         SendBackwardCommand = new RelayCommand(() => Reorder(-1), () => _session.Selection.Count > 0);
         SendToBackCommand = new RelayCommand(() => Reorder(int.MinValue), () => _session.Selection.Count > 0);
 
-        AlignLeftCommand = new RelayCommand(() => Align(a => a.X = _session.Selection.Min(s => s.Bounds.X)), MultiSel);
-        AlignTopCommand = new RelayCommand(() => Align(a => a.Y = _session.Selection.Min(s => s.Bounds.Y)), MultiSel);
-        CenterHorizontalCommand = new RelayCommand(() => Align(a => a.X = (_session.ActiveLabel.SizeMm.Width - a.W) / 2), AnySel);
-        CenterVerticalCommand = new RelayCommand(() => Align(a => a.Y = (_session.ActiveLabel.SizeMm.Height - a.H) / 2), AnySel);
+        AlignLeftCommand = new RelayCommand(() => AlignSelection(AlignEdge.Left), AnySel);
+        AlignTopCommand = new RelayCommand(() => AlignSelection(AlignEdge.Top), AnySel);
+        AlignRightCommand = new RelayCommand(() => AlignSelection(AlignEdge.Right), AnySel);
+        AlignBottomCommand = new RelayCommand(() => AlignSelection(AlignEdge.Bottom), AnySel);
+        CenterHorizontalCommand = new RelayCommand(() => AlignSelection(AlignEdge.CentreX), AnySel);
+        CenterVerticalCommand = new RelayCommand(() => AlignSelection(AlignEdge.CentreY), AnySel);
+        DistributeHorizontallyCommand = new RelayCommand(() => DistributeSelection(horizontal: true), () => _session.Selection.Count >= 3);
+        DistributeVerticallyCommand = new RelayCommand(() => DistributeSelection(horizontal: false), () => _session.Selection.Count >= 3);
+        MatchWidthCommand = new RelayCommand(() => MatchSize(width: true, height: false), MultiSel);
+        MatchHeightCommand = new RelayCommand(() => MatchSize(width: false, height: true), MultiSel);
+        MatchSizeCommand = new RelayCommand(() => MatchSize(width: true, height: true), MultiSel);
+        FreeTransformCommand = new RelayCommand(() =>
+        {
+            if (_canvas is not null)
+            {
+                _canvas.FreeTransform = !_canvas.FreeTransform;
+                StatusText = _canvas.FreeTransform
+                    ? "Free transform: corners resize, side handles skew, the knob rotates. Press it again to finish."
+                    : "Free transform off";
+            }
+        });
 
         ImportDataCommand = new RelayCommand(ImportData);
         ClearDataCommand = new RelayCommand(
@@ -1039,35 +1064,40 @@ public sealed class MainViewModel : ObservableObject
     {
         try
         {
-            byte[] bytes = File.ReadAllBytes(path);
-            string id = _session.Document.Assets.Add(bytes, Path.GetExtension(path));
-            (int w, int h) = ImageDimensions.Probe(bytes);
-            double aspect = h > 0 ? (double)w / h : 1.0;
-            double boxW = Math.Min(_session.ActiveLabel.SizeMm.Width - 4, 30);
-            double boxH = aspect > 0 ? boxW / aspect : boxW;
-
-            RectMm bounds = atMm is { } at
-                ? new RectMm(
-                    Math.Clamp(at.X - (boxW / 2), 0, Math.Max(0, _session.ActiveLabel.SizeMm.Width - boxW)),
-                    Math.Clamp(at.Y - (boxH / 2), 0, Math.Max(0, _session.ActiveLabel.SizeMm.Height - boxH)),
-                    boxW, boxH)
-                : NewBounds(boxW, boxH);
-
-            var obj = new ImageObject
-            {
-                AssetId = id,
-                SourceFileName = Path.GetFileName(path),
-                SourcePixelWidth = w,
-                SourcePixelHeight = h,
-                Bounds = bounds,
-            };
-            _imageSource.Invalidate();
-            AddObject(obj);
+            AddImageFromBytes(File.ReadAllBytes(path), Path.GetExtension(path), Path.GetFileName(path), atMm);
         }
         catch (Exception ex)
         {
             _shell.Warn($"Could not load \"{Path.GetFileName(path)}\": {ex.Message}");
         }
+    }
+
+    /// <summary>Shared by files, drag-and-drop and bitmaps pasted from other apps.</summary>
+    private void AddImageFromBytes(byte[] bytes, string extension, string? name, Core.Units.PointMm? atMm)
+    {
+        string id = _session.Document.Assets.Add(bytes, extension);
+        (int w, int h) = ImageDimensions.Probe(bytes);
+        double aspect = h > 0 ? (double)w / h : 1.0;
+        double boxW = Math.Min(_session.ActiveLabel.SizeMm.Width - 4, 30);
+        double boxH = aspect > 0 ? boxW / aspect : boxW;
+
+        RectMm bounds = atMm is { } at
+            ? new RectMm(
+                Math.Clamp(at.X - (boxW / 2), 0, Math.Max(0, _session.ActiveLabel.SizeMm.Width - boxW)),
+                Math.Clamp(at.Y - (boxH / 2), 0, Math.Max(0, _session.ActiveLabel.SizeMm.Height - boxH)),
+                boxW, boxH)
+            : NewBounds(boxW, boxH);
+
+        var obj = new ImageObject
+        {
+            AssetId = id,
+            SourceFileName = name,
+            SourcePixelWidth = w,
+            SourcePixelHeight = h,
+            Bounds = bounds,
+        };
+        _imageSource.Invalidate();
+        AddObject(obj);
     }
 
     private void ReplaceSelectedImage()
@@ -1210,14 +1240,67 @@ public sealed class MainViewModel : ObservableObject
     /// </summary>
     private void PasteObjects(bool atContextPoint = false)
     {
-        var atMm = atContextPoint ? _canvas?.ContextMm : null;
-        IReadOnlyList<LabelObject> pasted = atMm is { } p
-            ? ObjectClipboard.PasteAt(new Core.Units.PointMm(p.X, p.Y))
-            : ObjectClipboard.Paste();
+        Core.Units.PointMm? atMm = atContextPoint ? _canvas?.ContextMm : null;
+
+        switch (ObjectClipboard.Read())
+        {
+            case ClipboardContent.Objects objects:
+                PasteLabelObjects(objects, atMm);
+                break;
+
+            case ClipboardContent.Image image:
+                AddImageFromBytes(image.Png, ".png", "Pasted image", atMm);
+                StatusText = "Pasted an image from the clipboard";
+                break;
+
+            case ClipboardContent.Files files:
+                foreach (string path in files.Paths)
+                {
+                    AddImageFromFile(path, atMm);
+                }
+
+                break;
+
+            case ClipboardContent.Text text:
+                PasteText(text.Value, atMm);
+                break;
+        }
+    }
+
+    /// <summary>Text from another app becomes a text box sized for a couple of lines.</summary>
+    private void PasteText(string value, Core.Units.PointMm? atMm)
+    {
+        string text = value.Replace("\r\n", "\n").TrimEnd('\n');
+        int lines = Math.Clamp(text.Split('\n').Length, 1, 12);
+        RectMm bounds = NewBounds(60, 5.5 * lines);
+        if (atMm is { } at)
+        {
+            bounds = bounds with { X = at.X, Y = at.Y };
+        }
+
+        AddObject(new TextObject { Content = RichTextContent.FromPlainText(text), Bounds = bounds });
+        StatusText = "Pasted text from the clipboard";
+    }
+
+    private void PasteLabelObjects(ClipboardContent.Objects clip, Core.Units.PointMm? atMm)
+    {
+        IReadOnlyList<LabelObject> pasted = ObjectClipboard.Place(clip.Items, atMm);
         if (pasted.Count == 0)
         {
             return;
         }
+
+        // Images copied from another project bring their pixels along.
+        foreach (ImageObject image in pasted.OfType<ImageObject>())
+        {
+            if (!_session.Document.Assets.Contains(image.AssetId) &&
+                clip.Assets.TryGetValue(image.AssetId, out (string Extension, byte[] Bytes) asset))
+            {
+                image.AssetId = _session.Document.Assets.Add(asset.Bytes, asset.Extension);
+            }
+        }
+
+        _imageSource.Invalidate();
 
         // keep pasted objects inside the label
         var size = _session.ActiveLabel.SizeMm;
@@ -1300,28 +1383,140 @@ public sealed class MainViewModel : ObservableObject
         }
     }
 
-    private sealed class AlignAccessor
+    private enum AlignEdge
     {
-        public double X, Y, W, H;
+        Left,
+        CentreX,
+        Right,
+        Top,
+        CentreY,
+        Bottom,
     }
 
-    private void Align(Action<AlignAccessor> mutate)
+    private bool _alignToLabel;
+
+    /// <summary>
+    /// When set, alignment uses the label's edges even with several objects selected.
+    /// Otherwise one object aligns to the label and several align to each other.
+    /// </summary>
+    public bool AlignToLabel
     {
-        var commands = new List<IUndoableCommand>();
-        foreach (LabelObject obj in _session.Selection)
+        get => _alignToLabel;
+        set => SetField(ref _alignToLabel, value);
+    }
+
+    /// <summary>
+    /// Aligns by what you see: the edges of each object's rotated/skewed outline,
+    /// not its un-rotated box, so a tilted barcode lines up with its neighbours.
+    /// </summary>
+    private void AlignSelection(AlignEdge edge)
+    {
+        var targets = _session.Selection.Where(o => !o.Locked).ToList();
+        if (targets.Count == 0)
         {
-            var a = new AlignAccessor { X = obj.Bounds.X, Y = obj.Bounds.Y, W = obj.Bounds.Width, H = obj.Bounds.Height };
-            mutate(a);
-            RectMm target = new(a.X, a.Y, a.W, a.H);
-            if (target != obj.Bounds)
+            return;
+        }
+
+        RectMm reference = targets.Count == 1 || _alignToLabel
+            ? _session.ActiveLabel.Bounds
+            : _session.Selection.Select(o => o.RotatedBounds).Aggregate((a, b) => a.Union(b));
+
+        var commands = new List<IUndoableCommand>();
+        foreach (LabelObject obj in targets)
+        {
+            RectMm visual = obj.RotatedBounds;
+            double dx = edge switch
             {
-                commands.Add(new TransformObjectCommand(obj, target, obj.RotationDegrees));
+                AlignEdge.Left => reference.Left - visual.Left,
+                AlignEdge.CentreX => reference.Center.X - visual.Center.X,
+                AlignEdge.Right => reference.Right - visual.Right,
+                _ => 0,
+            };
+            double dy = edge switch
+            {
+                AlignEdge.Top => reference.Top - visual.Top,
+                AlignEdge.CentreY => reference.Center.Y - visual.Center.Y,
+                AlignEdge.Bottom => reference.Bottom - visual.Bottom,
+                _ => 0,
+            };
+
+            if (Math.Abs(dx) > 1e-6 || Math.Abs(dy) > 1e-6)
+            {
+                commands.Add(new TransformObjectCommand(obj, obj.Bounds.Offset(dx, dy), obj.RotationDegrees));
             }
         }
 
         if (commands.Count > 0)
         {
             _session.Execute(new CompositeCommand("Align", commands));
+        }
+    }
+
+    /// <summary>
+    /// Equal gaps between objects: the outermost two stay put and everything in
+    /// between is spaced so the space between neighbours is the same.
+    /// </summary>
+    private void DistributeSelection(bool horizontal)
+    {
+        var targets = _session.Selection.Where(o => !o.Locked).ToList();
+        if (targets.Count < 3)
+        {
+            return;
+        }
+
+        var ordered = targets
+            .OrderBy(o => horizontal ? o.RotatedBounds.Center.X : o.RotatedBounds.Center.Y)
+            .ToList();
+
+        RectMm first = ordered[0].RotatedBounds;
+        RectMm last = ordered[^1].RotatedBounds;
+        double span = horizontal ? last.Right - first.Left : last.Bottom - first.Top;
+        double sizes = ordered.Sum(o => horizontal ? o.RotatedBounds.Width : o.RotatedBounds.Height);
+        double gap = (span - sizes) / (ordered.Count - 1);
+
+        var commands = new List<IUndoableCommand>();
+        double cursor = horizontal ? first.Left : first.Top;
+        foreach (LabelObject obj in ordered)
+        {
+            RectMm visual = obj.RotatedBounds;
+            double delta = cursor - (horizontal ? visual.Left : visual.Top);
+            if (Math.Abs(delta) > 1e-6)
+            {
+                RectMm moved = horizontal ? obj.Bounds.Offset(delta, 0) : obj.Bounds.Offset(0, delta);
+                commands.Add(new TransformObjectCommand(obj, moved, obj.RotationDegrees));
+            }
+
+            cursor += (horizontal ? visual.Width : visual.Height) + gap;
+        }
+
+        if (commands.Count > 0)
+        {
+            _session.Execute(new CompositeCommand(horizontal ? "Distribute horizontally" : "Distribute vertically", commands));
+        }
+    }
+
+    /// <summary>Gives every selected object the width and/or height of the first one selected.</summary>
+    private void MatchSize(bool width, bool height)
+    {
+        if (_session.Selection.Count < 2)
+        {
+            return;
+        }
+
+        RectMm model = _session.Selection[0].Bounds;
+        var commands = _session.Selection.Skip(1)
+            .Where(o => !o.Locked)
+            .Select(o =>
+            {
+                RectMm b = o.Bounds;
+                var size = new SizeMm(width ? model.Width : b.Width, height ? model.Height : b.Height);
+                return (IUndoableCommand)new TransformObjectCommand(o, RectMm.FromCenter(b.Center, size), o.RotationDegrees);
+            })
+            .ToList();
+
+        if (commands.Count > 0)
+        {
+            _session.Execute(new CompositeCommand("Match size", commands));
         }
     }
 
@@ -1720,18 +1915,16 @@ public sealed class MainViewModel : ObservableObject
 
     private void RaiseAllCanExecute()
     {
-        foreach (var cmd in new[]
-                 {
-                     UndoCommand, RedoCommand, DeleteCommand, DuplicateCommand, GroupCommand, UngroupCommand,
-                     CopyCommand, CutCommand, PasteCommand,
-                     BringToFrontCommand, BringForwardCommand, SendBackwardCommand, SendToBackCommand,
-                     AlignLeftCommand, AlignTopCommand, CenterHorizontalCommand, CenterVerticalCommand, ClearDataCommand,
-                     RemovePageCommand, RenamePageCommand, ReplaceImageCommand,
-                 })
+        // Every command, not a hand-kept list: the list went stale as commands were
+        // added, leaving menu items greyed out (or live) after the selection changed.
+        foreach (System.Reflection.PropertyInfo property in CommandProperties)
         {
-            cmd.RaiseCanExecuteChanged();
+            (property.GetValue(this) as RelayCommand)?.RaiseCanExecuteChanged();
         }
     }
+
+    private static readonly System.Reflection.PropertyInfo[] CommandProperties =
+        typeof(MainViewModel).GetProperties().Where(p => p.PropertyType == typeof(RelayCommand)).ToArray();
 
     private static string SafeName(string title)
     {

@@ -147,6 +147,20 @@ public sealed class SelectionProperties : ObservableObject
         set => Set(nameof(RotationDegrees), () => Obj!.RotationDegrees, v => Obj!.RotationDegrees = v, value);
     }
 
+    public double SkewX
+    {
+        get => Round(Obj?.SkewXDegrees ?? 0);
+        set => Set(nameof(SkewX), () => Obj!.SkewXDegrees, v => Obj!.SkewXDegrees = v,
+            Math.Clamp(value, -ObjectGeometry.MaxSkewDegrees, ObjectGeometry.MaxSkewDegrees));
+    }
+
+    public double SkewY
+    {
+        get => Round(Obj?.SkewYDegrees ?? 0);
+        set => Set(nameof(SkewY), () => Obj!.SkewYDegrees, v => Obj!.SkewYDegrees = v,
+            Math.Clamp(value, -ObjectGeometry.MaxSkewDegrees, ObjectGeometry.MaxSkewDegrees));
+    }
+
     public bool Locked
     {
         get => Obj?.Locked ?? false;

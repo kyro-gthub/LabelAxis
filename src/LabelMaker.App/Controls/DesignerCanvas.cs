@@ -62,7 +62,40 @@ public sealed class DesignerCanvas : FrameworkElement
     private Point _dragStartMm;
     private Dictionary<string, RectMm> _dragStartBounds = new();
     private Dictionary<string, double> _dragStartRotation = new();
+    private Dictionary<string, (double X, double Y)> _dragStartSkew = new();
     private double _rotateStartAngle;
+    private bool _skewing;
+
+    // drag-to-select
+    private bool _marquee;
+    private Point _marqueeStart;
+    private Point _marqueeEnd;
+    private IReadOnlyList<LabelObject> _marqueeBase = Array.Empty<LabelObject>();
+
+    private const double RotateKnobPx = 26.0;
+    private static readonly System.Windows.Media.DashStyle MarqueeDash = new(new[] { 3.0, 2.0 }, 0);
+    private static readonly System.Windows.Media.DashStyle FreeTransformDash = new(new[] { 4.0, 3.0 }, 0);
+    private const double MarqueeThresholdPx = 3.0;
+
+    private bool _freeTransform;
+
+    /// <summary>
+    /// Free-transform mode: side handles skew instead of stretch, and the rotate knob
+    /// is the primary way to turn the object. Ctrl+Alt on a side handle skews in the
+    /// normal mode too.
+    /// </summary>
+    public bool FreeTransform
+    {
+        get => _freeTransform;
+        set
+        {
+            _freeTransform = value;
+            InvalidateVisual();
+            FreeTransformChanged?.Invoke(this, EventArgs.Empty);
+        }
+    }
+
+    public event EventHandler? FreeTransformChanged;
     private IReadOnlyList<SnapLine> _activeSnapLines = Array.Empty<SnapLine>();
 
     private GuideDrag? _guideDrag;
@@ -432,6 +465,17 @@ public sealed class DesignerCanvas : FrameworkElement
 
         DrawSnapLines(dc);
 
+        if (_marquee)
+        {
+            Rect r = MarqueeRect;
+            if (r.Width >= MarqueeThresholdPx || r.Height >= MarqueeThresholdPx)
+            {
+                var fill = new SolidColorBrush(Color.FromArgb(28, Accent.R, Accent.G, Accent.B));
+                var pen = new Pen(new SolidColorBrush(Accent), 1) { DashStyle = MarqueeDash };
+                dc.DrawRectangle(fill, pen, r);
+            }
+        }
+
         if (RulerPad > 0)
         {
             DrawRulers(dc, label);
@@ -466,27 +510,91 @@ public sealed class DesignerCanvas : FrameworkElement
         }
 
         var stroke = new Pen(new SolidColorBrush(Accent), 1.3 / _zoom);
+        if (_freeTransform)
+        {
+            stroke.DashStyle = FreeTransformDash;
+        }
+
         stroke.Freeze();
         var handlePen = new Pen(new SolidColorBrush(Accent), 1.3 / _zoom);
         handlePen.Freeze();
+        double hs = HandleSize / _zoom;
 
         foreach (LabelObject obj in _session.Selection)
         {
-            RectMm b = obj.Bounds;
-            var rect = new Rect(b.X * K, b.Y * K, b.Width * K, b.Height * K);
-            dc.PushTransform(new RotateTransform(obj.RotationDegrees, rect.X + (rect.Width / 2), rect.Y + (rect.Height / 2)));
-            dc.DrawRectangle(null, stroke, rect);
-
-            if (!obj.Locked)
+            // Outline and handles follow the real (rotated, skewed) shape.
+            PointMm[] corners = ObjectGeometry.Corners(obj);
+            var outline = new StreamGeometry();
+            using (StreamGeometryContext g = outline.Open())
             {
-                double hs = HandleSize / _zoom;
-                foreach (Point p in HandlePoints(rect))
+                g.BeginFigure(ToCanvas(corners[0]), false, true);
+                g.PolyLineTo(corners.Skip(1).Select(ToCanvas).ToList(), true, true);
+            }
+
+            outline.Freeze();
+            dc.DrawGeometry(null, stroke, outline);
+
+            if (obj.Locked)
+            {
+                continue;
+            }
+
+            foreach ((Handle handle, PointMm local) in HandleLocals(obj))
+            {
+                Point p = ToCanvas(ObjectGeometry.ToWorld(obj, local));
+                bool side = handle is Handle.Top or Handle.Bottom or Handle.Left or Handle.Right;
+
+                if (handle == Handle.Rotate)
+                {
+                    Point top = ToCanvas(ObjectGeometry.ToWorld(obj, new PointMm(0, -obj.Bounds.Height / 2.0)));
+                    dc.DrawLine(handlePen, top, p);
+                    dc.DrawEllipse(Brushes.White, handlePen, p, hs * 0.65, hs * 0.65);
+                }
+                else if (side && _freeTransform)
+                {
+                    // Diamonds mark the skew handles in free-transform mode.
+                    var diamond = new StreamGeometry();
+                    using (StreamGeometryContext g = diamond.Open())
+                    {
+                        g.BeginFigure(new Point(p.X, p.Y - (hs * 0.7)), true, true);
+                        g.PolyLineTo(new[]
+                        {
+                            new Point(p.X + (hs * 0.7), p.Y), new Point(p.X, p.Y + (hs * 0.7)), new Point(p.X - (hs * 0.7), p.Y),
+                        }, true, true);
+                    }
+
+                    diamond.Freeze();
+                    dc.DrawGeometry(Brushes.White, handlePen, diamond);
+                }
+                else
                 {
                     dc.DrawRectangle(Brushes.White, handlePen, new Rect(p.X - (hs / 2), p.Y - (hs / 2), hs, hs));
                 }
             }
+        }
+    }
 
-            dc.Pop();
+    /// <summary>Document mm to the zoomed drawing space used inside OnRender's transforms.</summary>
+    private static Point ToCanvas(PointMm mm) => new(mm.X * K, mm.Y * K);
+
+    /// <summary>Where each handle sits in the object's local (centre-origin) space.</summary>
+    private IEnumerable<(Handle Handle, PointMm Local)> HandleLocals(LabelObject obj)
+    {
+        double hw = obj.Bounds.Width / 2.0, hh = obj.Bounds.Height / 2.0;
+        yield return (Handle.TopLeft, new PointMm(-hw, -hh));
+        yield return (Handle.Top, new PointMm(0, -hh));
+        yield return (Handle.TopRight, new PointMm(hw, -hh));
+        yield return (Handle.Right, new PointMm(hw, 0));
+        yield return (Handle.BottomRight, new PointMm(hw, hh));
+        yield return (Handle.Bottom, new PointMm(0, hh));
+        yield return (Handle.BottomLeft, new PointMm(-hw, hh));
+        yield return (Handle.Left, new PointMm(-hw, 0));
+
+        // A fixed on-screen distance above the top edge, whatever the zoom. The knob
+        // is skipped for lines, which have no meaningful "top".
+        if (obj is not LabelMaker.Core.Model.Objects.ShapeObject { Shape: LabelMaker.Core.Model.Objects.ShapeKind.Line })
+        {
+            yield return (Handle.Rotate, new PointMm(0, -hh - (RotateKnobPx / Scale)));
         }
     }
 
@@ -678,18 +786,6 @@ public sealed class DesignerCanvas : FrameworkElement
         dc.DrawText(ft, new Point(at.X + 5, at.Y + 2));
     }
 
-    private static IEnumerable<Point> HandlePoints(Rect r)
-    {
-        yield return new Point(r.Left, r.Top);
-        yield return new Point(r.Left + (r.Width / 2), r.Top);
-        yield return new Point(r.Right, r.Top);
-        yield return new Point(r.Right, r.Top + (r.Height / 2));
-        yield return new Point(r.Right, r.Bottom);
-        yield return new Point(r.Left + (r.Width / 2), r.Bottom);
-        yield return new Point(r.Left, r.Bottom);
-        yield return new Point(r.Left, r.Top + (r.Height / 2));
-    }
-
     // ---- interaction ---------------------------------------------------
 
     protected override void OnMouseWheel(MouseWheelEventArgs e)
@@ -745,24 +841,29 @@ public sealed class DesignerCanvas : FrameworkElement
         Point mm = ScreenToMm(screen);
         _dragStartMm = mm;
 
-        // Resize handles on the current selection take priority over everything else.
+        // Handles on the current selection take priority over everything else.
         foreach (LabelObject obj in _session.Selection)
         {
-            Handle h = obj.Locked ? Handle.None : HitHandle(obj, mm);
-            if (h != Handle.None)
+            Handle h = obj.Locked ? Handle.None : HitHandle(obj, screen);
+            if (h == Handle.None)
             {
-                _resizing = true;
-                // Alt turns the handles into a rotation ring, the way every design
-                // tool does it; the modifier is sampled again on each move so it can
-                // be pressed or released mid-drag.
-                _rotating = Keyboard.Modifiers.HasFlag(ModifierKeys.Alt);
-                _activeHandle = h;
-                CaptureStart();
-                _rotateStartAngle = AngleFromCentre(obj.Bounds.Center, mm);
-                CaptureMouse();
-                e.Handled = true;
-                return;
+                continue;
             }
+
+            bool side = h is Handle.Top or Handle.Bottom or Handle.Left or Handle.Right;
+            bool ctrlAlt = Keyboard.Modifiers.HasFlag(ModifierKeys.Control) && Keyboard.Modifiers.HasFlag(ModifierKeys.Alt);
+
+            _resizing = true;
+            _activeHandle = h;
+            // The rotate knob always rotates; Alt turns any other handle into rotation.
+            _rotating = h == Handle.Rotate || (Keyboard.Modifiers == ModifierKeys.Alt);
+            // Side handles skew in free-transform mode, or with Ctrl+Alt in normal mode.
+            _skewing = !_rotating && side && (_freeTransform || ctrlAlt);
+            CaptureStart();
+            _rotateStartAngle = AngleFromCentre(obj.Bounds.Center, mm);
+            CaptureMouse();
+            e.Handled = true;
+            return;
         }
 
         // Object selection/drag beats grabbing a guide that happens to sit on the
@@ -781,8 +882,18 @@ public sealed class DesignerCanvas : FrameworkElement
 
         if (hit is null)
         {
-            _session.ClearSelection();
-            BeginPan(screen);
+            // Drag on empty space draws a selection box; Shift adds to what is selected.
+            // Panning moved to Space+drag and the middle button, as in other design tools.
+            bool additive = Keyboard.Modifiers.HasFlag(ModifierKeys.Shift);
+            _marqueeBase = additive ? _session.Selection.ToList() : Array.Empty<LabelObject>();
+            if (!additive)
+            {
+                _session.ClearSelection();
+            }
+
+            _marquee = true;
+            _marqueeStart = _marqueeEnd = screen;
+            CaptureMouse();
             e.Handled = true;
             return;
         }
@@ -846,6 +957,14 @@ public sealed class DesignerCanvas : FrameworkElement
             return;
         }
 
+        if (_marquee)
+        {
+            _marqueeEnd = screen;
+            UpdateMarqueeSelection();
+            InvalidateVisual();
+            return;
+        }
+
         UpdateCursor(screen);
 
         if (RulerPad > 0)
@@ -866,7 +985,14 @@ public sealed class DesignerCanvas : FrameworkElement
         bool ctrl = Keyboard.Modifiers.HasFlag(ModifierKeys.Control);
         bool alt = Keyboard.Modifiers.HasFlag(ModifierKeys.Alt);
 
-        if (_resizing && (alt || _rotating))
+        if (_resizing && _skewing)
+        {
+            SkewSelection(dx, dy, shift);
+            InvalidateVisual();
+            return;
+        }
+
+        if (_resizing && (_rotating || (alt && !ctrl)))
         {
             RotateSelection(pMm, shift);
             InvalidateVisual();
@@ -894,16 +1020,140 @@ public sealed class DesignerCanvas : FrameworkElement
             }
 
             obj.Bounds = _resizing
-                ? ResizeRect(start, _activeHandle, dx, dy, proportional: shift, fromCentre: ctrl)
+                ? ResizeInLocalSpace(obj, start, _activeHandle, dx, dy, proportional: shift, fromCentre: ctrl)
                 : start.Offset(dx, dy);
         }
 
-        // Snapping fights a constrained resize, so it only applies to a plain drag.
+        // Snapping fights a constrained resize, and edge snapping only makes sense for
+        // an upright box, so it applies to plain drags on axis-aligned objects.
+        bool uprightSingle = _session.Selection.Count == 1 && ObjectGeometry.IsAxisAligned(_session.Selection[0]);
         _activeSnapLines = _resizing
-            ? (shift || ctrl ? Array.Empty<SnapLine>() : ApplyResizeSnap())
+            ? (shift || ctrl || !uprightSingle ? Array.Empty<SnapLine>() : ApplyResizeSnap())
             : ApplyMoveSnap();
 
         InvalidateVisual();
+    }
+
+    /// <summary>
+    /// Resizes against the object's own axes, so dragging the right handle of a
+    /// rotated or skewed box stretches it along its length and the opposite edge
+    /// stays put on screen. For an upright box this is exactly the plain rectangle
+    /// resize it replaces.
+    /// </summary>
+    private static RectMm ResizeInLocalSpace(LabelObject obj, RectMm start, Handle handle, double dx, double dy, bool proportional, bool fromCentre)
+    {
+        Affine linear = ObjectGeometry.Linear(obj);
+        if (ObjectGeometry.IsAxisAligned(obj))
+        {
+            return ResizeRect(start, handle, dx, dy, proportional, fromCentre);
+        }
+
+        // Pointer movement expressed along the object's axes.
+        PointMm localDelta = linear.Inverse().ApplyVector(dx, dy);
+
+        // Resize a centre-origin copy of the starting box in local space.
+        var local = new RectMm(-start.Width / 2.0, -start.Height / 2.0, start.Width, start.Height);
+        RectMm resized = ResizeRect(local, handle, localDelta.X, localDelta.Y, proportional, fromCentre);
+
+        // The local centre moved by this much; carry that back into document space.
+        PointMm shift = linear.ApplyVector(resized.Center.X, resized.Center.Y);
+        PointMm centre = new(start.Center.X + shift.X, start.Center.Y + shift.Y);
+        return RectMm.FromCenter(centre, new SizeMm(resized.Width, resized.Height));
+    }
+
+    /// <summary>
+    /// Dragging a side handle shears the object: top and bottom handles lean it
+    /// sideways (skew X), left and right handles tip it up or down (skew Y). Shift
+    /// snaps to 5° steps.
+    /// </summary>
+    private void SkewSelection(double dx, double dy, bool snap)
+    {
+        if (_session is null)
+        {
+            return;
+        }
+
+        foreach (LabelObject obj in _session.Selection)
+        {
+            if (obj.Locked || !_dragStartBounds.TryGetValue(obj.Id, out RectMm start) ||
+                !_dragStartSkew.TryGetValue(obj.Id, out (double X, double Y) skew) ||
+                !_dragStartRotation.TryGetValue(obj.Id, out double rotation))
+            {
+                continue;
+            }
+
+            // Measure the drag along the object's rotated (but un-skewed) axes.
+            Affine rotate = ObjectGeometry.Linear(rotation, 0, 0);
+            PointMm along = rotate.Inverse().ApplyVector(dx, dy);
+            double height = Math.Max(1, start.Height);
+            double width = Math.Max(1, start.Width);
+
+            double tanX = Math.Tan(skew.X * Math.PI / 180.0);
+            double tanY = Math.Tan(skew.Y * Math.PI / 180.0);
+
+            // Skew is about the centre, which would move both edges. Shifting the
+            // centre by half the drag keeps the opposite edge still, so the handle
+            // under the pointer is the only thing that moves.
+            PointMm centreShift = default;
+            switch (_activeHandle)
+            {
+                case Handle.Bottom:
+                    tanX += along.X / height;
+                    centreShift = rotate.ApplyVector(along.X / 2.0, 0);
+                    break;
+                case Handle.Top:
+                    tanX -= along.X / height;
+                    centreShift = rotate.ApplyVector(along.X / 2.0, 0);
+                    break;
+                case Handle.Right:
+                    tanY += along.Y / width;
+                    centreShift = rotate.ApplyVector(0, along.Y / 2.0);
+                    break;
+                case Handle.Left:
+                    tanY -= along.Y / width;
+                    centreShift = rotate.ApplyVector(0, along.Y / 2.0);
+                    break;
+            }
+
+            obj.Bounds = start.Offset(centreShift.X, centreShift.Y);
+
+            double newX = Math.Atan(tanX) * 180.0 / Math.PI;
+            double newY = Math.Atan(tanY) * 180.0 / Math.PI;
+            if (snap)
+            {
+                newX = Math.Round(newX / 5.0) * 5.0;
+                newY = Math.Round(newY / 5.0) * 5.0;
+            }
+
+            obj.SkewXDegrees = Math.Round(Math.Clamp(newX, -ObjectGeometry.MaxSkewDegrees, ObjectGeometry.MaxSkewDegrees), 1);
+            obj.SkewYDegrees = Math.Round(Math.Clamp(newY, -ObjectGeometry.MaxSkewDegrees, ObjectGeometry.MaxSkewDegrees), 1);
+        }
+    }
+
+    private Rect MarqueeRect => new(_marqueeStart, _marqueeEnd);
+
+    private void UpdateMarqueeSelection()
+    {
+        if (_session is null)
+        {
+            return;
+        }
+
+        Rect r = MarqueeRect;
+        if (r.Width < MarqueeThresholdPx && r.Height < MarqueeThresholdPx)
+        {
+            return;
+        }
+
+        Point a = ScreenToMm(r.TopLeft);
+        Point b = ScreenToMm(r.BottomRight);
+        RectMm box = RectMm.FromLtrb(a.X, a.Y, b.X, b.Y);
+
+        var picked = _session.ActiveLabel.Objects
+            .Where(o => o.Visible && ObjectGeometry.Intersects(o, box))
+            .ToList();
+
+        _session.SetSelection(_marqueeBase.Concat(picked.Where(o => !_marqueeBase.Contains(o))).ToList());
     }
 
     /// <summary>Alt-dragging a handle rotates about the object's centre; Shift snaps to 15°.</summary>
@@ -976,23 +1226,48 @@ public sealed class DesignerCanvas : FrameworkElement
             return;
         }
 
+        if (_marquee)
+        {
+            _marqueeEnd = screen;
+            UpdateMarqueeSelection();
+            _marquee = false;
+            _marqueeBase = Array.Empty<LabelObject>();
+            ReleaseMouseCapture();
+            InvalidateVisual();
+            return;
+        }
+
         if (_session is not null && (_dragging || _resizing))
         {
             var commands = new List<IUndoableCommand>();
             foreach (LabelObject obj in _session.Selection)
             {
-                bool movedOrResized = _dragStartBounds.TryGetValue(obj.Id, out RectMm start) && start != obj.Bounds;
-                bool rotated = _dragStartRotation.TryGetValue(obj.Id, out double startAngle) &&
-                               Math.Abs(startAngle - obj.RotationDegrees) > 0.001;
-
-                if (movedOrResized || rotated)
+                if (!_dragStartBounds.TryGetValue(obj.Id, out RectMm start) ||
+                    !_dragStartRotation.TryGetValue(obj.Id, out double startAngle) ||
+                    !_dragStartSkew.TryGetValue(obj.Id, out (double X, double Y) startSkew))
                 {
-                    RectMm final = obj.Bounds;
-                    double finalAngle = obj.RotationDegrees;
-                    obj.Bounds = start;
-                    obj.RotationDegrees = startAngle;
-                    commands.Add(new TransformObjectCommand(obj, final, finalAngle));
+                    continue;
                 }
+
+                bool changed = start != obj.Bounds ||
+                               Math.Abs(startAngle - obj.RotationDegrees) > 0.001 ||
+                               Math.Abs(startSkew.X - obj.SkewXDegrees) > 0.001 ||
+                               Math.Abs(startSkew.Y - obj.SkewYDegrees) > 0.001;
+                if (!changed)
+                {
+                    continue;
+                }
+
+                // Put the object back where it started, then apply the end state through
+                // the undo stack so the whole drag is one step.
+                RectMm finalBounds = obj.Bounds;
+                double finalAngle = obj.RotationDegrees;
+                double finalSkewX = obj.SkewXDegrees, finalSkewY = obj.SkewYDegrees;
+                obj.Bounds = start;
+                obj.RotationDegrees = startAngle;
+                obj.SkewXDegrees = startSkew.X;
+                obj.SkewYDegrees = startSkew.Y;
+                commands.Add(new TransformObjectCommand(obj, finalBounds, finalAngle, finalSkewX, finalSkewY));
             }
 
             if (commands.Count == 1)
@@ -1005,20 +1280,60 @@ public sealed class DesignerCanvas : FrameworkElement
             }
         }
 
-        _dragging = _resizing = _rotating = false;
-        _activeHandle = Handle.None;
-        _dragStartBounds.Clear();
-        _dragStartRotation.Clear();
-        _activeSnapLines = Array.Empty<SnapLine>();
+        ResetDragState();
         ReleaseMouseCapture();
         InvalidateVisual();
     }
 
+    private void ResetDragState()
+    {
+        _dragging = _resizing = _rotating = _skewing = false;
+        _activeHandle = Handle.None;
+        _dragStartBounds.Clear();
+        _dragStartRotation.Clear();
+        _dragStartSkew.Clear();
+        _activeSnapLines = Array.Empty<SnapLine>();
+    }
+
     protected override void OnLostMouseCapture(MouseEventArgs e)
     {
-        _panning = _dragging = _resizing = false;
+        _panning = _marquee = false;
         _guideDrag = null;
-        _activeSnapLines = Array.Empty<SnapLine>();
+        if (_dragging || _resizing)
+        {
+            // Capture was taken away mid-drag (e.g. a dialog): undo the half-finished drag.
+            RestoreDragStart();
+        }
+
+        ResetDragState();
+        InvalidateVisual();
+    }
+
+    private void RestoreDragStart()
+    {
+        if (_session is null)
+        {
+            return;
+        }
+
+        foreach (LabelObject obj in _session.Selection)
+        {
+            if (_dragStartBounds.TryGetValue(obj.Id, out RectMm b))
+            {
+                obj.Bounds = b;
+            }
+
+            if (_dragStartRotation.TryGetValue(obj.Id, out double r))
+            {
+                obj.RotationDegrees = r;
+            }
+
+            if (_dragStartSkew.TryGetValue(obj.Id, out (double X, double Y) s))
+            {
+                obj.SkewXDegrees = s.X;
+                obj.SkewYDegrees = s.Y;
+            }
+        }
     }
 
     protected override void OnKeyDown(KeyEventArgs e)
@@ -1340,15 +1655,9 @@ public sealed class DesignerCanvas : FrameworkElement
         Point mm = ScreenToMm(screen);
         foreach (LabelObject obj in _session.Selection)
         {
-            if (!obj.Locked && HitHandle(obj, mm) is var h and not Handle.None)
+            if (!obj.Locked && HitHandle(obj, screen) is var h and not Handle.None)
             {
-                Cursor = h switch
-                {
-                    Handle.Top or Handle.Bottom => Cursors.SizeNS,
-                    Handle.Left or Handle.Right => Cursors.SizeWE,
-                    Handle.TopLeft or Handle.BottomRight => Cursors.SizeNWSE,
-                    _ => Cursors.SizeNESW,
-                };
+                Cursor = HandleCursor(obj, h);
                 return;
             }
         }
@@ -1374,6 +1683,7 @@ public sealed class DesignerCanvas : FrameworkElement
     {
         _dragStartBounds = _session!.Selection.ToDictionary(o => o.Id, o => o.Bounds);
         _dragStartRotation = _session.Selection.ToDictionary(o => o.Id, o => o.RotationDegrees);
+        _dragStartSkew = _session.Selection.ToDictionary(o => o.Id, o => (o.SkewXDegrees, o.SkewYDegrees));
     }
 
     private LabelObject? HitObject(Point mm)
@@ -1388,7 +1698,10 @@ public sealed class DesignerCanvas : FrameworkElement
         for (int i = _session.ActiveLabel.Objects.Count - 1; i >= 0; i--)
         {
             LabelObject obj = _session.ActiveLabel.Objects[i];
-            if (obj.Visible && obj.RotatedBounds.Inflate(tol, tol).Contains(point))
+
+            // The real (rotated, skewed) shape, not its bounding box: clicking the empty
+            // corner beside a diamond-rotated barcode should reach what is underneath.
+            if (obj.Visible && ObjectGeometry.Contains(obj, point, tol))
             {
                 return obj;
             }
@@ -1397,26 +1710,58 @@ public sealed class DesignerCanvas : FrameworkElement
         return null;
     }
 
-    private Handle HitHandle(LabelObject obj, Point mm)
+    /// <summary>
+    /// Handle under a screen point, found where the handles are actually drawn —
+    /// on the transformed shape. (Testing against the upright box meant the handles
+    /// of a rotated object could not be grabbed where they were shown.)
+    /// </summary>
+    private Handle HitHandle(LabelObject obj, Point screen)
     {
-        RectMm b = obj.Bounds;
-        var rect = new Rect(b.X * K, b.Y * K, b.Width * K, b.Height * K);
-        var p = new Point(mm.X * K, mm.Y * K);
-        double tol = (HandleSize + 4) / _zoom;
+        double tol = (HandleSize / 2.0) + 4;
+        Handle best = Handle.None;
+        double bestDistance = double.MaxValue;
 
-        Handle[] order = { Handle.TopLeft, Handle.Top, Handle.TopRight, Handle.Right, Handle.BottomRight, Handle.Bottom, Handle.BottomLeft, Handle.Left };
-        int idx = 0;
-        foreach (Point hp in HandlePoints(rect))
+        foreach ((Handle handle, PointMm local) in HandleLocals(obj))
         {
-            if (Math.Abs(hp.X - p.X) <= tol && Math.Abs(hp.Y - p.Y) <= tol)
+            PointMm world = ObjectGeometry.ToWorld(obj, local);
+            Point p = MmToScreen(world.X, world.Y);
+            double d = Math.Max(Math.Abs(p.X - screen.X), Math.Abs(p.Y - screen.Y));
+            if (d <= tol && d < bestDistance)
             {
-                return order[idx];
+                best = handle;
+                bestDistance = d;
             }
-
-            idx++;
         }
 
-        return Handle.None;
+        return best;
+    }
+
+    /// <summary>A resize cursor pointing along the handle's real on-screen direction.</summary>
+    private Cursor HandleCursor(LabelObject obj, Handle handle)
+    {
+        if (handle == Handle.Rotate)
+        {
+            return Cursors.Hand;
+        }
+
+        bool side = handle is Handle.Top or Handle.Bottom or Handle.Left or Handle.Right;
+        if (side && (_freeTransform || (Keyboard.Modifiers.HasFlag(ModifierKeys.Control) && Keyboard.Modifiers.HasFlag(ModifierKeys.Alt))))
+        {
+            // Skewing a top/bottom edge slides it sideways, and vice versa.
+            return handle is Handle.Top or Handle.Bottom ? Cursors.SizeWE : Cursors.SizeNS;
+        }
+
+        PointMm local = HandleLocals(obj).First(h => h.Handle == handle).Local;
+        PointMm dir = ObjectGeometry.Linear(obj).ApplyVector(local.X, local.Y);
+        double angle = ((Math.Atan2(dir.Y, dir.X) * 180.0 / Math.PI) + 360) % 180;
+
+        return angle switch
+        {
+            < 22.5 or >= 157.5 => Cursors.SizeWE,
+            < 67.5 => Cursors.SizeNWSE,
+            < 112.5 => Cursors.SizeNS,
+            _ => Cursors.SizeNESW,
+        };
     }
 
     /// <summary>
@@ -1529,6 +1874,9 @@ public sealed class DesignerCanvas : FrameworkElement
         Bottom,
         BottomLeft,
         Left,
+
+        /// <summary>The knob above the top edge.</summary>
+        Rotate,
     }
 }
 

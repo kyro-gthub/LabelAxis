@@ -32,6 +32,7 @@
     <KeyBinding Key="Delete" Command="{Binding DeleteCommand}" />
     <KeyBinding Key="A" Modifiers="Control" Command="{Binding SelectAllCommand}" />
     <KeyBinding Key="F" Modifiers="Control" Command="{Binding FindCommand}" />
+    <KeyBinding Key="T" Modifiers="Control+Shift" Command="{Binding FreeTransformCommand}" />
     <KeyBinding Key="H" Modifiers="Control" Command="{Binding FindReplaceCommand}" />
     <KeyBinding Key="T" Modifiers="Control" Command="{Binding DataTableCommand}" />
     <KeyBinding Key="F2" Command="{Binding RenamePageCommand}" />
@@ -252,9 +253,23 @@
             <Button.ContextMenu>
               <ContextMenu>
                 <MenuItem Header="Align left" Command="{Binding AlignLeftCommand}" />
+                <MenuItem Header="Align centre" Command="{Binding CenterHorizontalCommand}" />
+                <MenuItem Header="Align right" Command="{Binding AlignRightCommand}" />
+                <Separator />
                 <MenuItem Header="Align top" Command="{Binding AlignTopCommand}" />
-                <MenuItem Header="Centre horizontally on label" Command="{Binding CenterHorizontalCommand}" />
-                <MenuItem Header="Centre vertically on label" Command="{Binding CenterVerticalCommand}" />
+                <MenuItem Header="Align middle" Command="{Binding CenterVerticalCommand}" />
+                <MenuItem Header="Align bottom" Command="{Binding AlignBottomCommand}" />
+                <Separator />
+                <MenuItem Header="Distribute horizontally" Command="{Binding DistributeHorizontallyCommand}"
+                          ToolTip="Equal gaps between three or more objects" />
+                <MenuItem Header="Distribute vertically" Command="{Binding DistributeVerticallyCommand}" />
+                <Separator />
+                <MenuItem Header="Match width" Command="{Binding MatchWidthCommand}" ToolTip="Use the first selected object's width" />
+                <MenuItem Header="Match height" Command="{Binding MatchHeightCommand}" />
+                <MenuItem Header="Match size" Command="{Binding MatchSizeCommand}" />
+                <Separator />
+                <MenuItem Header="Align to label" IsCheckable="True" IsChecked="{Binding AlignToLabel}"
+                          ToolTip="Off: one object aligns to the label, several align to each other" />
               </ContextMenu>
             </Button.ContextMenu>
           </Button>
@@ -276,6 +291,9 @@
                 <Separator />
                 <MenuItem Header="Flip horizontal" Command="{Binding FlipHorizontalCommand}" />
                 <MenuItem Header="Flip vertical" Command="{Binding FlipVerticalCommand}" />
+                <Separator />
+                <MenuItem Header="Free transform" InputGestureText="Ctrl+Shift+T" Command="{Binding FreeTransformCommand}"
+                          ToolTip="Corners resize, side handles skew, the knob rotates" />
               </ContextMenu>
             </Button.ContextMenu>
           </Button>
@@ -1053,7 +1071,13 @@
                 <StackPanel Visibility="{Binding HasSelection, Converter={StaticResource BoolToVis}}">
                   <Grid>
                     <Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" /><ColumnDefinition Width="14" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions><RowDefinition /><RowDefinition /><RowDefinition /></Grid.RowDefinitions>
+                    <Grid.RowDefinitions><RowDefinition /><RowDefinition /><RowDefinition /><RowDefinition /></Grid.RowDefinitions>
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Skew" Style="{StaticResource FieldLabel}" Width="22"
+                               ToolTip="Horizontal / vertical shear in degrees (Ctrl+Alt+drag a side handle, or Free transform)" />
+                    <TextBox   Grid.Row="3" Grid.Column="1" Style="{StaticResource NumberBox}" ToolTip="Horizontal skew (°)"
+                               Text="{Binding SkewX, StringFormat=0.0, UpdateSourceTrigger=LostFocus}" />
+                    <TextBox   Grid.Row="3" Grid.Column="4" Style="{StaticResource NumberBox}" ToolTip="Vertical skew (°)"
+                               Text="{Binding SkewY, StringFormat=0.0, UpdateSourceTrigger=LostFocus}" />
                     <TextBlock Grid.Row="0" Grid.Column="0" Text="X" Style="{StaticResource FieldLabel}" Width="22" />
                     <TextBox   Grid.Row="0" Grid.Column="1" Style="{StaticResource NumberBox}" Text="{Binding X, StringFormat=0.00, UpdateSourceTrigger=LostFocus}" />
                     <TextBlock Grid.Row="0" Grid.Column="3" Text="Y" Style="{StaticResource FieldLabel}" Width="22" />

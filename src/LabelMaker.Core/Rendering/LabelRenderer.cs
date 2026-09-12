@@ -153,7 +153,15 @@ public sealed class LabelRenderer
         PointMm center = b.Center;
         var local = new RectMm(-b.Width / 2.0, -b.Height / 2.0, b.Width, b.Height);
 
-        surface.PushTransform(center.X, center.Y, obj.RotationDegrees, 1, 1);
+        if (ObjectGeometry.HasSkew(obj))
+        {
+            surface.PushMatrix(ObjectGeometry.Matrix(obj));
+        }
+        else
+        {
+            surface.PushTransform(center.X, center.Y, obj.RotationDegrees, 1, 1);
+        }
+
         surface.PushOpacity(Math.Clamp(obj.Opacity, 0, 1));
 
         try
