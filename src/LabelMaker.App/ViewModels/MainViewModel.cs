@@ -136,7 +136,7 @@ public sealed class MainViewModel : ObservableObject
         _session.PagesChanged += (_, _) => RebuildPages();
         _session.ActivePageChanged += (_, _) => OnActivePageChanged();
 
-        Properties = new SelectionProperties(_session);
+        Properties = new SelectionProperties(_session, _env.Settings);
         _canvas?.Attach(_session);
 
         RebuildPages();
@@ -208,6 +208,32 @@ public sealed class MainViewModel : ObservableObject
             return $"{_session.Selection.Count} selected";
         }
     }
+
+    /// <summary>Units offered for every length in the UI. Storage stays millimetres.</summary>
+    public IReadOnlyList<Core.Units.Unit> DisplayUnits { get; } = new[]
+    {
+        Core.Units.Unit.Mm, Core.Units.Unit.Cm, Core.Units.Unit.Inch, Core.Units.Unit.Point, Core.Units.Unit.Pixel,
+    };
+
+    public Core.Units.Unit DisplayUnit
+    {
+        get => _env.Settings.DisplayUnit;
+        set
+        {
+            if (_env.Settings.DisplayUnit == value)
+            {
+                return;
+            }
+
+            _env.Settings.DisplayUnit = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(UnitSymbol));
+            _properties.NotifyUnitChanged();
+            _canvas?.InvalidateVisual();
+        }
+    }
+
+    public string UnitSymbol => _env.Settings.DisplayUnit.Symbol();
 
     public string RecordText => _session.RecordCount > 0
         ? $"{_session.RecordIndex + 1} / {_session.RecordCount}"
@@ -614,6 +640,12 @@ public sealed class MainViewModel : ObservableObject
     public RelayCommand LabelSizeCommand { get; private set; } = null!;
     public RelayCommand SelectAllCommand { get; private set; } = null!;
     public RelayCommand CropImageCommand { get; private set; } = null!;
+    public RelayCommand ClearCropCommand { get; private set; } = null!;
+    public RelayCommand PickColorCommand { get; private set; } = null!;
+    public RelayCommand ApplySwatchCommand { get; private set; } = null!;
+    public RelayCommand FlipHorizontalCommand { get; private set; } = null!;
+    public RelayCommand FlipVerticalCommand { get; private set; } = null!;
+    public RelayCommand RotateCommand { get; private set; } = null!;
 
     private void BuildCommands()
     {
@@ -700,8 +732,49 @@ public sealed class MainViewModel : ObservableObject
             () => _session.SetSelection(_session.ActiveLabel.Objects.Where(o => o.Visible).ToList()),
             () => _session.ActiveLabel.Objects.Count > 0);
         CropImageCommand = new RelayCommand(
-            () => { if (_shell.ShowImageCrop()) { _session.MarkDirty(); RefreshCanvas(); } },
+            () => { if (_shell.ShowImageCrop()) { _session.MarkDirty(); _properties.RefreshAll(); RefreshCanvas(); } },
             () => _session.Selection.Count == 1 && _session.Selection[0] is ImageObject);
+        ClearCropCommand = new RelayCommand(
+            () => { _properties.ClearCrop(); RefreshCanvas(); },
+            () => _session.Selection.Count == 1 && _session.Selection[0] is ImageObject);
+
+        // Parameter is "fill" or "stroke": which of the shape's two colours to edit.
+        PickColorCommand = new RelayCommand(p =>
+        {
+            string target = p as string ?? "fill";
+            bool fill = target == "fill";
+            if (!ColorRgba.TryParse(fill ? _properties.FillHex : _properties.StrokeHex, out ColorRgba current))
+            {
+                current = fill ? ColorRgba.Transparent : ColorRgba.Black;
+            }
+
+            if (_shell.PickColor(current, fill ? "Fill colour" : "Stroke colour") is { } chosen)
+            {
+                _properties.ApplySwatch(target, chosen.ToHex());
+                RefreshCanvas();
+            }
+        });
+
+        FlipHorizontalCommand = new RelayCommand(() => Flip(horizontal: true), AnySel);
+        FlipVerticalCommand = new RelayCommand(() => Flip(horizontal: false), AnySel);
+
+        // Parameter is the angle in degrees, e.g. "90" / "-90" / "180".
+        RotateCommand = new RelayCommand(p =>
+        {
+            double by = double.TryParse(p as string, System.Globalization.NumberStyles.Float,
+                System.Globalization.CultureInfo.InvariantCulture, out double v) ? v : 90;
+            RotateSelection(by);
+        }, _ => AnySel());
+
+        // Parameter is "fill|#RRGGBB" from the palette strip in Shape Settings.
+        ApplySwatchCommand = new RelayCommand(p =>
+        {
+            if (p is string s && s.Split('|') is [string target, string hex])
+            {
+                _properties.ApplySwatch(target, hex);
+                RefreshCanvas();
+            }
+        });
         LabelSizeCommand = new RelayCommand(() =>
         {
             if (_shell.ShowLabelSize())
@@ -808,6 +881,79 @@ public sealed class MainViewModel : ObservableObject
         }
 
         AddObject(shape);
+    }
+
+    /// <summary>
+    /// Mirrors the selection. An image flips its own pixels (the model carries flip
+    /// flags); everything else mirrors its position inside the selection's bounding
+    /// box, which is what flipping a group of objects means.
+    /// </summary>
+    private void Flip(bool horizontal)
+    {
+        var targets = _session.Selection.Where(o => !o.Locked).ToList();
+        if (targets.Count == 0)
+        {
+            return;
+        }
+
+        RectMm union = targets[0].Bounds;
+        foreach (LabelObject o in targets.Skip(1))
+        {
+            union = union.Union(o.Bounds);
+        }
+
+        var commands = new List<IUndoableCommand>();
+        foreach (LabelObject obj in targets)
+        {
+            if (obj is ImageObject image)
+            {
+                ImageAdjustments before = image.Adjustments.Clone();
+                ImageAdjustments after = image.Adjustments.Clone();
+                if (horizontal)
+                {
+                    after.FlipHorizontal = !after.FlipHorizontal;
+                }
+                else
+                {
+                    after.FlipVertical = !after.FlipVertical;
+                }
+
+                commands.Add(new SetPropertyCommand<ImageAdjustments>(
+                    "Flip image", () => image.Adjustments, v => image.Adjustments = v, after, (image.Id, "flip")));
+                _ = before;
+            }
+
+            if (targets.Count > 1)
+            {
+                RectMm b = obj.Bounds;
+                RectMm mirrored = horizontal
+                    ? b with { X = union.X + union.Width - (b.X - union.X) - b.Width }
+                    : b with { Y = union.Y + union.Height - (b.Y - union.Y) - b.Height };
+                commands.Add(new TransformObjectCommand(obj, mirrored, obj.RotationDegrees));
+            }
+        }
+
+        if (commands.Count > 0)
+        {
+            _session.Execute(commands.Count == 1 ? commands[0] : new CompositeCommand("Flip", commands));
+            RefreshCanvas();
+        }
+    }
+
+    private void RotateSelection(double degrees)
+    {
+        var commands = _session.Selection
+            .Where(o => !o.Locked)
+            .Select(obj => (IUndoableCommand)new TransformObjectCommand(
+                obj, obj.Bounds, ((obj.RotationDegrees + degrees) % 360 + 360) % 360))
+            .ToList();
+
+        if (commands.Count > 0)
+        {
+            _session.Execute(commands.Count == 1 ? commands[0] : new CompositeCommand("Rotate", commands));
+            _properties.RefreshAll();
+            RefreshCanvas();
+        }
     }
 
     private void AddObject(LabelObject obj)
@@ -1548,3 +1694,4 @@ public sealed class MainViewModel : ObservableObject
 }
 
 public sealed record RecentEntry(string Path, string Title);
+

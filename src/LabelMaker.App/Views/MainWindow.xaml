@@ -94,9 +94,16 @@
               <MenuItem Header="_Paste" InputGestureText="Ctrl+V" Command="{Binding PasteCommand}" />
               <MenuItem Header="_Duplicate" InputGestureText="Ctrl+D" Command="{Binding DuplicateCommand}" />
               <MenuItem Header="De_lete" InputGestureText="Del" Command="{Binding DeleteCommand}" />
+              <MenuItem Header="Select _all" InputGestureText="Ctrl+A" Command="{Binding SelectAllCommand}" />
               <Separator />
               <MenuItem Header="_Group" InputGestureText="Ctrl+G" Command="{Binding GroupCommand}" />
               <MenuItem Header="U_ngroup" InputGestureText="Ctrl+Shift+G" Command="{Binding UngroupCommand}" />
+              <MenuItem Header="_Lock / unlock" InputGestureText="Ctrl+L" Command="{Binding ToggleObjectLockCommand}" />
+              <Separator />
+              <MenuItem Header="Rotate 90° _right" Command="{Binding RotateCommand}" CommandParameter="90" />
+              <MenuItem Header="Rotate 90° _left" Command="{Binding RotateCommand}" CommandParameter="-90" />
+              <MenuItem Header="Flip _horizontal" Command="{Binding FlipHorizontalCommand}" />
+              <MenuItem Header="Flip _vertical" Command="{Binding FlipVerticalCommand}" />
             </MenuItem>
 
             <MenuItem Header="D_ata">
@@ -257,6 +264,13 @@
                 <MenuItem Header="Bring forward" Command="{Binding BringForwardCommand}" />
                 <MenuItem Header="Send backward" Command="{Binding SendBackwardCommand}" />
                 <MenuItem Header="Send to back" Command="{Binding SendToBackCommand}" />
+                <Separator />
+                <MenuItem Header="Rotate 90° right" Command="{Binding RotateCommand}" CommandParameter="90" />
+                <MenuItem Header="Rotate 90° left" Command="{Binding RotateCommand}" CommandParameter="-90" />
+                <MenuItem Header="Rotate 180°" Command="{Binding RotateCommand}" CommandParameter="180" />
+                <Separator />
+                <MenuItem Header="Flip horizontal" Command="{Binding FlipHorizontalCommand}" />
+                <MenuItem Header="Flip vertical" Command="{Binding FlipVerticalCommand}" />
               </ContextMenu>
             </Button.ContextMenu>
           </Button>
@@ -726,12 +740,47 @@
                     <TextBlock Text="Source" Style="{StaticResource FieldLabel}" Width="86" />
                     <TextBlock Text="{Binding ImageSourceFileName}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
                   </DockPanel>
+                  <TextBlock Text="{Binding ImageResolution}" FontSize="11.5" Margin="86,2,0,0"
+                             Foreground="{DynamicResource Br.TextMuted}" TextWrapping="Wrap" />
                   <Button Content="Replace image…" Style="{StaticResource GhostButton}" HorizontalAlignment="Left" Margin="0,8"
                           Command="{Binding DataContext.ReplaceImageCommand, RelativeSource={RelativeSource AncestorType=ScrollViewer}}" />
+
+                  <!-- Crop -->
+                  <DockPanel Margin="0,3">
+                    <TextBlock Text="Crop" Style="{StaticResource FieldLabel}" Width="86" />
+                    <TextBlock Text="{Binding CropSummary}" VerticalAlignment="Center" FontSize="12"
+                               TextTrimming="CharacterEllipsis" />
+                  </DockPanel>
+                  <StackPanel Orientation="Horizontal" Margin="86,4,0,6">
+                    <Button Content="Crop…" Style="{StaticResource GhostButton}" Margin="0,0,6,0"
+                            Command="{Binding DataContext.CropImageCommand, RelativeSource={RelativeSource AncestorType=ScrollViewer}}" />
+                    <Button Content="Reset" Style="{StaticResource GhostButton}"
+                            IsEnabled="{Binding HasCrop}"
+                            Command="{Binding DataContext.ClearCropCommand, RelativeSource={RelativeSource AncestorType=ScrollViewer}}" />
+                  </StackPanel>
+
                   <DockPanel Margin="0,3"><TextBlock Text="Fit" Style="{StaticResource FieldLabel}" Width="86" /><ComboBox ItemsSource="{Binding ImageFitModes}" SelectedItem="{Binding FitMode}" /></DockPanel>
-                  <DockPanel Margin="0,3"><TextBlock Text="Opacity" Style="{StaticResource FieldLabel}" Width="86" /><TextBox Style="{StaticResource NumberBox}" Text="{Binding ImageOpacity, StringFormat=0.00, UpdateSourceTrigger=LostFocus}" /></DockPanel>
-                  <DockPanel Margin="0,3"><TextBlock Text="Brightness" Style="{StaticResource FieldLabel}" Width="86" /><TextBox Style="{StaticResource NumberBox}" Text="{Binding Brightness, StringFormat=0.00, UpdateSourceTrigger=LostFocus}" /></DockPanel>
-                  <DockPanel Margin="0,3"><TextBlock Text="Contrast" Style="{StaticResource FieldLabel}" Width="86" /><TextBox Style="{StaticResource NumberBox}" Text="{Binding Contrast, StringFormat=0.00, UpdateSourceTrigger=LostFocus}" /></DockPanel>
+                  <CheckBox Content="Allow stretching (ignore aspect ratio)" IsChecked="{Binding AllowStretch}" Margin="0,6,0,3"
+                            ToolTip="Off keeps the image's proportions when the box is resized" />
+
+                  <DockPanel Margin="0,3">
+                    <TextBlock Text="Opacity" Style="{StaticResource FieldLabel}" Width="86" />
+                    <TextBox DockPanel.Dock="Right" Width="52" Style="{StaticResource NumberBox}"
+                             Text="{Binding ImageOpacity, StringFormat=0.00, UpdateSourceTrigger=LostFocus}" />
+                    <Slider Minimum="0" Maximum="1" Value="{Binding ImageOpacity}" Margin="0,0,8,0" />
+                  </DockPanel>
+                  <DockPanel Margin="0,3">
+                    <TextBlock Text="Brightness" Style="{StaticResource FieldLabel}" Width="86" />
+                    <TextBox DockPanel.Dock="Right" Width="52" Style="{StaticResource NumberBox}"
+                             Text="{Binding Brightness, StringFormat=0.00, UpdateSourceTrigger=LostFocus}" />
+                    <Slider Minimum="-1" Maximum="1" Value="{Binding Brightness}" Margin="0,0,8,0" />
+                  </DockPanel>
+                  <DockPanel Margin="0,3">
+                    <TextBlock Text="Contrast" Style="{StaticResource FieldLabel}" Width="86" />
+                    <TextBox DockPanel.Dock="Right" Width="52" Style="{StaticResource NumberBox}"
+                             Text="{Binding Contrast, StringFormat=0.00, UpdateSourceTrigger=LostFocus}" />
+                    <Slider Minimum="-1" Maximum="1" Value="{Binding Contrast}" Margin="0,0,8,0" />
+                  </DockPanel>
                   <CheckBox Content="Grayscale" IsChecked="{Binding Grayscale}" Margin="0,8,0,3" />
                   <StackPanel Orientation="Horizontal">
                     <CheckBox Content="Flip horizontal" IsChecked="{Binding FlipHorizontal}" Margin="0,0,16,0" />
@@ -752,12 +801,103 @@
               </ToggleButton>
               <StackPanel Style="{StaticResource SectionBody}" Visibility="{Binding IsChecked, ElementName=Sec5, Converter={StaticResource BoolToVis}}">
                 <StackPanel Visibility="{Binding IsShape, Converter={StaticResource BoolToVis}}">
-                  <DockPanel Margin="0,3"><TextBlock Text="Fill" Style="{StaticResource FieldLabel}" Width="86" /><TextBox Text="{Binding FillHex, UpdateSourceTrigger=LostFocus}" FontFamily="{StaticResource Font.Mono}" /></DockPanel>
-                  <DockPanel Margin="0,3"><TextBlock Text="Stroke" Style="{StaticResource FieldLabel}" Width="86" /><TextBox Text="{Binding StrokeHex, UpdateSourceTrigger=LostFocus}" FontFamily="{StaticResource Font.Mono}" /></DockPanel>
-                  <DockPanel Margin="0,3"><TextBlock Text="Stroke width" Style="{StaticResource FieldLabel}" Width="86" /><TextBox Style="{StaticResource NumberBox}" Text="{Binding StrokeWidthMm, StringFormat=0.## mm, UpdateSourceTrigger=LostFocus}" /></DockPanel>
-                  <DockPanel Margin="0,3"><TextBlock Text="Corner radius" Style="{StaticResource FieldLabel}" Width="86" /><TextBox Style="{StaticResource NumberBox}" Text="{Binding CornerRadiusMm, StringFormat=0.# mm, UpdateSourceTrigger=LostFocus}" /></DockPanel>
+                  <DockPanel Margin="0,3">
+                    <TextBlock Text="Shape" Style="{StaticResource FieldLabel}" Width="86" />
+                    <ComboBox ItemsSource="{Binding ShapeKinds}" SelectedItem="{Binding ShapeKindValue}" />
+                  </DockPanel>
+
+                  <!-- Fill -->
+                  <DockPanel Margin="0,8,0,3">
+                    <TextBlock Text="Fill" Style="{StaticResource FieldLabel}" Width="86" />
+                    <Button DockPanel.Dock="Right" Content="…" MinWidth="30" Padding="6,4" Margin="6,0,0,0"
+                            Style="{StaticResource GhostButton}" ToolTip="Colour picker, sliders and eyedropper"
+                            Command="{Binding DataContext.PickColorCommand, RelativeSource={RelativeSource AncestorType=ScrollViewer}}"
+                            CommandParameter="fill" />
+                    <Border Width="26" Background="{Binding FillBrush}" CornerRadius="6" Margin="0,0,6,0"
+                            BorderBrush="{DynamicResource Br.BorderStrong}" BorderThickness="1" />
+                    <TextBox Text="{Binding FillHex, UpdateSourceTrigger=LostFocus}" FontFamily="{StaticResource Font.Mono}" />
+                  </DockPanel>
+                  <DockPanel Margin="0,3">
+                    <TextBlock Text="Fill opacity" Style="{StaticResource FieldLabel}" Width="86" />
+                    <TextBlock Text="{Binding FillAlpha, StringFormat={}{0:0}%}" Width="38" TextAlignment="Right"
+                               DockPanel.Dock="Right" Foreground="{DynamicResource Br.TextMuted}" FontSize="11.5" />
+                    <Slider Minimum="0" Maximum="100" Value="{Binding FillAlpha}" />
+                  </DockPanel>
+                  <ItemsControl ItemsSource="{Binding Swatches}" Margin="86,2,0,6">
+                    <ItemsControl.ItemsPanel><ItemsPanelTemplate><WrapPanel /></ItemsPanelTemplate></ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate>
+                        <Button Width="18" Height="18" Margin="0,0,4,4" Padding="0"
+                                Background="{Binding Converter={StaticResource HexBrush}}"
+                                BorderBrush="{DynamicResource Br.BorderStrong}" BorderThickness="1"
+                                ToolTip="{Binding}"
+                                Command="{Binding DataContext.ApplySwatchCommand, RelativeSource={RelativeSource AncestorType=ScrollViewer}}"
+                                CommandParameter="{Binding StringFormat=fill|{0}}" />
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+
+                  <!-- Stroke -->
+                  <DockPanel Margin="0,3">
+                    <TextBlock Text="Stroke" Style="{StaticResource FieldLabel}" Width="86" />
+                    <Button DockPanel.Dock="Right" Content="…" MinWidth="30" Padding="6,4" Margin="6,0,0,0"
+                            Style="{StaticResource GhostButton}" ToolTip="Colour picker, sliders and eyedropper"
+                            Command="{Binding DataContext.PickColorCommand, RelativeSource={RelativeSource AncestorType=ScrollViewer}}"
+                            CommandParameter="stroke" />
+                    <Border Width="26" Background="{Binding StrokeBrush}" CornerRadius="6" Margin="0,0,6,0"
+                            BorderBrush="{DynamicResource Br.BorderStrong}" BorderThickness="1" />
+                    <TextBox Text="{Binding StrokeHex, UpdateSourceTrigger=LostFocus}" FontFamily="{StaticResource Font.Mono}" />
+                  </DockPanel>
+                  <ItemsControl ItemsSource="{Binding Swatches}" Margin="86,2,0,6">
+                    <ItemsControl.ItemsPanel><ItemsPanelTemplate><WrapPanel /></ItemsPanelTemplate></ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate>
+                        <Button Width="18" Height="18" Margin="0,0,4,4" Padding="0"
+                                Background="{Binding Converter={StaticResource HexBrush}}"
+                                BorderBrush="{DynamicResource Br.BorderStrong}" BorderThickness="1"
+                                ToolTip="{Binding}"
+                                Command="{Binding DataContext.ApplySwatchCommand, RelativeSource={RelativeSource AncestorType=ScrollViewer}}"
+                                CommandParameter="{Binding StringFormat=stroke|{0}}" />
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+
+                  <DockPanel Margin="0,3">
+                    <TextBlock Text="Stroke width" Style="{StaticResource FieldLabel}" Width="86" />
+                    <TextBox DockPanel.Dock="Right" Width="58" Style="{StaticResource NumberBox}"
+                             Text="{Binding StrokeWidthMm, StringFormat=0.##, UpdateSourceTrigger=LostFocus}" />
+                    <Slider Minimum="0" Maximum="5" Value="{Binding StrokeWidthMm}" Margin="0,0,8,0" />
+                  </DockPanel>
+                  <DockPanel Margin="0,3">
+                    <TextBlock Text="Line style" Style="{StaticResource FieldLabel}" Width="86" />
+                    <ComboBox ItemsSource="{Binding DashStyles}" SelectedItem="{Binding DashStyleValue}" />
+                  </DockPanel>
+
+                  <DockPanel Margin="0,3" Visibility="{Binding IsRoundRect, Converter={StaticResource BoolToVis}}">
+                    <TextBlock Text="Corner radius" Style="{StaticResource FieldLabel}" Width="86" />
+                    <TextBox DockPanel.Dock="Right" Width="58" Style="{StaticResource NumberBox}"
+                             Text="{Binding CornerRadiusMm, StringFormat=0.#, UpdateSourceTrigger=LostFocus}" />
+                    <Slider Minimum="0" Maximum="20" Value="{Binding CornerRadiusMm}" Margin="0,0,8,0" />
+                  </DockPanel>
+
+                  <StackPanel Visibility="{Binding IsPolygon, Converter={StaticResource BoolToVis}}">
+                    <DockPanel Margin="0,3">
+                      <TextBlock Text="Points" Style="{StaticResource FieldLabel}" Width="86" />
+                      <TextBlock DockPanel.Dock="Right" Width="38" TextAlignment="Right" FontSize="11.5"
+                                 Foreground="{DynamicResource Br.TextMuted}" Text="{Binding PolygonPoints, StringFormat=0}" />
+                      <Slider Minimum="3" Maximum="24" TickFrequency="1" IsSnapToTickEnabled="True"
+                              Value="{Binding PolygonPoints}" Margin="0,0,8,0" />
+                    </DockPanel>
+                    <DockPanel Margin="0,3">
+                      <TextBlock Text="Star depth" Style="{StaticResource FieldLabel}" Width="86" />
+                      <TextBlock DockPanel.Dock="Right" Width="38" TextAlignment="Right" FontSize="11.5"
+                                 Foreground="{DynamicResource Br.TextMuted}" Text="{Binding StarInnerRatio, StringFormat=0.00}" />
+                      <Slider Minimum="0" Maximum="0.95" Value="{Binding StarInnerRatio}" Margin="0,0,8,0"
+                              ToolTip="0 keeps a regular polygon; higher values pull the inner points in" />
+                    </DockPanel>
+                  </StackPanel>
                 </StackPanel>
-                <TextBlock Text="Select a rectangle, ellipse or line to edit fill and stroke."
+                <TextBlock Text="Select a shape, line or arrow to edit its fill, stroke and geometry."
                            Visibility="{Binding IsShape, Converter={StaticResource InverseBool}}"
                            Foreground="{DynamicResource Br.TextMuted}" FontSize="12" TextWrapping="Wrap" />
               </StackPanel>
@@ -784,8 +924,19 @@
                     <TextBox   Grid.Row="1" Grid.Column="4" Style="{StaticResource NumberBox}" Text="{Binding Height, StringFormat=0.00, UpdateSourceTrigger=LostFocus}" />
                     <TextBlock Grid.Row="2" Grid.Column="0" Text="Rot" Style="{StaticResource FieldLabel}" Width="22" />
                     <TextBox   Grid.Row="2" Grid.Column="1" Style="{StaticResource NumberBox}" Text="{Binding RotationDegrees, StringFormat=0.0, UpdateSourceTrigger=LostFocus}" />
+                    <TextBlock Grid.Row="2" Grid.Column="3" Text="°" Style="{StaticResource FieldLabel}" Width="22" />
                   </Grid>
-                  <TextBlock Text="All values in millimetres." Foreground="{DynamicResource Br.TextMuted}" FontSize="11.5" Margin="0,8,0,0" />
+
+                  <CheckBox Content="Keep proportions" IsChecked="{Binding LockAspect}" Margin="0,8,0,0"
+                            ToolTip="Typing a width also updates the height, like holding Shift while resizing" />
+
+                  <DockPanel Margin="0,10,0,0">
+                    <TextBlock Text="Units" Style="{StaticResource FieldLabel}" Width="52" />
+                    <ComboBox ItemsSource="{Binding DataContext.DisplayUnits, RelativeSource={RelativeSource AncestorType=ScrollViewer}}"
+                              SelectedItem="{Binding DataContext.DisplayUnit, RelativeSource={RelativeSource AncestorType=ScrollViewer}}" />
+                  </DockPanel>
+                  <TextBlock Foreground="{DynamicResource Br.TextMuted}" FontSize="11.5" Margin="0,6,0,0"
+                             Text="{Binding UnitSymbol, StringFormat=All values shown in {0}. Files always store millimetres.}" />
                 </StackPanel>
                 <TextBlock Text="Select an object to set exact coordinates."
                            Visibility="{Binding HasSelection, Converter={StaticResource InverseBool}}"

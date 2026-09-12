@@ -14,6 +14,46 @@ public sealed class BoolToVisibilityConverter : IValueConverter
         value is Visibility.Visible;
 }
 
+/// <summary>
+/// "#RRGGBB(AA)" to a brush, for the colour-palette swatch buttons. A fully
+/// transparent entry is drawn as a checkerboard so it is not mistaken for white.
+/// </summary>
+public sealed class HexBrushConverter : IValueConverter
+{
+    private static readonly Brush Checker = BuildChecker();
+
+    public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        if (value is string s && Core.Model.ColorRgba.TryParse(s, out Core.Model.ColorRgba c))
+        {
+            return c.A == 0 ? Checker : new SolidColorBrush(Color.FromArgb(c.A, c.R, c.G, c.B));
+        }
+
+        return Brushes.Transparent;
+    }
+
+    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) =>
+        Binding.DoNothing;
+
+    private static Brush BuildChecker()
+    {
+        var group = new DrawingGroup();
+        group.Children.Add(new GeometryDrawing(Brushes.White, null, new RectangleGeometry(new Rect(0, 0, 8, 8))));
+        var dark = new SolidColorBrush(Color.FromRgb(0xD6, 0xDC, 0xE6));
+        group.Children.Add(new GeometryDrawing(dark, null, new RectangleGeometry(new Rect(0, 0, 4, 4))));
+        group.Children.Add(new GeometryDrawing(dark, null, new RectangleGeometry(new Rect(4, 4, 4, 4))));
+        var brush = new DrawingBrush(group)
+        {
+            TileMode = TileMode.Tile,
+            Viewport = new Rect(0, 0, 8, 8),
+            ViewportUnits = BrushMappingMode.Absolute,
+            Stretch = Stretch.None,
+        };
+        brush.Freeze();
+        return brush;
+    }
+}
+
 public sealed class InverseBoolToVisibilityConverter : IValueConverter
 {
     public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture) =>

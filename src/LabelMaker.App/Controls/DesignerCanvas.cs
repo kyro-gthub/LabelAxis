@@ -19,6 +19,11 @@ namespace LabelMaker.App.Controls;
 /// Navigation: wheel = zoom to cursor · middle / Space+left / empty-space drag =
 /// pan · Ctrl+0 actual size · Ctrl+1 fit · arrows nudge (Shift ×10) or pan.
 ///
+/// Transforms, all sampled live so a modifier can be pressed mid-drag:
+/// drag a handle = resize · Shift = keep proportions · Ctrl = resize about the
+/// centre · Alt = rotate (Shift snaps to 15°) · Shift while moving = constrain to
+/// one axis.
+///
 /// Guides (spec §2): drag from the top or left ruler to drop a guide; drag a
 /// guide to move it; drag it back onto a ruler to delete it. Objects snap their
 /// edges / centres to guides, to other objects, and to the label edges / centre
@@ -51,9 +56,12 @@ public sealed class DesignerCanvas : FrameworkElement
     private Vector _panStartValue;
     private bool _dragging;
     private bool _resizing;
+    private bool _rotating;
     private Handle _activeHandle = Handle.None;
     private Point _dragStartMm;
     private Dictionary<string, RectMm> _dragStartBounds = new();
+    private Dictionary<string, double> _dragStartRotation = new();
+    private double _rotateStartAngle;
     private IReadOnlyList<SnapLine> _activeSnapLines = Array.Empty<SnapLine>();
 
     private GuideDrag? _guideDrag;
@@ -685,8 +693,13 @@ public sealed class DesignerCanvas : FrameworkElement
             if (h != Handle.None)
             {
                 _resizing = true;
+                // Alt turns the handles into a rotation ring, the way every design
+                // tool does it; the modifier is sampled again on each move so it can
+                // be pressed or released mid-drag.
+                _rotating = Keyboard.Modifiers.HasFlag(ModifierKeys.Alt);
                 _activeHandle = h;
                 CaptureStart();
+                _rotateStartAngle = AngleFromCentre(obj.Bounds.Center, mm);
                 CaptureMouse();
                 e.Handled = true;
                 return;
@@ -781,6 +794,30 @@ public sealed class DesignerCanvas : FrameworkElement
         double dx = pMm.X - _dragStartMm.X;
         double dy = pMm.Y - _dragStartMm.Y;
 
+        bool shift = Keyboard.Modifiers.HasFlag(ModifierKeys.Shift);
+        bool ctrl = Keyboard.Modifiers.HasFlag(ModifierKeys.Control);
+        bool alt = Keyboard.Modifiers.HasFlag(ModifierKeys.Alt);
+
+        if (_resizing && (alt || _rotating))
+        {
+            RotateSelection(pMm, shift);
+            InvalidateVisual();
+            return;
+        }
+
+        if (!_resizing && shift)
+        {
+            // Shift while moving constrains to the dominant axis.
+            if (Math.Abs(dx) > Math.Abs(dy))
+            {
+                dy = 0;
+            }
+            else
+            {
+                dx = 0;
+            }
+        }
+
         foreach (LabelObject obj in _session.Selection)
         {
             if (obj.Locked || !_dragStartBounds.TryGetValue(obj.Id, out RectMm start))
@@ -788,13 +825,44 @@ public sealed class DesignerCanvas : FrameworkElement
                 continue;
             }
 
-            obj.Bounds = _resizing ? ResizeRect(start, _activeHandle, dx, dy) : start.Offset(dx, dy);
+            obj.Bounds = _resizing
+                ? ResizeRect(start, _activeHandle, dx, dy, proportional: shift, fromCentre: ctrl)
+                : start.Offset(dx, dy);
         }
 
-        _activeSnapLines = _resizing ? ApplyResizeSnap() : ApplyMoveSnap();
+        // Snapping fights a constrained resize, so it only applies to a plain drag.
+        _activeSnapLines = _resizing
+            ? (shift || ctrl ? Array.Empty<SnapLine>() : ApplyResizeSnap())
+            : ApplyMoveSnap();
 
         InvalidateVisual();
     }
+
+    /// <summary>Alt-dragging a handle rotates about the object's centre; Shift snaps to 15°.</summary>
+    private void RotateSelection(Point pointerMm, bool snapAngle)
+    {
+        _rotating = true;
+        foreach (LabelObject obj in _session.Selection)
+        {
+            if (obj.Locked || !_dragStartBounds.TryGetValue(obj.Id, out RectMm start) ||
+                !_dragStartRotation.TryGetValue(obj.Id, out double startAngle))
+            {
+                continue;
+            }
+
+            double delta = AngleFromCentre(start.Center, pointerMm) - _rotateStartAngle;
+            double angle = startAngle + delta;
+            if (snapAngle)
+            {
+                angle = Math.Round(angle / 15.0) * 15.0;
+            }
+
+            obj.RotationDegrees = Math.Round(((angle % 360) + 360) % 360, 1);
+        }
+    }
+
+    private static double AngleFromCentre(PointMm centre, Point p) =>
+        Math.Atan2(p.Y - centre.Y, p.X - centre.X) * 180.0 / Math.PI;
 
     protected override void OnMouseUp(MouseButtonEventArgs e)
     {
@@ -840,11 +908,17 @@ public sealed class DesignerCanvas : FrameworkElement
             var commands = new List<IUndoableCommand>();
             foreach (LabelObject obj in _session.Selection)
             {
-                if (_dragStartBounds.TryGetValue(obj.Id, out RectMm start) && start != obj.Bounds)
+                bool movedOrResized = _dragStartBounds.TryGetValue(obj.Id, out RectMm start) && start != obj.Bounds;
+                bool rotated = _dragStartRotation.TryGetValue(obj.Id, out double startAngle) &&
+                               Math.Abs(startAngle - obj.RotationDegrees) > 0.001;
+
+                if (movedOrResized || rotated)
                 {
                     RectMm final = obj.Bounds;
+                    double finalAngle = obj.RotationDegrees;
                     obj.Bounds = start;
-                    commands.Add(new TransformObjectCommand(obj, final, obj.RotationDegrees));
+                    obj.RotationDegrees = startAngle;
+                    commands.Add(new TransformObjectCommand(obj, final, finalAngle));
                 }
             }
 
@@ -858,9 +932,10 @@ public sealed class DesignerCanvas : FrameworkElement
             }
         }
 
-        _dragging = _resizing = false;
+        _dragging = _resizing = _rotating = false;
         _activeHandle = Handle.None;
         _dragStartBounds.Clear();
+        _dragStartRotation.Clear();
         _activeSnapLines = Array.Empty<SnapLine>();
         ReleaseMouseCapture();
         InvalidateVisual();
@@ -1090,6 +1165,33 @@ public sealed class DesignerCanvas : FrameworkElement
             }
         }
 
+        // Grid snapping applies to the edge being dragged too, not just to moves:
+        // only the edges that actually moved are rounded, and only when no guide or
+        // object edge already claimed them.
+        if (Settings is { SnapToGrid: true, GridSizeMm: > 0 } grid && lines.Count == 0)
+        {
+            double g = grid.GridSizeMm;
+            if (left)
+            {
+                l = Math.Round(l / g) * g;
+            }
+
+            if (right)
+            {
+                rr = Math.Round(rr / g) * g;
+            }
+
+            if (top)
+            {
+                t = Math.Round(t / g) * g;
+            }
+
+            if (bottom)
+            {
+                bb = Math.Round(bb / g) * g;
+            }
+        }
+
         if (rr - l >= 1 && bb - t >= 1)
         {
             obj.Bounds = RectMm.FromLtrb(l, t, rr, bb);
@@ -1186,7 +1288,11 @@ public sealed class DesignerCanvas : FrameworkElement
         Cursor = Cursors.Arrow;
     }
 
-    private void CaptureStart() => _dragStartBounds = _session!.Selection.ToDictionary(o => o.Id, o => o.Bounds);
+    private void CaptureStart()
+    {
+        _dragStartBounds = _session!.Selection.ToDictionary(o => o.Id, o => o.Bounds);
+        _dragStartRotation = _session.Selection.ToDictionary(o => o.Id, o => o.RotationDegrees);
+    }
 
     private LabelObject? HitObject(Point mm)
     {
@@ -1231,8 +1337,39 @@ public sealed class DesignerCanvas : FrameworkElement
         return Handle.None;
     }
 
-    private static RectMm ResizeRect(RectMm start, Handle handle, double dx, double dy)
+    /// <summary>
+    /// Handle drag maths. <paramref name="proportional"/> (Shift) keeps the original
+    /// aspect ratio; <paramref name="fromCentre"/> (Ctrl) grows or shrinks about the
+    /// object's centre instead of the opposite edge. Holding both does both.
+    /// </summary>
+    private static RectMm ResizeRect(
+        RectMm start, Handle handle, double dx, double dy, bool proportional = false, bool fromCentre = false)
     {
+        if (proportional && start.Width > 0 && start.Height > 0 &&
+            handle is Handle.TopLeft or Handle.TopRight or Handle.BottomLeft or Handle.BottomRight)
+        {
+            // Drive both axes from whichever the pointer moved further on, so the
+            // corner tracks the cursor without the box drifting off the diagonal.
+            double aspect = start.Width / start.Height;
+            bool left = handle is Handle.TopLeft or Handle.BottomLeft;
+            bool top = handle is Handle.TopLeft or Handle.TopRight;
+
+            double widthDelta = left ? -dx : dx;
+            double heightDelta = top ? -dy : dy;
+
+            if (Math.Abs(widthDelta) * (1 / aspect) >= Math.Abs(heightDelta))
+            {
+                heightDelta = widthDelta / aspect;
+            }
+            else
+            {
+                widthDelta = heightDelta * aspect;
+            }
+
+            dx = left ? -widthDelta : widthDelta;
+            dy = top ? -heightDelta : heightDelta;
+        }
+
         double l = start.Left, t = start.Top, r = start.Right, b = start.Bottom;
         switch (handle)
         {
@@ -1244,6 +1381,22 @@ public sealed class DesignerCanvas : FrameworkElement
             case Handle.Bottom: b += dy; break;
             case Handle.BottomLeft: l += dx; b += dy; break;
             case Handle.Left: l += dx; break;
+        }
+
+        if (fromCentre)
+        {
+            // Mirror the same movement onto the opposite edge.
+            switch (handle)
+            {
+                case Handle.TopLeft: r -= dx; b -= dy; break;
+                case Handle.Top: b -= dy; break;
+                case Handle.TopRight: l -= dx; b -= dy; break;
+                case Handle.Right: l -= dx; break;
+                case Handle.BottomRight: l -= dx; t -= dy; break;
+                case Handle.Bottom: t -= dy; break;
+                case Handle.BottomLeft: r -= dx; t -= dy; break;
+                case Handle.Left: r -= dx; break;
+            }
         }
 
         const double min = 1.0;
