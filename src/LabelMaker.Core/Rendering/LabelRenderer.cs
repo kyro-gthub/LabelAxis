@@ -231,6 +231,20 @@ public sealed class LabelRenderer
         ImageAdjustments adj = image.Adjustments;
         double opacity = image.IsWatermark ? 0.25 : 1.0;
 
+        // "Shape crop": clip the whole object to a circle or rounded box first.
+        bool shapeClipped = image.ClipShape != ImageClipShape.None;
+        if (shapeClipped)
+        {
+            if (image.ClipShape == ImageClipShape.Ellipse)
+            {
+                surface.PushClipEllipse(local);
+            }
+            else
+            {
+                surface.PushClipRectangle(local, Math.Max(0, image.ClipCornerRadiusMm));
+            }
+        }
+
         double cropW = Math.Clamp(adj.CropWidth, 0.01, 1.0);
         double cropH = Math.Clamp(adj.CropHeight, 0.01, 1.0);
         double cropX = Math.Clamp(adj.CropX, 0.0, 1.0 - cropW);
@@ -245,6 +259,11 @@ public sealed class LabelRenderer
         if (!adj.HasCrop)
         {
             surface.DrawImage(decoded, dest, adj, opacity);
+            if (shapeClipped)
+            {
+                surface.Pop();
+            }
+
             return;
         }
 
@@ -260,6 +279,11 @@ public sealed class LabelRenderer
         surface.PushClipRectangle(dest);
         surface.DrawImage(decoded, full, adj, opacity);
         surface.Pop();
+
+        if (shapeClipped)
+        {
+            surface.Pop();
+        }
     }
 
     private static void RenderShape(ShapeObject shape, RectMm local, IDrawingSurface surface)

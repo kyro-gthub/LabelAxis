@@ -759,6 +759,18 @@
                             Command="{Binding DataContext.ClearCropCommand, RelativeSource={RelativeSource AncestorType=ScrollViewer}}" />
                   </StackPanel>
 
+                  <DockPanel Margin="0,3">
+                    <TextBlock Text="Crop to shape" Style="{StaticResource FieldLabel}" Width="86" />
+                    <ComboBox ItemsSource="{Binding ClipShapes}" SelectedItem="{Binding ClipShape}"
+                              ToolTip="Clips the image to a circle or a rounded box" />
+                  </DockPanel>
+                  <DockPanel Margin="0,3" Visibility="{Binding IsRoundedClip, Converter={StaticResource BoolToVis}}">
+                    <TextBlock Text="Clip radius" Style="{StaticResource FieldLabel}" Width="86" />
+                    <TextBox DockPanel.Dock="Right" Width="52" Style="{StaticResource NumberBox}"
+                             Text="{Binding ClipCornerRadiusMm, StringFormat=0.#, UpdateSourceTrigger=LostFocus}" />
+                    <Slider Minimum="0" Maximum="20" Value="{Binding ClipCornerRadiusMm}" Margin="0,0,8,0" />
+                  </DockPanel>
+
                   <DockPanel Margin="0,3"><TextBlock Text="Fit" Style="{StaticResource FieldLabel}" Width="86" /><ComboBox ItemsSource="{Binding ImageFitModes}" SelectedItem="{Binding FitMode}" /></DockPanel>
                   <CheckBox Content="Allow stretching (ignore aspect ratio)" IsChecked="{Binding AllowStretch}" Margin="0,6,0,3"
                             ToolTip="Off keeps the image's proportions when the box is resized" />
