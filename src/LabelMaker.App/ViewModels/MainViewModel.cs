@@ -783,18 +783,22 @@ public sealed class MainViewModel : ObservableObject
             {
                 "stroke" => _properties.StrokeHex,
                 "gradient" => _properties.GradientToHex,
+                "text" => _properties.TextColorHex,
+                "highlight" => _properties.HighlightHex,
                 _ => _properties.FillHex,
             };
 
             if (!ColorRgba.TryParse(currentHex, out ColorRgba current))
             {
-                current = target == "stroke" ? ColorRgba.Black : ColorRgba.Transparent;
+                current = target is "stroke" or "text" ? ColorRgba.Black : ColorRgba.Transparent;
             }
 
             string title = target switch
             {
                 "stroke" => "Stroke colour",
                 "gradient" => "Gradient end colour",
+                "text" => "Text colour",
+                "highlight" => "Highlight colour",
                 _ => "Fill colour",
             };
 

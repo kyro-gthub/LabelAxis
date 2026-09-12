@@ -17,6 +17,7 @@ public partial class MainWindow : Window
     private readonly MainViewModel _vm;
     private readonly DesignerCanvas _canvas;
     private readonly DispatcherTimer _autoSaveTimer;
+    private readonly InlineTextEditor _textEditor;
     private MenuItem _removeGuideItem = null!;
 
     public MainWindow(AppEnvironment env)
@@ -33,7 +34,15 @@ public partial class MainWindow : Window
         _canvas = new DesignerCanvas(_vm.SheetRenderer);
         _canvas.ContextMenu = BuildCanvasContextMenu();
         _canvas.ContextMenu.Opened += OnCanvasContextMenuOpened;
-        CanvasHost.Child = _canvas;
+
+        // The canvas draws everything itself; real controls (the in-place text
+        // editor) live in a transparent overlay stacked on top of it.
+        var overlay = new Canvas { ClipToBounds = true };
+        var stack = new Grid();
+        stack.Children.Add(_canvas);
+        stack.Children.Add(overlay);
+        CanvasHost.Child = stack;
+        _textEditor = new InlineTextEditor(_canvas, overlay, () => _vm.Session);
         _vm.AttachCanvas(_canvas);
         Loaded += (_, _) => _canvas.Focus();
         _canvas.MouseEnter += (_, _) =>
