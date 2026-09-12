@@ -270,6 +270,15 @@ public sealed class MainViewModel : ObservableObject
 
     public void NotifyAutoSaveSettingsChanged() => AutoSaveSettingsChanged?.Invoke(this, EventArgs.Empty);
 
+    /// <summary>Switches the live color palette (Settings > Appearance) and repaints the canvas, whose
+    /// rulers/workspace chrome are drawn with theme-aware colors that aren't resource-bound.</summary>
+    public void ApplyTheme(bool dark)
+    {
+        _env.Settings.DarkTheme = dark;
+        Services.ThemeManager.Apply(dark ? Services.AppTheme.Dark : Services.AppTheme.Light);
+        RefreshCanvas();
+    }
+
     public bool LockGuides
     {
         get => _session.ActiveLabel.Guides.Locked;
@@ -425,7 +434,7 @@ public sealed class MainViewModel : ObservableObject
         AddPageCommand = new RelayCommand(() => _session.AddPage());
         DuplicatePageCommand = new RelayCommand(() => _session.DuplicateActivePage());
         RemovePageCommand = new RelayCommand(
-            () => { if (_shell.Confirm($"Remove page \"{ActivePageName}\"?")) _session.RemoveActivePage(); },
+            () => { if (!_env.Settings.ConfirmDestructiveActions || _shell.Confirm($"Remove page \"{ActivePageName}\"?")) _session.RemoveActivePage(); },
             () => !_session.IsEditingMaster);
         RenamePageCommand = new RelayCommand(RenameActivePage, () => !_session.IsEditingMaster);
         AddVerticalGuideCommand = new RelayCommand(() => _canvas?.InsertGuideAtContext(vertical: true));
@@ -457,7 +466,9 @@ public sealed class MainViewModel : ObservableObject
         CenterVerticalCommand = new RelayCommand(() => Align(a => a.Y = (_session.ActiveLabel.SizeMm.Height - a.H) / 2), AnySel);
 
         ImportDataCommand = new RelayCommand(ImportData);
-        ClearDataCommand = new RelayCommand(() => _session.SetData(null, null), () => _session.Data is not null);
+        ClearDataCommand = new RelayCommand(
+            () => { if (!_env.Settings.ConfirmDestructiveActions || _shell.Confirm("Clear the connected data source?")) _session.SetData(null, null); },
+            () => _session.Data is not null);
         SequencesCommand = new RelayCommand(() => _shell.ShowSequenceManager());
         DuplicateCheckCommand = new RelayCommand(DuplicateCheck);
         BulkBarcodeCommand = new RelayCommand(() => _shell.ShowBulkBarcode());

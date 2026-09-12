@@ -1,20 +1,28 @@
 <Window x:Class="LabelMaker.App.Views.SettingsWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Settings" Height="560" Width="520" WindowStartupLocation="CenterOwner"
+        Title="Settings" Height="700" Width="520" WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize">
   <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="18">
     <StackPanel>
-      <TextBlock Text="Appearance" FontWeight="SemiBold" FontSize="13" Margin="0,0,0,8" Foreground="{StaticResource Br.TextMuted}" />
+      <TextBlock Text="Appearance" FontWeight="SemiBold" FontSize="13" Margin="0,0,0,8" Foreground="{DynamicResource Br.TextMuted}" />
       <GroupBox>
         <StackPanel>
+          <TextBlock Text="Theme" Style="{StaticResource FieldLabel}" Margin="0,2,0,4" />
+          <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+            <RadioButton x:Name="ThemeLightBox" GroupName="theme" Content="Light" Margin="0,0,18,0" />
+            <RadioButton x:Name="ThemeDarkBox" GroupName="theme" Content="Dark" />
+          </StackPanel>
+          <TextBlock Text="Takes effect after restarting Label Maker." TextWrapping="Wrap"
+                     Foreground="{DynamicResource Br.TextMuted}" FontSize="11.5" Margin="0,0,0,4" />
+          <Separator Margin="0,6" />
           <CheckBox x:Name="ReduceMotionBox" Content="Reduce hover effects (e.g. the top menu's highlight/underline)" Margin="0,4" />
           <TextBlock Text="Turns off the fade/underline that appears while hovering File, Edit, etc. in the menu bar."
-                     TextWrapping="Wrap" Foreground="{StaticResource Br.TextMuted}" FontSize="11.5" Margin="20,2,0,4" />
+                     TextWrapping="Wrap" Foreground="{DynamicResource Br.TextMuted}" FontSize="11.5" Margin="20,2,0,4" />
         </StackPanel>
       </GroupBox>
 
-      <TextBlock Text="Canvas &amp; snapping" FontWeight="SemiBold" FontSize="13" Margin="0,14,0,8" Foreground="{StaticResource Br.TextMuted}" />
+      <TextBlock Text="Canvas &amp; snapping" FontWeight="SemiBold" FontSize="13" Margin="0,14,0,8" Foreground="{DynamicResource Br.TextMuted}" />
       <GroupBox>
         <StackPanel>
           <DockPanel Margin="0,3">
@@ -28,7 +36,21 @@
         </StackPanel>
       </GroupBox>
 
-      <TextBlock Text="Auto-save &amp; recovery" FontWeight="SemiBold" FontSize="13" Margin="0,14,0,8" Foreground="{StaticResource Br.TextMuted}" />
+      <TextBlock Text="Editing" FontWeight="SemiBold" FontSize="13" Margin="0,14,0,8" Foreground="{DynamicResource Br.TextMuted}" />
+      <GroupBox>
+        <StackPanel>
+          <CheckBox x:Name="ConfirmDestructiveBox" Content="Confirm before removing a page or clearing the data source" Margin="0,4" />
+        </StackPanel>
+      </GroupBox>
+
+      <TextBlock Text="Startup" FontWeight="SemiBold" FontSize="13" Margin="0,14,0,8" Foreground="{DynamicResource Br.TextMuted}" />
+      <GroupBox>
+        <StackPanel>
+          <CheckBox x:Name="ReopenLastProjectBox" Content="Reopen the last project automatically" Margin="0,4" />
+        </StackPanel>
+      </GroupBox>
+
+      <TextBlock Text="Auto-save &amp; recovery" FontWeight="SemiBold" FontSize="13" Margin="0,14,0,8" Foreground="{DynamicResource Br.TextMuted}" />
       <GroupBox>
         <StackPanel>
           <CheckBox x:Name="AutoSaveEnabledBox" Content="Auto-save a recovery snapshot" Margin="0,4" />
@@ -39,7 +61,7 @@
         </StackPanel>
       </GroupBox>
 
-      <TextBlock Text="Files" FontWeight="SemiBold" FontSize="13" Margin="0,14,0,8" Foreground="{StaticResource Br.TextMuted}" />
+      <TextBlock Text="Files" FontWeight="SemiBold" FontSize="13" Margin="0,14,0,8" Foreground="{DynamicResource Br.TextMuted}" />
       <GroupBox>
         <StackPanel>
           <DockPanel Margin="0,3">
@@ -49,7 +71,16 @@
         </StackPanel>
       </GroupBox>
 
-      <TextBlock x:Name="StatusText" TextWrapping="Wrap" Foreground="{StaticResource Br.TextMuted}" Margin="0,10,0,0" />
+      <TextBlock Text="About" FontWeight="SemiBold" FontSize="13" Margin="0,14,0,8" Foreground="{DynamicResource Br.TextMuted}" />
+      <GroupBox>
+        <StackPanel>
+          <TextBlock Text="Label Maker 1.0" FontFamily="{StaticResource Font.UiSemiBold}" FontSize="13" Margin="0,2" />
+          <TextBlock Text="Windows-first label design &amp; printing. Formtec templates · barcodes · variable data · accurate printing."
+                     TextWrapping="Wrap" Foreground="{DynamicResource Br.TextMuted}" FontSize="11.5" Margin="0,2" />
+        </StackPanel>
+      </GroupBox>
+
+      <TextBlock x:Name="StatusText" TextWrapping="Wrap" Foreground="{DynamicResource Br.TextMuted}" Margin="0,10,0,0" />
 
       <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
         <Button Content="Cancel" IsCancel="True" Padding="16,6" Margin="0,0,8,0" />

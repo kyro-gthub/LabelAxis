@@ -1,4 +1,5 @@
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Threading;
 using LabelMaker.App.Services;
@@ -15,6 +16,7 @@ public partial class App : Application
     {
         base.OnStartup(e);
         Environment = new AppEnvironment();
+        ThemeManager.Apply(Environment.Settings.DarkTheme ? AppTheme.Dark : AppTheme.Light);
 
         DispatcherUnhandledException += OnUnhandledException;
 
@@ -23,6 +25,7 @@ public partial class App : Application
         window.Show();
 
         // Crash recovery prompt (spec §32).
+        bool restoredFromRecovery = false;
         IReadOnlyList<RecoveryInfo> recoverable = Environment.AutoSave.FindRecoverable();
         if (recoverable.Count > 0)
         {
@@ -37,6 +40,7 @@ public partial class App : Application
             if (result == MessageBoxResult.Yes)
             {
                 window.RestoreRecovered(info);
+                restoredFromRecovery = true;
             }
             else
             {
@@ -47,6 +51,11 @@ public partial class App : Application
         if (e.Args.Length > 0 && File.Exists(e.Args[0]))
         {
             window.OpenProjectPath(e.Args[0]);
+        }
+        else if (!restoredFromRecovery && Environment.Settings.ReopenLastProjectOnStart &&
+                 Environment.Settings.RecentProjects.FirstOrDefault() is { } last && File.Exists(last.Path))
+        {
+            window.OpenProjectPath(last.Path);
         }
     }
 

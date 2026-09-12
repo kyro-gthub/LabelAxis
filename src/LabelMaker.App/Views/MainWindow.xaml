@@ -29,7 +29,7 @@
       <Setter Property="Width" Value="26" />
       <Setter Property="Height" Value="26" />
       <Setter Property="CornerRadius" Value="8" />
-      <Setter Property="Background" Value="{StaticResource Br.AccentSoft}" />
+      <Setter Property="Background" Value="{DynamicResource Br.AccentSoft}" />
       <Setter Property="HorizontalAlignment" Value="Center" />
     </Style>
     <Style x:Key="RibbonIconGlyph" TargetType="Image">
@@ -48,14 +48,14 @@
     <Style x:Key="GroupCaption" TargetType="TextBlock">
       <Setter Property="FontFamily" Value="{StaticResource Font.UiSemiBold}" />
       <Setter Property="FontSize" Value="9" />
-      <Setter Property="Foreground" Value="{StaticResource Br.TextMuted}" />
+      <Setter Property="Foreground" Value="{DynamicResource Br.TextMuted}" />
       <Setter Property="HorizontalAlignment" Value="Center" />
       <Setter Property="Margin" Value="0,3,0,0" />
     </Style>
     <Style x:Key="PanelSectionHeader" TargetType="TextBlock">
       <Setter Property="FontFamily" Value="{StaticResource Font.UiSemiBold}" />
       <Setter Property="FontSize" Value="11" />
-      <Setter Property="Foreground" Value="{StaticResource Br.TextMuted}" />
+      <Setter Property="Foreground" Value="{DynamicResource Br.TextMuted}" />
       <Setter Property="Margin" Value="2,0,0,6" />
     </Style>
     <!-- Clickable "› Appearance" collapsible-section header (spec 3.8's "Collapsible Appearance section"). -->
@@ -66,7 +66,7 @@
         <Setter.Value>
           <ControlTemplate TargetType="ToggleButton">
             <StackPanel Orientation="Horizontal" Background="Transparent">
-              <TextBlock x:Name="chev" Text="›" FontFamily="{StaticResource Font.UiSemiBold}" Foreground="{StaticResource Br.Accent}" Margin="0,0,5,0" />
+              <TextBlock x:Name="chev" Text="›" FontFamily="{StaticResource Font.UiSemiBold}" Foreground="{DynamicResource Br.Accent}" Margin="0,0,5,0" />
               <ContentPresenter />
             </StackPanel>
             <ControlTemplate.Triggers>
@@ -79,13 +79,13 @@
       </Setter>
       <Setter Property="FontFamily" Value="{StaticResource Font.UiSemiBold}" />
       <Setter Property="FontSize" Value="12.5" />
-      <Setter Property="Foreground" Value="{StaticResource Br.Text2}" />
+      <Setter Property="Foreground" Value="{DynamicResource Br.Text2}" />
     </Style>
   </Window.Resources>
 
   <DockPanel>
     <!-- ============ Title / header band (pastel gradient) + menu + ribbon toolbar ============ -->
-    <Border DockPanel.Dock="Top" Background="{StaticResource Br.TitleBarGradient}" Panel.ZIndex="10">
+    <Border DockPanel.Dock="Top" Background="{DynamicResource Br.TitleBarGradient}" Panel.ZIndex="10">
       <Border.Effect>
         <DropShadowEffect BlurRadius="14" ShadowDepth="3" Direction="270" Opacity="0.16" Color="#2A1E7A" />
       </Border.Effect>
@@ -94,12 +94,12 @@
           <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" VerticalAlignment="Center">
             <Image Source="/Assets/logo.png" Width="22" Height="22" Margin="0,0,9,0" />
             <TextBlock VerticalAlignment="Center" FontSize="15.5">
-              <Run Text="Label" FontFamily="{StaticResource Font.UiExtraBold}" Foreground="{StaticResource Br.Text}" />
-              <Run Text=" Maker" FontFamily="{StaticResource Font.UiExtraBold}" Foreground="{StaticResource Br.Accent}" />
+              <Run Text="Label" FontFamily="{StaticResource Font.UiExtraBold}" Foreground="{DynamicResource Br.Text}" />
+              <Run Text=" Maker" FontFamily="{StaticResource Font.UiExtraBold}" Foreground="{DynamicResource Br.Accent}" />
             </TextBlock>
           </StackPanel>
           <TextBlock DockPanel.Dock="Right" Text="{Binding ActivePageName}" VerticalAlignment="Center"
-                     Foreground="{StaticResource Br.Text2}" FontFamily="{StaticResource Font.UiMedium}" FontSize="12" />
+                     Foreground="{DynamicResource Br.Text2}" FontFamily="{StaticResource Font.UiMedium}" FontSize="12" />
         </DockPanel>
 
         <Menu>
@@ -329,17 +329,17 @@
     <StatusBar DockPanel.Dock="Bottom">
       <StatusBarItem>
         <StackPanel Orientation="Horizontal">
-          <Ellipse Width="8" Height="8" Fill="{StaticResource Br.Ok}" VerticalAlignment="Center" Margin="0,0,8,0" />
-          <TextBlock Text="{Binding StatusText}" VerticalAlignment="Center" Foreground="{StaticResource Br.Text}" FontFamily="{StaticResource Font.UiMedium}" />
+          <Ellipse Width="8" Height="8" Fill="{DynamicResource Br.Ok}" VerticalAlignment="Center" Margin="0,0,8,0" />
+          <TextBlock Text="{Binding StatusText}" VerticalAlignment="Center" Foreground="{DynamicResource Br.Text}" FontFamily="{StaticResource Font.UiMedium}" />
         </StackPanel>
       </StatusBarItem>
       <Separator />
       <StatusBarItem><TextBlock Text="{Binding SelectionInfo}" FontFamily="{StaticResource Font.Mono}" FontSize="11.5" /></StatusBarItem>
       <StatusBarItem HorizontalAlignment="Right">
         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-          <Border Background="{StaticResource Br.Bg}" BorderBrush="{StaticResource Br.Border}" BorderThickness="1" CornerRadius="6" Padding="2">
+          <Border Background="{DynamicResource Br.Bg}" BorderBrush="{DynamicResource Br.Border}" BorderThickness="1" CornerRadius="6" Padding="2">
             <StackPanel Orientation="Horizontal">
-              <TextBlock Text="Record" Margin="6,0,4,0" VerticalAlignment="Center" Foreground="{StaticResource Br.TextMuted}" />
+              <TextBlock Text="Record" Margin="6,0,4,0" VerticalAlignment="Center" Foreground="{DynamicResource Br.TextMuted}" />
               <Button Content="⏮" Command="{Binding FirstRecordCommand}" Style="{StaticResource ToolButton}" MinWidth="26" Padding="4,2" />
               <Button Content="◀" Command="{Binding PrevRecordCommand}" Style="{StaticResource ToolButton}" MinWidth="26" Padding="4,2" />
               <TextBlock Text="{Binding RecordText}" Margin="8,0" VerticalAlignment="Center" MinWidth="56" TextAlignment="Center" FontFamily="{StaticResource Font.Mono}" />
@@ -347,7 +347,7 @@
               <Button Content="⏭" Command="{Binding LastRecordCommand}" Style="{StaticResource ToolButton}" MinWidth="26" Padding="4,2" />
             </StackPanel>
           </Border>
-          <Border Background="{StaticResource Br.Bg}" BorderBrush="{StaticResource Br.Border}" BorderThickness="1" CornerRadius="6" Padding="2" Margin="8,0,0,0">
+          <Border Background="{DynamicResource Br.Bg}" BorderBrush="{DynamicResource Br.Border}" BorderThickness="1" CornerRadius="6" Padding="2" Margin="8,0,0,0">
             <StackPanel Orientation="Horizontal">
               <Button Content="−" Command="{Binding ZoomOutCommand}" Style="{StaticResource ToolButton}" MinWidth="26" Padding="4,2" />
               <TextBlock Text="{Binding ZoomText}" VerticalAlignment="Center" MinWidth="46" TextAlignment="Center" FontFamily="{StaticResource Font.Mono}" />
@@ -360,7 +360,7 @@
     </StatusBar>
 
     <!-- ============ Main body ============ -->
-    <Grid Background="{StaticResource Br.Surface}">
+    <Grid Background="{DynamicResource Br.Surface}">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="272" MinWidth="220" />
         <ColumnDefinition Width="6" />
@@ -370,7 +370,7 @@
       </Grid.ColumnDefinitions>
 
       <!-- Left: Templates / Pages -->
-      <Border Grid.Column="0" Background="{StaticResource PanelBackground}" BorderBrush="{StaticResource PanelBorder}" BorderThickness="0,0,1,0">
+      <Border Grid.Column="0" Background="{DynamicResource PanelBackground}" BorderBrush="{DynamicResource PanelBorder}" BorderThickness="0,0,1,0">
         <DockPanel Margin="12,12,12,10">
 
           <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="2,0,0,12">
@@ -463,20 +463,20 @@
             </StackPanel>
           </Grid>
         </Border>
-        <Border CornerRadius="10" ClipToBounds="True" BorderBrush="{StaticResource Br.Border}" BorderThickness="1">
-          <Border x:Name="CanvasHost" Background="{StaticResource CanvasBackground}" ClipToBounds="True" />
+        <Border CornerRadius="10" ClipToBounds="True" BorderBrush="{DynamicResource Br.Border}" BorderThickness="1">
+          <Border x:Name="CanvasHost" Background="{DynamicResource CanvasBackground}" ClipToBounds="True" />
         </Border>
       </DockPanel>
 
       <GridSplitter Grid.Column="3" Width="6" HorizontalAlignment="Stretch" />
 
       <!-- Right: properties -->
-      <Border Grid.Column="4" Background="{StaticResource PanelBackground}" BorderBrush="{StaticResource PanelBorder}" BorderThickness="1,0,0,0">
+      <Border Grid.Column="4" Background="{DynamicResource PanelBackground}" BorderBrush="{DynamicResource PanelBorder}" BorderThickness="1,0,0,0">
         <ScrollViewer VerticalScrollBarVisibility="Auto">
           <StackPanel Margin="12" DataContext="{Binding Properties}">
             <TextBlock Text="PROPERTIES" Style="{StaticResource PanelSectionHeader}" />
             <TextBlock Text="Select an object on the canvas to edit its exact size and position, or use the mouse wheel to zoom and drag empty space to pan."
-                       TextWrapping="Wrap" Foreground="{StaticResource Br.TextMuted}" Margin="2,0,2,0" FontSize="12"
+                       TextWrapping="Wrap" Foreground="{DynamicResource Br.TextMuted}" Margin="2,0,2,0" FontSize="12"
                        Visibility="{Binding HasSelection, Converter={StaticResource InverseBool}}" />
 
             <!-- Object-type header: icon + type name (spec 3.8's "barcode icon + Barcode (16/800)"). -->
@@ -489,7 +489,7 @@
             </StackPanel>
 
             <!-- Pill tab strip on a track (spec 3.8: "Tabs on a #eef0f7 track: General (active, brand-grad)…"). -->
-            <Border Background="{StaticResource Br.Surface}" CornerRadius="10" Padding="3" Margin="0,0,0,14"
+            <Border Background="{DynamicResource Br.Surface}" CornerRadius="10" Padding="3" Margin="0,0,0,14"
                     Visibility="{Binding HasSelection, Converter={StaticResource BoolToVis}}">
               <UniformGrid Rows="1" Columns="4">
                 <RadioButton GroupName="PropTab" Content="General" Style="{StaticResource SegmentTab}" HorizontalContentAlignment="Center" Padding="2,7" FontSize="11.5"
@@ -528,7 +528,7 @@
                     <CheckBox Content="Bold" IsChecked="{Binding Bold}" Margin="0,0,10,0" />
                     <CheckBox Content="Italic" IsChecked="{Binding Italic}" />
                   </StackPanel>
-                  <TextBlock Text="Use {Field} tokens for variable data." Foreground="{StaticResource Br.TextMuted}" TextWrapping="Wrap" Margin="0,4,0,0" FontSize="11.5" />
+                  <TextBlock Text="Use {Field} tokens for variable data." Foreground="{DynamicResource Br.TextMuted}" TextWrapping="Wrap" Margin="0,4,0,0" FontSize="11.5" />
                 </StackPanel>
               </GroupBox>
 
@@ -540,7 +540,7 @@
                   <DockPanel Margin="0,2" Visibility="{Binding ShowHumanReadable, Converter={StaticResource BoolToVis}}">
                     <TextBlock Text="Number size" Style="{StaticResource FieldLabel}" Width="90" />
                     <TextBox Style="{StaticResource NumberBox}" Text="{Binding HriFontSizePt, StringFormat=0.#, UpdateSourceTrigger=LostFocus}" ToolTip="Size of the barcode's human-readable number, independent of the bars" />
-                    <TextBlock Text="pt" Foreground="{StaticResource Br.TextMuted}" VerticalAlignment="Center" Margin="6,0,0,0" />
+                    <TextBlock Text="pt" Foreground="{DynamicResource Br.TextMuted}" VerticalAlignment="Center" Margin="6,0,0,0" />
                   </DockPanel>
 
                   <ToggleButton Style="{StaticResource CollapsibleHeader}" Content="Appearance" IsChecked="{Binding ShowBarcodeAppearance}" />
@@ -603,7 +603,7 @@
 
             <!-- Data -->
             <StackPanel Visibility="{Binding SelectedPropertyTab, Converter={StaticResource IntEqualsVis}, ConverterParameter=3}">
-              <TextBlock TextWrapping="Wrap" Foreground="{StaticResource Br.TextMuted}" FontSize="12" Margin="2,0,2,0"
+              <TextBlock TextWrapping="Wrap" Foreground="{DynamicResource Br.TextMuted}" FontSize="12" Margin="2,0,2,0"
                          Text="Use {Field} tokens inside a text box's content to bind it to the active data source, or insert a dedicated Data field / Date-time field object from the Insert menu." />
               <TextBlock Text="{Binding BarcodeValidationMessage}" Foreground="#C0392B" TextWrapping="Wrap" Margin="2,10,2,0"
                          Visibility="{Binding IsBarcode, Converter={StaticResource BoolToVis}}" />
