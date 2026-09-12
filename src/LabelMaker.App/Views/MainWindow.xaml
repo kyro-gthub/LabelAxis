@@ -51,9 +51,9 @@
       <Grid>
         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="14,0,0,0"
                     shell:WindowChrome.IsHitTestVisibleInChrome="True">
-          <Border Width="28" Height="28" CornerRadius="8" Background="{DynamicResource Br.AccentGradient}" Margin="0,0,10,0">
-            <Image Source="{StaticResource Icon.LogoGlyph}" Width="15" Height="15" />
-          </Border>
+          <!-- The product logo itself, not a stand-in glyph on a gradient tile. -->
+          <Image Source="/Assets/logo.png" Width="28" Height="28" Margin="0,0,10,0"
+                 RenderOptions.BitmapScalingMode="HighQuality" SnapsToDevicePixels="True" />
           <TextBlock VerticalAlignment="Center" FontSize="15.5" Margin="0,0,22,0">
             <Run Text="Label" FontFamily="{StaticResource Font.UiExtraBold}" Foreground="{DynamicResource Br.Text}" />
             <Run Text="Maker" FontFamily="{StaticResource Font.UiExtraBold}" Foreground="{DynamicResource Br.Accent}" />
