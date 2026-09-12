@@ -30,6 +30,17 @@
     <KeyBinding Key="G" Modifiers="Control" Command="{Binding GroupCommand}" />
     <KeyBinding Key="G" Modifiers="Control+Shift" Command="{Binding UngroupCommand}" />
     <KeyBinding Key="Delete" Command="{Binding DeleteCommand}" />
+    <KeyBinding Key="A" Modifiers="Control" Command="{Binding SelectAllCommand}" />
+    <KeyBinding Key="T" Modifiers="Control" Command="{Binding DataTableCommand}" />
+    <KeyBinding Key="F2" Command="{Binding RenamePageCommand}" />
+    <KeyBinding Key="P" Modifiers="Control+Shift" Command="{Binding PrintPreviewCommand}" />
+    <KeyBinding Key="L" Modifiers="Control" Command="{Binding ToggleObjectLockCommand}" />
+    <KeyBinding Key="OemPlus" Modifiers="Control" Command="{Binding ZoomInCommand}" />
+    <KeyBinding Key="OemMinus" Modifiers="Control" Command="{Binding ZoomOutCommand}" />
+    <KeyBinding Key="D0" Modifiers="Control" Command="{Binding ZoomActualCommand}" />
+    <KeyBinding Key="D1" Modifiers="Control" Command="{Binding ZoomFitCommand}" />
+    <KeyBinding Key="B" Modifiers="Control" Command="{Binding BringToFrontCommand}" />
+    <KeyBinding Key="B" Modifiers="Control+Shift" Command="{Binding SendToBackCommand}" />
   </Window.InputBindings>
 
   <DockPanel>
@@ -65,7 +76,8 @@
               <MenuItem Header="_Save" InputGestureText="Ctrl+S" Command="{Binding SaveCommand}" />
               <MenuItem Header="Save _As…" InputGestureText="Ctrl+Shift+S" Command="{Binding SaveAsCommand}" />
               <Separator />
-              <MenuItem Header="_Formtec template manager…" Command="{Binding TemplateManagerCommand}" />
+              <MenuItem Header="_Label manager…" Command="{Binding TemplateManagerCommand}" />
+              <MenuItem Header="Label si_ze…" Command="{Binding LabelSizeCommand}" />
               <Separator />
               <MenuItem Header="Se_ttings…" Command="{Binding SettingsCommand}" />
               <MenuItem Header="_About Label Maker" Command="{Binding AboutCommand}" />
@@ -89,6 +101,7 @@
 
             <MenuItem Header="D_ata">
               <MenuItem Header="_Import CSV / Excel…" Command="{Binding ImportDataCommand}" />
+              <MenuItem Header="_Data table…" InputGestureText="Ctrl+T" Command="{Binding DataTableCommand}" />
               <MenuItem Header="_Clear data source" Command="{Binding ClearDataCommand}" />
               <Separator />
               <MenuItem Header="Manage _sequences…" Command="{Binding SequencesCommand}" />
@@ -171,17 +184,50 @@
           <Button Style="{StaticResource ToolTileButton}" Command="{Binding AddQrCodeCommand}" ToolTip="Add a QR code">
             <StackPanel><Image Style="{StaticResource ToolTileIcon}" Source="{StaticResource Icon.QrCode}" /><TextBlock Style="{StaticResource ToolTileLabel}" Text="QR Code" /></StackPanel>
           </Button>
-          <Button Style="{StaticResource ToolTileButton}" Command="{Binding AddRoundRectCommand}" ToolTip="Add a rounded shape">
-            <StackPanel><Image Style="{StaticResource ToolTileIcon}" Source="{StaticResource Icon.Shape}" /><TextBlock Style="{StaticResource ToolTileLabel}" Text="Shape" /></StackPanel>
+          <Button Style="{StaticResource ToolTileButton}" ToolTip="Add a shape" Click="OnAlignMenu">
+            <StackPanel Orientation="Horizontal">
+              <StackPanel><Image Style="{StaticResource ToolTileIcon}" Source="{StaticResource Icon.Shape}" /><TextBlock Style="{StaticResource ToolTileLabel}" Text="Shapes" /></StackPanel>
+              <Path Data="M 0,0 L 8,0 L 4,5 Z" Fill="{DynamicResource Br.TextMuted}" Margin="4,0,0,0" VerticalAlignment="Center" />
+            </StackPanel>
+            <Button.ContextMenu>
+              <ContextMenu>
+                <MenuItem Header="_Rectangle" Command="{Binding AddShapeCommand}" CommandParameter="rectangle" />
+                <MenuItem Header="R_ounded rectangle" Command="{Binding AddShapeCommand}" CommandParameter="round" />
+                <MenuItem Header="_Ellipse / circle" Command="{Binding AddShapeCommand}" CommandParameter="ellipse" />
+                <Separator />
+                <MenuItem Header="_Triangle" Command="{Binding AddShapeCommand}" CommandParameter="triangle" />
+                <MenuItem Header="_Diamond" Command="{Binding AddShapeCommand}" CommandParameter="diamond" />
+                <MenuItem Header="_Pentagon" Command="{Binding AddShapeCommand}" CommandParameter="pentagon" />
+                <MenuItem Header="_Hexagon" Command="{Binding AddShapeCommand}" CommandParameter="hexagon" />
+                <MenuItem Header="Oc_tagon" Command="{Binding AddShapeCommand}" CommandParameter="octagon" />
+                <Separator />
+                <MenuItem Header="5-point _star" Command="{Binding AddShapeCommand}" CommandParameter="star5" />
+                <MenuItem Header="6-point star" Command="{Binding AddShapeCommand}" CommandParameter="star6" />
+                <MenuItem Header="_Burst (12 points)" Command="{Binding AddShapeCommand}" CommandParameter="burst" />
+                <Separator />
+                <MenuItem Header="Dashed _box" Command="{Binding AddShapeCommand}" CommandParameter="dashedbox" />
+                <MenuItem Header="_Custom polygon…" ToolTip="Adds a polygon; set the point count and star ratio in Shape Settings"
+                          Command="{Binding AddShapeCommand}" CommandParameter="pentagon" />
+              </ContextMenu>
+            </Button.ContextMenu>
           </Button>
-          <Button Style="{StaticResource ToolTileButton}" Command="{Binding AddLineCommand}" ToolTip="Add a line">
-            <StackPanel><Image Style="{StaticResource ToolTileIcon}" Source="{StaticResource Icon.Line}" /><TextBlock Style="{StaticResource ToolTileLabel}" Text="Line" /></StackPanel>
-          </Button>
-          <Button Style="{StaticResource ToolTileButton}" Command="{Binding AddRectangleCommand}" ToolTip="Add a rectangle">
-            <StackPanel><Image Style="{StaticResource ToolTileIcon}" Source="{StaticResource Icon.Rectangle}" /><TextBlock Style="{StaticResource ToolTileLabel}" Text="Rectangle" /></StackPanel>
-          </Button>
-          <Button Style="{StaticResource ToolTileButton}" Command="{Binding AddEllipseCommand}" ToolTip="Add an ellipse">
-            <StackPanel><Image Style="{StaticResource ToolTileIcon}" Source="{StaticResource Icon.Ellipse}" /><TextBlock Style="{StaticResource ToolTileLabel}" Text="Ellipse" /></StackPanel>
+          <Button Style="{StaticResource ToolTileButton}" ToolTip="Add a line" Click="OnAlignMenu">
+            <StackPanel Orientation="Horizontal">
+              <StackPanel><Image Style="{StaticResource ToolTileIcon}" Source="{StaticResource Icon.Line}" /><TextBlock Style="{StaticResource ToolTileLabel}" Text="Lines" /></StackPanel>
+              <Path Data="M 0,0 L 8,0 L 4,5 Z" Fill="{DynamicResource Br.TextMuted}" Margin="4,0,0,0" VerticalAlignment="Center" />
+            </StackPanel>
+            <Button.ContextMenu>
+              <ContextMenu>
+                <MenuItem Header="_Solid line" Command="{Binding AddShapeCommand}" CommandParameter="line" />
+                <MenuItem Header="_Hairline (0.1 mm)" Command="{Binding AddShapeCommand}" CommandParameter="hairline" />
+                <Separator />
+                <MenuItem Header="_Dashed line" Command="{Binding AddShapeCommand}" CommandParameter="dashed" />
+                <MenuItem Header="D_otted line" Command="{Binding AddShapeCommand}" CommandParameter="dotted" />
+                <MenuItem Header="Dash-dot line" Command="{Binding AddShapeCommand}" CommandParameter="dashdot" />
+                <Separator />
+                <MenuItem Header="_Arrow" Command="{Binding AddShapeCommand}" CommandParameter="arrow" />
+              </ContextMenu>
+            </Button.ContextMenu>
           </Button>
 
           <Rectangle Style="{StaticResource ToolDivider}" />
@@ -333,6 +379,14 @@
             </StackPanel>
           </Border>
 
+          <!--
+            All three tab bodies share one Grid cell. They used to be siblings of a
+            DockPanel, where only the last child fills and the others dock to the
+            left at their own content width, so the panel changed size depending on
+            which tab (and how much content) was showing.
+          -->
+          <Grid>
+
           <!-- Templates tab -->
           <DockPanel Visibility="{Binding SelectedLeftTab, Converter={StaticResource IntEqualsVis}, ConverterParameter=0}">
             <Border DockPanel.Dock="Top" Style="{StaticResource SearchField}" Margin="14,14,14,10">
@@ -390,12 +444,29 @@
                 <Button Content="✕" ToolTip="Remove page" Command="{Binding RemovePageCommand}" Style="{StaticResource IconGhost}" />
               </StackPanel>
             </Grid>
-            <Border DockPanel.Dock="Top" Style="{StaticResource InsetPanel}" MaxHeight="150" Margin="0,0,0,14">
+            <Border DockPanel.Dock="Top" Style="{StaticResource InsetPanel}" Height="150" Margin="0,0,0,14">
               <ListBox ItemsSource="{Binding Pages}" SelectedItem="{Binding SelectedPage}" DisplayMemberPath="Display"
                        BorderThickness="0" Background="Transparent">
                 <ListBox.InputBindings>
                   <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding RenamePageCommand}" />
                 </ListBox.InputBindings>
+                <ListBox.ItemContainerStyle>
+                  <Style TargetType="ListBoxItem">
+                    <!-- Right-click selects first, so the menu always acts on the row under the cursor. -->
+                    <EventSetter Event="PreviewMouseRightButtonDown" Handler="OnListItemRightClick" />
+                  </Style>
+                </ListBox.ItemContainerStyle>
+                <ListBox.ContextMenu>
+                  <ContextMenu>
+                    <MenuItem Header="_Add page" Command="{Binding AddPageCommand}" />
+                    <MenuItem Header="_Duplicate page" Command="{Binding DuplicatePageCommand}" />
+                    <Separator />
+                    <MenuItem Header="_Rename…" InputGestureText="Double-click" Command="{Binding RenamePageCommand}" />
+                    <MenuItem Header="Label _size…" Command="{Binding LabelSizeCommand}" />
+                    <Separator />
+                    <MenuItem Header="_Remove page" Command="{Binding RemovePageCommand}" />
+                  </ContextMenu>
+                </ListBox.ContextMenu>
               </ListBox>
             </Border>
 
@@ -447,6 +518,8 @@
                        DisplayMemberPath="Display" BorderThickness="0" Background="Transparent" />
             </Border>
           </DockPanel>
+
+          </Grid>
         </DockPanel>
       </Border>
 
@@ -474,107 +547,6 @@
           </StackPanel>
         </Border>
 
-        <!-- bottom data panel -->
-        <Border DockPanel.Dock="Bottom" Height="248" Background="{DynamicResource Br.Bg}"
-                BorderBrush="{DynamicResource Br.Border}" BorderThickness="0,1,0,0">
-          <DockPanel>
-            <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource Br.Border}" BorderThickness="0,0,0,1">
-              <StackPanel Orientation="Horizontal" Margin="14,8,14,0">
-                <RadioButton GroupName="DataTab" Content="Data Table" Style="{StaticResource PanelTab}" Margin="0,0,22,0"
-                             IsChecked="{Binding SelectedDataTab, Converter={StaticResource IntEquals}, ConverterParameter=0}" />
-                <RadioButton GroupName="DataTab" Content="Print Queue" Style="{StaticResource PanelTab}" Margin="0,0,22,0"
-                             IsChecked="{Binding SelectedDataTab, Converter={StaticResource IntEquals}, ConverterParameter=1}" />
-                <RadioButton GroupName="DataTab" Content="Variable Data" Style="{StaticResource PanelTab}"
-                             IsChecked="{Binding SelectedDataTab, Converter={StaticResource IntEquals}, ConverterParameter=2}" />
-              </StackPanel>
-            </Border>
-
-            <!-- action bar -->
-            <Border DockPanel.Dock="Top" Padding="14,9">
-              <Grid>
-                <Grid.ColumnDefinitions>
-                  <ColumnDefinition Width="*" />
-                  <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <ScrollViewer Grid.Column="0" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled"
-                              Padding="0,0,0,2">
-                <StackPanel Orientation="Horizontal">
-                  <Button Style="{StaticResource GhostButton}" Command="{Binding ImportDataCommand}" Margin="0,0,8,0">
-                    <StackPanel Orientation="Horizontal">
-                      <Image Source="{StaticResource Icon.Import}" Width="15" Height="15" Margin="0,0,7,0" />
-                      <TextBlock Text="Import CSV/XLSX" VerticalAlignment="Center" />
-                    </StackPanel>
-                  </Button>
-                  <Button Style="{StaticResource GhostButton}" Command="{Binding AddDataFieldCommand}" Margin="0,0,8,0">
-                    <StackPanel Orientation="Horizontal">
-                      <Image Source="{StaticResource Icon.PlusCircle}" Width="15" Height="15" Margin="0,0,7,0" />
-                      <TextBlock Text="Add Field" VerticalAlignment="Center" />
-                    </StackPanel>
-                  </Button>
-                  <Button Style="{StaticResource GhostButton}" Command="{Binding BulkBarcodeCommand}" Margin="0,0,8,0">
-                    <StackPanel Orientation="Horizontal">
-                      <Image Source="{StaticResource Icon.Barcode}" Width="15" Height="15" Margin="0,0,7,0" />
-                      <TextBlock Text="Generate Barcodes" VerticalAlignment="Center" />
-                    </StackPanel>
-                  </Button>
-                  <Button Style="{StaticResource GhostButton}" Command="{Binding PrintSettingsCommand}" Margin="0,0,8,0">
-                    <StackPanel Orientation="Horizontal">
-                      <Image Source="{StaticResource Icon.Print}" Width="15" Height="15" Margin="0,0,7,0" />
-                      <TextBlock Text="Bulk Print" VerticalAlignment="Center" />
-                    </StackPanel>
-                  </Button>
-                  <Button Style="{StaticResource GhostButton}" Command="{Binding ExportSheetPdfCommand}">
-                    <StackPanel Orientation="Horizontal">
-                      <Image Source="{StaticResource Icon.FileDoc}" Width="15" Height="15" Margin="0,0,7,0" />
-                      <TextBlock Text="Export (PDF/Images)" VerticalAlignment="Center" />
-                    </StackPanel>
-                  </Button>
-                </StackPanel>
-                </ScrollViewer>
-
-                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="14,0,0,0">
-                  <Ellipse Width="8" Height="8" Fill="{DynamicResource Br.Ok}" VerticalAlignment="Center" Margin="0,0,7,0" />
-                  <TextBlock Text="{Binding RecordsReadyText}" Style="{StaticResource StatusText}" />
-                </StackPanel>
-              </Grid>
-            </Border>
-
-            <!-- data table -->
-            <Grid Visibility="{Binding SelectedDataTab, Converter={StaticResource IntEqualsVis}, ConverterParameter=0}">
-              <DataGrid x:Name="RecordsGrid" AutoGenerateColumns="False" IsReadOnly="True"
-                        HeadersVisibility="Column" GridLinesVisibility="Horizontal"
-                        CanUserAddRows="False" SelectionMode="Single"
-                        Background="Transparent" BorderThickness="0" />
-              <TextBlock Text="No data source connected — use Import CSV/XLSX to load records."
-                         Foreground="{DynamicResource Br.TextMuted}" FontSize="12.5"
-                         HorizontalAlignment="Center" VerticalAlignment="Center"
-                         Visibility="{Binding HasData, Converter={StaticResource InverseBool}}" />
-            </Grid>
-
-            <StackPanel Visibility="{Binding SelectedDataTab, Converter={StaticResource IntEqualsVis}, ConverterParameter=1}"
-                        Margin="16,10">
-              <TextBlock Text="{Binding PrintQueueSummary}" TextWrapping="Wrap" FontSize="12.5" />
-              <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
-                <Button Content="Advanced print settings…" Style="{StaticResource GhostButton}" Margin="0,0,8,0"
-                        Command="{Binding PrintSettingsCommand}" />
-                <Button Content="Preflight check…" Style="{StaticResource GhostButton}" Command="{Binding PreflightCommand}" />
-              </StackPanel>
-            </StackPanel>
-
-            <StackPanel Visibility="{Binding SelectedDataTab, Converter={StaticResource IntEqualsVis}, ConverterParameter=2}"
-                        Margin="16,10">
-              <TextBlock TextWrapping="Wrap" FontSize="12.5" Foreground="{DynamicResource Br.Text2}"
-                         Text="Bind objects to your data with {Field} tokens — e.g. {ProductName} in a text box, or {Barcode} as a barcode value. Expressions like &quot;LOT-&quot; + {Batch} and UPPER({Product}) are supported." />
-              <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
-                <Button Content="Insert data field…" Style="{StaticResource GhostButton}" Margin="0,0,8,0"
-                        Command="{Binding AddDataFieldCommand}" />
-                <Button Content="Manage sequences…" Style="{StaticResource GhostButton}" Margin="0,0,8,0"
-                        Command="{Binding SequencesCommand}" />
-                <Button Content="Duplicate check…" Style="{StaticResource GhostButton}" Command="{Binding DuplicateCheckCommand}" />
-              </StackPanel>
-            </StackPanel>
-          </DockPanel>
-        </Border>
 
         <!-- canvas -->
         <Border Background="{DynamicResource CanvasBackground}" ClipToBounds="True">
@@ -598,6 +570,9 @@
                            IsChecked="{Binding SelectedRightTab, Converter={StaticResource IntEquals}, ConverterParameter=2}" />
             </StackPanel>
           </Border>
+
+          <!-- One cell for all three tab bodies (see the left panel for why). -->
+          <Grid>
 
           <!-- Layers tab -->
           <DockPanel Visibility="{Binding SelectedRightTab, Converter={StaticResource IntEqualsVis}, ConverterParameter=1}"
@@ -849,6 +824,8 @@
               </StackPanel>
             </StackPanel>
           </ScrollViewer>
+
+          </Grid>
         </DockPanel>
       </Border>
     </Grid>

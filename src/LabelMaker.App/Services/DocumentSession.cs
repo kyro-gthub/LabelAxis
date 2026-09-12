@@ -164,9 +164,15 @@ public sealed class DocumentSession
         {
             page.Name = name;
             page.Document.Name = name;
-            PagesChanged?.Invoke(this, EventArgs.Empty);
-            MarkDirty();
         }
+        else
+        {
+            // No standalone page selected: the master label is what is on screen.
+            Project.MasterLabel.Name = name;
+        }
+
+        PagesChanged?.Invoke(this, EventArgs.Empty);
+        MarkDirty();
     }
 
     public void MarkDirty()

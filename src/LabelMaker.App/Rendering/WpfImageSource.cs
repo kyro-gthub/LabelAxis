@@ -20,6 +20,9 @@ public sealed class WpfDecodedImage : IDecodedImage
         PixelHeight = source.PixelHeight;
     }
 
+    /// <summary>The undecorated bitmap, for UI that needs the real pixels (the crop dialog).</summary>
+    public BitmapSource Original => _original;
+
     public int PixelWidth { get; }
     public int PixelHeight { get; }
 

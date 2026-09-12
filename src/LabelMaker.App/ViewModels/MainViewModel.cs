@@ -72,6 +72,9 @@ public sealed class MainViewModel : ObservableObject
 
     public SheetVisualRenderer SheetRenderer => _sheetRenderer;
 
+    /// <summary>Shared with the print preview, so preview and print use one paginator.</summary>
+    public WpfPrintServer PrintServer => _printServer;
+
     public void AttachCanvas(DesignerCanvas canvas)
     {
         _canvas = canvas;
@@ -167,7 +170,7 @@ public sealed class MainViewModel : ObservableObject
     {
         _suppressPageSelection = true;
         Pages.Clear();
-        Pages.Add(new PageListItem(null, "Master label", 0, IsMaster: true));
+        Pages.Add(new PageListItem(null, MasterPageName, 0, IsMaster: true));
         for (int i = 0; i < _session.Project.Pages.Count; i++)
         {
             LabelPage p = _session.Project.Pages[i];
@@ -500,8 +503,12 @@ public sealed class MainViewModel : ObservableObject
     }
 
     public string ActivePageName => _session.IsEditingMaster
-        ? "Master label"
+        ? MasterPageName
         : _session.Project.Pages.FirstOrDefault(p => p.Id == _session.ActivePageId)?.Name ?? "Page";
+
+    /// <summary>The master label's own display name, which is renamable like any page.</summary>
+    private string MasterPageName =>
+        string.IsNullOrWhiteSpace(_session.Project.MasterLabel.Name) ? "Master label" : _session.Project.MasterLabel.Name;
 
     public string SearchText
     {
@@ -602,6 +609,11 @@ public sealed class MainViewModel : ObservableObject
     public RelayCommand SettingsCommand { get; private set; } = null!;
     public RelayCommand ReplaceImageCommand { get; private set; } = null!;
     public RelayCommand ToggleObjectLockCommand { get; private set; } = null!;
+    public RelayCommand AddShapeCommand { get; private set; } = null!;
+    public RelayCommand DataTableCommand { get; private set; } = null!;
+    public RelayCommand LabelSizeCommand { get; private set; } = null!;
+    public RelayCommand SelectAllCommand { get; private set; } = null!;
+    public RelayCommand CropImageCommand { get; private set; } = null!;
 
     private void BuildCommands()
     {
@@ -626,7 +638,7 @@ public sealed class MainViewModel : ObservableObject
         RemovePageCommand = new RelayCommand(
             () => { if (!_env.Settings.ConfirmDestructiveActions || _shell.Confirm($"Remove page \"{ActivePageName}\"?")) _session.RemoveActivePage(); },
             () => !_session.IsEditingMaster);
-        RenamePageCommand = new RelayCommand(RenameActivePage, () => !_session.IsEditingMaster);
+        RenamePageCommand = new RelayCommand(RenameActivePage);
         AddVerticalGuideCommand = new RelayCommand(() => _canvas?.InsertGuideAtContext(vertical: true));
         AddHorizontalGuideCommand = new RelayCommand(() => _canvas?.InsertGuideAtContext(vertical: false));
 
@@ -651,10 +663,11 @@ public sealed class MainViewModel : ObservableObject
             },
         }));
         AddImageCommand = new RelayCommand(AddImage);
-        AddRectangleCommand = new RelayCommand(() => AddObject(new ShapeObject { Shape = ShapeKind.Rectangle, Bounds = NewBounds(30, 20), Stroke = ColorRgba.Black, StrokeWidthMm = 0.25 }));
-        AddRoundRectCommand = new RelayCommand(() => AddObject(new ShapeObject { Shape = ShapeKind.RoundRectangle, CornerRadiusMm = 2, Bounds = NewBounds(30, 20), Stroke = ColorRgba.Black, StrokeWidthMm = 0.25 }));
-        AddEllipseCommand = new RelayCommand(() => AddObject(new ShapeObject { Shape = ShapeKind.Ellipse, Bounds = NewBounds(24, 24), Stroke = ColorRgba.Black, StrokeWidthMm = 0.25 }));
-        AddLineCommand = new RelayCommand(() => AddObject(new ShapeObject { Shape = ShapeKind.Line, Bounds = NewBounds(40, 0.5), Stroke = ColorRgba.Black, StrokeWidthMm = 0.3 }));
+        AddRectangleCommand = new RelayCommand(() => AddShape("rectangle"));
+        AddRoundRectCommand = new RelayCommand(() => AddShape("round"));
+        AddEllipseCommand = new RelayCommand(() => AddShape("ellipse"));
+        AddLineCommand = new RelayCommand(() => AddShape("line"));
+        AddShapeCommand = new RelayCommand(p => AddShape(p as string ?? "rectangle"));
         AddDataFieldCommand = new RelayCommand(AddDataField);
         AddDateFieldCommand = new RelayCommand(() => AddObject(new TextObject { Name = "Date", Content = RichTextContent.FromPlainText("{CurrentDate}"), Bounds = NewBounds(30, 6) }));
 
@@ -681,7 +694,24 @@ public sealed class MainViewModel : ObservableObject
 
         PrintCommand = new RelayCommand(Print);
         PrintSettingsCommand = new RelayCommand(OpenPrintSettingsThenPrint);
-        PrintPreviewCommand = new RelayCommand(Print); // system dialog offers preview
+        PrintPreviewCommand = new RelayCommand(() => _shell.ShowPrintPreview());
+        DataTableCommand = new RelayCommand(() => _shell.ShowDataTable());
+        SelectAllCommand = new RelayCommand(
+            () => _session.SetSelection(_session.ActiveLabel.Objects.Where(o => o.Visible).ToList()),
+            () => _session.ActiveLabel.Objects.Count > 0);
+        CropImageCommand = new RelayCommand(
+            () => { if (_shell.ShowImageCrop()) { _session.MarkDirty(); RefreshCanvas(); } },
+            () => _session.Selection.Count == 1 && _session.Selection[0] is ImageObject);
+        LabelSizeCommand = new RelayCommand(() =>
+        {
+            if (_shell.ShowLabelSize())
+            {
+                OnPropertyChanged(nameof(TemplateSummary));
+                OnPropertyChanged(nameof(SheetSummary));
+                _canvas?.FitToView();
+                RefreshCanvas();
+            }
+        });
         CalibrationCommand = new RelayCommand(() => _shell.ShowCalibrationWizard());
         ExportSheetPdfCommand = new RelayCommand(ExportSheetPdf);
         ExportLabelPngCommand = new RelayCommand(ExportLabelPng);
@@ -711,10 +741,73 @@ public sealed class MainViewModel : ObservableObject
 
     // ---------- object operations ----------
 
+    /// <summary>
+    /// Centres a new object on the label, shrinking the requested size to fit.
+    /// The defaults here are sized for a business-card-ish label; on a 25 x 10 mm
+    /// sheet an unclamped 40 x 8 mm text box lands mostly outside the artboard,
+    /// which is what "the object doesn't match the canvas" looked like.
+    /// </summary>
     private RectMm NewBounds(double w, double h)
     {
         var size = _session.ActiveLabel.SizeMm;
-        return new RectMm(Math.Max(1, (size.Width - w) / 2), Math.Max(1, (size.Height - h) / 2), w, h);
+
+        // Leave a visible margin, and never exceed the label itself.
+        double maxW = Math.Max(1, size.Width * 0.84);
+        double maxH = Math.Max(0.4, size.Height * 0.72);
+
+        if (w > maxW || h > maxH)
+        {
+            // Scale both axes by the same factor so the intended proportion survives;
+            // a zero/near-zero height (the Line default) must not divide by zero.
+            double scale = Math.Min(w > 0 ? maxW / w : 1, h > 0.01 ? maxH / h : 1);
+            w *= scale;
+            h = h > 0.01 ? h * scale : h;
+        }
+
+        return new RectMm(
+            Math.Max(0, (size.Width - w) / 2),
+            Math.Max(0, (size.Height - h) / 2),
+            w,
+            h);
+    }
+
+    /// <summary>
+    /// Every entry in the Shapes and Lines toolbar menus funnels through here. The
+    /// model already understands N-gons, stars, arrows and dash patterns; this just
+    /// names the useful combinations.
+    /// </summary>
+    private void AddShape(string kind)
+    {
+        ShapeObject shape = kind.ToLowerInvariant() switch
+        {
+            "round" => new ShapeObject { Shape = ShapeKind.RoundRectangle, CornerRadiusMm = 2, Bounds = NewBounds(30, 20) },
+            "ellipse" => new ShapeObject { Shape = ShapeKind.Ellipse, Bounds = NewBounds(24, 24) },
+            "circle" => new ShapeObject { Shape = ShapeKind.Ellipse, Bounds = NewBounds(24, 24) },
+            "triangle" => new ShapeObject { Shape = ShapeKind.Polygon, PolygonPoints = 3, Bounds = NewBounds(24, 24) },
+            "diamond" => new ShapeObject { Shape = ShapeKind.Polygon, PolygonPoints = 4, Bounds = NewBounds(24, 24) },
+            "pentagon" => new ShapeObject { Shape = ShapeKind.Polygon, PolygonPoints = 5, Bounds = NewBounds(24, 24) },
+            "hexagon" => new ShapeObject { Shape = ShapeKind.Polygon, PolygonPoints = 6, Bounds = NewBounds(24, 24) },
+            "octagon" => new ShapeObject { Shape = ShapeKind.Polygon, PolygonPoints = 8, Bounds = NewBounds(24, 24) },
+            "star5" => new ShapeObject { Shape = ShapeKind.Polygon, PolygonPoints = 5, StarInnerRatio = 0.42, Bounds = NewBounds(24, 24) },
+            "star6" => new ShapeObject { Shape = ShapeKind.Polygon, PolygonPoints = 6, StarInnerRatio = 0.5, Bounds = NewBounds(24, 24) },
+            "burst" => new ShapeObject { Shape = ShapeKind.Polygon, PolygonPoints = 12, StarInnerRatio = 0.7, Bounds = NewBounds(24, 24) },
+            "arrow" => new ShapeObject { Shape = ShapeKind.Arrow, Bounds = NewBounds(40, 0.5), StrokeWidthMm = 0.4 },
+            "line" => new ShapeObject { Shape = ShapeKind.Line, Bounds = NewBounds(40, 0.5), StrokeWidthMm = 0.3 },
+            "dashed" => new ShapeObject { Shape = ShapeKind.Line, DashStyle = DashStyle.Dash, Bounds = NewBounds(40, 0.5), StrokeWidthMm = 0.3 },
+            "dotted" => new ShapeObject { Shape = ShapeKind.Line, DashStyle = DashStyle.Dot, Bounds = NewBounds(40, 0.5), StrokeWidthMm = 0.3 },
+            "dashdot" => new ShapeObject { Shape = ShapeKind.Line, DashStyle = DashStyle.DashDot, Bounds = NewBounds(40, 0.5), StrokeWidthMm = 0.3 },
+            "hairline" => new ShapeObject { Shape = ShapeKind.Line, Bounds = NewBounds(40, 0.2), StrokeWidthMm = 0.1 },
+            "dashedbox" => new ShapeObject { Shape = ShapeKind.Rectangle, DashStyle = DashStyle.Dash, Bounds = NewBounds(30, 20) },
+            _ => new ShapeObject { Shape = ShapeKind.Rectangle, Bounds = NewBounds(30, 20) },
+        };
+
+        shape.Stroke = ColorRgba.Black;
+        if (shape.StrokeWidthMm <= 0)
+        {
+            shape.StrokeWidthMm = 0.25;
+        }
+
+        AddObject(shape);
     }
 
     private void AddObject(LabelObject obj)
@@ -810,15 +903,28 @@ public sealed class MainViewModel : ObservableObject
         }
     }
 
+    /// <summary>
+    /// Toggles the lock on the list row that was clicked, or — when invoked from the
+    /// Ctrl+L shortcut with no parameter — on everything currently selected.
+    /// </summary>
     private void ToggleObjectLock(ObjectListItem? item)
     {
-        if (item is null)
+        var targets = item is not null
+            ? new List<LabelObject> { item.Object }
+            : _session.Selection.ToList();
+
+        if (targets.Count == 0)
         {
             return;
         }
 
-        LabelObject obj = item.Object;
-        _session.Execute(new SetPropertyCommand<bool>("Toggle lock", () => obj.Locked, v => obj.Locked = v, !obj.Locked, (obj.Id, "locked")));
+        bool locking = !targets[0].Locked;
+        var commands = targets
+            .Select(obj => (IUndoableCommand)new SetPropertyCommand<bool>(
+                "Toggle lock", () => obj.Locked, v => obj.Locked = v, locking, (obj.Id, "locked")))
+            .ToList();
+
+        _session.Execute(commands.Count == 1 ? commands[0] : new CompositeCommand("Toggle lock", commands));
         RebuildObjectList();
         _properties.RefreshAll();
     }
@@ -917,20 +1023,23 @@ public sealed class MainViewModel : ObservableObject
         RebuildObjectList();
     }
 
+    /// <summary>
+    /// Renames whichever page is selected — including the master label, which used to
+    /// refuse and so looked like "renaming pages doesn't work" on a project that has
+    /// no standalone pages yet.
+    /// </summary>
     private void RenameActivePage()
     {
-        if (_session.IsEditingMaster)
+        string current = ActivePageName;
+        string? name = _shell.Prompt("Rename page", "Page name:", current);
+        if (string.IsNullOrWhiteSpace(name) || name.Trim() == current)
         {
             return;
         }
 
-        string current = ActivePageName;
-        string? name = _shell.Prompt("Rename page", "Page name:", current);
-        if (!string.IsNullOrWhiteSpace(name) && name != current)
-        {
-            _session.RenameActivePage(name.Trim());
-            OnPropertyChanged(nameof(ActivePageName));
-        }
+        _session.RenameActivePage(name.Trim());
+        OnPropertyChanged(nameof(ActivePageName));
+        OnPropertyChanged(nameof(DocumentTabTitle));
     }
 
     private void GroupSelection()
