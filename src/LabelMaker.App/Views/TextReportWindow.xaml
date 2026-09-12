@@ -1,6 +1,7 @@
 <Window x:Class="LabelMaker.App.Views.TextReportWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Background="{DynamicResource Br.Surface}" TextElement.Foreground="{DynamicResource Br.Text}"
         Title="Report" Height="480" Width="640" WindowStartupLocation="CenterOwner">
   <DockPanel Margin="8">
     <Button DockPanel.Dock="Bottom" Content="Close" HorizontalAlignment="Right" Padding="16,4" Margin="0,8,0,0" IsCancel="True" />

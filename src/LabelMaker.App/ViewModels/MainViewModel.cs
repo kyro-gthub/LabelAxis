@@ -44,7 +44,7 @@ public sealed class MainViewModel : ObservableObject
     private PageListItem? _selectedPage;
     private bool _suppressPageSelection;
     private bool _hasConfiguredPrintSettings;
-    private int _selectedLeftTab = 1;
+    private int _selectedLeftTab;
 
     public MainViewModel(AppEnvironment env, IShellServices shell)
     {
@@ -121,7 +121,14 @@ public sealed class MainViewModel : ObservableObject
         _session.DocumentChanged += (_, _) => OnDocumentChanged();
         _session.SelectionChanged += (_, _) => OnSelectionChanged();
         _session.RecordChanged += (_, _) => { RefreshCanvas(); OnPropertyChanged(nameof(RecordText)); };
-        _session.DataChanged += (_, _) => { OnPropertyChanged(nameof(RecordText)); OnPropertyChanged(nameof(DataSourceSummary)); RefreshSearch(); };
+        _session.DataChanged += (_, _) =>
+        {
+            OnPropertyChanged(nameof(RecordText));
+            OnPropertyChanged(nameof(DataSourceSummary));
+            OnPropertyChanged(nameof(RecordsReadyText));
+            DataChanged?.Invoke(this, EventArgs.Empty);
+            RefreshSearch();
+        };
         _session.HistoryChanged += (_, _) => RaiseAllCanExecute();
         _session.PagesChanged += (_, _) => RebuildPages();
         _session.ActivePageChanged += (_, _) => OnActivePageChanged();
@@ -132,7 +139,11 @@ public sealed class MainViewModel : ObservableObject
         RebuildPages();
         RebuildObjectList();
         RefreshSearch();
+        RebuildTemplateCategories();
         OnDocumentChanged();
+        OnPropertyChanged(nameof(PrinterName));
+        OnPropertyChanged(nameof(CalibrationStatus));
+        OnPropertyChanged(nameof(RecordsReadyText));
         OnPropertyChanged(nameof(TemplateSummary));
         OnPropertyChanged(nameof(LockGuides));
         OnPropertyChanged(nameof(RecordText));
@@ -201,12 +212,187 @@ public sealed class MainViewModel : ObservableObject
 
     public string ZoomText => _canvas is null ? "100%" : $"{Math.Round(_canvas.Zoom * 100)}%";
 
-    /// <summary>0 = Templates tab, 1 = Pages tab, in the left panel.</summary>
+    /// <summary>Left panel: 0 = Templates, 1 = Assets, 2 = Data.</summary>
     public int SelectedLeftTab { get => _selectedLeftTab; set => SetField(ref _selectedLeftTab, value); }
+
+    private int _selectedRightTab;
+
+    /// <summary>Right panel: 0 = Properties, 1 = Layers, 2 = Page.</summary>
+    public int SelectedRightTab { get => _selectedRightTab; set => SetField(ref _selectedRightTab, value); }
+
+    private int _selectedDataTab;
+
+    /// <summary>Bottom panel: 0 = Data Table, 1 = Print Queue, 2 = Variable Data.</summary>
+    public int SelectedDataTab { get => _selectedDataTab; set => SetField(ref _selectedDataTab, value); }
+
+    public bool HasData => _session.Data is { RowCount: > 0 };
+
+    public string PrintQueueSummary
+    {
+        get
+        {
+            string printer = PrinterName;
+            string sheet = _session.Project.Template is { } t
+                ? $"{t.Grid.Columns * t.Grid.Rows} labels per sheet ({t.Grid.Columns} × {t.Grid.Rows})"
+                : "no template";
+            return _session.RecordCount > 0
+                ? $"{_session.RecordCount:N0} records queued · {sheet} · printing to {printer}."
+                : $"No variable data loaded. The master label will fill the sheet — {sheet} · printing to {printer}.";
+        }
+    }
+
+    private string _templateSearchText = string.Empty;
+
+    /// <summary>Filters the template list in the left panel.</summary>
+    public string TemplateSearchText
+    {
+        get => _templateSearchText;
+        set
+        {
+            if (SetField(ref _templateSearchText, value))
+            {
+                RebuildTemplateCategories();
+            }
+        }
+    }
 
     public string DataSourceSummary => _session.RecordCount > 0
         ? $"{_session.RecordCount} record{(_session.RecordCount == 1 ? "" : "s")} loaded"
         : "No data source connected";
+
+    // ---------- shell chrome (title bar, tab strip, status bar) ----------
+
+    /// <summary>File name for the document tab, with the unsaved-changes marker.</summary>
+    public string DocumentTabTitle =>
+        (_session.Document.FilePath is { } p ? Path.GetFileName(p) : "Untitled.labelproj") +
+        (_session.Document.HasUnsavedChanges ? "*" : string.Empty);
+
+    public string SaveStateText => _session.Document.HasUnsavedChanges ? "Unsaved changes" : "Project saved";
+
+    public bool HasUnsavedChanges => _session.Document.HasUnsavedChanges;
+
+    /// <summary>"Formtec 3100 (99.1 × 38.1 mm)" for the status bar.</summary>
+    public string SheetSummary
+    {
+        get
+        {
+            if (_session.Project.Template is not { } t)
+            {
+                return "No template";
+            }
+
+            return $"{t.Brand} {t.ProductCode} ({t.Grid.LabelWidthMm:0.#} × {t.Grid.LabelHeightMm:0.#} mm)";
+        }
+    }
+
+    public string PrinterName => _env.Settings.LastPrinterName ?? "System default printer";
+
+    public string CalibrationStatus =>
+        _env.Settings.LastPrinterName is { } printer && _env.Calibration.Has(printer)
+            ? "Calibration: aligned"
+            : "Calibration: not set";
+
+    public string RecordsReadyText => _session.RecordCount > 0
+        ? $"{_session.RecordCount:N0} records ready to print"
+        : "No variable data";
+
+    public ObservableCollection<TemplateCategoryItem> TemplateCategories { get; } = new();
+
+    private TemplateCategoryItem? _selectedCategory;
+
+    public TemplateCategoryItem? SelectedCategory
+    {
+        get => _selectedCategory;
+        set
+        {
+            if (SetField(ref _selectedCategory, value) && value is not null)
+            {
+                TemplateResults.Clear();
+                foreach (LabelTemplate t in value.Templates.Take(60))
+                {
+                    TemplateResults.Add(new TemplateListItem(t));
+                }
+            }
+        }
+    }
+
+    /// <summary>Templates inside the selected left-panel category.</summary>
+    public ObservableCollection<TemplateListItem> TemplateResults { get; } = new();
+
+    private TemplateListItem? _selectedTemplateResult;
+
+    public TemplateListItem? SelectedTemplateResult
+    {
+        get => _selectedTemplateResult;
+        set
+        {
+            if (SetField(ref _selectedTemplateResult, value) && value is not null)
+            {
+                ApplyTemplate(value.Template);
+            }
+        }
+    }
+
+    private void ApplyTemplate(LabelTemplate template)
+    {
+        _session.Project.Template = template;
+        _session.Project.MasterLabel.SizeMm = new SizeMm(template.Grid.LabelWidthMm, template.Grid.LabelHeightMm);
+        _env.Settings.LastTemplateId = template.Id;
+        _session.MarkDirty();
+        _canvas?.FitToView();
+        RefreshCanvas();
+        OnPropertyChanged(nameof(TemplateSummary));
+        OnPropertyChanged(nameof(SheetSummary));
+        StatusText = $"Template: {template.Brand} {template.ProductCode} — {template.Name}";
+    }
+
+    private void RebuildTemplateCategories()
+    {
+        TemplateCategories.Clear();
+        IEnumerable<LabelTemplate> source = _env.Templates.All;
+        if (!string.IsNullOrWhiteSpace(_templateSearchText))
+        {
+            string q = _templateSearchText.Trim();
+            source = source.Where(t =>
+                t.Name.Contains(q, StringComparison.OrdinalIgnoreCase) ||
+                t.ProductCode.Contains(q, StringComparison.OrdinalIgnoreCase) ||
+                t.Brand.Contains(q, StringComparison.OrdinalIgnoreCase));
+        }
+
+        var all = source.ToList();
+
+        void Add(string title, string subtitle, string icon, Func<LabelTemplate, bool> match)
+        {
+            var hits = all.Where(match).OrderBy(t => t.ProductCode, StringComparer.OrdinalIgnoreCase).ToList();
+            if (hits.Count > 0)
+            {
+                TemplateCategories.Add(new TemplateCategoryItem(title, subtitle, icon, hits));
+            }
+        }
+
+        Add("Formtec Templates", "A4, A5 and label sheets", "Icon.Sheet",
+            t => t.Brand.Contains("Formtec", StringComparison.OrdinalIgnoreCase));
+        Add("Product Labels", "Retail & commercial", "Icon.Tag",
+            t => t.Grid.LabelWidthMm >= 50 && t.Grid.LabelHeightMm >= 20);
+        Add("Barcode Labels", "Logistics & inventory", "Icon.Barcode",
+            t => t.Grid.LabelWidthMm >= 40 && t.Grid.LabelHeightMm < 30);
+        Add("Small & Serial", "Sequential numbering", "Icon.Sticker",
+            t => t.Grid.LabelWidthMm < 40);
+        Add("Round & Special", "Shaped labels", "Icon.Ellipse",
+            t => t.Grid.LabelShape != LabelShape.Rectangle);
+        Add("All Templates", "Every installed sheet", "Icon.Gallery", _ => true);
+
+        _selectedCategory = TemplateCategories.FirstOrDefault();
+        OnPropertyChanged(nameof(SelectedCategory));
+        if (_selectedCategory is not null)
+        {
+            TemplateResults.Clear();
+            foreach (LabelTemplate t in _selectedCategory.Templates.Take(60))
+            {
+                TemplateResults.Add(new TemplateListItem(t));
+            }
+        }
+    }
 
     public string TemplateSummary
     {
@@ -267,6 +453,9 @@ public sealed class MainViewModel : ObservableObject
 
     /// <summary>Raised after the Settings dialog changes auto-save preferences, so the running timer can be re-applied.</summary>
     public event EventHandler? AutoSaveSettingsChanged;
+
+    /// <summary>Raised when the dataset is replaced, so the data table can rebuild its columns.</summary>
+    public event EventHandler? DataChanged;
 
     public void NotifyAutoSaveSettingsChanged() => AutoSaveSettingsChanged?.Invoke(this, EventArgs.Empty);
 
@@ -369,6 +558,7 @@ public sealed class MainViewModel : ObservableObject
     public RelayCommand AddHorizontalGuideCommand { get; private set; } = null!;
     public RelayCommand AddTextCommand { get; private set; } = null!;
     public RelayCommand AddBarcodeCommand { get; private set; } = null!;
+    public RelayCommand AddQrCodeCommand { get; private set; } = null!;
     public RelayCommand AddImageCommand { get; private set; } = null!;
     public RelayCommand AddRectangleCommand { get; private set; } = null!;
     public RelayCommand AddRoundRectCommand { get; private set; } = null!;
@@ -446,6 +636,19 @@ public sealed class MainViewModel : ObservableObject
             Bounds = NewBounds(40, 16),
             AutoSize = false,
             Spec = new BarcodeSpec { Symbology = BarcodeSymbology.Code128, Data = "12345678", ModuleWidthMm = 0.3, BarHeightMm = 12 },
+        }));
+        AddQrCodeCommand = new RelayCommand(() => AddObject(new BarcodeObject
+        {
+            Name = "QR code",
+            Bounds = NewBounds(20, 20),
+            AutoSize = false,
+            Spec = new BarcodeSpec
+            {
+                Symbology = BarcodeSymbology.QrCode,
+                Data = "https://example.com",
+                ModuleWidthMm = 0.6,
+                HumanReadable = HumanReadablePosition.None,
+            },
         }));
         AddImageCommand = new RelayCommand(AddImage);
         AddRectangleCommand = new RelayCommand(() => AddObject(new ShapeObject { Shape = ShapeKind.Rectangle, Bounds = NewBounds(30, 20), Stroke = ColorRgba.Black, StrokeWidthMm = 0.25 }));
@@ -1175,6 +1378,10 @@ public sealed class MainViewModel : ObservableObject
     {
         OnPropertyChanged(nameof(Title));
         OnPropertyChanged(nameof(SelectionInfo));
+        OnPropertyChanged(nameof(DocumentTabTitle));
+        OnPropertyChanged(nameof(SaveStateText));
+        OnPropertyChanged(nameof(HasUnsavedChanges));
+        OnPropertyChanged(nameof(SheetSummary));
         RebuildObjectList();
         RefreshCanvas();
         RaiseAllCanExecute();

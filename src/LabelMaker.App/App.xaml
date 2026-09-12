@@ -16,6 +16,7 @@
       <conv:IntEqualsVisibilityConverter x:Key="IntEqualsVis" />
       <conv:NotNullConverter x:Key="NotNullVis" />
       <conv:LockIconConverter x:Key="LockIcon" />
+      <conv:IconLookupConverter x:Key="IconLookup" />
 
       <!-- Aliases kept for MainWindow.xaml -->
       <SolidColorBrush x:Key="PanelBackground" Color="{DynamicResource Clr.Bg}" />

@@ -1,10 +1,18 @@
 <Window x:Class="LabelMaker.App.Views.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Label Maker" Height="820" Width="1400" MinHeight="600" MinWidth="960"
+        xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
+        Title="Label Maker" Height="860" Width="1480" MinHeight="620" MinWidth="1040"
         Icon="/Assets/icon.ico"
         WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        Background="{DynamicResource Br.Surface}"
+        TextElement.Foreground="{DynamicResource Br.Text}"
         UseLayoutRounding="True" TextOptions.TextFormattingMode="Display">
+
+  <shell:WindowChrome.WindowChrome>
+    <shell:WindowChrome CaptionHeight="46" ResizeBorderThickness="6" CornerRadius="0" GlassFrameThickness="0" />
+  </shell:WindowChrome.WindowChrome>
 
   <Window.InputBindings>
     <KeyBinding Key="N" Modifiers="Control" Command="{Binding NewCommand}" />
@@ -23,395 +31,371 @@
     <KeyBinding Key="Delete" Command="{Binding DeleteCommand}" />
   </Window.InputBindings>
 
-  <Window.Resources>
-    <!-- Small monogram badge used as a ribbon-button "icon" (see RibbonIcon below). -->
-    <Style x:Key="RibbonIconBadge" TargetType="Border">
-      <Setter Property="Width" Value="26" />
-      <Setter Property="Height" Value="26" />
-      <Setter Property="CornerRadius" Value="8" />
-      <Setter Property="Background" Value="{DynamicResource Br.AccentSoft}" />
-      <Setter Property="HorizontalAlignment" Value="Center" />
-    </Style>
-    <Style x:Key="RibbonIconGlyph" TargetType="Image">
-      <Setter Property="Width" Value="16" />
-      <Setter Property="Height" Value="16" />
-      <Setter Property="Stretch" Value="Uniform" />
-      <Setter Property="HorizontalAlignment" Value="Center" />
-      <Setter Property="VerticalAlignment" Value="Center" />
-    </Style>
-    <Style x:Key="RibbonCaption" TargetType="TextBlock">
-      <Setter Property="FontFamily" Value="{StaticResource Font.Ui}" />
-      <Setter Property="FontSize" Value="10.5" />
-      <Setter Property="HorizontalAlignment" Value="Center" />
-      <Setter Property="Margin" Value="0,3,0,0" />
-    </Style>
-    <Style x:Key="GroupCaption" TargetType="TextBlock">
-      <Setter Property="FontFamily" Value="{StaticResource Font.UiSemiBold}" />
-      <Setter Property="FontSize" Value="9" />
-      <Setter Property="Foreground" Value="{DynamicResource Br.TextMuted}" />
-      <Setter Property="HorizontalAlignment" Value="Center" />
-      <Setter Property="Margin" Value="0,3,0,0" />
-    </Style>
-    <Style x:Key="PanelSectionHeader" TargetType="TextBlock">
-      <Setter Property="FontFamily" Value="{StaticResource Font.UiSemiBold}" />
-      <Setter Property="FontSize" Value="11" />
-      <Setter Property="Foreground" Value="{DynamicResource Br.TextMuted}" />
-      <Setter Property="Margin" Value="2,0,0,6" />
-    </Style>
-    <!-- Clickable "› Appearance" collapsible-section header (spec 3.8's "Collapsible Appearance section"). -->
-    <Style x:Key="CollapsibleHeader" TargetType="ToggleButton">
-      <Setter Property="Cursor" Value="Hand" />
-      <Setter Property="Margin" Value="0,6,0,2" />
-      <Setter Property="Template">
-        <Setter.Value>
-          <ControlTemplate TargetType="ToggleButton">
-            <StackPanel Orientation="Horizontal" Background="Transparent">
-              <TextBlock x:Name="chev" Text="›" FontFamily="{StaticResource Font.UiSemiBold}" Foreground="{DynamicResource Br.Accent}" Margin="0,0,5,0" />
-              <ContentPresenter />
-            </StackPanel>
-            <ControlTemplate.Triggers>
-              <Trigger Property="IsChecked" Value="True">
-                <Setter TargetName="chev" Property="Text" Value="⌄" />
-              </Trigger>
-            </ControlTemplate.Triggers>
-          </ControlTemplate>
-        </Setter.Value>
-      </Setter>
-      <Setter Property="FontFamily" Value="{StaticResource Font.UiSemiBold}" />
-      <Setter Property="FontSize" Value="12.5" />
-      <Setter Property="Foreground" Value="{DynamicResource Br.Text2}" />
-    </Style>
-  </Window.Resources>
-
   <DockPanel>
-    <!-- ============ Title / header band (pastel gradient) + menu + ribbon toolbar ============ -->
-    <Border DockPanel.Dock="Top" Background="{DynamicResource Br.TitleBarGradient}" Panel.ZIndex="10">
-      <Border.Effect>
-        <DropShadowEffect BlurRadius="14" ShadowDepth="3" Direction="270" Opacity="0.16" Color="#2A1E7A" />
-      </Border.Effect>
-      <StackPanel>
-        <DockPanel Margin="16,9,16,7" LastChildFill="False">
-          <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" VerticalAlignment="Center">
-            <Image Source="/Assets/logo.png" Width="22" Height="22" Margin="0,0,9,0" />
-            <TextBlock VerticalAlignment="Center" FontSize="15.5">
-              <Run Text="Label" FontFamily="{StaticResource Font.UiExtraBold}" Foreground="{DynamicResource Br.Text}" />
-              <Run Text=" Maker" FontFamily="{StaticResource Font.UiExtraBold}" Foreground="{DynamicResource Br.Accent}" />
-            </TextBlock>
-          </StackPanel>
-          <TextBlock DockPanel.Dock="Right" Text="{Binding ActivePageName}" VerticalAlignment="Center"
-                     Foreground="{DynamicResource Br.Text2}" FontFamily="{StaticResource Font.UiMedium}" FontSize="12" />
-        </DockPanel>
 
-        <Menu>
-          <MenuItem Header="_File">
-            <MenuItem Header="_New Project…" InputGestureText="Ctrl+N" Command="{Binding NewCommand}" />
-            <MenuItem Header="_Open…" InputGestureText="Ctrl+O" Command="{Binding OpenCommand}" />
-            <MenuItem Header="Open _Recent" ItemsSource="{Binding RecentProjects}">
-              <MenuItem.ItemContainerStyle>
-                <Style TargetType="MenuItem">
-                  <Setter Property="Header" Value="{Binding Title}" />
-                  <Setter Property="Command" Value="{Binding DataContext.OpenRecentCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
-                  <Setter Property="CommandParameter" Value="{Binding Path}" />
-                </Style>
-              </MenuItem.ItemContainerStyle>
+    <!-- ═════════════ Title bar ═════════════ -->
+    <Border DockPanel.Dock="Top" Height="46" Background="{DynamicResource Br.TitleBarGradient}"
+            BorderBrush="{DynamicResource Br.Border}" BorderThickness="0,0,0,1">
+      <Grid>
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="14,0,0,0"
+                    shell:WindowChrome.IsHitTestVisibleInChrome="True">
+          <Border Width="28" Height="28" CornerRadius="8" Background="{DynamicResource Br.AccentGradient}" Margin="0,0,10,0">
+            <Image Source="{StaticResource Icon.LogoGlyph}" Width="15" Height="15" />
+          </Border>
+          <TextBlock VerticalAlignment="Center" FontSize="15.5" Margin="0,0,22,0">
+            <Run Text="Label" FontFamily="{StaticResource Font.UiExtraBold}" Foreground="{DynamicResource Br.Text}" />
+            <Run Text="Maker" FontFamily="{StaticResource Font.UiExtraBold}" Foreground="{DynamicResource Br.Accent}" />
+          </TextBlock>
+
+          <Menu Background="Transparent" VerticalAlignment="Center">
+            <MenuItem Header="_Design">
+              <MenuItem Header="_New Project…" InputGestureText="Ctrl+N" Command="{Binding NewCommand}" />
+              <MenuItem Header="_Open…" InputGestureText="Ctrl+O" Command="{Binding OpenCommand}" />
+              <MenuItem Header="Open _Recent" ItemsSource="{Binding RecentProjects}">
+                <MenuItem.ItemContainerStyle>
+                  <Style TargetType="MenuItem">
+                    <Setter Property="Header" Value="{Binding Title}" />
+                    <Setter Property="Command" Value="{Binding DataContext.OpenRecentCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
+                    <Setter Property="CommandParameter" Value="{Binding Path}" />
+                  </Style>
+                </MenuItem.ItemContainerStyle>
+              </MenuItem>
+              <Separator />
+              <MenuItem Header="_Save" InputGestureText="Ctrl+S" Command="{Binding SaveCommand}" />
+              <MenuItem Header="Save _As…" InputGestureText="Ctrl+Shift+S" Command="{Binding SaveAsCommand}" />
+              <Separator />
+              <MenuItem Header="_Undo" InputGestureText="Ctrl+Z" Command="{Binding UndoCommand}" />
+              <MenuItem Header="_Redo" InputGestureText="Ctrl+Y" Command="{Binding RedoCommand}" />
+              <Separator />
+              <MenuItem Header="Cu_t" InputGestureText="Ctrl+X" Command="{Binding CutCommand}" />
+              <MenuItem Header="_Copy" InputGestureText="Ctrl+C" Command="{Binding CopyCommand}" />
+              <MenuItem Header="_Paste" InputGestureText="Ctrl+V" Command="{Binding PasteCommand}" />
+              <MenuItem Header="_Duplicate" InputGestureText="Ctrl+D" Command="{Binding DuplicateCommand}" />
+              <MenuItem Header="De_lete" InputGestureText="Del" Command="{Binding DeleteCommand}" />
+              <Separator />
+              <MenuItem Header="_Group" InputGestureText="Ctrl+G" Command="{Binding GroupCommand}" />
+              <MenuItem Header="U_ngroup" InputGestureText="Ctrl+Shift+G" Command="{Binding UngroupCommand}" />
+              <Separator />
+              <MenuItem Header="E_xit" Command="{Binding ExitCommand}" />
             </MenuItem>
-            <Separator />
-            <MenuItem Header="_Save" InputGestureText="Ctrl+S" Command="{Binding SaveCommand}" />
-            <MenuItem Header="Save _As…" InputGestureText="Ctrl+Shift+S" Command="{Binding SaveAsCommand}" />
-            <Separator />
-            <MenuItem Header="_Print…" InputGestureText="Ctrl+P" Command="{Binding PrintCommand}" />
-            <MenuItem Header="_Advanced Print Settings…" Command="{Binding PrintSettingsCommand}" />
-            <MenuItem Header="Print Pre_view…" Command="{Binding PrintPreviewCommand}" />
-            <MenuItem Header="Printer _Calibration Wizard…" Command="{Binding CalibrationCommand}" />
-            <Separator />
-            <MenuItem Header="_Export">
-              <MenuItem Header="Sheet to PDF…" Command="{Binding ExportSheetPdfCommand}" />
-              <MenuItem Header="Current label to PNG…" Command="{Binding ExportLabelPngCommand}" />
-              <MenuItem Header="Current label to SVG…" Command="{Binding ExportLabelSvgCommand}" />
+
+            <MenuItem Header="D_ata">
+              <MenuItem Header="_Import CSV / Excel…" Command="{Binding ImportDataCommand}" />
+              <MenuItem Header="_Clear data source" Command="{Binding ClearDataCommand}" />
+              <Separator />
+              <MenuItem Header="Manage _sequences…" Command="{Binding SequencesCommand}" />
+              <MenuItem Header="Duplicate _check…" Command="{Binding DuplicateCheckCommand}" />
+              <Separator />
+              <MenuItem Header="_Bulk Barcode Generator…" Command="{Binding BulkBarcodeCommand}" />
+              <MenuItem Header="Barcode i_mage…" Command="{Binding BarcodeImageCommand}" />
+              <Separator />
+              <MenuItem Header="Add _data field…" Command="{Binding AddDataFieldCommand}" />
+              <MenuItem Header="Add date / time field" Command="{Binding AddDateFieldCommand}" />
             </MenuItem>
-            <Separator />
-            <MenuItem Header="E_xit" Command="{Binding ExitCommand}" />
-          </MenuItem>
-          <MenuItem Header="_Edit">
-            <MenuItem Header="_Undo" InputGestureText="Ctrl+Z" Command="{Binding UndoCommand}" />
-            <MenuItem Header="_Redo" InputGestureText="Ctrl+Y" Command="{Binding RedoCommand}" />
-            <Separator />
-            <MenuItem Header="Cu_t" InputGestureText="Ctrl+X" Command="{Binding CutCommand}" />
-            <MenuItem Header="_Copy" InputGestureText="Ctrl+C" Command="{Binding CopyCommand}" />
-            <MenuItem Header="_Paste" InputGestureText="Ctrl+V" Command="{Binding PasteCommand}" />
-            <MenuItem Header="_Duplicate" InputGestureText="Ctrl+D" Command="{Binding DuplicateCommand}" />
-            <MenuItem Header="_Delete" InputGestureText="Del" Command="{Binding DeleteCommand}" />
-            <Separator />
-            <MenuItem Header="_Group" InputGestureText="Ctrl+G" Command="{Binding GroupCommand}" />
-            <MenuItem Header="_Ungroup" InputGestureText="Ctrl+Shift+G" Command="{Binding UngroupCommand}" />
-          </MenuItem>
-          <MenuItem Header="_Page">
-            <MenuItem Header="_Add page" Command="{Binding AddPageCommand}" />
-            <MenuItem Header="D_uplicate page" Command="{Binding DuplicatePageCommand}" />
-            <MenuItem Header="_Remove page" Command="{Binding RemovePageCommand}" />
-            <MenuItem Header="Re_name page…" Command="{Binding RenamePageCommand}" />
-          </MenuItem>
-          <MenuItem Header="_Insert">
-            <MenuItem Header="_Text box" Command="{Binding AddTextCommand}" />
-            <MenuItem Header="_Barcode / QR" Command="{Binding AddBarcodeCommand}" />
-            <MenuItem Header="_Image…" Command="{Binding AddImageCommand}" />
-            <MenuItem Header="_Rectangle" Command="{Binding AddRectangleCommand}" />
-            <MenuItem Header="R_ounded rectangle" Command="{Binding AddRoundRectCommand}" />
-            <MenuItem Header="_Ellipse" Command="{Binding AddEllipseCommand}" />
-            <MenuItem Header="_Line" Command="{Binding AddLineCommand}" />
-            <MenuItem Header="_Data field…" Command="{Binding AddDataFieldCommand}" />
-            <MenuItem Header="Date / time field" Command="{Binding AddDateFieldCommand}" />
-          </MenuItem>
-          <MenuItem Header="_Arrange">
-            <MenuItem Header="Bring to _front" Command="{Binding BringToFrontCommand}" />
-            <MenuItem Header="Bring _forward" Command="{Binding BringForwardCommand}" />
-            <MenuItem Header="Send _backward" Command="{Binding SendBackwardCommand}" />
-            <MenuItem Header="Send to bac_k" Command="{Binding SendToBackCommand}" />
-            <Separator />
-            <MenuItem Header="Align left" Command="{Binding AlignLeftCommand}" />
-            <MenuItem Header="Align top" Command="{Binding AlignTopCommand}" />
-            <MenuItem Header="Center horizontally on label" Command="{Binding CenterHorizontalCommand}" />
-            <MenuItem Header="Center vertically on label" Command="{Binding CenterVerticalCommand}" />
-          </MenuItem>
-          <MenuItem Header="_Data">
-            <MenuItem Header="_Import CSV / Excel…" Command="{Binding ImportDataCommand}" />
-            <MenuItem Header="_Clear data source" Command="{Binding ClearDataCommand}" />
-            <Separator />
-            <MenuItem Header="Manage _sequences…" Command="{Binding SequencesCommand}" />
-            <MenuItem Header="Duplicate _check…" Command="{Binding DuplicateCheckCommand}" />
-          </MenuItem>
-          <MenuItem Header="_Tools">
-            <MenuItem Header="_Bulk Barcode Generator…" Command="{Binding BulkBarcodeCommand}" />
-            <MenuItem Header="Barcode _image…" Command="{Binding BarcodeImageCommand}" />
-            <MenuItem Header="_Preflight check…" Command="{Binding PreflightCommand}" />
-            <MenuItem Header="_Formtec template manager…" Command="{Binding TemplateManagerCommand}" />
-            <Separator />
-            <MenuItem Header="_Settings…" Command="{Binding SettingsCommand}" />
-          </MenuItem>
-          <MenuItem Header="_View">
-            <MenuItem Header="Zoom in" Command="{Binding ZoomInCommand}" />
-            <MenuItem Header="Zoom out" Command="{Binding ZoomOutCommand}" />
-            <MenuItem Header="Fit label" Command="{Binding ZoomFitCommand}" />
-            <MenuItem Header="Actual size (100%)" Command="{Binding ZoomActualCommand}" />
-            <Separator />
-            <MenuItem Header="_Rulers" IsCheckable="True" IsChecked="{Binding ShowRulers}" />
-            <MenuItem Header="_Guides" IsCheckable="True" IsChecked="{Binding ShowGuides}" />
-            <MenuItem Header="_Lock guides" IsCheckable="True" IsChecked="{Binding LockGuides}" />
-            <MenuItem Header="Clear guides" Command="{Binding ClearGuidesCommand}" />
-            <Separator />
-            <MenuItem Header="Show grid" IsCheckable="True" IsChecked="{Binding ShowGrid}" />
-            <MenuItem Header="Snap to grid" IsCheckable="True" IsChecked="{Binding SnapToGrid}" />
-            <MenuItem Header="Snap to guides" IsCheckable="True" IsChecked="{Binding SnapToGuides}" />
-            <MenuItem Header="Snap to objects" IsCheckable="True" IsChecked="{Binding SnapToObjects}" />
-          </MenuItem>
-          <MenuItem Header="_Help">
-            <MenuItem Header="_About Label Maker" Command="{Binding AboutCommand}" />
-          </MenuItem>
-        </Menu>
 
-        <ToolBarTray>
-          <ToolBar>
-            <!-- File -->
-            <StackPanel>
-              <StackPanel Orientation="Horizontal">
-                <Button Style="{StaticResource RibbonButton}" Command="{Binding NewCommand}" ToolTip="New Project (Ctrl+N)">
-                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}"><Image Style="{StaticResource RibbonIconGlyph}" Source="{StaticResource Icon.New}" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="New" /></StackPanel>
-                </Button>
-                <Button Style="{StaticResource RibbonButton}" Command="{Binding OpenCommand}" ToolTip="Open (Ctrl+O)">
-                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}"><Image Style="{StaticResource RibbonIconGlyph}" Source="{StaticResource Icon.Open}" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="Open" /></StackPanel>
-                </Button>
-                <Button Style="{StaticResource RibbonButton}" Command="{Binding SaveCommand}" ToolTip="Save (Ctrl+S)">
-                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}"><Image Style="{StaticResource RibbonIconGlyph}" Source="{StaticResource Icon.Save}" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="Save" /></StackPanel>
-                </Button>
-              </StackPanel>
-              <TextBlock Style="{StaticResource GroupCaption}" Text="FILE" />
-            </StackPanel>
-            <Separator />
+            <MenuItem Header="_Print">
+              <MenuItem Header="_Print…" InputGestureText="Ctrl+P" Command="{Binding PrintCommand}" />
+              <MenuItem Header="_Advanced Print Settings…" Command="{Binding PrintSettingsCommand}" />
+              <MenuItem Header="Print Pre_view…" Command="{Binding PrintPreviewCommand}" />
+              <MenuItem Header="Printer _Calibration Wizard…" Command="{Binding CalibrationCommand}" />
+              <Separator />
+              <MenuItem Header="Pre_flight check…" Command="{Binding PreflightCommand}" />
+              <Separator />
+              <MenuItem Header="_Export">
+                <MenuItem Header="Sheet to PDF…" Command="{Binding ExportSheetPdfCommand}" />
+                <MenuItem Header="Current label to PNG…" Command="{Binding ExportLabelPngCommand}" />
+                <MenuItem Header="Current label to SVG…" Command="{Binding ExportLabelSvgCommand}" />
+              </MenuItem>
+            </MenuItem>
 
-            <!-- Edit -->
-            <StackPanel>
-              <StackPanel Orientation="Horizontal">
-                <Button Style="{StaticResource RibbonButton}" Command="{Binding UndoCommand}" ToolTip="Undo (Ctrl+Z)">
-                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}"><Image Style="{StaticResource RibbonIconGlyph}" Source="{StaticResource Icon.Undo}" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="Undo" /></StackPanel>
-                </Button>
-                <Button Style="{StaticResource RibbonButton}" Command="{Binding RedoCommand}" ToolTip="Redo (Ctrl+Y)">
-                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}"><Image Style="{StaticResource RibbonIconGlyph}" Source="{StaticResource Icon.Redo}" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="Redo" /></StackPanel>
-                </Button>
-              </StackPanel>
-              <TextBlock Style="{StaticResource GroupCaption}" Text="EDIT" />
-            </StackPanel>
-            <Separator />
+            <MenuItem Header="_Scale">
+              <MenuItem Header="Zoom in" Command="{Binding ZoomInCommand}" />
+              <MenuItem Header="Zoom out" Command="{Binding ZoomOutCommand}" />
+              <MenuItem Header="Fit label" Command="{Binding ZoomFitCommand}" />
+              <MenuItem Header="Actual size (100%)" Command="{Binding ZoomActualCommand}" />
+              <Separator />
+              <MenuItem Header="_Rulers" IsCheckable="True" IsChecked="{Binding ShowRulers}" />
+              <MenuItem Header="_Guides" IsCheckable="True" IsChecked="{Binding ShowGuides}" />
+              <MenuItem Header="_Lock guides" IsCheckable="True" IsChecked="{Binding LockGuides}" />
+              <MenuItem Header="Clear guides" Command="{Binding ClearGuidesCommand}" />
+              <Separator />
+              <MenuItem Header="Show grid" IsCheckable="True" IsChecked="{Binding ShowGrid}" />
+              <MenuItem Header="Snap to grid" IsCheckable="True" IsChecked="{Binding SnapToGrid}" />
+              <MenuItem Header="Snap to guides" IsCheckable="True" IsChecked="{Binding SnapToGuides}" />
+              <MenuItem Header="Snap to objects" IsCheckable="True" IsChecked="{Binding SnapToObjects}" />
+              <Separator />
+              <MenuItem Header="_Formtec template manager…" Command="{Binding TemplateManagerCommand}" />
+              <MenuItem Header="_Settings…" Command="{Binding SettingsCommand}" />
+              <MenuItem Header="_About Label Maker" Command="{Binding AboutCommand}" />
+            </MenuItem>
+          </Menu>
+        </StackPanel>
 
-            <!-- Clipboard -->
-            <StackPanel>
-              <StackPanel Orientation="Horizontal">
-                <Button Style="{StaticResource RibbonButton}" Command="{Binding CutCommand}" ToolTip="Cut (Ctrl+X)">
-                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}"><Image Style="{StaticResource RibbonIconGlyph}" Source="{StaticResource Icon.Cut}" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="Cut" /></StackPanel>
-                </Button>
-                <Button Style="{StaticResource RibbonButton}" Command="{Binding CopyCommand}" ToolTip="Copy (Ctrl+C)">
-                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}"><Image Style="{StaticResource RibbonIconGlyph}" Source="{StaticResource Icon.Copy}" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="Copy" /></StackPanel>
-                </Button>
-                <Button Style="{StaticResource RibbonButton}" Command="{Binding PasteCommand}" ToolTip="Paste (Ctrl+V)">
-                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}"><Image Style="{StaticResource RibbonIconGlyph}" Source="{StaticResource Icon.Paste}" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="Paste" /></StackPanel>
-                </Button>
-                <Button Style="{StaticResource RibbonButton}" Command="{Binding DeleteCommand}" ToolTip="Delete">
-                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}"><Image Style="{StaticResource RibbonIconGlyph}" Source="{StaticResource Icon.Delete}" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="Delete" /></StackPanel>
-                </Button>
-              </StackPanel>
-              <TextBlock Style="{StaticResource GroupCaption}" Text="CLIPBOARD" />
+        <!-- edition pill + window buttons -->
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center"
+                    shell:WindowChrome.IsHitTestVisibleInChrome="True">
+          <Border Background="{DynamicResource Br.Bg}" BorderBrush="{DynamicResource Br.BorderStrong}" BorderThickness="1"
+                  CornerRadius="8" Padding="12,5" Margin="0,0,12,0">
+            <StackPanel Orientation="Horizontal">
+              <TextBlock Text="Standard Edition" FontFamily="{StaticResource Font.UiMedium}" FontSize="12.5"
+                         Foreground="{DynamicResource Br.Text}" VerticalAlignment="Center" />
+              <Path Data="M 0,0 L 8,0 L 4,5 Z" Fill="{DynamicResource Br.TextMuted}" Margin="9,2,0,0" VerticalAlignment="Center" />
             </StackPanel>
-            <Separator />
-
-            <!-- Insert -->
-            <StackPanel>
-              <StackPanel Orientation="Horizontal">
-                <Button Style="{StaticResource RibbonButton}" Command="{Binding AddTextCommand}" ToolTip="Add text box">
-                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}"><Image Style="{StaticResource RibbonIconGlyph}" Source="{StaticResource Icon.Text}" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="Text" /></StackPanel>
-                </Button>
-                <Button Style="{StaticResource RibbonButton}" Command="{Binding AddBarcodeCommand}" ToolTip="Add barcode / QR">
-                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}"><Image Style="{StaticResource RibbonIconGlyph}" Source="{StaticResource Icon.Barcode}" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="Barcode" /></StackPanel>
-                </Button>
-                <Button Style="{StaticResource RibbonButton}" Command="{Binding AddImageCommand}" ToolTip="Add image">
-                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}"><Image Style="{StaticResource RibbonIconGlyph}" Source="{StaticResource Icon.Image}" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="Image" /></StackPanel>
-                </Button>
-                <Button Style="{StaticResource RibbonButton}" Command="{Binding AddRectangleCommand}" ToolTip="Add rectangle">
-                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}"><Image Style="{StaticResource RibbonIconGlyph}" Source="{StaticResource Icon.Rectangle}" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="Rect" /></StackPanel>
-                </Button>
-                <Button Style="{StaticResource RibbonButton}" Command="{Binding AddEllipseCommand}" ToolTip="Add ellipse">
-                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}"><Image Style="{StaticResource RibbonIconGlyph}" Source="{StaticResource Icon.Ellipse}" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="Ellipse" /></StackPanel>
-                </Button>
-                <Button Style="{StaticResource RibbonButton}" Command="{Binding AddLineCommand}" ToolTip="Add line">
-                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}"><Image Style="{StaticResource RibbonIconGlyph}" Source="{StaticResource Icon.Line}" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="Line" /></StackPanel>
-                </Button>
-              </StackPanel>
-              <TextBlock Style="{StaticResource GroupCaption}" Text="INSERT" />
-            </StackPanel>
-            <Separator />
-
-            <!-- Data -->
-            <StackPanel>
-              <StackPanel Orientation="Horizontal">
-                <Button Style="{StaticResource RibbonButtonEmphasized}" Command="{Binding ImportDataCommand}" ToolTip="Import CSV / Excel data source">
-                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}" Background="Transparent"><Image Style="{StaticResource RibbonIconGlyph}" Source="{StaticResource Icon.Import}" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="Import Data" /></StackPanel>
-                </Button>
-                <Button Style="{StaticResource RibbonButton}" Command="{Binding BulkBarcodeCommand}" ToolTip="Bulk barcode generator">
-                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}"><Image Style="{StaticResource RibbonIconGlyph}" Source="{StaticResource Icon.Layers}" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="Bulk Codes" /></StackPanel>
-                </Button>
-                <Button Style="{StaticResource RibbonButton}" Command="{Binding PreflightCommand}" ToolTip="Preflight check">
-                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}"><Image Style="{StaticResource RibbonIconGlyph}" Source="{StaticResource Icon.Checklist}" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="Preflight" /></StackPanel>
-                </Button>
-              </StackPanel>
-              <TextBlock Style="{StaticResource GroupCaption}" Text="DATA" />
-            </StackPanel>
-            <Separator />
-
-            <!-- Print -->
-            <StackPanel>
-              <StackPanel Orientation="Horizontal">
-                <Button Style="{StaticResource RibbonButton}" Command="{Binding PrintPreviewCommand}" ToolTip="Print preview">
-                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}"><Image Style="{StaticResource RibbonIconGlyph}" Source="{StaticResource Icon.Eye}" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="Preview" /></StackPanel>
-                </Button>
-                <Button Style="{StaticResource RibbonButton}" Command="{Binding PrintSettingsCommand}" ToolTip="Advanced print settings">
-                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}"><Image Style="{StaticResource RibbonIconGlyph}" Source="{StaticResource Icon.Sliders}" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="Settings" /></StackPanel>
-                </Button>
-                <Button Style="{StaticResource RibbonButton}" Command="{Binding PrintCommand}" ToolTip="Print (Ctrl+P)">
-                  <StackPanel><Border Style="{StaticResource RibbonIconBadge}"><Image Style="{StaticResource RibbonIconGlyph}" Source="{StaticResource Icon.Print}" /></Border><TextBlock Style="{StaticResource RibbonCaption}" Text="Print" /></StackPanel>
-                </Button>
-              </StackPanel>
-              <TextBlock Style="{StaticResource GroupCaption}" Text="PRINT" />
-            </StackPanel>
-          </ToolBar>
-        </ToolBarTray>
-      </StackPanel>
+          </Border>
+          <Button Style="{StaticResource WindowChromeButton}" Click="OnMinimise" ToolTip="Minimise">
+            <Path Data="M 0,0 L 10,0" Stroke="{DynamicResource Br.Text2}" StrokeThickness="1.2" />
+          </Button>
+          <Button Style="{StaticResource WindowChromeButton}" Click="OnMaximise" ToolTip="Maximise">
+            <Path Data="M 0,0 L 9,0 L 9,9 L 0,9 Z" Stroke="{DynamicResource Br.Text2}" StrokeThickness="1.2" />
+          </Button>
+          <Button Style="{StaticResource WindowCloseButton}" Click="OnClose" ToolTip="Close">
+            <Path Data="M 0,0 L 9,9 M 9,0 L 0,9" Stroke="{DynamicResource Br.Text2}" StrokeThickness="1.2" />
+          </Button>
+        </StackPanel>
+      </Grid>
     </Border>
 
-    <!-- ============ Status bar ============ -->
-    <StatusBar DockPanel.Dock="Bottom">
-      <StatusBarItem>
+    <!-- ═════════════ Tool bar ═════════════ -->
+    <Border DockPanel.Dock="Top" Background="{DynamicResource Br.Bg}"
+            BorderBrush="{DynamicResource Br.Border}" BorderThickness="0,0,0,1">
+      <Grid Margin="10,8">
         <StackPanel Orientation="Horizontal">
-          <Ellipse Width="8" Height="8" Fill="{DynamicResource Br.Ok}" VerticalAlignment="Center" Margin="0,0,8,0" />
-          <TextBlock Text="{Binding StatusText}" VerticalAlignment="Center" Foreground="{DynamicResource Br.Text}" FontFamily="{StaticResource Font.UiMedium}" />
-        </StackPanel>
-      </StatusBarItem>
-      <Separator />
-      <StatusBarItem><TextBlock Text="{Binding SelectionInfo}" FontFamily="{StaticResource Font.Mono}" FontSize="11.5" /></StatusBarItem>
-      <StatusBarItem HorizontalAlignment="Right">
-        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-          <Border Background="{DynamicResource Br.Bg}" BorderBrush="{DynamicResource Br.Border}" BorderThickness="1" CornerRadius="6" Padding="2">
-            <StackPanel Orientation="Horizontal">
-              <TextBlock Text="Record" Margin="6,0,4,0" VerticalAlignment="Center" Foreground="{DynamicResource Br.TextMuted}" />
-              <Button Content="⏮" Command="{Binding FirstRecordCommand}" Style="{StaticResource ToolButton}" MinWidth="26" Padding="4,2" />
-              <Button Content="◀" Command="{Binding PrevRecordCommand}" Style="{StaticResource ToolButton}" MinWidth="26" Padding="4,2" />
-              <TextBlock Text="{Binding RecordText}" Margin="8,0" VerticalAlignment="Center" MinWidth="56" TextAlignment="Center" FontFamily="{StaticResource Font.Mono}" />
-              <Button Content="▶" Command="{Binding NextRecordCommand}" Style="{StaticResource ToolButton}" MinWidth="26" Padding="4,2" />
-              <Button Content="⏭" Command="{Binding LastRecordCommand}" Style="{StaticResource ToolButton}" MinWidth="26" Padding="4,2" />
-            </StackPanel>
-          </Border>
-          <Border Background="{DynamicResource Br.Bg}" BorderBrush="{DynamicResource Br.Border}" BorderThickness="1" CornerRadius="6" Padding="2" Margin="8,0,0,0">
-            <StackPanel Orientation="Horizontal">
-              <Button Content="−" Command="{Binding ZoomOutCommand}" Style="{StaticResource ToolButton}" MinWidth="26" Padding="4,2" />
-              <TextBlock Text="{Binding ZoomText}" VerticalAlignment="Center" MinWidth="46" TextAlignment="Center" FontFamily="{StaticResource Font.Mono}" />
-              <Button Content="+" Command="{Binding ZoomInCommand}" Style="{StaticResource ToolButton}" MinWidth="26" Padding="4,2" />
-              <Button Content="Fit" Command="{Binding ZoomFitCommand}" Style="{StaticResource ToolButton}" Padding="8,2" />
-            </StackPanel>
-          </Border>
-        </StackPanel>
-      </StatusBarItem>
-    </StatusBar>
+          <RadioButton Style="{StaticResource ToolTile}" IsChecked="True" GroupName="tool" ToolTip="Select / move objects">
+            <StackPanel><Image Style="{StaticResource ToolTileIcon}" Source="{StaticResource Icon.Select}" /><TextBlock Style="{StaticResource ToolTileLabel}" Text="Select" /></StackPanel>
+          </RadioButton>
+          <Button Style="{StaticResource ToolTileButton}" Command="{Binding AddTextCommand}" ToolTip="Add a text box">
+            <StackPanel><Image Style="{StaticResource ToolTileIcon}" Source="{StaticResource Icon.Text}" /><TextBlock Style="{StaticResource ToolTileLabel}" Text="Text" /></StackPanel>
+          </Button>
+          <Button Style="{StaticResource ToolTileButton}" Command="{Binding AddImageCommand}" ToolTip="Add an image">
+            <StackPanel><Image Style="{StaticResource ToolTileIcon}" Source="{StaticResource Icon.Image}" /><TextBlock Style="{StaticResource ToolTileLabel}" Text="Image" /></StackPanel>
+          </Button>
+          <Button Style="{StaticResource ToolTileButton}" Command="{Binding AddBarcodeCommand}" ToolTip="Add a barcode">
+            <StackPanel><Image Style="{StaticResource ToolTileIcon}" Source="{StaticResource Icon.Barcode}" /><TextBlock Style="{StaticResource ToolTileLabel}" Text="Barcode" /></StackPanel>
+          </Button>
+          <Button Style="{StaticResource ToolTileButton}" Command="{Binding AddQrCodeCommand}" ToolTip="Add a QR code">
+            <StackPanel><Image Style="{StaticResource ToolTileIcon}" Source="{StaticResource Icon.QrCode}" /><TextBlock Style="{StaticResource ToolTileLabel}" Text="QR Code" /></StackPanel>
+          </Button>
+          <Button Style="{StaticResource ToolTileButton}" Command="{Binding AddRoundRectCommand}" ToolTip="Add a rounded shape">
+            <StackPanel><Image Style="{StaticResource ToolTileIcon}" Source="{StaticResource Icon.Shape}" /><TextBlock Style="{StaticResource ToolTileLabel}" Text="Shape" /></StackPanel>
+          </Button>
+          <Button Style="{StaticResource ToolTileButton}" Command="{Binding AddLineCommand}" ToolTip="Add a line">
+            <StackPanel><Image Style="{StaticResource ToolTileIcon}" Source="{StaticResource Icon.Line}" /><TextBlock Style="{StaticResource ToolTileLabel}" Text="Line" /></StackPanel>
+          </Button>
+          <Button Style="{StaticResource ToolTileButton}" Command="{Binding AddRectangleCommand}" ToolTip="Add a rectangle">
+            <StackPanel><Image Style="{StaticResource ToolTileIcon}" Source="{StaticResource Icon.Rectangle}" /><TextBlock Style="{StaticResource ToolTileLabel}" Text="Rectangle" /></StackPanel>
+          </Button>
+          <Button Style="{StaticResource ToolTileButton}" Command="{Binding AddEllipseCommand}" ToolTip="Add an ellipse">
+            <StackPanel><Image Style="{StaticResource ToolTileIcon}" Source="{StaticResource Icon.Ellipse}" /><TextBlock Style="{StaticResource ToolTileLabel}" Text="Ellipse" /></StackPanel>
+          </Button>
 
-    <!-- ============ Main body ============ -->
+          <Rectangle Style="{StaticResource ToolDivider}" />
+
+          <Button Style="{StaticResource ToolTileButton}" ToolTip="Align selected objects" Click="OnAlignMenu">
+            <StackPanel Orientation="Horizontal">
+              <StackPanel><Image Style="{StaticResource ToolTileIcon}" Source="{StaticResource Icon.Align}" /><TextBlock Style="{StaticResource ToolTileLabel}" Text="Align" /></StackPanel>
+              <Path Data="M 0,0 L 8,0 L 4,5 Z" Fill="{DynamicResource Br.TextMuted}" Margin="4,0,0,0" VerticalAlignment="Center" />
+            </StackPanel>
+            <Button.ContextMenu>
+              <ContextMenu>
+                <MenuItem Header="Align left" Command="{Binding AlignLeftCommand}" />
+                <MenuItem Header="Align top" Command="{Binding AlignTopCommand}" />
+                <MenuItem Header="Centre horizontally on label" Command="{Binding CenterHorizontalCommand}" />
+                <MenuItem Header="Centre vertically on label" Command="{Binding CenterVerticalCommand}" />
+              </ContextMenu>
+            </Button.ContextMenu>
+          </Button>
+          <Button Style="{StaticResource ToolTileButton}" ToolTip="Arrange z-order" Click="OnAlignMenu">
+            <StackPanel Orientation="Horizontal">
+              <StackPanel><Image Style="{StaticResource ToolTileIcon}" Source="{StaticResource Icon.Arrange}" /><TextBlock Style="{StaticResource ToolTileLabel}" Text="Arrange" /></StackPanel>
+              <Path Data="M 0,0 L 8,0 L 4,5 Z" Fill="{DynamicResource Br.TextMuted}" Margin="4,0,0,0" VerticalAlignment="Center" />
+            </StackPanel>
+            <Button.ContextMenu>
+              <ContextMenu>
+                <MenuItem Header="Bring to front" Command="{Binding BringToFrontCommand}" />
+                <MenuItem Header="Bring forward" Command="{Binding BringForwardCommand}" />
+                <MenuItem Header="Send backward" Command="{Binding SendBackwardCommand}" />
+                <MenuItem Header="Send to back" Command="{Binding SendToBackCommand}" />
+              </ContextMenu>
+            </Button.ContextMenu>
+          </Button>
+
+          <Rectangle Style="{StaticResource ToolDivider}" />
+
+          <Button Style="{StaticResource ToolTileButton}" Command="{Binding GroupCommand}" ToolTip="Group (Ctrl+G)">
+            <StackPanel><Image Style="{StaticResource ToolTileIcon}" Source="{StaticResource Icon.Group}" /><TextBlock Style="{StaticResource ToolTileLabel}" Text="Group" /></StackPanel>
+          </Button>
+          <Button Style="{StaticResource ToolTileButton}" Command="{Binding UngroupCommand}" ToolTip="Ungroup (Ctrl+Shift+G)">
+            <StackPanel><Image Style="{StaticResource ToolTileIcon}" Source="{StaticResource Icon.Ungroup}" /><TextBlock Style="{StaticResource ToolTileLabel}" Text="Ungroup" /></StackPanel>
+          </Button>
+
+          <Rectangle Style="{StaticResource ToolDivider}" />
+
+          <Button Style="{StaticResource ToolTileButton}" Command="{Binding ZoomOutCommand}" ToolTip="Zoom out">
+            <StackPanel><Image Style="{StaticResource ToolTileIcon}" Source="{StaticResource Icon.ZoomOut}" /><TextBlock Style="{StaticResource ToolTileLabel}" Text="Zoom Out" /></StackPanel>
+          </Button>
+          <Button Style="{StaticResource ToolTileButton}" Command="{Binding ZoomActualCommand}" ToolTip="Actual size">
+            <StackPanel><Image Style="{StaticResource ToolTileIcon}" Source="{StaticResource Icon.ZoomFit}" /><TextBlock Style="{StaticResource ToolTileLabel}" Text="100%" /></StackPanel>
+          </Button>
+          <Button Style="{StaticResource ToolTileButton}" Command="{Binding ZoomInCommand}" ToolTip="Zoom in">
+            <StackPanel><Image Style="{StaticResource ToolTileIcon}" Source="{StaticResource Icon.ZoomIn}" /><TextBlock Style="{StaticResource ToolTileLabel}" Text="Zoom In" /></StackPanel>
+          </Button>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+          <Button Style="{StaticResource GhostButton}" Command="{Binding PrintPreviewCommand}" Margin="0,0,10,0">
+            <StackPanel Orientation="Horizontal">
+              <Image Source="{StaticResource Icon.Eye}" Width="16" Height="16" Margin="0,0,8,0" />
+              <TextBlock Text="Preview" VerticalAlignment="Center" />
+            </StackPanel>
+          </Button>
+          <Button Style="{StaticResource PrimaryButton}" Command="{Binding PrintCommand}">
+            <StackPanel Orientation="Horizontal">
+              <Image Source="{StaticResource Icon.PrintWhite}" Width="16" Height="16" Margin="0,0,8,0" />
+              <TextBlock Text="Print" VerticalAlignment="Center" />
+            </StackPanel>
+          </Button>
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <!-- ═════════════ Status bar ═════════════ -->
+    <Border DockPanel.Dock="Bottom" Background="{DynamicResource Br.Bg}"
+            BorderBrush="{DynamicResource Br.Border}" BorderThickness="0,1,0,0" Padding="14,7">
+      <Grid>
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+          <Image Source="{StaticResource Icon.Check}" Width="15" Height="15" Margin="0,0,7,0" />
+          <TextBlock Text="{Binding SaveStateText}" Style="{StaticResource StatusText}" Margin="0,0,16,0" />
+          <Rectangle Style="{StaticResource StatusDivider}" />
+          <Image Source="{StaticResource Icon.FileDoc}" Width="15" Height="15" Margin="0,0,7,0" />
+          <TextBlock Text="{Binding DocumentTabTitle}" Style="{StaticResource StatusText}" Margin="0,0,16,0" />
+          <Rectangle Style="{StaticResource StatusDivider}" />
+          <Image Source="{StaticResource Icon.Sheet}" Width="15" Height="15" Margin="0,0,7,0" />
+          <TextBlock Text="{Binding SheetSummary}" Style="{StaticResource StatusText}" Margin="0,0,16,0" />
+          <Rectangle Style="{StaticResource StatusDivider}" />
+          <Image Source="{StaticResource Icon.Search}" Width="15" Height="15" Margin="0,0,7,0" />
+          <TextBlock Text="{Binding ZoomText}" Style="{StaticResource StatusText}" />
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+          <Border Background="{DynamicResource Br.Surface2}" BorderBrush="{DynamicResource Br.Border}" BorderThickness="1"
+                  CornerRadius="8" Padding="10,4" Margin="0,0,14,0">
+            <StackPanel Orientation="Horizontal">
+              <Image Source="{StaticResource Icon.Print}" Width="14" Height="14" Margin="0,0,7,0" />
+              <TextBlock Text="{Binding PrinterName}" Style="{StaticResource StatusText}" />
+            </StackPanel>
+          </Border>
+          <Ellipse Width="8" Height="8" Fill="{DynamicResource Br.Ok}" VerticalAlignment="Center" Margin="0,0,7,0" />
+          <TextBlock Text="{Binding CalibrationStatus}" Style="{StaticResource StatusText}" Margin="0,0,16,0" />
+          <Image Source="{StaticResource Icon.Database}" Width="15" Height="15" Margin="0,0,7,0" />
+          <TextBlock Text="{Binding RecordsReadyText}" Style="{StaticResource StatusText}" Margin="0,0,14,0" />
+          <Button Style="{StaticResource PrimaryButton}" Command="{Binding PrintCommand}" Padding="16,6">
+            <StackPanel Orientation="Horizontal">
+              <Image Source="{StaticResource Icon.PrintWhite}" Width="15" Height="15" Margin="0,0,7,0" />
+              <TextBlock Text="Print All" VerticalAlignment="Center" />
+            </StackPanel>
+          </Button>
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <!-- ═════════════ Workspace ═════════════ -->
     <Grid Background="{DynamicResource Br.Surface}">
       <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="272" MinWidth="220" />
+        <ColumnDefinition Width="308" MinWidth="240" />
         <ColumnDefinition Width="6" />
-        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="*" MinWidth="420" />
         <ColumnDefinition Width="6" />
-        <ColumnDefinition Width="320" MinWidth="260" />
+        <ColumnDefinition Width="344" MinWidth="280" />
       </Grid.ColumnDefinitions>
 
-      <!-- Left: Templates / Pages -->
-      <Border Grid.Column="0" Background="{DynamicResource PanelBackground}" BorderBrush="{DynamicResource PanelBorder}" BorderThickness="0,0,1,0">
-        <DockPanel Margin="12,12,12,10">
-
-          <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="2,0,0,12">
-            <RadioButton GroupName="LeftTab" Content="Templates" Style="{StaticResource UnderlineTab}" Margin="0,0,22,0"
-                         IsChecked="{Binding SelectedLeftTab, Converter={StaticResource IntEquals}, ConverterParameter=0}" />
-            <RadioButton GroupName="LeftTab" Content="Pages" Style="{StaticResource UnderlineTab}"
-                         IsChecked="{Binding SelectedLeftTab, Converter={StaticResource IntEquals}, ConverterParameter=1}" />
-          </StackPanel>
-
-          <Border DockPanel.Dock="Bottom" Style="{StaticResource Card}" Margin="0,10,0,0" Padding="12,10">
-            <StackPanel>
-              <TextBlock Text="DATA SOURCE" Style="{StaticResource PanelSectionHeader}" Margin="0,0,0,4" />
-              <TextBlock Text="{Binding DataSourceSummary}" FontSize="12.5" Margin="0,0,0,10" />
-              <StackPanel Orientation="Horizontal">
-                <Button Content="Import…" Command="{Binding ImportDataCommand}" Style="{StaticResource AccentButton}" Padding="12,5" Margin="0,0,6,0" />
-                <Button Content="Clear" Command="{Binding ClearDataCommand}" Padding="12,5" />
-              </StackPanel>
+      <!-- ───────── Left panel ───────── -->
+      <Border Grid.Column="0" Background="{DynamicResource Br.Bg}"
+              BorderBrush="{DynamicResource Br.Border}" BorderThickness="0,0,1,0">
+        <DockPanel>
+          <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource Br.Border}" BorderThickness="0,0,0,1">
+            <StackPanel Orientation="Horizontal" Margin="16,10,16,0">
+              <RadioButton GroupName="LeftTab" Content="Templates" Style="{StaticResource PanelTab}" Margin="0,0,22,0"
+                           IsChecked="{Binding SelectedLeftTab, Converter={StaticResource IntEquals}, ConverterParameter=0}" />
+              <RadioButton GroupName="LeftTab" Content="Assets" Style="{StaticResource PanelTab}" Margin="0,0,22,0"
+                           IsChecked="{Binding SelectedLeftTab, Converter={StaticResource IntEquals}, ConverterParameter=1}" />
+              <RadioButton GroupName="LeftTab" Content="Data" Style="{StaticResource PanelTab}"
+                           IsChecked="{Binding SelectedLeftTab, Converter={StaticResource IntEquals}, ConverterParameter=2}" />
             </StackPanel>
           </Border>
 
           <!-- Templates tab -->
-          <StackPanel Visibility="{Binding SelectedLeftTab, Converter={StaticResource IntEqualsVis}, ConverterParameter=0}">
-            <TextBlock Text="CURRENT TEMPLATE" Style="{StaticResource PanelSectionHeader}" />
-            <Border Style="{StaticResource Card}" Padding="12,10" Margin="0,0,0,12">
-              <TextBlock Text="{Binding TemplateSummary}" TextWrapping="Wrap" FontSize="12.5" />
+          <DockPanel Visibility="{Binding SelectedLeftTab, Converter={StaticResource IntEqualsVis}, ConverterParameter=0}">
+            <Border DockPanel.Dock="Top" Style="{StaticResource SearchField}" Margin="14,14,14,10">
+              <DockPanel>
+                <Image DockPanel.Dock="Left" Source="{StaticResource Icon.Search}" Width="15" Height="15" Margin="2,0,8,0" />
+                <TextBox Style="{StaticResource PlainTextBox}" Tag="Search templates…"
+                         Text="{Binding TemplateSearchText, UpdateSourceTrigger=PropertyChanged}" />
+              </DockPanel>
             </Border>
-            <Button Content="Change template…" Command="{Binding TemplateManagerCommand}" Style="{StaticResource AccentButton}"
-                    HorizontalAlignment="Left" Padding="14,7" />
-          </StackPanel>
 
-          <!-- Pages tab -->
-          <DockPanel Visibility="{Binding SelectedLeftTab, Converter={StaticResource IntEqualsVis}, ConverterParameter=1}">
-            <Grid DockPanel.Dock="Top" Margin="0,0,0,6">
-              <TextBlock Text="PAGES" Style="{StaticResource PanelSectionHeader}" Margin="0" VerticalAlignment="Center" />
+            <Border DockPanel.Dock="Bottom" Style="{StaticResource PromoCard}" Margin="14,10,14,14">
+              <StackPanel>
+                <DockPanel Margin="0,0,0,8">
+                  <Border DockPanel.Dock="Right" Width="56" Height="42" CornerRadius="8"
+                          Background="{DynamicResource Br.AccentSoft}">
+                    <Image Source="{StaticResource Icon.Gallery}" Width="20" Height="20" />
+                  </Border>
+                  <StackPanel Margin="0,0,10,0">
+                    <TextBlock Text="More templates online" FontFamily="{StaticResource Font.UiSemiBold}"
+                               FontSize="13" Foreground="{DynamicResource Br.Accent}" />
+                    <TextBlock Text="Discover more professional label templates" TextWrapping="Wrap"
+                               FontSize="11.5" Foreground="{DynamicResource Br.Text2}" Margin="0,3,0,0" />
+                  </StackPanel>
+                </DockPanel>
+                <Button Style="{StaticResource PrimaryButton}" HorizontalAlignment="Stretch" Padding="12,7"
+                        Command="{Binding TemplateManagerCommand}">
+                  <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <TextBlock Text="Browse Gallery" VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <Image Source="{StaticResource Icon.ArrowRightWhite}" Width="15" Height="15" />
+                  </StackPanel>
+                </Button>
+              </StackPanel>
+            </Border>
+
+            <ListBox ItemsSource="{Binding TemplateCategories}" SelectedItem="{Binding SelectedCategory}"
+                     Style="{StaticResource SidebarList}" Margin="8,0,8,0">
+              <ListBox.ItemContainerStyle>
+                <Style TargetType="ListBoxItem" BasedOn="{StaticResource SidebarItem}" />
+              </ListBox.ItemContainerStyle>
+              <ListBox.ItemTemplate>
+                <DataTemplate>
+                  <DockPanel>
+                    <Border DockPanel.Dock="Left" Width="34" Height="34" CornerRadius="9"
+                            Background="{DynamicResource Br.AccentSoft}" Margin="0,0,11,0">
+                      <Image Width="17" Height="17" Source="{Binding IconKey, Converter={StaticResource IconLookup}}" />
+                    </Border>
+                    <TextBlock DockPanel.Dock="Right" Text="{Binding Count}" VerticalAlignment="Center"
+                               FontFamily="{StaticResource Font.UiSemiBold}" FontSize="12.5"
+                               Foreground="{DynamicResource Br.TextMuted}" Margin="8,0,2,0" />
+                    <StackPanel VerticalAlignment="Center">
+                      <TextBlock Text="{Binding Title}" FontFamily="{StaticResource Font.UiSemiBold}" FontSize="13"
+                                 TextTrimming="CharacterEllipsis" />
+                      <TextBlock Text="{Binding Subtitle}" FontSize="11.5" Foreground="{DynamicResource Br.TextMuted}"
+                                 TextTrimming="CharacterEllipsis" Margin="0,2,0,0" />
+                    </StackPanel>
+                  </DockPanel>
+                </DataTemplate>
+              </ListBox.ItemTemplate>
+            </ListBox>
+          </DockPanel>
+
+          <!-- Assets tab: the objects on this page, plus page management -->
+          <DockPanel Visibility="{Binding SelectedLeftTab, Converter={StaticResource IntEqualsVis}, ConverterParameter=1}"
+                     Margin="14,12,14,14">
+            <Grid DockPanel.Dock="Top" Margin="0,0,0,8">
+              <TextBlock Text="PAGES" Style="{StaticResource PanelSectionHeader}" VerticalAlignment="Center" />
               <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button Content="+" ToolTip="Add page" Command="{Binding AddPageCommand}" Style="{StaticResource ToolButton}" MinWidth="24" Padding="6,1" />
-                <Button Content="⧉" ToolTip="Duplicate page" Command="{Binding DuplicatePageCommand}" Style="{StaticResource ToolButton}" MinWidth="24" Padding="6,1" />
-                <Button Content="✕" ToolTip="Remove page" Command="{Binding RemovePageCommand}" Style="{StaticResource ToolButton}" MinWidth="24" Padding="6,1" />
+                <Button Content="+" ToolTip="Add page" Command="{Binding AddPageCommand}" Style="{StaticResource IconGhost}" />
+                <Button Content="⧉" ToolTip="Duplicate page" Command="{Binding DuplicatePageCommand}" Style="{StaticResource IconGhost}" />
+                <Button Content="✕" ToolTip="Remove page" Command="{Binding RemovePageCommand}" Style="{StaticResource IconGhost}" />
               </StackPanel>
             </Grid>
-            <Border DockPanel.Dock="Top" Style="{StaticResource Card}" Padding="4" Margin="0,0,0,12" MaxHeight="150">
+            <Border DockPanel.Dock="Top" Style="{StaticResource InsetPanel}" MaxHeight="150" Margin="0,0,0,14">
               <ListBox ItemsSource="{Binding Pages}" SelectedItem="{Binding SelectedPage}" DisplayMemberPath="Display"
                        BorderThickness="0" Background="Transparent">
                 <ListBox.InputBindings>
@@ -420,22 +404,15 @@
               </ListBox>
             </Border>
 
-            <TextBlock DockPanel.Dock="Top" Text="SEARCH" Style="{StaticResource PanelSectionHeader}" />
-            <TextBox DockPanel.Dock="Top" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,6" />
-            <Border DockPanel.Dock="Top" Style="{StaticResource Card}" Padding="4" Margin="0,0,0,12" MaxHeight="110">
-              <ListBox ItemsSource="{Binding SearchResults}" SelectedItem="{Binding SelectedSearchResult}" DisplayMemberPath="Display"
-                       BorderThickness="0" Background="Transparent" />
-            </Border>
-
             <TextBlock DockPanel.Dock="Top" Text="OBJECTS ON PAGE" Style="{StaticResource PanelSectionHeader}" />
-            <Border Style="{StaticResource Card}" Padding="4">
+            <Border Style="{StaticResource InsetPanel}">
               <ListBox ItemsSource="{Binding ObjectList}" SelectedItem="{Binding SelectedObjectItem}"
                        BorderThickness="0" Background="Transparent">
                 <ListBox.ItemTemplate>
                   <DataTemplate>
                     <DockPanel>
-                      <Button DockPanel.Dock="Right" Style="{StaticResource ToolButton}" MinWidth="22" Padding="2"
-                              ToolTip="Lock this object so it stays fixed across labels (a simple template-lock section)"
+                      <Button DockPanel.Dock="Right" Style="{StaticResource IconGhost}" MinWidth="22" Padding="2"
+                              ToolTip="Lock this object so it stays fixed across labels"
                               Command="{Binding DataContext.ToggleObjectLockCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
                               CommandParameter="{Binding}">
                         <Image Width="13" Height="13" Source="{Binding Object.Locked, Converter={StaticResource LockIcon}}" />
@@ -447,169 +424,437 @@
               </ListBox>
             </Border>
           </DockPanel>
+
+          <!-- Data tab: search across the project -->
+          <DockPanel Visibility="{Binding SelectedLeftTab, Converter={StaticResource IntEqualsVis}, ConverterParameter=2}"
+                     Margin="14,12,14,14">
+            <Border DockPanel.Dock="Top" Style="{StaticResource InsetPanel}" Padding="12,10" Margin="0,0,0,14">
+              <StackPanel>
+                <TextBlock Text="DATA SOURCE" Style="{StaticResource PanelSectionHeader}" Margin="0,0,0,6" />
+                <TextBlock Text="{Binding DataSourceSummary}" FontSize="12.5" Margin="0,0,0,10" TextWrapping="Wrap" />
+                <StackPanel Orientation="Horizontal">
+                  <Button Content="Import…" Command="{Binding ImportDataCommand}" Style="{StaticResource PrimaryButton}" Margin="0,0,8,0" />
+                  <Button Content="Clear" Command="{Binding ClearDataCommand}" Style="{StaticResource GhostButton}" />
+                </StackPanel>
+              </StackPanel>
+            </Border>
+
+            <TextBlock DockPanel.Dock="Top" Text="SEARCH PROJECT" Style="{StaticResource PanelSectionHeader}" />
+            <Border DockPanel.Dock="Top" Style="{StaticResource SearchField}" Margin="0,0,0,10">
+              <DockPanel>
+                <Image DockPanel.Dock="Left" Source="{StaticResource Icon.Search}" Width="15" Height="15" Margin="2,0,8,0" />
+                <TextBox Style="{StaticResource PlainTextBox}" Tag="Search text, barcodes, records…"
+                         Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" />
+              </DockPanel>
+            </Border>
+            <Border Style="{StaticResource InsetPanel}">
+              <ListBox ItemsSource="{Binding SearchResults}" SelectedItem="{Binding SelectedSearchResult}"
+                       DisplayMemberPath="Display" BorderThickness="0" Background="Transparent" />
+            </Border>
+          </DockPanel>
         </DockPanel>
       </Border>
 
       <GridSplitter Grid.Column="1" Width="6" HorizontalAlignment="Stretch" />
 
-      <!-- Center: canvas toolbar + designer canvas host -->
-      <DockPanel Grid.Column="2" Margin="8">
-        <Border DockPanel.Dock="Top" Style="{StaticResource Card}" CornerRadius="12" Padding="10,7" Margin="0,0,0,8">
-          <Grid>
-            <TextBlock Text="{Binding ActivePageName}" VerticalAlignment="Center" FontFamily="{StaticResource Font.UiSemiBold}" FontSize="13" />
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-              <Button Content="Preview" Command="{Binding PrintPreviewCommand}" Style="{StaticResource ToolButton}" Padding="12,5" Margin="0,0,6,0" />
-              <Button Content="Print" Command="{Binding PrintCommand}" Style="{StaticResource AccentButton}" Padding="14,6" />
-            </StackPanel>
-          </Grid>
+      <!-- ───────── Centre: document tabs + canvas + data table ───────── -->
+      <DockPanel Grid.Column="2">
+        <!-- document tab strip -->
+        <Border DockPanel.Dock="Top" Background="{DynamicResource Br.Surface2}"
+                BorderBrush="{DynamicResource Br.Border}" BorderThickness="0,0,0,1" Padding="10,6,10,0">
+          <StackPanel Orientation="Horizontal">
+            <Border Style="{StaticResource DocumentTab}">
+              <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{Binding DocumentTabTitle}" VerticalAlignment="Center"
+                           FontFamily="{StaticResource Font.UiSemiBold}" FontSize="12.5"
+                           Foreground="{DynamicResource Br.Accent}" />
+                <Button Content="✕" Style="{StaticResource IconGhost}" MinWidth="20" Padding="4,0" Margin="10,0,0,0"
+                        Command="{Binding NewCommand}" ToolTip="Close document" />
+              </StackPanel>
+            </Border>
+            <Button Style="{StaticResource IconGhost}" MinWidth="28" Margin="6,0,0,4" Command="{Binding NewCommand}"
+                    ToolTip="New document" VerticalAlignment="Center">
+              <Image Source="{StaticResource Icon.Plus}" Width="14" Height="14" />
+            </Button>
+          </StackPanel>
         </Border>
-        <Border CornerRadius="10" ClipToBounds="True" BorderBrush="{DynamicResource Br.Border}" BorderThickness="1">
-          <Border x:Name="CanvasHost" Background="{DynamicResource CanvasBackground}" ClipToBounds="True" />
+
+        <!-- bottom data panel -->
+        <Border DockPanel.Dock="Bottom" Height="248" Background="{DynamicResource Br.Bg}"
+                BorderBrush="{DynamicResource Br.Border}" BorderThickness="0,1,0,0">
+          <DockPanel>
+            <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource Br.Border}" BorderThickness="0,0,0,1">
+              <StackPanel Orientation="Horizontal" Margin="14,8,14,0">
+                <RadioButton GroupName="DataTab" Content="Data Table" Style="{StaticResource PanelTab}" Margin="0,0,22,0"
+                             IsChecked="{Binding SelectedDataTab, Converter={StaticResource IntEquals}, ConverterParameter=0}" />
+                <RadioButton GroupName="DataTab" Content="Print Queue" Style="{StaticResource PanelTab}" Margin="0,0,22,0"
+                             IsChecked="{Binding SelectedDataTab, Converter={StaticResource IntEquals}, ConverterParameter=1}" />
+                <RadioButton GroupName="DataTab" Content="Variable Data" Style="{StaticResource PanelTab}"
+                             IsChecked="{Binding SelectedDataTab, Converter={StaticResource IntEquals}, ConverterParameter=2}" />
+              </StackPanel>
+            </Border>
+
+            <!-- action bar -->
+            <Border DockPanel.Dock="Top" Padding="14,9">
+              <Grid>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <ScrollViewer Grid.Column="0" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled"
+                              Padding="0,0,0,2">
+                <StackPanel Orientation="Horizontal">
+                  <Button Style="{StaticResource GhostButton}" Command="{Binding ImportDataCommand}" Margin="0,0,8,0">
+                    <StackPanel Orientation="Horizontal">
+                      <Image Source="{StaticResource Icon.Import}" Width="15" Height="15" Margin="0,0,7,0" />
+                      <TextBlock Text="Import CSV/XLSX" VerticalAlignment="Center" />
+                    </StackPanel>
+                  </Button>
+                  <Button Style="{StaticResource GhostButton}" Command="{Binding AddDataFieldCommand}" Margin="0,0,8,0">
+                    <StackPanel Orientation="Horizontal">
+                      <Image Source="{StaticResource Icon.PlusCircle}" Width="15" Height="15" Margin="0,0,7,0" />
+                      <TextBlock Text="Add Field" VerticalAlignment="Center" />
+                    </StackPanel>
+                  </Button>
+                  <Button Style="{StaticResource GhostButton}" Command="{Binding BulkBarcodeCommand}" Margin="0,0,8,0">
+                    <StackPanel Orientation="Horizontal">
+                      <Image Source="{StaticResource Icon.Barcode}" Width="15" Height="15" Margin="0,0,7,0" />
+                      <TextBlock Text="Generate Barcodes" VerticalAlignment="Center" />
+                    </StackPanel>
+                  </Button>
+                  <Button Style="{StaticResource GhostButton}" Command="{Binding PrintSettingsCommand}" Margin="0,0,8,0">
+                    <StackPanel Orientation="Horizontal">
+                      <Image Source="{StaticResource Icon.Print}" Width="15" Height="15" Margin="0,0,7,0" />
+                      <TextBlock Text="Bulk Print" VerticalAlignment="Center" />
+                    </StackPanel>
+                  </Button>
+                  <Button Style="{StaticResource GhostButton}" Command="{Binding ExportSheetPdfCommand}">
+                    <StackPanel Orientation="Horizontal">
+                      <Image Source="{StaticResource Icon.FileDoc}" Width="15" Height="15" Margin="0,0,7,0" />
+                      <TextBlock Text="Export (PDF/Images)" VerticalAlignment="Center" />
+                    </StackPanel>
+                  </Button>
+                </StackPanel>
+                </ScrollViewer>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="14,0,0,0">
+                  <Ellipse Width="8" Height="8" Fill="{DynamicResource Br.Ok}" VerticalAlignment="Center" Margin="0,0,7,0" />
+                  <TextBlock Text="{Binding RecordsReadyText}" Style="{StaticResource StatusText}" />
+                </StackPanel>
+              </Grid>
+            </Border>
+
+            <!-- data table -->
+            <Grid Visibility="{Binding SelectedDataTab, Converter={StaticResource IntEqualsVis}, ConverterParameter=0}">
+              <DataGrid x:Name="RecordsGrid" AutoGenerateColumns="False" IsReadOnly="True"
+                        HeadersVisibility="Column" GridLinesVisibility="Horizontal"
+                        CanUserAddRows="False" SelectionMode="Single"
+                        Background="Transparent" BorderThickness="0" />
+              <TextBlock Text="No data source connected — use Import CSV/XLSX to load records."
+                         Foreground="{DynamicResource Br.TextMuted}" FontSize="12.5"
+                         HorizontalAlignment="Center" VerticalAlignment="Center"
+                         Visibility="{Binding HasData, Converter={StaticResource InverseBool}}" />
+            </Grid>
+
+            <StackPanel Visibility="{Binding SelectedDataTab, Converter={StaticResource IntEqualsVis}, ConverterParameter=1}"
+                        Margin="16,10">
+              <TextBlock Text="{Binding PrintQueueSummary}" TextWrapping="Wrap" FontSize="12.5" />
+              <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                <Button Content="Advanced print settings…" Style="{StaticResource GhostButton}" Margin="0,0,8,0"
+                        Command="{Binding PrintSettingsCommand}" />
+                <Button Content="Preflight check…" Style="{StaticResource GhostButton}" Command="{Binding PreflightCommand}" />
+              </StackPanel>
+            </StackPanel>
+
+            <StackPanel Visibility="{Binding SelectedDataTab, Converter={StaticResource IntEqualsVis}, ConverterParameter=2}"
+                        Margin="16,10">
+              <TextBlock TextWrapping="Wrap" FontSize="12.5" Foreground="{DynamicResource Br.Text2}"
+                         Text="Bind objects to your data with {Field} tokens — e.g. {ProductName} in a text box, or {Barcode} as a barcode value. Expressions like &quot;LOT-&quot; + {Batch} and UPPER({Product}) are supported." />
+              <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                <Button Content="Insert data field…" Style="{StaticResource GhostButton}" Margin="0,0,8,0"
+                        Command="{Binding AddDataFieldCommand}" />
+                <Button Content="Manage sequences…" Style="{StaticResource GhostButton}" Margin="0,0,8,0"
+                        Command="{Binding SequencesCommand}" />
+                <Button Content="Duplicate check…" Style="{StaticResource GhostButton}" Command="{Binding DuplicateCheckCommand}" />
+              </StackPanel>
+            </StackPanel>
+          </DockPanel>
+        </Border>
+
+        <!-- canvas -->
+        <Border Background="{DynamicResource CanvasBackground}" ClipToBounds="True">
+          <Border x:Name="CanvasHost" ClipToBounds="True" />
         </Border>
       </DockPanel>
 
       <GridSplitter Grid.Column="3" Width="6" HorizontalAlignment="Stretch" />
 
-      <!-- Right: properties -->
-      <Border Grid.Column="4" Background="{DynamicResource PanelBackground}" BorderBrush="{DynamicResource PanelBorder}" BorderThickness="1,0,0,0">
-        <ScrollViewer VerticalScrollBarVisibility="Auto">
-          <StackPanel Margin="12" DataContext="{Binding Properties}">
-            <TextBlock Text="PROPERTIES" Style="{StaticResource PanelSectionHeader}" />
-            <TextBlock Text="Select an object on the canvas to edit its exact size and position, or use the mouse wheel to zoom and drag empty space to pan."
-                       TextWrapping="Wrap" Foreground="{DynamicResource Br.TextMuted}" Margin="2,0,2,0" FontSize="12"
-                       Visibility="{Binding HasSelection, Converter={StaticResource InverseBool}}" />
-
-            <!-- Object-type header: icon + type name (spec 3.8's "barcode icon + Barcode (16/800)"). -->
-            <StackPanel Orientation="Horizontal" Margin="2,0,2,10" Visibility="{Binding HasSelection, Converter={StaticResource BoolToVis}}">
-              <Image Width="18" Height="18" Margin="0,0,8,0" Source="{StaticResource Icon.Text}" Visibility="{Binding IsText, Converter={StaticResource BoolToVis}}" />
-              <Image Width="18" Height="18" Margin="0,0,8,0" Source="{StaticResource Icon.Barcode}" Visibility="{Binding IsBarcode, Converter={StaticResource BoolToVis}}" />
-              <Image Width="18" Height="18" Margin="0,0,8,0" Source="{StaticResource Icon.Rectangle}" Visibility="{Binding IsShape, Converter={StaticResource BoolToVis}}" />
-              <Image Width="18" Height="18" Margin="0,0,8,0" Source="{StaticResource Icon.Image}" Visibility="{Binding IsImage, Converter={StaticResource BoolToVis}}" />
-              <TextBlock Text="{Binding TypeName}" FontFamily="{StaticResource Font.UiExtraBold}" FontSize="16" VerticalAlignment="Center" />
+      <!-- ───────── Right panel ───────── -->
+      <Border Grid.Column="4" Background="{DynamicResource Br.Bg}"
+              BorderBrush="{DynamicResource Br.Border}" BorderThickness="1,0,0,0">
+        <DockPanel>
+          <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource Br.Border}" BorderThickness="0,0,0,1">
+            <StackPanel Orientation="Horizontal" Margin="16,10,16,0">
+              <RadioButton GroupName="RightTab" Content="Properties" Style="{StaticResource PanelTab}" Margin="0,0,22,0"
+                           IsChecked="{Binding SelectedRightTab, Converter={StaticResource IntEquals}, ConverterParameter=0}" />
+              <RadioButton GroupName="RightTab" Content="Layers" Style="{StaticResource PanelTab}" Margin="0,0,22,0"
+                           IsChecked="{Binding SelectedRightTab, Converter={StaticResource IntEquals}, ConverterParameter=1}" />
+              <RadioButton GroupName="RightTab" Content="Page" Style="{StaticResource PanelTab}"
+                           IsChecked="{Binding SelectedRightTab, Converter={StaticResource IntEquals}, ConverterParameter=2}" />
             </StackPanel>
+          </Border>
 
-            <!-- Pill tab strip on a track (spec 3.8: "Tabs on a #eef0f7 track: General (active, brand-grad)…"). -->
-            <Border Background="{DynamicResource Br.Surface}" CornerRadius="10" Padding="3" Margin="0,0,0,14"
-                    Visibility="{Binding HasSelection, Converter={StaticResource BoolToVis}}">
-              <UniformGrid Rows="1" Columns="4">
-                <RadioButton GroupName="PropTab" Content="General" Style="{StaticResource SegmentTab}" HorizontalContentAlignment="Center" Padding="2,7" FontSize="11.5"
-                             IsChecked="{Binding SelectedPropertyTab, Converter={StaticResource IntEquals}, ConverterParameter=0}" />
-                <RadioButton GroupName="PropTab" Content="Style" Style="{StaticResource SegmentTab}" HorizontalContentAlignment="Center" Padding="2,7" FontSize="11.5"
-                             IsChecked="{Binding SelectedPropertyTab, Converter={StaticResource IntEquals}, ConverterParameter=1}" />
-                <RadioButton GroupName="PropTab" Content="Position" Style="{StaticResource SegmentTab}" HorizontalContentAlignment="Center" Padding="2,7" FontSize="11.5"
-                             IsChecked="{Binding SelectedPropertyTab, Converter={StaticResource IntEquals}, ConverterParameter=2}" />
-                <RadioButton GroupName="PropTab" Content="Data" Style="{StaticResource SegmentTab}" HorizontalContentAlignment="Center" Padding="2,7" FontSize="11.5"
-                             IsChecked="{Binding SelectedPropertyTab, Converter={StaticResource IntEquals}, ConverterParameter=3}" />
-              </UniformGrid>
+          <!-- Layers tab -->
+          <DockPanel Visibility="{Binding SelectedRightTab, Converter={StaticResource IntEqualsVis}, ConverterParameter=1}"
+                     Margin="14,12,14,14">
+            <TextBlock DockPanel.Dock="Top" Text="OBJECTS, FRONT TO BACK" Style="{StaticResource PanelSectionHeader}" />
+            <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Margin="0,10,0,0">
+              <Button Content="Bring forward" Style="{StaticResource GhostButton}" Margin="0,0,8,0" Command="{Binding BringForwardCommand}" />
+              <Button Content="Send backward" Style="{StaticResource GhostButton}" Command="{Binding SendBackwardCommand}" />
+            </StackPanel>
+            <Border Style="{StaticResource InsetPanel}">
+              <ListBox ItemsSource="{Binding ObjectList}" SelectedItem="{Binding SelectedObjectItem}"
+                       DisplayMemberPath="Display" BorderThickness="0" Background="Transparent" />
             </Border>
+          </DockPanel>
 
-            <!-- General -->
-            <StackPanel Visibility="{Binding SelectedPropertyTab, Converter={StaticResource IntEqualsVis}, ConverterParameter=0}">
-              <GroupBox Header="Object" Visibility="{Binding HasSelection, Converter={StaticResource BoolToVis}}">
+          <!-- Page tab -->
+          <ScrollViewer VerticalScrollBarVisibility="Auto"
+                        Visibility="{Binding SelectedRightTab, Converter={StaticResource IntEqualsVis}, ConverterParameter=2}">
+            <StackPanel Margin="14,12,14,14">
+              <TextBlock Text="LABEL SHEET" Style="{StaticResource PanelSectionHeader}" />
+              <Border Style="{StaticResource InsetPanel}" Padding="12,10" Margin="0,0,0,12">
+                <TextBlock Text="{Binding TemplateSummary}" TextWrapping="Wrap" FontSize="12.5" />
+              </Border>
+              <Button Content="Change template…" Style="{StaticResource PrimaryButton}" HorizontalAlignment="Left"
+                      Command="{Binding TemplateManagerCommand}" Margin="0,0,0,14" />
+
+              <TextBlock Text="CURRENT PAGE" Style="{StaticResource PanelSectionHeader}" />
+              <Border Style="{StaticResource InsetPanel}" Padding="12,10">
                 <StackPanel>
-                  <DockPanel Margin="0,2"><TextBlock Text="Name" Style="{StaticResource FieldLabel}" Width="40" /><TextBox Text="{Binding Name, UpdateSourceTrigger=LostFocus}" /></DockPanel>
-                  <CheckBox Content="Locked" IsChecked="{Binding Locked}" Margin="0,3" />
-                  <CheckBox Content="Visible" IsChecked="{Binding Visible}" Margin="0,3" />
+                  <TextBlock Text="{Binding ActivePageName}" FontFamily="{StaticResource Font.UiSemiBold}" FontSize="13" />
+                  <TextBlock Text="{Binding SelectionInfo}" FontFamily="{StaticResource Font.Mono}" FontSize="11.5"
+                             Foreground="{DynamicResource Br.TextMuted}" Margin="0,4,0,0" />
                 </StackPanel>
-              </GroupBox>
+              </Border>
             </StackPanel>
+          </ScrollViewer>
 
-            <!-- Style -->
-            <StackPanel Visibility="{Binding SelectedPropertyTab, Converter={StaticResource IntEqualsVis}, ConverterParameter=1}">
-              <GroupBox Header="Text" Visibility="{Binding IsText, Converter={StaticResource BoolToVis}}">
-                <StackPanel>
-                  <TextBox Text="{Binding TextContent, UpdateSourceTrigger=LostFocus}" AcceptsReturn="True" MinHeight="52" TextWrapping="Wrap" />
-                  <DockPanel Margin="0,4">
-                    <TextBlock Text="Font" Style="{StaticResource FieldLabel}" Width="40" />
-                    <ComboBox IsEditable="True" ItemsSource="{Binding FontFamilies}" Text="{Binding FontFamily, UpdateSourceTrigger=PropertyChanged}" />
+          <!-- Properties tab -->
+          <ScrollViewer VerticalScrollBarVisibility="Auto"
+                        Visibility="{Binding SelectedRightTab, Converter={StaticResource IntEqualsVis}, ConverterParameter=0}">
+            <StackPanel Margin="14,12,14,16" DataContext="{Binding Properties}">
+
+              <!-- Object Properties -->
+              <ToggleButton x:Name="Sec1" Style="{StaticResource SectionHeader}" IsChecked="True">
+                <StackPanel Orientation="Horizontal">
+                  <Image Source="{StaticResource Icon.Sliders}" Width="16" Height="16" Margin="0,0,9,0" />
+                  <TextBlock Text="Object Properties" VerticalAlignment="Center" />
+                </StackPanel>
+              </ToggleButton>
+              <StackPanel Style="{StaticResource SectionBody}" Visibility="{Binding IsChecked, ElementName=Sec1, Converter={StaticResource BoolToVis}}">
+                <StackPanel Visibility="{Binding HasSelection, Converter={StaticResource InverseBool}}">
+                  <TextBlock Text="No object selected" FontFamily="{StaticResource Font.UiSemiBold}" FontSize="13" />
+                  <TextBlock Text="Select an object on the canvas to edit its properties."
+                             TextWrapping="Wrap" FontSize="12" Foreground="{DynamicResource Br.TextMuted}" Margin="0,4,0,0" />
+                </StackPanel>
+                <StackPanel Visibility="{Binding HasSelection, Converter={StaticResource BoolToVis}}">
+                  <DockPanel Margin="0,2"><TextBlock Text="Name" Style="{StaticResource FieldLabel}" Width="86" /><TextBox Text="{Binding Name, UpdateSourceTrigger=LostFocus}" /></DockPanel>
+                  <DockPanel Margin="0,6,0,2">
+                    <TextBlock Text="Type" Style="{StaticResource FieldLabel}" Width="86" />
+                    <TextBlock Text="{Binding TypeName}" VerticalAlignment="Center" FontFamily="{StaticResource Font.UiMedium}" />
                   </DockPanel>
-                  <DockPanel Margin="0,2"><TextBlock Text="Size" Style="{StaticResource FieldLabel}" Width="40" /><TextBox Style="{StaticResource NumberBox}" Text="{Binding FontSizePt, StringFormat=0.#, UpdateSourceTrigger=LostFocus}" /></DockPanel>
-                  <StackPanel Orientation="Horizontal" Margin="0,3">
-                    <CheckBox Content="Bold" IsChecked="{Binding Bold}" Margin="0,0,10,0" />
+                  <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                    <CheckBox Content="Locked" IsChecked="{Binding Locked}" Margin="0,0,16,0" />
+                    <CheckBox Content="Visible" IsChecked="{Binding Visible}" />
+                  </StackPanel>
+                </StackPanel>
+              </StackPanel>
+
+              <!-- Text Settings -->
+              <ToggleButton x:Name="Sec2" Style="{StaticResource SectionHeader}"
+                            IsChecked="{Binding IsText, Mode=OneWay}">
+                <StackPanel Orientation="Horizontal">
+                  <Image Source="{StaticResource Icon.Text}" Width="16" Height="16" Margin="0,0,9,0" />
+                  <TextBlock Text="Text Settings" VerticalAlignment="Center" />
+                </StackPanel>
+              </ToggleButton>
+              <StackPanel Style="{StaticResource SectionBody}" Visibility="{Binding IsChecked, ElementName=Sec2, Converter={StaticResource BoolToVis}}">
+                <StackPanel Visibility="{Binding IsText, Converter={StaticResource BoolToVis}}">
+                  <TextBox Text="{Binding TextContent, UpdateSourceTrigger=LostFocus}" AcceptsReturn="True"
+                           MinHeight="54" TextWrapping="Wrap" Margin="0,0,0,6" />
+                  <DockPanel Margin="0,3">
+                    <TextBlock Text="Font" Style="{StaticResource FieldLabel}" Width="86" />
+                    <ComboBox IsEditable="True" ItemsSource="{Binding FontFamilies}"
+                              Text="{Binding FontFamily, UpdateSourceTrigger=PropertyChanged}" />
+                  </DockPanel>
+                  <DockPanel Margin="0,3">
+                    <TextBlock Text="Size (pt)" Style="{StaticResource FieldLabel}" Width="86" />
+                    <TextBox Style="{StaticResource NumberBox}" Text="{Binding FontSizePt, StringFormat=0.#, UpdateSourceTrigger=LostFocus}" />
+                  </DockPanel>
+                  <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                    <CheckBox Content="Bold" IsChecked="{Binding Bold}" Margin="0,0,16,0" />
                     <CheckBox Content="Italic" IsChecked="{Binding Italic}" />
                   </StackPanel>
-                  <TextBlock Text="Use {Field} tokens for variable data." Foreground="{DynamicResource Br.TextMuted}" TextWrapping="Wrap" Margin="0,4,0,0" FontSize="11.5" />
+                  <TextBlock Text="Use {Field} tokens for variable data." Foreground="{DynamicResource Br.TextMuted}"
+                             TextWrapping="Wrap" FontSize="11.5" Margin="0,8,0,0" />
                 </StackPanel>
-              </GroupBox>
+                <TextBlock Text="Select a text object to edit its typography."
+                           Visibility="{Binding IsText, Converter={StaticResource InverseBool}}"
+                           Foreground="{DynamicResource Br.TextMuted}" FontSize="12" TextWrapping="Wrap" />
+              </StackPanel>
 
-              <GroupBox Header="Barcode" Visibility="{Binding IsBarcode, Converter={StaticResource BoolToVis}}">
-                <StackPanel>
-                  <DockPanel Margin="0,2"><TextBlock Text="Type" Style="{StaticResource FieldLabel}" Width="52" /><ComboBox ItemsSource="{Binding Symbologies}" SelectedItem="{Binding Symbology}" /></DockPanel>
-                  <DockPanel Margin="0,2"><TextBlock Text="Value" Style="{StaticResource FieldLabel}" Width="52" /><TextBox Text="{Binding BarcodeData, UpdateSourceTrigger=LostFocus}" /></DockPanel>
-                  <CheckBox Content="Show human-readable text" IsChecked="{Binding ShowHumanReadable}" Margin="0,5,0,2" />
-                  <DockPanel Margin="0,2" Visibility="{Binding ShowHumanReadable, Converter={StaticResource BoolToVis}}">
-                    <TextBlock Text="Number size" Style="{StaticResource FieldLabel}" Width="90" />
-                    <TextBox Style="{StaticResource NumberBox}" Text="{Binding HriFontSizePt, StringFormat=0.#, UpdateSourceTrigger=LostFocus}" ToolTip="Size of the barcode's human-readable number, independent of the bars" />
-                    <TextBlock Text="pt" Foreground="{DynamicResource Br.TextMuted}" VerticalAlignment="Center" Margin="6,0,0,0" />
+              <!-- Barcode Settings -->
+              <ToggleButton x:Name="Sec3" Style="{StaticResource SectionHeader}" IsChecked="{Binding IsBarcode, Mode=OneWay}">
+                <StackPanel Orientation="Horizontal">
+                  <Image Source="{StaticResource Icon.Barcode}" Width="16" Height="16" Margin="0,0,9,0" />
+                  <TextBlock Text="Barcode Settings" VerticalAlignment="Center" />
+                </StackPanel>
+              </ToggleButton>
+              <StackPanel Style="{StaticResource SectionBody}" Visibility="{Binding IsChecked, ElementName=Sec3, Converter={StaticResource BoolToVis}}">
+                <StackPanel Visibility="{Binding IsBarcode, Converter={StaticResource BoolToVis}}">
+                  <DockPanel Margin="0,3">
+                    <TextBlock Text="Barcode Type" Style="{StaticResource FieldLabel}" Width="86" />
+                    <ComboBox ItemsSource="{Binding Symbologies}" SelectedItem="{Binding Symbology}" />
                   </DockPanel>
-
-                  <ToggleButton Style="{StaticResource CollapsibleHeader}" Content="Appearance" IsChecked="{Binding ShowBarcodeAppearance}" />
-                  <StackPanel Visibility="{Binding ShowBarcodeAppearance, Converter={StaticResource BoolToVis}}">
-                    <DockPanel Margin="0,2"><TextBlock Text="Module" Style="{StaticResource FieldLabel}" Width="52" /><TextBox Style="{StaticResource NumberBox}" Text="{Binding ModuleWidthMm, StringFormat=0.###, UpdateSourceTrigger=LostFocus}" /></DockPanel>
-                    <DockPanel Margin="0,2"><TextBlock Text="Bar ht" Style="{StaticResource FieldLabel}" Width="52" /><TextBox Style="{StaticResource NumberBox}" Text="{Binding BarHeightMm, StringFormat=0.#, UpdateSourceTrigger=LostFocus}" /></DockPanel>
-                    <CheckBox Content="Auto-size to symbol" IsChecked="{Binding BarcodeAutoSize}" Margin="0,3" />
-                  </StackPanel>
-                  <TextBlock Text="{Binding BarcodeValidationMessage}" Foreground="#C0392B" TextWrapping="Wrap" Margin="0,6,0,2" />
+                  <DockPanel Margin="0,3">
+                    <TextBlock Text="Value" Style="{StaticResource FieldLabel}" Width="86" />
+                    <TextBox Text="{Binding BarcodeData, UpdateSourceTrigger=LostFocus}" FontFamily="{StaticResource Font.Mono}" />
+                  </DockPanel>
+                  <CheckBox Content="Show value text" IsChecked="{Binding ShowHumanReadable}" Margin="0,8,0,2" />
+                  <DockPanel Margin="0,3" Visibility="{Binding ShowHumanReadable, Converter={StaticResource BoolToVis}}">
+                    <TextBlock Text="Text size (pt)" Style="{StaticResource FieldLabel}" Width="86" />
+                    <TextBox Style="{StaticResource NumberBox}" Text="{Binding HriFontSizePt, StringFormat=0.#, UpdateSourceTrigger=LostFocus}" />
+                  </DockPanel>
+                  <DockPanel Margin="0,3">
+                    <TextBlock Text="Barcode height" Style="{StaticResource FieldLabel}" Width="86" />
+                    <TextBox Style="{StaticResource NumberBox}" Text="{Binding BarHeightMm, StringFormat=0.# mm, UpdateSourceTrigger=LostFocus}" />
+                  </DockPanel>
+                  <DockPanel Margin="0,3">
+                    <TextBlock Text="Module width" Style="{StaticResource FieldLabel}" Width="86" />
+                    <TextBox Style="{StaticResource NumberBox}" Text="{Binding ModuleWidthMm, StringFormat=0.## mm, UpdateSourceTrigger=LostFocus}" />
+                  </DockPanel>
+                  <CheckBox Content="Auto-size to symbol" IsChecked="{Binding BarcodeAutoSize}" Margin="0,8,0,0" />
+                  <TextBlock Text="{Binding BarcodeValidationMessage}" Foreground="{DynamicResource Br.Danger}"
+                             TextWrapping="Wrap" FontSize="11.5" Margin="0,8,0,0" />
                 </StackPanel>
-              </GroupBox>
+                <TextBlock Text="Select a barcode or QR code to edit its symbology and value."
+                           Visibility="{Binding IsBarcode, Converter={StaticResource InverseBool}}"
+                           Foreground="{DynamicResource Br.TextMuted}" FontSize="12" TextWrapping="Wrap" />
+              </StackPanel>
 
-              <GroupBox Header="Shape" Visibility="{Binding IsShape, Converter={StaticResource BoolToVis}}">
-                <StackPanel>
-                  <DockPanel Margin="0,2"><TextBlock Text="Fill" Style="{StaticResource FieldLabel}" Width="60" /><TextBox Text="{Binding FillHex, UpdateSourceTrigger=LostFocus}" /></DockPanel>
-                  <DockPanel Margin="0,2"><TextBlock Text="Stroke" Style="{StaticResource FieldLabel}" Width="60" /><TextBox Text="{Binding StrokeHex, UpdateSourceTrigger=LostFocus}" /></DockPanel>
-                  <DockPanel Margin="0,2"><TextBlock Text="Stroke mm" Style="{StaticResource FieldLabel}" Width="60" /><TextBox Style="{StaticResource NumberBox}" Text="{Binding StrokeWidthMm, StringFormat=0.###, UpdateSourceTrigger=LostFocus}" /></DockPanel>
-                  <DockPanel Margin="0,2"><TextBlock Text="Corner mm" Style="{StaticResource FieldLabel}" Width="60" /><TextBox Style="{StaticResource NumberBox}" Text="{Binding CornerRadiusMm, StringFormat=0.##, UpdateSourceTrigger=LostFocus}" /></DockPanel>
+              <!-- Image Settings -->
+              <ToggleButton x:Name="Sec4" Style="{StaticResource SectionHeader}" IsChecked="{Binding IsImage, Mode=OneWay}">
+                <StackPanel Orientation="Horizontal">
+                  <Image Source="{StaticResource Icon.Image}" Width="16" Height="16" Margin="0,0,9,0" />
+                  <TextBlock Text="Image Settings" VerticalAlignment="Center" />
                 </StackPanel>
-              </GroupBox>
-
-              <GroupBox Header="Image" Visibility="{Binding IsImage, Converter={StaticResource BoolToVis}}">
-                <StackPanel>
-                  <DockPanel Margin="0,2"><TextBlock Text="Source" Style="{StaticResource FieldLabel}" Width="60" /><TextBlock Text="{Binding ImageSourceFileName}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" /></DockPanel>
-                  <Button Content="Replace image…" HorizontalAlignment="Left" Padding="10,4" Margin="0,4,0,8"
+              </ToggleButton>
+              <StackPanel Style="{StaticResource SectionBody}" Visibility="{Binding IsChecked, ElementName=Sec4, Converter={StaticResource BoolToVis}}">
+                <StackPanel Visibility="{Binding IsImage, Converter={StaticResource BoolToVis}}">
+                  <DockPanel Margin="0,2">
+                    <TextBlock Text="Source" Style="{StaticResource FieldLabel}" Width="86" />
+                    <TextBlock Text="{Binding ImageSourceFileName}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                  </DockPanel>
+                  <Button Content="Replace image…" Style="{StaticResource GhostButton}" HorizontalAlignment="Left" Margin="0,8"
                           Command="{Binding DataContext.ReplaceImageCommand, RelativeSource={RelativeSource AncestorType=ScrollViewer}}" />
-
-                  <DockPanel Margin="0,2"><TextBlock Text="Fit" Style="{StaticResource FieldLabel}" Width="60" /><ComboBox ItemsSource="{Binding ImageFitModes}" SelectedItem="{Binding FitMode}" /></DockPanel>
-                  <DockPanel Margin="0,2"><TextBlock Text="Opacity" Style="{StaticResource FieldLabel}" Width="60" /><TextBox Style="{StaticResource NumberBox}" Text="{Binding ImageOpacity, StringFormat=0.00, UpdateSourceTrigger=LostFocus}" /></DockPanel>
-                  <DockPanel Margin="0,2"><TextBlock Text="Brightness" Style="{StaticResource FieldLabel}" Width="60" /><TextBox Style="{StaticResource NumberBox}" Text="{Binding Brightness, StringFormat=0.00, UpdateSourceTrigger=LostFocus}" ToolTip="-1.00 .. 1.00" /></DockPanel>
-                  <DockPanel Margin="0,2"><TextBlock Text="Contrast" Style="{StaticResource FieldLabel}" Width="60" /><TextBox Style="{StaticResource NumberBox}" Text="{Binding Contrast, StringFormat=0.00, UpdateSourceTrigger=LostFocus}" ToolTip="-1.00 .. 1.00" /></DockPanel>
-                  <CheckBox Content="Grayscale" IsChecked="{Binding Grayscale}" Margin="0,5,0,3" />
-                  <StackPanel Orientation="Horizontal" Margin="0,3">
-                    <CheckBox Content="Flip horizontal" IsChecked="{Binding FlipHorizontal}" Margin="0,0,14,0" />
+                  <DockPanel Margin="0,3"><TextBlock Text="Fit" Style="{StaticResource FieldLabel}" Width="86" /><ComboBox ItemsSource="{Binding ImageFitModes}" SelectedItem="{Binding FitMode}" /></DockPanel>
+                  <DockPanel Margin="0,3"><TextBlock Text="Opacity" Style="{StaticResource FieldLabel}" Width="86" /><TextBox Style="{StaticResource NumberBox}" Text="{Binding ImageOpacity, StringFormat=0.00, UpdateSourceTrigger=LostFocus}" /></DockPanel>
+                  <DockPanel Margin="0,3"><TextBlock Text="Brightness" Style="{StaticResource FieldLabel}" Width="86" /><TextBox Style="{StaticResource NumberBox}" Text="{Binding Brightness, StringFormat=0.00, UpdateSourceTrigger=LostFocus}" /></DockPanel>
+                  <DockPanel Margin="0,3"><TextBlock Text="Contrast" Style="{StaticResource FieldLabel}" Width="86" /><TextBox Style="{StaticResource NumberBox}" Text="{Binding Contrast, StringFormat=0.00, UpdateSourceTrigger=LostFocus}" /></DockPanel>
+                  <CheckBox Content="Grayscale" IsChecked="{Binding Grayscale}" Margin="0,8,0,3" />
+                  <StackPanel Orientation="Horizontal">
+                    <CheckBox Content="Flip horizontal" IsChecked="{Binding FlipHorizontal}" Margin="0,0,16,0" />
                     <CheckBox Content="Flip vertical" IsChecked="{Binding FlipVertical}" />
                   </StackPanel>
                 </StackPanel>
-              </GroupBox>
-            </StackPanel>
+                <TextBlock Text="Select an image to adjust fit, opacity and colour."
+                           Visibility="{Binding IsImage, Converter={StaticResource InverseBool}}"
+                           Foreground="{DynamicResource Br.TextMuted}" FontSize="12" TextWrapping="Wrap" />
+              </StackPanel>
 
-            <!-- Position -->
-            <StackPanel Visibility="{Binding SelectedPropertyTab, Converter={StaticResource IntEqualsVis}, ConverterParameter=2}">
-              <GroupBox Header="Position &amp; size (mm)" Visibility="{Binding HasSelection, Converter={StaticResource BoolToVis}}">
-                <Grid>
-                  <Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
-                  <Grid.RowDefinitions><RowDefinition /><RowDefinition /><RowDefinition /></Grid.RowDefinitions>
-                  <TextBlock Grid.Row="0" Grid.Column="0" Text="X" Style="{StaticResource FieldLabel}" />
-                  <TextBox   Grid.Row="0" Grid.Column="1" Style="{StaticResource NumberBox}" Text="{Binding X, StringFormat=0.00, UpdateSourceTrigger=LostFocus}" />
-                  <TextBlock Grid.Row="0" Grid.Column="2" Text="Y" Style="{StaticResource FieldLabel}" Margin="8,0,6,0" />
-                  <TextBox   Grid.Row="0" Grid.Column="3" Style="{StaticResource NumberBox}" Text="{Binding Y, StringFormat=0.00, UpdateSourceTrigger=LostFocus}" />
-                  <TextBlock Grid.Row="1" Grid.Column="0" Text="W" Style="{StaticResource FieldLabel}" />
-                  <TextBox   Grid.Row="1" Grid.Column="1" Style="{StaticResource NumberBox}" Text="{Binding Width, StringFormat=0.00, UpdateSourceTrigger=LostFocus}" />
-                  <TextBlock Grid.Row="1" Grid.Column="2" Text="H" Style="{StaticResource FieldLabel}" Margin="8,0,6,0" />
-                  <TextBox   Grid.Row="1" Grid.Column="3" Style="{StaticResource NumberBox}" Text="{Binding Height, StringFormat=0.00, UpdateSourceTrigger=LostFocus}" />
-                  <TextBlock Grid.Row="2" Grid.Column="0" Text="Rot°" Style="{StaticResource FieldLabel}" />
-                  <TextBox   Grid.Row="2" Grid.Column="1" Style="{StaticResource NumberBox}" Text="{Binding RotationDegrees, StringFormat=0.0, UpdateSourceTrigger=LostFocus}" />
-                </Grid>
-              </GroupBox>
-            </StackPanel>
+              <!-- Shape Settings -->
+              <ToggleButton x:Name="Sec5" Style="{StaticResource SectionHeader}" IsChecked="{Binding IsShape, Mode=OneWay}">
+                <StackPanel Orientation="Horizontal">
+                  <Image Source="{StaticResource Icon.Shape}" Width="16" Height="16" Margin="0,0,9,0" />
+                  <TextBlock Text="Shape Settings" VerticalAlignment="Center" />
+                </StackPanel>
+              </ToggleButton>
+              <StackPanel Style="{StaticResource SectionBody}" Visibility="{Binding IsChecked, ElementName=Sec5, Converter={StaticResource BoolToVis}}">
+                <StackPanel Visibility="{Binding IsShape, Converter={StaticResource BoolToVis}}">
+                  <DockPanel Margin="0,3"><TextBlock Text="Fill" Style="{StaticResource FieldLabel}" Width="86" /><TextBox Text="{Binding FillHex, UpdateSourceTrigger=LostFocus}" FontFamily="{StaticResource Font.Mono}" /></DockPanel>
+                  <DockPanel Margin="0,3"><TextBlock Text="Stroke" Style="{StaticResource FieldLabel}" Width="86" /><TextBox Text="{Binding StrokeHex, UpdateSourceTrigger=LostFocus}" FontFamily="{StaticResource Font.Mono}" /></DockPanel>
+                  <DockPanel Margin="0,3"><TextBlock Text="Stroke width" Style="{StaticResource FieldLabel}" Width="86" /><TextBox Style="{StaticResource NumberBox}" Text="{Binding StrokeWidthMm, StringFormat=0.## mm, UpdateSourceTrigger=LostFocus}" /></DockPanel>
+                  <DockPanel Margin="0,3"><TextBlock Text="Corner radius" Style="{StaticResource FieldLabel}" Width="86" /><TextBox Style="{StaticResource NumberBox}" Text="{Binding CornerRadiusMm, StringFormat=0.# mm, UpdateSourceTrigger=LostFocus}" /></DockPanel>
+                </StackPanel>
+                <TextBlock Text="Select a rectangle, ellipse or line to edit fill and stroke."
+                           Visibility="{Binding IsShape, Converter={StaticResource InverseBool}}"
+                           Foreground="{DynamicResource Br.TextMuted}" FontSize="12" TextWrapping="Wrap" />
+              </StackPanel>
 
-            <!-- Data -->
-            <StackPanel Visibility="{Binding SelectedPropertyTab, Converter={StaticResource IntEqualsVis}, ConverterParameter=3}">
-              <TextBlock TextWrapping="Wrap" Foreground="{DynamicResource Br.TextMuted}" FontSize="12" Margin="2,0,2,0"
-                         Text="Use {Field} tokens inside a text box's content to bind it to the active data source, or insert a dedicated Data field / Date-time field object from the Insert menu." />
-              <TextBlock Text="{Binding BarcodeValidationMessage}" Foreground="#C0392B" TextWrapping="Wrap" Margin="2,10,2,0"
-                         Visibility="{Binding IsBarcode, Converter={StaticResource BoolToVis}}" />
+              <!-- Position & Size -->
+              <ToggleButton x:Name="Sec6" Style="{StaticResource SectionHeader}" IsChecked="True">
+                <StackPanel Orientation="Horizontal">
+                  <Image Source="{StaticResource Icon.Arrange}" Width="16" Height="16" Margin="0,0,9,0" />
+                  <TextBlock Text="Position &amp; Size" VerticalAlignment="Center" />
+                </StackPanel>
+              </ToggleButton>
+              <StackPanel Style="{StaticResource SectionBody}" Visibility="{Binding IsChecked, ElementName=Sec6, Converter={StaticResource BoolToVis}}">
+                <StackPanel Visibility="{Binding HasSelection, Converter={StaticResource BoolToVis}}">
+                  <Grid>
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" /><ColumnDefinition Width="14" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions><RowDefinition /><RowDefinition /><RowDefinition /></Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="X" Style="{StaticResource FieldLabel}" Width="22" />
+                    <TextBox   Grid.Row="0" Grid.Column="1" Style="{StaticResource NumberBox}" Text="{Binding X, StringFormat=0.00, UpdateSourceTrigger=LostFocus}" />
+                    <TextBlock Grid.Row="0" Grid.Column="3" Text="Y" Style="{StaticResource FieldLabel}" Width="22" />
+                    <TextBox   Grid.Row="0" Grid.Column="4" Style="{StaticResource NumberBox}" Text="{Binding Y, StringFormat=0.00, UpdateSourceTrigger=LostFocus}" />
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="W" Style="{StaticResource FieldLabel}" Width="22" />
+                    <TextBox   Grid.Row="1" Grid.Column="1" Style="{StaticResource NumberBox}" Text="{Binding Width, StringFormat=0.00, UpdateSourceTrigger=LostFocus}" />
+                    <TextBlock Grid.Row="1" Grid.Column="3" Text="H" Style="{StaticResource FieldLabel}" Width="22" />
+                    <TextBox   Grid.Row="1" Grid.Column="4" Style="{StaticResource NumberBox}" Text="{Binding Height, StringFormat=0.00, UpdateSourceTrigger=LostFocus}" />
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Rot" Style="{StaticResource FieldLabel}" Width="22" />
+                    <TextBox   Grid.Row="2" Grid.Column="1" Style="{StaticResource NumberBox}" Text="{Binding RotationDegrees, StringFormat=0.0, UpdateSourceTrigger=LostFocus}" />
+                  </Grid>
+                  <TextBlock Text="All values in millimetres." Foreground="{DynamicResource Br.TextMuted}" FontSize="11.5" Margin="0,8,0,0" />
+                </StackPanel>
+                <TextBlock Text="Select an object to set exact coordinates."
+                           Visibility="{Binding HasSelection, Converter={StaticResource InverseBool}}"
+                           Foreground="{DynamicResource Br.TextMuted}" FontSize="12" TextWrapping="Wrap" />
+              </StackPanel>
+
+              <!-- Print Calibration -->
+              <ToggleButton x:Name="Sec7" Style="{StaticResource SectionHeader}" IsChecked="False">
+                <StackPanel Orientation="Horizontal">
+                  <Image Source="{StaticResource Icon.Sliders}" Width="16" Height="16" Margin="0,0,9,0" />
+                  <TextBlock Text="Print Calibration" VerticalAlignment="Center" />
+                </StackPanel>
+              </ToggleButton>
+              <StackPanel Style="{StaticResource SectionBody}" Visibility="{Binding IsChecked, ElementName=Sec7, Converter={StaticResource BoolToVis}}">
+                <TextBlock TextWrapping="Wrap" FontSize="12" Foreground="{DynamicResource Br.Text2}"
+                           Text="Printers drift by a millimetre or two. The wizard prints a test sheet and stores an X/Y offset per printer so labels land where they should." />
+                <Button Content="Calibration wizard…" Style="{StaticResource GhostButton}" HorizontalAlignment="Left"
+                        Margin="0,10,0,0"
+                        Command="{Binding DataContext.CalibrationCommand, RelativeSource={RelativeSource AncestorType=ScrollViewer}}" />
+              </StackPanel>
+
+              <!-- Export Settings -->
+              <ToggleButton x:Name="Sec8" Style="{StaticResource SectionHeader}" IsChecked="False">
+                <StackPanel Orientation="Horizontal">
+                  <Image Source="{StaticResource Icon.FileDoc}" Width="16" Height="16" Margin="0,0,9,0" />
+                  <TextBlock Text="Export Settings" VerticalAlignment="Center" />
+                </StackPanel>
+              </ToggleButton>
+              <StackPanel Style="{StaticResource SectionBody}" Visibility="{Binding IsChecked, ElementName=Sec8, Converter={StaticResource BoolToVis}}">
+                <Button Content="Sheet to PDF…" Style="{StaticResource GhostButton}" HorizontalAlignment="Stretch" Margin="0,0,0,6"
+                        Command="{Binding DataContext.ExportSheetPdfCommand, RelativeSource={RelativeSource AncestorType=ScrollViewer}}" />
+                <Button Content="Label to PNG (300 DPI)…" Style="{StaticResource GhostButton}" HorizontalAlignment="Stretch" Margin="0,0,0,6"
+                        Command="{Binding DataContext.ExportLabelPngCommand, RelativeSource={RelativeSource AncestorType=ScrollViewer}}" />
+                <Button Content="Label to SVG…" Style="{StaticResource GhostButton}" HorizontalAlignment="Stretch"
+                        Command="{Binding DataContext.ExportLabelSvgCommand, RelativeSource={RelativeSource AncestorType=ScrollViewer}}" />
+              </StackPanel>
             </StackPanel>
-          </StackPanel>
-        </ScrollViewer>
+          </ScrollViewer>
+        </DockPanel>
       </Border>
     </Grid>
   </DockPanel>
