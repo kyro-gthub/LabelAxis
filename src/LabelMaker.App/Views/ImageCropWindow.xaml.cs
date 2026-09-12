@@ -188,12 +188,17 @@ public partial class ImageCropWindow : Window
         Redraw();
     }
 
+    /// <summary>
+    /// Only reports the chosen rectangle. The caller applies it as an undoable
+    /// command, so the dialog never edits the document behind the history's back.
+    /// </summary>
     private void OnApply(object sender, RoutedEventArgs e)
     {
-        _image.Adjustments.CropX = Math.Round(_crop.X, 4);
-        _image.Adjustments.CropY = Math.Round(_crop.Y, 4);
-        _image.Adjustments.CropWidth = Math.Round(Math.Max(0.01, _crop.Width), 4);
-        _image.Adjustments.CropHeight = Math.Round(Math.Max(0.01, _crop.Height), 4);
+        _crop = new Rect(
+            Math.Round(_crop.X, 4),
+            Math.Round(_crop.Y, 4),
+            Math.Round(Math.Max(0.01, _crop.Width), 4),
+            Math.Round(Math.Max(0.01, _crop.Height), 4));
         DialogResult = true;
     }
 

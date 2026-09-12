@@ -365,15 +365,29 @@ public sealed class MainViewModel : ObservableObject
     /// <summary>Switches the project to another label sheet. Also used by the Label manager's "Use this sheet".</summary>
     public void ApplyTemplate(LabelTemplate template)
     {
-        _session.Project.Template = template;
-        _session.Project.MasterLabel.SizeMm = new SizeMm(template.Grid.LabelWidthMm, template.Grid.LabelHeightMm);
+        ProjectModel project = _session.Project;
+        var size = new SizeMm(template.Grid.LabelWidthMm, template.Grid.LabelHeightMm);
+
+        // Undoable like any other edit: sheet and label size change together, and
+        // the canvas refits whichever way the step is taken.
+        _session.Execute(new CompositeCommand("Change label sheet", new IUndoableCommand[]
+        {
+            new SetPropertyCommand<LabelTemplate?>("Change sheet", () => project.Template, v => project.Template = v, template),
+            new SetPropertyCommand<SizeMm>("Label size", () => project.MasterLabel.SizeMm,
+                v => { project.MasterLabel.SizeMm = v; OnSheetChanged(); }, size),
+        }));
+
         _env.Settings.LastTemplateId = template.Id;
-        _session.MarkDirty();
+        StatusText = $"Template: {template.Brand} {template.ProductCode} — {template.Name}";
+    }
+
+    /// <summary>Anything that depends on the sheet or label size, refreshed after the change or its undo.</summary>
+    private void OnSheetChanged()
+    {
         _canvas?.FitToView();
         RefreshCanvas();
         OnPropertyChanged(nameof(TemplateSummary));
         OnPropertyChanged(nameof(SheetSummary));
-        StatusText = $"Template: {template.Brand} {template.ProductCode} — {template.Name}";
     }
 
     private void RebuildTemplateCategories()
@@ -503,9 +517,12 @@ public sealed class MainViewModel : ObservableObject
         get => _session.ActiveLabel.Guides.Locked;
         set
         {
-            _session.ActiveLabel.Guides.Locked = value;
-            _session.MarkDirty();
-            OnPropertyChanged();
+            GuideCollection guides = _session.ActiveLabel.Guides;
+            _session.Execute(new SetPropertyCommand<bool>(
+                value ? "Lock guides" : "Unlock guides",
+                () => guides.Locked,
+                v => { guides.Locked = v; OnPropertyChanged(nameof(LockGuides)); },
+                value));
         }
     }
 
@@ -737,7 +754,22 @@ public sealed class MainViewModel : ObservableObject
             () => _session.SetSelection(_session.ActiveLabel.Objects.Where(o => o.Visible).ToList()),
             () => _session.ActiveLabel.Objects.Count > 0);
         CropImageCommand = new RelayCommand(
-            () => { if (_shell.ShowImageCrop()) { _session.MarkDirty(); _properties.RefreshAll(); RefreshCanvas(); } },
+            () =>
+            {
+                if (_session.Selection.FirstOrDefault() is not ImageObject image ||
+                    _shell.ShowImageCrop(image) is not { } crop)
+                {
+                    return;
+                }
+
+                ImageAdjustments next = image.Adjustments.Clone();
+                next.CropX = crop.X;
+                next.CropY = crop.Y;
+                next.CropWidth = crop.Width;
+                next.CropHeight = crop.Height;
+                _session.Execute(new SetPropertyCommand<ImageAdjustments>(
+                    "Crop image", () => image.Adjustments, v => image.Adjustments = v, next));
+            },
             () => _session.Selection.Count == 1 && _session.Selection[0] is ImageObject);
         ClearCropCommand = new RelayCommand(
             () => { _properties.ClearCrop(); RefreshCanvas(); },
@@ -1668,6 +1700,7 @@ public sealed class MainViewModel : ObservableObject
         OnPropertyChanged(nameof(SaveStateText));
         OnPropertyChanged(nameof(HasUnsavedChanges));
         OnPropertyChanged(nameof(SheetSummary));
+        OnPropertyChanged(nameof(TemplateSummary));
         RebuildObjectList();
         RefreshCanvas();
         RaiseAllCanExecute();
