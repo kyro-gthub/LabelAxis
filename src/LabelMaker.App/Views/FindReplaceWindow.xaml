@@ -1,0 +1,150 @@
+<Window x:Class="LabelMaker.App.Views.FindReplaceWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Style="{StaticResource AppWindow}"
+        Background="{DynamicResource Br.Surface}" TextElement.Foreground="{DynamicResource Br.Text}"
+        Title="Find and replace" Height="620" Width="600" MinHeight="460" MinWidth="540"
+        WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
+  <Window.InputBindings>
+    <KeyBinding Key="Escape" Command="{Binding CloseCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
+    <KeyBinding Key="F3" Command="{Binding FindNextCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
+    <KeyBinding Key="F3" Modifiers="Shift" Command="{Binding FindPreviousCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
+    <KeyBinding Key="Z" Modifiers="Control" Command="{Binding UndoCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
+    <KeyBinding Key="Y" Modifiers="Control" Command="{Binding RedoCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
+  </Window.InputBindings>
+
+  <DockPanel>
+
+    <!-- header: the two fields and the action buttons -->
+    <Border DockPanel.Dock="Top" Background="{DynamicResource Br.Bg}"
+            BorderBrush="{DynamicResource Br.Border}" BorderThickness="0,0,0,1" Padding="16,14">
+      <Grid>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="Auto" />
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="8" />
+          <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="Find" Style="{StaticResource FieldLabel}" Width="92" />
+        <Border Grid.Row="0" Grid.Column="1" Style="{StaticResource SearchField}">
+          <DockPanel>
+            <Image DockPanel.Dock="Left" Source="{StaticResource Icon.Search}" Width="15" Height="15" Margin="2,0,8,0" />
+            <TextBox x:Name="FindBox" Style="{StaticResource PlainTextBox}" Tag="Text, barcode value, cell or name…"
+                     TextChanged="OnQueryChanged" KeyDown="OnFindKeyDown" />
+          </DockPanel>
+        </Border>
+        <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Horizontal" Margin="8,0,0,0">
+          <Button Content="◀" Style="{StaticResource IconGhost}" MinWidth="30" ToolTip="Previous match (Shift+F3)"
+                  Command="{Binding FindPreviousCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
+          <Button Content="Find next" Style="{StaticResource GhostButton}" Width="154" Margin="4,0,0,0"
+                  ToolTip="Select the next match on the canvas (Enter / F3)"
+                  Command="{Binding FindNextCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
+        </StackPanel>
+
+        <TextBlock Grid.Row="2" Grid.Column="0" Text="Replace with" Style="{StaticResource FieldLabel}" Width="92" />
+        <TextBox x:Name="ReplaceBox" Grid.Row="2" Grid.Column="1" KeyDown="OnReplaceKeyDown"
+                 ToolTip="In regular-expression mode, $1, $2… insert captured groups" />
+        <StackPanel Grid.Row="2" Grid.Column="2" Orientation="Horizontal" Margin="8,0,0,0">
+          <Button Content="Replace" Style="{StaticResource GhostButton}" Width="84" Margin="0,0,4,0"
+                  ToolTip="Replace the selected match, then move to the next one"
+                  Command="{Binding ReplaceCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
+          <Button Content="Replace all" Style="{StaticResource PrimaryButton}" Width="104"
+                  ToolTip="Replace every match in scope as one undoable step"
+                  Command="{Binding ReplaceAllCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <!-- status -->
+    <Border DockPanel.Dock="Bottom" Background="{DynamicResource Br.Bg}"
+            BorderBrush="{DynamicResource Br.Border}" BorderThickness="0,1,0,0" Padding="16,9">
+      <DockPanel>
+        <Button DockPanel.Dock="Right" Content="Close" Style="{StaticResource GhostButton}"
+                Command="{Binding CloseCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
+        <Ellipse x:Name="StatusDot" Width="8" Height="8" Fill="{DynamicResource Br.TextMuted}"
+                 VerticalAlignment="Center" Margin="0,0,8,0" />
+        <TextBlock x:Name="StatusText" VerticalAlignment="Center" FontSize="12.5" TextWrapping="Wrap"
+                   Foreground="{DynamicResource Br.Text2}" Margin="0,0,12,0" />
+      </DockPanel>
+    </Border>
+
+    <!-- options -->
+    <Border DockPanel.Dock="Top" Padding="16,12,16,4">
+      <Grid>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="14" />
+          <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Grid.Column="0">
+          <TextBlock Text="OPTIONS" Style="{StaticResource PanelSectionHeader}" />
+          <Border Style="{StaticResource InsetPanel}" Padding="12,9">
+            <StackPanel>
+              <CheckBox x:Name="MatchCaseBox" Content="Match case" Margin="0,2" Click="OnOptionChanged" />
+              <CheckBox x:Name="WholeWordBox" Content="Whole words only" Margin="0,2" Click="OnOptionChanged" />
+              <CheckBox x:Name="RegexBox" Content="Regular expression" Margin="0,2" Click="OnOptionChanged" />
+              <CheckBox x:Name="SkipTokensBox" Content="Leave {data fields} alone" IsChecked="True" Margin="0,2"
+                        Click="OnOptionChanged"
+                        ToolTip="Don't match inside {Field} tokens, so replacing a word never breaks a data binding" />
+            </StackPanel>
+          </Border>
+        </StackPanel>
+
+        <StackPanel Grid.Column="2">
+          <TextBlock Text="LOOK IN" Style="{StaticResource PanelSectionHeader}" />
+          <Border Style="{StaticResource InsetPanel}" Padding="12,9">
+            <StackPanel>
+              <StackPanel Orientation="Horizontal" Margin="0,2,0,6">
+                <RadioButton x:Name="ScopeAllBox" GroupName="scope" Content="All pages" IsChecked="True"
+                             Margin="0,0,14,0" Click="OnOptionChanged" />
+                <RadioButton x:Name="ScopeCurrentBox" GroupName="scope" Content="This label" Click="OnOptionChanged" />
+              </StackPanel>
+              <WrapPanel>
+                <CheckBox x:Name="TextBoxesBox" Content="Text" IsChecked="True" Margin="0,2,14,2" Click="OnOptionChanged" />
+                <CheckBox x:Name="BarcodesBox" Content="Barcodes" IsChecked="True" Margin="0,2,14,2" Click="OnOptionChanged" />
+                <CheckBox x:Name="TablesBox" Content="Tables" IsChecked="True" Margin="0,2,14,2" Click="OnOptionChanged" />
+                <CheckBox x:Name="NamesBox" Content="Object names" Margin="0,2" Click="OnOptionChanged" />
+              </WrapPanel>
+            </StackPanel>
+          </Border>
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <!-- results -->
+    <DockPanel Margin="16,8,16,12">
+      <TextBlock DockPanel.Dock="Top" x:Name="ResultsHeader" Text="MATCHES" Style="{StaticResource PanelSectionHeader}" />
+      <Border Style="{StaticResource InsetPanel}" Padding="0">
+        <Grid>
+          <ListBox x:Name="Results" BorderThickness="0" Background="Transparent"
+                   HorizontalContentAlignment="Stretch" SelectionChanged="OnResultSelected"
+                   ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+            <ListBox.ItemTemplate>
+              <DataTemplate>
+                <StackPanel Margin="4,5">
+                  <TextBlock FontSize="11" Foreground="{DynamicResource Br.TextMuted}" Text="{Binding Location}" />
+                  <TextBlock TextTrimming="CharacterEllipsis" Margin="0,2,0,0" FontSize="12.5">
+                    <Run Text="{Binding Before, Mode=OneWay}" />
+                    <Run Text="{Binding Hit, Mode=OneWay}" FontFamily="{StaticResource Font.UiSemiBold}"
+                         Foreground="{DynamicResource Br.Accent}" Background="{DynamicResource Br.AccentSoft}" />
+                    <Run Text="{Binding After, Mode=OneWay}" />
+                  </TextBlock>
+                </StackPanel>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+          <TextBlock x:Name="EmptyText" HorizontalAlignment="Center" VerticalAlignment="Center"
+                     TextAlignment="Center" TextWrapping="Wrap" Margin="24" FontSize="12.5"
+                     Foreground="{DynamicResource Br.TextMuted}"
+                     Text="Matches appear here as you type. Pick one to jump to it on the canvas." />
+        </Grid>
+      </Border>
+    </DockPanel>
+  </DockPanel>
+</Window>

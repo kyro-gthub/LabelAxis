@@ -50,6 +50,12 @@ public interface IShellServices
     /// <summary>The app's own print dialog (printer, copies, scale). Returns true if a job was sent.</summary>
     bool ShowPrintDialog();
 
+    /// <summary>
+    /// Opens (or brings back) the modeless find-and-replace window, focused on the
+    /// replace field when <paramref name="replace"/> is set.
+    /// </summary>
+    void ShowFindReplace(bool replace, string? initialQuery);
+
     /// <summary>Change the working label size without starting a new project. Returns true if it changed.</summary>
     bool ShowLabelSize();
 

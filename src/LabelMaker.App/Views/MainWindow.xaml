@@ -31,6 +31,8 @@
     <KeyBinding Key="G" Modifiers="Control+Shift" Command="{Binding UngroupCommand}" />
     <KeyBinding Key="Delete" Command="{Binding DeleteCommand}" />
     <KeyBinding Key="A" Modifiers="Control" Command="{Binding SelectAllCommand}" />
+    <KeyBinding Key="F" Modifiers="Control" Command="{Binding FindCommand}" />
+    <KeyBinding Key="H" Modifiers="Control" Command="{Binding FindReplaceCommand}" />
     <KeyBinding Key="T" Modifiers="Control" Command="{Binding DataTableCommand}" />
     <KeyBinding Key="F2" Command="{Binding RenamePageCommand}" />
     <KeyBinding Key="P" Modifiers="Control+Shift" Command="{Binding PrintPreviewCommand}" />
@@ -95,6 +97,9 @@
               <MenuItem Header="_Duplicate" InputGestureText="Ctrl+D" Command="{Binding DuplicateCommand}" />
               <MenuItem Header="De_lete" InputGestureText="Del" Command="{Binding DeleteCommand}" />
               <MenuItem Header="Select _all" InputGestureText="Ctrl+A" Command="{Binding SelectAllCommand}" />
+              <Separator />
+              <MenuItem Header="_Find…" InputGestureText="Ctrl+F" Command="{Binding FindCommand}" />
+              <MenuItem Header="Find and _replace…" InputGestureText="Ctrl+H" Command="{Binding FindReplaceCommand}" />
               <Separator />
               <MenuItem Header="_Group" InputGestureText="Ctrl+G" Command="{Binding GroupCommand}" />
               <MenuItem Header="U_ngroup" InputGestureText="Ctrl+Shift+G" Command="{Binding UngroupCommand}" />
@@ -519,7 +524,12 @@
               </StackPanel>
             </Border>
 
-            <TextBlock DockPanel.Dock="Top" Text="SEARCH PROJECT" Style="{StaticResource PanelSectionHeader}" />
+            <DockPanel DockPanel.Dock="Top">
+              <Button DockPanel.Dock="Right" Content="Find &amp; replace…" Style="{StaticResource GhostButton}"
+                      Padding="10,4" Margin="0,0,0,6" Command="{Binding FindReplaceCommand}"
+                      ToolTip="Replace text, barcode values and table cells across every page (Ctrl+H)" />
+              <TextBlock Text="SEARCH PROJECT" Style="{StaticResource PanelSectionHeader}" VerticalAlignment="Center" />
+            </DockPanel>
             <Border DockPanel.Dock="Top" Style="{StaticResource SearchField}" Margin="0,0,0,10">
               <DockPanel>
                 <Image DockPanel.Dock="Left" Source="{StaticResource Icon.Search}" Width="15" Height="15" Margin="2,0,8,0" />

@@ -645,6 +645,8 @@ public sealed class MainViewModel : ObservableObject
     public RelayCommand ClearCropCommand { get; private set; } = null!;
     public RelayCommand PickColorCommand { get; private set; } = null!;
     public RelayCommand ApplySwatchCommand { get; private set; } = null!;
+    public RelayCommand FindCommand { get; private set; } = null!;
+    public RelayCommand FindReplaceCommand { get; private set; } = null!;
     public RelayCommand FlipHorizontalCommand { get; private set; } = null!;
     public RelayCommand FlipVerticalCommand { get; private set; } = null!;
     public RelayCommand RotateCommand { get; private set; } = null!;
@@ -770,6 +772,9 @@ public sealed class MainViewModel : ObservableObject
                 RefreshCanvas();
             }
         });
+
+        FindCommand = new RelayCommand(() => _shell.ShowFindReplace(replace: false, initialQuery: null));
+        FindReplaceCommand = new RelayCommand(() => _shell.ShowFindReplace(replace: true, initialQuery: null));
 
         FlipHorizontalCommand = new RelayCommand(() => Flip(horizontal: true), AnySel);
         FlipVerticalCommand = new RelayCommand(() => Flip(horizontal: false), AnySel);
