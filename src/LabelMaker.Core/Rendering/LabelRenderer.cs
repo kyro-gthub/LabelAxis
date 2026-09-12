@@ -228,9 +228,38 @@ public sealed class LabelRenderer
             return;
         }
 
-        RectMm dest = ImageFit.Compute(image.FitMode, local, decoded.PixelWidth, decoded.PixelHeight);
+        ImageAdjustments adj = image.Adjustments;
         double opacity = image.IsWatermark ? 0.25 : 1.0;
-        surface.DrawImage(decoded, dest, image.Adjustments, opacity);
+
+        double cropW = Math.Clamp(adj.CropWidth, 0.01, 1.0);
+        double cropH = Math.Clamp(adj.CropHeight, 0.01, 1.0);
+        double cropX = Math.Clamp(adj.CropX, 0.0, 1.0 - cropW);
+        double cropY = Math.Clamp(adj.CropY, 0.0, 1.0 - cropH);
+
+        // Fit on the *visible* part of the image, so a cropped photo keeps the
+        // proportions the user sees rather than the original file's.
+        int visibleW = Math.Max(1, (int)Math.Round(decoded.PixelWidth * cropW));
+        int visibleH = Math.Max(1, (int)Math.Round(decoded.PixelHeight * cropH));
+        RectMm dest = ImageFit.Compute(image.FitMode, local, visibleW, visibleH);
+
+        if (!adj.HasCrop)
+        {
+            surface.DrawImage(decoded, dest, adj, opacity);
+            return;
+        }
+
+        // Crop without a surface-level crop API: clip to the destination, then draw
+        // the whole image enlarged so the crop window lands exactly on that rect.
+        // Works identically on WPF, PDF and SVG because all three support clipping.
+        var full = new RectMm(
+            dest.X - (cropX * dest.Width / cropW),
+            dest.Y - (cropY * dest.Height / cropH),
+            dest.Width / cropW,
+            dest.Height / cropH);
+
+        surface.PushClipRectangle(dest);
+        surface.DrawImage(decoded, full, adj, opacity);
+        surface.Pop();
     }
 
     private static void RenderShape(ShapeObject shape, RectMm local, IDrawingSurface surface)

@@ -1,0 +1,83 @@
+<Window x:Class="LabelMaker.App.Views.PrintPreviewWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Style="{StaticResource AppWindow}"
+        Background="{DynamicResource Br.Surface}" TextElement.Foreground="{DynamicResource Br.Text}"
+        Title="Print preview" Height="820" Width="1180" MinHeight="560" MinWidth="860"
+        WindowStartupLocation="CenterOwner">
+  <DockPanel>
+
+    <!-- toolbar -->
+    <Border DockPanel.Dock="Top" Background="{DynamicResource Br.Bg}"
+            BorderBrush="{DynamicResource Br.Border}" BorderThickness="0,0,0,1" Padding="14,9">
+      <DockPanel>
+        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+          <Button Content="Print settings…" Style="{StaticResource GhostButton}" Margin="0,0,8,0" Click="OnSettings" />
+          <Button Style="{StaticResource PrimaryButton}" Click="OnPrint">
+            <StackPanel Orientation="Horizontal">
+              <Image Source="{StaticResource Icon.PrintWhite}" Width="15" Height="15" Margin="0,0,7,0" />
+              <TextBlock Text="Print" VerticalAlignment="Center" />
+            </StackPanel>
+          </Button>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+          <Button Content="⏮" Style="{StaticResource IconGhost}" MinWidth="26" ToolTip="First sheet" Click="OnFirst" />
+          <Button Content="◀" Style="{StaticResource IconGhost}" MinWidth="26" ToolTip="Previous sheet" Click="OnPrev" />
+          <TextBlock x:Name="PageText" VerticalAlignment="Center" MinWidth="96" TextAlignment="Center"
+                     FontFamily="{StaticResource Font.UiSemiBold}" FontSize="12.5" />
+          <Button Content="▶" Style="{StaticResource IconGhost}" MinWidth="26" ToolTip="Next sheet" Click="OnNext" />
+          <Button Content="⏭" Style="{StaticResource IconGhost}" MinWidth="26" ToolTip="Last sheet" Click="OnLast" Margin="0,0,14,0" />
+
+          <Rectangle Style="{StaticResource StatusDivider}" />
+
+          <Button Content="−" Style="{StaticResource IconGhost}" MinWidth="26" ToolTip="Zoom out" Click="OnZoomOut" />
+          <TextBlock x:Name="ZoomText" VerticalAlignment="Center" MinWidth="54" TextAlignment="Center" FontSize="12.5" />
+          <Button Content="+" Style="{StaticResource IconGhost}" MinWidth="26" ToolTip="Zoom in" Click="OnZoomIn" />
+          <Button Content="Fit" Style="{StaticResource GhostButton}" Padding="10,5" Margin="6,0,14,0" Click="OnFit" />
+
+          <Rectangle Style="{StaticResource StatusDivider}" />
+
+          <CheckBox x:Name="ShowOutlines" Content="Label outlines" Margin="0,0,14,0" Click="OnOptionChanged"
+                    ToolTip="Draw a hairline around each label (preview and print)" />
+          <CheckBox x:Name="ShowMargins" Content="Printer margins" IsChecked="True" Click="OnOptionChanged"
+                    ToolTip="Show the area your printer cannot reach" />
+        </StackPanel>
+      </DockPanel>
+    </Border>
+
+    <!-- status -->
+    <Border DockPanel.Dock="Bottom" Background="{DynamicResource Br.Bg}"
+            BorderBrush="{DynamicResource Br.Border}" BorderThickness="0,1,0,0" Padding="14,7">
+      <DockPanel>
+        <TextBlock x:Name="RightStatus" DockPanel.Dock="Right" Style="{StaticResource StatusText}" />
+        <TextBlock x:Name="LeftStatus" Style="{StaticResource StatusText}" />
+      </DockPanel>
+    </Border>
+
+    <!-- sheet thumbnails -->
+    <Border DockPanel.Dock="Left" Width="182" Background="{DynamicResource Br.Bg}"
+            BorderBrush="{DynamicResource Br.Border}" BorderThickness="0,0,1,0">
+      <DockPanel>
+        <TextBlock DockPanel.Dock="Top" Text="SHEETS" Style="{StaticResource PanelSectionHeader}" Margin="14,12,14,6" />
+        <ListBox x:Name="Thumbs" BorderThickness="0" Background="Transparent" Margin="8,0,8,8"
+                 HorizontalContentAlignment="Stretch" SelectionChanged="OnThumbSelected"
+                 ScrollViewer.HorizontalScrollBarVisibility="Disabled" />
+      </DockPanel>
+    </Border>
+
+    <!-- the page -->
+    <Border x:Name="ViewHost" Background="{DynamicResource CanvasBackground}" ClipToBounds="True">
+      <ScrollViewer x:Name="Scroller" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
+                    Padding="24">
+        <Border x:Name="PageShadow" HorizontalAlignment="Center" VerticalAlignment="Center"
+                Background="White" SnapsToDevicePixels="True" Margin="10">
+          <Border.Effect>
+            <DropShadowEffect BlurRadius="22" ShadowDepth="4" Direction="270" Opacity="0.28" Color="#22303F" />
+          </Border.Effect>
+          <Grid x:Name="PageHost" />
+        </Border>
+      </ScrollViewer>
+    </Border>
+  </DockPanel>
+</Window>

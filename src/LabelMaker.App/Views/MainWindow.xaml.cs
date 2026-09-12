@@ -53,9 +53,6 @@ public partial class MainWindow : Window
         };
         Title = _vm.Title;
 
-        _vm.DataChanged += (_, _) => RebuildRecordsGrid();
-        RebuildRecordsGrid();
-
         _autoSaveTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(Math.Max(30, env.Settings.AutoSaveSeconds)) };
         _autoSaveTimer.Tick += (_, _) => TryAutoSave();
         if (env.Settings.AutoSaveEnabled)
@@ -144,36 +141,14 @@ public partial class MainWindow : Window
         }
     }
 
-    /// <summary>Rebuilds the record table's columns from the imported dataset's own headers.</summary>
-    private void RebuildRecordsGrid()
+    /// <summary>Right-clicking a list row should select it first, so the context menu acts on what was clicked.</summary>
+    private void OnListItemRightClick(object sender, MouseButtonEventArgs e)
     {
-        RecordsGrid.Columns.Clear();
-        Core.Data.DataSet? data = _vm.Session.Data;
-        if (data is null || data.Columns.Count == 0)
+        if (sender is ListBoxItem item)
         {
-            RecordsGrid.ItemsSource = null;
-            return;
+            item.IsSelected = true;
+            item.Focus();
         }
-
-        RecordsGrid.Columns.Add(new DataGridTextColumn
-        {
-            Header = "#",
-            Binding = new System.Windows.Data.Binding(nameof(Core.Data.DataRecord.SourceRowNumber)),
-            Width = 48,
-        });
-
-        foreach (Core.Data.DataColumn column in data.Columns)
-        {
-            RecordsGrid.Columns.Add(new DataGridTextColumn
-            {
-                Header = column.Name,
-                // DataRecord exposes a string indexer, so the cell reads straight from the row.
-                Binding = new System.Windows.Data.Binding($"[{column.Name}]"),
-                Width = new DataGridLength(1, DataGridLengthUnitType.Star),
-            });
-        }
-
-        RecordsGrid.ItemsSource = data.Rows;
     }
 
     private void OnCanvasContextMenuOpened(object? sender, RoutedEventArgs e) =>

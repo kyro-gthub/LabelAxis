@@ -40,4 +40,16 @@ public interface IShellServices
     void ShowTemplateManager();
 
     void ShowSettings();
+
+    /// <summary>The imported records in a resizable grid (moved out of the old bottom dock).</summary>
+    void ShowDataTable();
+
+    /// <summary>Full-sheet print preview: every sheet exactly as it will print.</summary>
+    void ShowPrintPreview();
+
+    /// <summary>Change the working label size without starting a new project. Returns true if it changed.</summary>
+    bool ShowLabelSize();
+
+    /// <summary>Interactive crop for the selected image. Returns true if the crop changed.</summary>
+    bool ShowImageCrop();
 }

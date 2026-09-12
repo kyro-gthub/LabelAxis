@@ -155,4 +155,57 @@ public sealed class DialogService : IShellServices
 
         new SettingsWindow(_env, _vm) { Owner = _owner }.ShowDialog();
     }
+
+    public void ShowDataTable()
+    {
+        if (_vm is not null)
+        {
+            new DataTableWindow(_vm) { Owner = _owner }.ShowDialog();
+        }
+    }
+
+    public void ShowPrintPreview()
+    {
+        if (_vm is null)
+        {
+            return;
+        }
+
+        try
+        {
+            new PrintPreviewWindow(_vm.Session, _vm.PrintServer, this) { Owner = _owner }.ShowDialog();
+        }
+        catch (Exception ex)
+        {
+            Warn("Could not build the preview:\n\n" + ex.Message);
+        }
+    }
+
+    public bool ShowLabelSize()
+    {
+        if (_vm is null)
+        {
+            return false;
+        }
+
+        var win = new LabelSizeWindow(_vm.Session, _env.Settings.DisplayUnit) { Owner = _owner };
+        return win.ShowDialog() == true;
+    }
+
+    public bool ShowImageCrop()
+    {
+        if (_vm is null || _vm.Session.Selection.FirstOrDefault() is not LabelMaker.Core.Model.Objects.ImageObject image)
+        {
+            return false;
+        }
+
+        if (_vm.SheetRenderer.Images.Get(image.AssetId) is not Rendering.WpfDecodedImage decoded)
+        {
+            Warn("That image could not be decoded, so it cannot be cropped.");
+            return false;
+        }
+
+        var win = new ImageCropWindow(image, decoded.Original) { Owner = _owner };
+        return win.ShowDialog() == true;
+    }
 }
