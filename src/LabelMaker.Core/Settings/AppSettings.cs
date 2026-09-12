@@ -37,6 +37,14 @@ public sealed class AppSettings
     /// <summary>Disable hover/transition highlighting (e.g. the top menu's underline) for users sensitive to motion.</summary>
     public bool ReduceMotion { get; set; }
 
+    public bool DarkTheme { get; set; }
+
+    /// <summary>Confirm before removing a page or clearing the data source.</summary>
+    public bool ConfirmDestructiveActions { get; set; } = true;
+
+    /// <summary>Restore the last-open project automatically when the app starts.</summary>
+    public bool ReopenLastProjectOnStart { get; set; }
+
     /// <summary>Assumed screen DPI for the actual-size preview, tuned by the ruler calibration.</summary>
     public double ScreenDpiCalibration { get; set; } = 96.0;
 

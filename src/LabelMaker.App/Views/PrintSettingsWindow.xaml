@@ -5,7 +5,7 @@
         ResizeMode="NoResize">
   <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="18">
     <StackPanel>
-      <TextBlock Text="What to print" FontWeight="SemiBold" FontSize="13" Margin="0,0,0,8" Foreground="{StaticResource Br.TextMuted}" />
+      <TextBlock Text="What to print" FontWeight="SemiBold" FontSize="13" Margin="0,0,0,8" Foreground="{DynamicResource Br.TextMuted}" />
       <GroupBox>
         <StackPanel>
           <RadioButton x:Name="ContentSheetFill" GroupName="content" Content="Fill sheet — repeat the master label in every slot" Margin="0,4" />
@@ -14,7 +14,7 @@
         </StackPanel>
       </GroupBox>
 
-      <TextBlock Text="Sheet position" FontWeight="SemiBold" FontSize="13" Margin="0,14,0,8" Foreground="{StaticResource Br.TextMuted}" />
+      <TextBlock Text="Sheet position" FontWeight="SemiBold" FontSize="13" Margin="0,14,0,8" Foreground="{DynamicResource Br.TextMuted}" />
       <GroupBox>
         <StackPanel>
           <DockPanel Margin="0,3">
@@ -28,7 +28,7 @@
         </StackPanel>
       </GroupBox>
 
-      <TextBlock Text="Records / pages to print" FontWeight="SemiBold" FontSize="13" Margin="0,14,0,8" Foreground="{StaticResource Br.TextMuted}" />
+      <TextBlock Text="Records / pages to print" FontWeight="SemiBold" FontSize="13" Margin="0,14,0,8" Foreground="{DynamicResource Br.TextMuted}" />
       <GroupBox>
         <StackPanel>
           <RadioButton x:Name="RecordsAll" GroupName="records" Content="All" IsChecked="True" Margin="0,3" />
@@ -44,7 +44,7 @@
         </StackPanel>
       </GroupBox>
 
-      <TextBlock Text="Physical output" FontWeight="SemiBold" FontSize="13" Margin="0,14,0,8" Foreground="{StaticResource Br.TextMuted}" />
+      <TextBlock Text="Physical output" FontWeight="SemiBold" FontSize="13" Margin="0,14,0,8" Foreground="{DynamicResource Br.TextMuted}" />
       <GroupBox>
         <StackPanel>
           <DockPanel Margin="0,3">
@@ -62,8 +62,8 @@
         </StackPanel>
       </GroupBox>
 
-      <Border Margin="0,14,0,0" Background="{StaticResource Br.AccentSoft}" CornerRadius="10" Padding="12">
-        <TextBlock x:Name="SummaryText" TextWrapping="Wrap" FontWeight="SemiBold" Foreground="{StaticResource Br.Accent}" />
+      <Border Margin="0,14,0,0" Background="{DynamicResource Br.AccentSoft}" CornerRadius="10" Padding="12">
+        <TextBlock x:Name="SummaryText" TextWrapping="Wrap" FontWeight="SemiBold" Foreground="{DynamicResource Br.Accent}" />
       </Border>
 
       <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">

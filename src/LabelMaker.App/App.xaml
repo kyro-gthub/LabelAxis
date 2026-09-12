@@ -18,14 +18,14 @@
       <conv:LockIconConverter x:Key="LockIcon" />
 
       <!-- Aliases kept for MainWindow.xaml -->
-      <SolidColorBrush x:Key="PanelBackground" Color="{StaticResource Clr.Bg}" />
-      <SolidColorBrush x:Key="PanelBorder" Color="{StaticResource Clr.Border}" />
-      <SolidColorBrush x:Key="CanvasBackground" Color="{StaticResource Clr.Surface}" />
+      <SolidColorBrush x:Key="PanelBackground" Color="{DynamicResource Clr.Bg}" />
+      <SolidColorBrush x:Key="PanelBorder" Color="{DynamicResource Clr.Border}" />
+      <SolidColorBrush x:Key="CanvasBackground" Color="{DynamicResource Clr.Surface}" />
 
       <Style x:Key="FieldLabel" TargetType="TextBlock">
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="Margin" Value="0,0,8,0" />
-        <Setter Property="Foreground" Value="{StaticResource Br.TextMuted}" />
+        <Setter Property="Foreground" Value="{DynamicResource Br.TextMuted}" />
         <Setter Property="FontSize" Value="12" />
       </Style>
 
@@ -41,7 +41,7 @@
         <Setter Property="Padding" Value="8,3" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="Foreground" Value="{StaticResource Br.Text}" />
+        <Setter Property="Foreground" Value="{DynamicResource Br.Text}" />
         <Setter Property="MinWidth" Value="26" />
       </Style>
 
@@ -54,7 +54,7 @@
         <Setter Property="Padding" Value="16,7" />
         <Setter Property="FontFamily" Value="{StaticResource Font.UiSemiBold}" />
         <Setter Property="FontSize" Value="13" />
-        <Setter Property="Foreground" Value="{StaticResource Br.Text2}" />
+        <Setter Property="Foreground" Value="{DynamicResource Br.Text2}" />
         <Setter Property="Template">
           <Setter.Value>
             <ControlTemplate TargetType="RadioButton">
@@ -63,7 +63,7 @@
               </Border>
               <ControlTemplate.Triggers>
                 <Trigger Property="IsChecked" Value="True">
-                  <Setter TargetName="bd" Property="Background" Value="{StaticResource Br.AccentGradient}" />
+                  <Setter TargetName="bd" Property="Background" Value="{DynamicResource Br.AccentGradient}" />
                   <Setter Property="Foreground" Value="White" />
                 </Trigger>
                 <MultiTrigger>
@@ -71,7 +71,7 @@
                     <Condition Property="IsChecked" Value="False" />
                     <Condition Property="IsMouseOver" Value="True" />
                   </MultiTrigger.Conditions>
-                  <Setter TargetName="bd" Property="Background" Value="{StaticResource Br.Bg}" />
+                  <Setter TargetName="bd" Property="Background" Value="{DynamicResource Br.Bg}" />
                 </MultiTrigger>
               </ControlTemplate.Triggers>
             </ControlTemplate>
@@ -84,7 +84,7 @@
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="FontFamily" Value="{StaticResource Font.UiSemiBold}" />
         <Setter Property="FontSize" Value="14" />
-        <Setter Property="Foreground" Value="{StaticResource Br.TextMuted}" />
+        <Setter Property="Foreground" Value="{DynamicResource Br.TextMuted}" />
         <Setter Property="Template">
           <Setter.Value>
             <ControlTemplate TargetType="RadioButton">
@@ -93,8 +93,8 @@
               </Border>
               <ControlTemplate.Triggers>
                 <Trigger Property="IsChecked" Value="True">
-                  <Setter TargetName="bd" Property="BorderBrush" Value="{StaticResource Br.Accent}" />
-                  <Setter Property="Foreground" Value="{StaticResource Br.Accent}" />
+                  <Setter TargetName="bd" Property="BorderBrush" Value="{DynamicResource Br.Accent}" />
+                  <Setter Property="Foreground" Value="{DynamicResource Br.Accent}" />
                 </Trigger>
               </ControlTemplate.Triggers>
             </ControlTemplate>
