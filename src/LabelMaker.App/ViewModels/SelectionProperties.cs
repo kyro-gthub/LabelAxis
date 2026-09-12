@@ -459,6 +459,85 @@ public sealed class SelectionProperties : ObservableObject
         }
     }
 
+    /// <summary>Turns the flat fill into a two-stop linear gradient and back.</summary>
+    public bool UseGradient
+    {
+        get => (Obj as ShapeObject)?.HasGradient == true;
+        set
+        {
+            if (Obj is not ShapeObject s)
+            {
+                return;
+            }
+
+            ColorRgba? next = value
+                ? (s.GradientTo ?? Lighten(s.Fill.A == 0 ? new ColorRgba(0x2C, 0x6F, 0xE8) : s.Fill))
+                : null;
+
+            if (value && s.Fill.IsTransparent)
+            {
+                // A gradient from "nothing" is invisible; start from the accent colour.
+                Set(nameof(FillHex), () => s.Fill, v => s.Fill = v, new ColorRgba(0x2C, 0x6F, 0xE8));
+            }
+
+            Set(nameof(UseGradient), () => s.GradientTo, v => s.GradientTo = v, next);
+            OnPropertyChanged(nameof(GradientToHex));
+            OnPropertyChanged(nameof(GradientPreview));
+            OnPropertyChanged(nameof(FillBrush));
+        }
+    }
+
+    public string GradientToHex
+    {
+        get => ((Obj as ShapeObject)?.GradientTo ?? ColorRgba.White).ToHex();
+        set
+        {
+            if (Obj is ShapeObject s && ColorRgba.TryParse(value, out ColorRgba c))
+            {
+                Set(nameof(GradientToHex), () => s.GradientTo, v => s.GradientTo = v, c);
+                OnPropertyChanged(nameof(GradientPreview));
+            }
+        }
+    }
+
+    public double GradientAngle
+    {
+        get => Math.Round((Obj as ShapeObject)?.GradientAngleDegrees ?? 90);
+        set
+        {
+            if (Obj is ShapeObject s)
+            {
+                Set(nameof(GradientAngle), () => s.GradientAngleDegrees, v => s.GradientAngleDegrees = v,
+                    Math.Round(Math.Clamp(value, 0, 360)));
+                OnPropertyChanged(nameof(GradientPreview));
+            }
+        }
+    }
+
+    /// <summary>Live preview of the gradient exactly as the renderer will draw it.</summary>
+    public Brush GradientPreview
+    {
+        get
+        {
+            if (Obj is not ShapeObject { GradientTo: { } to } s)
+            {
+                return FillBrush;
+            }
+
+            double radians = s.GradientAngleDegrees * Math.PI / 180.0;
+            double dx = Math.Cos(radians) / 2.0;
+            double dy = Math.Sin(radians) / 2.0;
+            return new LinearGradientBrush(
+                Color.FromArgb(s.Fill.A, s.Fill.R, s.Fill.G, s.Fill.B),
+                Color.FromArgb(to.A, to.R, to.G, to.B),
+                new System.Windows.Point(0.5 - dx, 0.5 - dy),
+                new System.Windows.Point(0.5 + dx, 0.5 + dy));
+        }
+    }
+
+    private static ColorRgba Lighten(ColorRgba c) => new(
+        (byte)Math.Min(255, c.R + 70), (byte)Math.Min(255, c.G + 70), (byte)Math.Min(255, c.B + 70), c.A);
+
     public double StrokeWidthMm
     {
         get => Out((Obj as ShapeObject)?.StrokeWidthMm ?? 0.25);
@@ -483,16 +562,20 @@ public sealed class SelectionProperties : ObservableObject
         }
     }
 
-    /// <summary>Applies a palette swatch to the fill or the stroke ("fill|#AARRGGBB").</summary>
+    /// <summary>Applies a palette swatch or picked colour to the fill, stroke or gradient end.</summary>
     public void ApplySwatch(string target, string hex)
     {
-        if (target == "fill")
+        switch (target)
         {
-            FillHex = hex;
-        }
-        else
-        {
-            StrokeHex = hex;
+            case "stroke":
+                StrokeHex = hex;
+                break;
+            case "gradient":
+                GradientToHex = hex;
+                break;
+            default:
+                FillHex = hex;
+                break;
         }
     }
 

@@ -745,13 +745,26 @@ public sealed class MainViewModel : ObservableObject
         PickColorCommand = new RelayCommand(p =>
         {
             string target = p as string ?? "fill";
-            bool fill = target == "fill";
-            if (!ColorRgba.TryParse(fill ? _properties.FillHex : _properties.StrokeHex, out ColorRgba current))
+            string currentHex = target switch
             {
-                current = fill ? ColorRgba.Transparent : ColorRgba.Black;
+                "stroke" => _properties.StrokeHex,
+                "gradient" => _properties.GradientToHex,
+                _ => _properties.FillHex,
+            };
+
+            if (!ColorRgba.TryParse(currentHex, out ColorRgba current))
+            {
+                current = target == "stroke" ? ColorRgba.Black : ColorRgba.Transparent;
             }
 
-            if (_shell.PickColor(current, fill ? "Fill colour" : "Stroke colour") is { } chosen)
+            string title = target switch
+            {
+                "stroke" => "Stroke colour",
+                "gradient" => "Gradient end colour",
+                _ => "Fill colour",
+            };
+
+            if (_shell.PickColor(current, title) is { } chosen)
             {
                 _properties.ApplySwatch(target, chosen.ToHex());
                 RefreshCanvas();

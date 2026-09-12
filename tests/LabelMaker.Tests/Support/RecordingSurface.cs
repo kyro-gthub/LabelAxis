@@ -15,7 +15,13 @@ internal sealed class RecordingSurface : IDrawingSurface
     public int BarcodeRectBatches { get; private set; }
 
     public ITextMeasurer TextMeasurer { get; } = new MonospaceMeasurer();
-    public IImageSource Images { get; } = new NullImages();
+
+    /// <summary>Defaults to "no images available"; set StubImagePixels to hand out a fake decoded image.</summary>
+    public IImageSource Images { get; set; } = new NullImages();
+
+    /// <summary>Makes <see cref="Images"/> return a decoded image of this pixel size for any asset id.</summary>
+    public void UseStubImage(int pixelWidth, int pixelHeight) =>
+        Images = new StubImages(new StubImage(pixelWidth, pixelHeight));
 
     public void PushTransform(double tx, double ty, double rot, double sx, double sy) => Ops.Add($"push({tx:0.##},{ty:0.##},{rot:0.##})");
     public void Pop() => Ops.Add("pop");
@@ -28,6 +34,15 @@ internal sealed class RecordingSurface : IDrawingSurface
     public void StrokeEllipse(RectMm rectMm, ColorRgba stroke, double strokeWidthMm, DashStyle dash = DashStyle.Solid) => Ops.Add("strokeEllipse");
     public void StrokeLine(PointMm a, PointMm b, ColorRgba stroke, double strokeWidthMm, DashStyle dash = DashStyle.Solid) => Ops.Add("line");
     public void FillPolygon(IReadOnlyList<PointMm> points, ColorRgba fill, ColorRgba stroke, double strokeWidthMm) => Ops.Add($"polygon({points.Count})");
+
+    public void FillRectangleGradient(RectMm rectMm, ColorRgba from, ColorRgba to, double angleDegrees, double cornerRadiusMm = 0) =>
+        Ops.Add($"gradientRect({angleDegrees:0})");
+
+    public void FillEllipseGradient(RectMm rectMm, ColorRgba from, ColorRgba to, double angleDegrees) =>
+        Ops.Add($"gradientEllipse({angleDegrees:0})");
+
+    public void FillPolygonGradient(IReadOnlyList<PointMm> points, ColorRgba from, ColorRgba to, double angleDegrees, ColorRgba stroke, double strokeWidthMm) =>
+        Ops.Add($"gradientPolygon({points.Count})");
     public void DrawImage(IDecodedImage image, RectMm destRectMm, ImageAdjustments adjustments, double opacity) => Ops.Add("image");
 
     public void DrawTextBlock(TextBlock block, RectMm rectMm, VerticalAlignment verticalAlignment)
@@ -62,5 +77,16 @@ internal sealed class RecordingSurface : IDrawingSurface
     private sealed class NullImages : IImageSource
     {
         public IDecodedImage? Get(string assetId) => null;
+    }
+
+    private sealed record StubImage(int PixelWidth, int PixelHeight) : IDecodedImage;
+
+    private sealed class StubImages : IImageSource
+    {
+        private readonly IDecodedImage _image;
+
+        public StubImages(IDecodedImage image) => _image = image;
+
+        public IDecodedImage? Get(string assetId) => _image;
     }
 }

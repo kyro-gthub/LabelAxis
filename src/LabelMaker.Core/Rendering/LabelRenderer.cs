@@ -265,10 +265,21 @@ public sealed class LabelRenderer
     private static void RenderShape(ShapeObject shape, RectMm local, IDrawingSurface surface)
     {
         double sw = shape.StrokeWidthMm;
+        ColorRgba? to = shape.GradientTo;
+        double angle = shape.GradientAngleDegrees;
+
         switch (shape.Shape)
         {
             case ShapeKind.Rectangle:
-                surface.FillRectangle(local, shape.Fill);
+                if (to is { } rectTo)
+                {
+                    surface.FillRectangleGradient(local, shape.Fill, rectTo, angle);
+                }
+                else
+                {
+                    surface.FillRectangle(local, shape.Fill);
+                }
+
                 if (sw > 0)
                 {
                     surface.StrokeRectangle(local, shape.Stroke, sw, shape.DashStyle);
@@ -277,7 +288,15 @@ public sealed class LabelRenderer
                 break;
 
             case ShapeKind.RoundRectangle:
-                surface.FillRectangle(local, shape.Fill, shape.CornerRadiusMm);
+                if (to is { } roundTo)
+                {
+                    surface.FillRectangleGradient(local, shape.Fill, roundTo, angle, shape.CornerRadiusMm);
+                }
+                else
+                {
+                    surface.FillRectangle(local, shape.Fill, shape.CornerRadiusMm);
+                }
+
                 if (sw > 0)
                 {
                     surface.StrokeRectangle(local, shape.Stroke, sw, shape.DashStyle, shape.CornerRadiusMm);
@@ -286,7 +305,15 @@ public sealed class LabelRenderer
                 break;
 
             case ShapeKind.Ellipse:
-                surface.FillEllipse(local, shape.Fill);
+                if (to is { } ellipseTo)
+                {
+                    surface.FillEllipseGradient(local, shape.Fill, ellipseTo, angle);
+                }
+                else
+                {
+                    surface.FillEllipse(local, shape.Fill);
+                }
+
                 if (sw > 0)
                 {
                     surface.StrokeEllipse(local, shape.Stroke, sw, shape.DashStyle);
@@ -342,7 +369,15 @@ public sealed class LabelRenderer
             points.Add(new PointMm(cx + (Math.Cos(angle) * rx * factor), cy + (Math.Sin(angle) * ry * factor)));
         }
 
-        surface.FillPolygon(points, shape.Fill, shape.Stroke, shape.StrokeWidthMm);
+        if (shape.GradientTo is { } to)
+        {
+            surface.FillPolygonGradient(
+                points, shape.Fill, to, shape.GradientAngleDegrees, shape.Stroke, shape.StrokeWidthMm);
+        }
+        else
+        {
+            surface.FillPolygon(points, shape.Fill, shape.Stroke, shape.StrokeWidthMm);
+        }
     }
 
     private static void RenderBarcode(BarcodeObject barcode, RectMm local, VariableResolver resolver, IDrawingSurface surface)

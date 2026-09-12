@@ -89,6 +89,23 @@ public interface IDrawingSurface
 
     void FillRectangle(RectMm rectMm, ColorRgba fill, double cornerRadiusMm = 0);
 
+    /// <summary>
+    /// Two-stop linear gradient fill. Implemented as a default method so a surface
+    /// that cannot express gradients still draws something sensible (the start
+    /// colour) rather than nothing at all.
+    /// </summary>
+    void FillRectangleGradient(
+        RectMm rectMm, ColorRgba from, ColorRgba to, double angleDegrees, double cornerRadiusMm = 0) =>
+        FillRectangle(rectMm, from, cornerRadiusMm);
+
+    void FillEllipseGradient(RectMm rectMm, ColorRgba from, ColorRgba to, double angleDegrees) =>
+        FillEllipse(rectMm, from);
+
+    void FillPolygonGradient(
+        IReadOnlyList<PointMm> points, ColorRgba from, ColorRgba to, double angleDegrees,
+        ColorRgba stroke, double strokeWidthMm) =>
+        FillPolygon(points, from, stroke, strokeWidthMm);
+
     void StrokeRectangle(RectMm rectMm, ColorRgba stroke, double strokeWidthMm, DashStyle dash = DashStyle.Solid, double cornerRadiusMm = 0);
 
     void FillEllipse(RectMm rectMm, ColorRgba fill);

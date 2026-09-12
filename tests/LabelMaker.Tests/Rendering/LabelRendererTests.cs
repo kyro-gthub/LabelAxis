@@ -54,6 +54,69 @@ public sealed class LabelRendererTests
     }
 
     [Fact]
+    public void Shape_with_a_second_stop_is_drawn_as_a_gradient()
+    {
+        var doc = new LabelDocument { SizeMm = new SizeMm(60, 30) };
+        doc.Objects.Add(new ShapeObject
+        {
+            Bounds = new RectMm(2, 2, 20, 10),
+            Shape = ShapeKind.Rectangle,
+            Fill = new ColorRgba(0x2C, 0x6F, 0xE8),
+            GradientTo = ColorRgba.White,
+            GradientAngleDegrees = 45,
+            StrokeWidthMm = 0,
+        });
+
+        var surface = new RecordingSurface();
+        new LabelRenderer().Render(doc, new ResolveContext(), surface);
+
+        surface.Ops.Should().Contain("gradientRect(45)");
+    }
+
+    [Fact]
+    public void Shape_without_a_second_stop_stays_a_flat_fill()
+    {
+        var doc = new LabelDocument { SizeMm = new SizeMm(60, 30) };
+        doc.Objects.Add(new ShapeObject
+        {
+            Bounds = new RectMm(2, 2, 20, 10),
+            Shape = ShapeKind.Rectangle,
+            Fill = new ColorRgba(0x2C, 0x6F, 0xE8),
+            StrokeWidthMm = 0,
+        });
+
+        var surface = new RecordingSurface();
+        new LabelRenderer().Render(doc, new ResolveContext(), surface);
+
+        surface.Ops.Should().Contain("fillRect");
+        surface.Ops.Should().NotContain(op => op.StartsWith("gradient", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void Cropped_image_clips_to_its_box_and_draws_enlarged()
+    {
+        var doc = new LabelDocument { SizeMm = new SizeMm(60, 30) };
+        var image = new ImageObject
+        {
+            Bounds = new RectMm(0, 0, 20, 20),
+            AssetId = "asset",
+            FitMode = ImageFitMode.Stretch,
+        };
+        image.Adjustments.CropX = 0.25;
+        image.Adjustments.CropY = 0;
+        image.Adjustments.CropWidth = 0.5;
+        image.Adjustments.CropHeight = 1.0;
+        doc.Objects.Add(image);
+
+        var surface = new RecordingSurface();
+        surface.UseStubImage(400, 200);
+        new LabelRenderer().Render(doc, new ResolveContext(), surface);
+
+        // The crop is implemented as clip + oversized draw, so both must be present.
+        surface.Ops.Should().ContainInOrder("clipRect", "image", "pop");
+    }
+
+    [Fact]
     public void Invisible_objects_are_skipped()
     {
         var doc = new LabelDocument { SizeMm = new SizeMm(60, 30) };

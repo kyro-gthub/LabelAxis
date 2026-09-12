@@ -109,6 +109,58 @@ public sealed class WpfDrawingSurface : IDrawingSurface
         }
     }
 
+    public void FillRectangleGradient(
+        RectMm rectMm, CoreColor from, CoreColor to, double angleDegrees, double cornerRadiusMm = 0)
+    {
+        Brush brush = Gradient(from, to, angleDegrees);
+        if (cornerRadiusMm > 0)
+        {
+            _dc.DrawRoundedRectangle(brush, null, Rect(rectMm), cornerRadiusMm * K, cornerRadiusMm * K);
+        }
+        else
+        {
+            _dc.DrawRectangle(brush, null, Rect(rectMm));
+        }
+    }
+
+    public void FillEllipseGradient(RectMm rectMm, CoreColor from, CoreColor to, double angleDegrees) =>
+        _dc.DrawEllipse(Gradient(from, to, angleDegrees), null, Point(rectMm.Center),
+            rectMm.Width / 2 * K, rectMm.Height / 2 * K);
+
+    public void FillPolygonGradient(
+        IReadOnlyList<PointMm> points, CoreColor from, CoreColor to, double angleDegrees,
+        CoreColor stroke, double strokeWidthMm)
+    {
+        if (points.Count < 2)
+        {
+            return;
+        }
+
+        Geometry geo = PolygonGeometry(points, filled: true);
+        Pen? pen = stroke.IsTransparent || strokeWidthMm <= 0 ? null : Pen(stroke, strokeWidthMm, WpfDashStyle.Solid);
+        _dc.DrawGeometry(Gradient(from, to, angleDegrees), pen, geo);
+    }
+
+    /// <summary>
+    /// Angle is degrees clockwise from left-to-right, expressed in the brush's own
+    /// 0..1 space so it follows the shape whatever its aspect ratio.
+    /// </summary>
+    private static Brush Gradient(CoreColor from, CoreColor to, double angleDegrees)
+    {
+        double radians = angleDegrees * Math.PI / 180.0;
+        double dx = Math.Cos(radians) / 2.0;
+        double dy = Math.Sin(radians) / 2.0;
+
+        var brush = new LinearGradientBrush(
+            System.Windows.Media.Color.FromArgb(from.A, from.R, from.G, from.B),
+            System.Windows.Media.Color.FromArgb(to.A, to.R, to.G, to.B),
+            new Point(0.5 - dx, 0.5 - dy),
+            new Point(0.5 + dx, 0.5 + dy));
+
+        brush.Freeze();
+        return brush;
+    }
+
     public void StrokeRectangle(RectMm rectMm, CoreColor stroke, double strokeWidthMm, WpfDashStyle dash = WpfDashStyle.Solid, double cornerRadiusMm = 0)
     {
         if (stroke.IsTransparent || strokeWidthMm <= 0)
@@ -161,7 +213,15 @@ public sealed class WpfDrawingSurface : IDrawingSurface
             return;
         }
 
-        var figure = new PathFigure { StartPoint = Point(points[0]), IsClosed = true, IsFilled = !fill.IsTransparent };
+        Geometry geo = PolygonGeometry(points, filled: !fill.IsTransparent);
+        Brush? brush = fill.IsTransparent ? null : Brush(fill);
+        Pen? pen = stroke.IsTransparent || strokeWidthMm <= 0 ? null : Pen(stroke, strokeWidthMm, WpfDashStyle.Solid);
+        _dc.DrawGeometry(brush, pen, geo);
+    }
+
+    private Geometry PolygonGeometry(IReadOnlyList<PointMm> points, bool filled)
+    {
+        var figure = new PathFigure { StartPoint = Point(points[0]), IsClosed = true, IsFilled = filled };
         for (int i = 1; i < points.Count; i++)
         {
             figure.Segments.Add(new LineSegment(Point(points[i]), true));
@@ -170,10 +230,7 @@ public sealed class WpfDrawingSurface : IDrawingSurface
         var geo = new PathGeometry();
         geo.Figures.Add(figure);
         geo.Freeze();
-
-        Brush? brush = fill.IsTransparent ? null : Brush(fill);
-        Pen? pen = stroke.IsTransparent || strokeWidthMm <= 0 ? null : Pen(stroke, strokeWidthMm, WpfDashStyle.Solid);
-        _dc.DrawGeometry(brush, pen, geo);
+        return geo;
     }
 
     public void DrawImage(IDecodedImage image, RectMm destRectMm, ImageAdjustments adjustments, double opacity)
