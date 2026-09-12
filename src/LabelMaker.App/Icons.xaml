@@ -277,4 +277,341 @@
     </DrawingImage.Drawing>
   </DrawingImage>
 
+  <!-- ==================== redesign icon set ==================== -->
+
+  <DrawingImage x:Key="Icon.Select">
+    <DrawingImage.Drawing>
+      <GeometryDrawing Pen="{StaticResource IconPen}">
+        <GeometryDrawing.Geometry>
+          <PathGeometry Figures="M5,3 L5,18 L9,14 L12,20.5 L14.5,19.4 L11.6,13.2 L17,13 Z" />
+        </GeometryDrawing.Geometry>
+      </GeometryDrawing>
+    </DrawingImage.Drawing>
+  </DrawingImage>
+
+  <DrawingImage x:Key="Icon.QrCode">
+    <DrawingImage.Drawing>
+      <GeometryDrawing Pen="{StaticResource IconPen}">
+        <GeometryDrawing.Geometry>
+          <GeometryGroup>
+            <RectangleGeometry Rect="3,3,7,7" RadiusX="1" RadiusY="1" />
+            <RectangleGeometry Rect="14,3,7,7" RadiusX="1" RadiusY="1" />
+            <RectangleGeometry Rect="3,14,7,7" RadiusX="1" RadiusY="1" />
+            <PathGeometry Figures="M14,14 L17,14 M20,14 L21,14 M14,17 L14,21 M17,17 L21,17 M20,20 L21,21" />
+          </GeometryGroup>
+        </GeometryDrawing.Geometry>
+      </GeometryDrawing>
+    </DrawingImage.Drawing>
+  </DrawingImage>
+
+  <DrawingImage x:Key="Icon.Shape">
+    <DrawingImage.Drawing>
+      <GeometryDrawing Pen="{StaticResource IconPen}">
+        <GeometryDrawing.Geometry>
+          <PathGeometry Figures="M12,3 L14.8,9.2 L21.5,10 L16.6,14.6 L17.9,21.2 L12,18 L6.1,21.2 L7.4,14.6 L2.5,10 L9.2,9.2 Z" />
+        </GeometryDrawing.Geometry>
+      </GeometryDrawing>
+    </DrawingImage.Drawing>
+  </DrawingImage>
+
+  <DrawingImage x:Key="Icon.Align">
+    <DrawingImage.Drawing>
+      <GeometryDrawing Pen="{StaticResource IconPen}">
+        <GeometryDrawing.Geometry>
+          <PathGeometry Figures="M3,4 L3,20 M7,7 L19,7 M7,12 L15,12 M7,17 L21,17" />
+        </GeometryDrawing.Geometry>
+      </GeometryDrawing>
+    </DrawingImage.Drawing>
+  </DrawingImage>
+
+  <DrawingImage x:Key="Icon.Arrange">
+    <DrawingImage.Drawing>
+      <GeometryDrawing Pen="{StaticResource IconPen}">
+        <GeometryDrawing.Geometry>
+          <GeometryGroup>
+            <RectangleGeometry Rect="3,3,12,12" RadiusX="2" RadiusY="2" />
+            <RectangleGeometry Rect="9,9,12,12" RadiusX="2" RadiusY="2" />
+          </GeometryGroup>
+        </GeometryDrawing.Geometry>
+      </GeometryDrawing>
+    </DrawingImage.Drawing>
+  </DrawingImage>
+
+  <DrawingImage x:Key="Icon.Group">
+    <DrawingImage.Drawing>
+      <GeometryDrawing Pen="{StaticResource IconPen}">
+        <GeometryDrawing.Geometry>
+          <GeometryGroup>
+            <RectangleGeometry Rect="4,4,7,7" RadiusX="1" RadiusY="1" />
+            <RectangleGeometry Rect="13,13,7,7" RadiusX="1" RadiusY="1" />
+            <PathGeometry Figures="M11,7.5 L16.5,7.5 L16.5,13 M7.5,11 L7.5,16.5 L13,16.5" />
+          </GeometryGroup>
+        </GeometryDrawing.Geometry>
+      </GeometryDrawing>
+    </DrawingImage.Drawing>
+  </DrawingImage>
+
+  <DrawingImage x:Key="Icon.Ungroup">
+    <DrawingImage.Drawing>
+      <GeometryDrawing Pen="{StaticResource IconPen}">
+        <GeometryDrawing.Geometry>
+          <GeometryGroup>
+            <RectangleGeometry Rect="3,3,8,8" RadiusX="1" RadiusY="1" />
+            <RectangleGeometry Rect="13,13,8,8" RadiusX="1" RadiusY="1" />
+          </GeometryGroup>
+        </GeometryDrawing.Geometry>
+      </GeometryDrawing>
+    </DrawingImage.Drawing>
+  </DrawingImage>
+
+  <DrawingImage x:Key="Icon.ZoomIn">
+    <DrawingImage.Drawing>
+      <GeometryDrawing Pen="{StaticResource IconPen}">
+        <GeometryDrawing.Geometry>
+          <GeometryGroup>
+            <EllipseGeometry Center="10.5,10.5" RadiusX="6.5" RadiusY="6.5" />
+            <PathGeometry Figures="M15.5,15.5 L21,21 M7.5,10.5 L13.5,10.5 M10.5,7.5 L10.5,13.5" />
+          </GeometryGroup>
+        </GeometryDrawing.Geometry>
+      </GeometryDrawing>
+    </DrawingImage.Drawing>
+  </DrawingImage>
+
+  <DrawingImage x:Key="Icon.ZoomOut">
+    <DrawingImage.Drawing>
+      <GeometryDrawing Pen="{StaticResource IconPen}">
+        <GeometryDrawing.Geometry>
+          <GeometryGroup>
+            <EllipseGeometry Center="10.5,10.5" RadiusX="6.5" RadiusY="6.5" />
+            <PathGeometry Figures="M15.5,15.5 L21,21 M7.5,10.5 L13.5,10.5" />
+          </GeometryGroup>
+        </GeometryDrawing.Geometry>
+      </GeometryDrawing>
+    </DrawingImage.Drawing>
+  </DrawingImage>
+
+  <DrawingImage x:Key="Icon.ZoomFit">
+    <DrawingImage.Drawing>
+      <GeometryDrawing Pen="{StaticResource IconPen}">
+        <GeometryDrawing.Geometry>
+          <GeometryGroup>
+            <EllipseGeometry Center="10.5,10.5" RadiusX="6.5" RadiusY="6.5" />
+            <PathGeometry Figures="M15.5,15.5 L21,21" />
+          </GeometryGroup>
+        </GeometryDrawing.Geometry>
+      </GeometryDrawing>
+    </DrawingImage.Drawing>
+  </DrawingImage>
+
+  <DrawingImage x:Key="Icon.Search">
+    <DrawingImage.Drawing>
+      <GeometryDrawing Pen="{StaticResource IconPen}">
+        <GeometryDrawing.Geometry>
+          <GeometryGroup>
+            <EllipseGeometry Center="10.5,10.5" RadiusX="6.5" RadiusY="6.5" />
+            <PathGeometry Figures="M15.4,15.4 L21,21" />
+          </GeometryGroup>
+        </GeometryDrawing.Geometry>
+      </GeometryDrawing>
+    </DrawingImage.Drawing>
+  </DrawingImage>
+
+  <DrawingImage x:Key="Icon.Plus">
+    <DrawingImage.Drawing>
+      <GeometryDrawing Pen="{StaticResource IconPen}">
+        <GeometryDrawing.Geometry>
+          <PathGeometry Figures="M12,5 L12,19 M5,12 L19,12" />
+        </GeometryDrawing.Geometry>
+      </GeometryDrawing>
+    </DrawingImage.Drawing>
+  </DrawingImage>
+
+  <DrawingImage x:Key="Icon.PlusCircle">
+    <DrawingImage.Drawing>
+      <GeometryDrawing Pen="{StaticResource IconPen}">
+        <GeometryDrawing.Geometry>
+          <GeometryGroup>
+            <EllipseGeometry Center="12,12" RadiusX="8.5" RadiusY="8.5" />
+            <PathGeometry Figures="M12,7.5 L12,16.5 M7.5,12 L16.5,12" />
+          </GeometryGroup>
+        </GeometryDrawing.Geometry>
+      </GeometryDrawing>
+    </DrawingImage.Drawing>
+  </DrawingImage>
+
+  <DrawingImage x:Key="Icon.Check">
+    <DrawingImage.Drawing>
+      <GeometryDrawing Pen="{StaticResource IconPen}">
+        <GeometryDrawing.Geometry>
+          <GeometryGroup>
+            <EllipseGeometry Center="12,12" RadiusX="8.5" RadiusY="8.5" />
+            <PathGeometry Figures="M8,12.3 L11,15.2 L16.2,9.2" />
+          </GeometryGroup>
+        </GeometryDrawing.Geometry>
+      </GeometryDrawing>
+    </DrawingImage.Drawing>
+  </DrawingImage>
+
+  <DrawingImage x:Key="Icon.FileDoc">
+    <DrawingImage.Drawing>
+      <GeometryDrawing Pen="{StaticResource IconPen}">
+        <GeometryDrawing.Geometry>
+          <PathGeometry Figures="M7,3 L14,3 L19,8 L19,21 L7,21 Z M14,3 L14,8 L19,8" />
+        </GeometryDrawing.Geometry>
+      </GeometryDrawing>
+    </DrawingImage.Drawing>
+  </DrawingImage>
+
+  <DrawingImage x:Key="Icon.Sheet">
+    <DrawingImage.Drawing>
+      <GeometryDrawing Pen="{StaticResource IconPen}">
+        <GeometryDrawing.Geometry>
+          <GeometryGroup>
+            <RectangleGeometry Rect="4,3,16,18" RadiusX="2" RadiusY="2" />
+            <PathGeometry Figures="M4,9 L20,9 M4,15 L20,15 M12,3 L12,21" />
+          </GeometryGroup>
+        </GeometryDrawing.Geometry>
+      </GeometryDrawing>
+    </DrawingImage.Drawing>
+  </DrawingImage>
+
+  <DrawingImage x:Key="Icon.Tag">
+    <DrawingImage.Drawing>
+      <GeometryDrawing Pen="{StaticResource IconPen}">
+        <GeometryDrawing.Geometry>
+          <GeometryGroup>
+            <PathGeometry Figures="M3,11 L3,4 L10,4 L21,15 L14,22 Z" />
+            <EllipseGeometry Center="7,8" RadiusX="1.6" RadiusY="1.6" />
+          </GeometryGroup>
+        </GeometryDrawing.Geometry>
+      </GeometryDrawing>
+    </DrawingImage.Drawing>
+  </DrawingImage>
+
+  <DrawingImage x:Key="Icon.Sticker">
+    <DrawingImage.Drawing>
+      <GeometryDrawing Pen="{StaticResource IconPen}">
+        <GeometryDrawing.Geometry>
+          <PathGeometry Figures="M4,6 A2,2 0 0 1 6,4 L18,4 A2,2 0 0 1 20,6 L20,14 L14,20 L6,20 A2,2 0 0 1 4,18 Z M20,14 L14,14 L14,20" />
+        </GeometryDrawing.Geometry>
+      </GeometryDrawing>
+    </DrawingImage.Drawing>
+  </DrawingImage>
+
+  <DrawingImage x:Key="Icon.Clock">
+    <DrawingImage.Drawing>
+      <GeometryDrawing Pen="{StaticResource IconPen}">
+        <GeometryDrawing.Geometry>
+          <GeometryGroup>
+            <EllipseGeometry Center="12,12" RadiusX="8.5" RadiusY="8.5" />
+            <PathGeometry Figures="M12,7 L12,12 L15.8,14.2" />
+          </GeometryGroup>
+        </GeometryDrawing.Geometry>
+      </GeometryDrawing>
+    </DrawingImage.Drawing>
+  </DrawingImage>
+
+  <DrawingImage x:Key="Icon.Pattern">
+    <DrawingImage.Drawing>
+      <GeometryDrawing Pen="{StaticResource IconPen}">
+        <GeometryDrawing.Geometry>
+          <GeometryGroup>
+            <RectangleGeometry Rect="3,3,18,18" RadiusX="2" RadiusY="2" />
+            <PathGeometry Figures="M3,9 L21,9 M3,15 L21,15 M9,3 L9,21 M15,3 L15,21" />
+          </GeometryGroup>
+        </GeometryDrawing.Geometry>
+      </GeometryDrawing>
+    </DrawingImage.Drawing>
+  </DrawingImage>
+
+  <DrawingImage x:Key="Icon.Database">
+    <DrawingImage.Drawing>
+      <GeometryDrawing Pen="{StaticResource IconPen}">
+        <GeometryDrawing.Geometry>
+          <GeometryGroup>
+            <EllipseGeometry Center="12,6" RadiusX="7.5" RadiusY="3" />
+            <PathGeometry Figures="M4.5,6 L4.5,18 A7.5,3 0 0 0 19.5,18 L19.5,6 M4.5,12 A7.5,3 0 0 0 19.5,12" />
+          </GeometryGroup>
+        </GeometryDrawing.Geometry>
+      </GeometryDrawing>
+    </DrawingImage.Drawing>
+  </DrawingImage>
+
+  <DrawingImage x:Key="Icon.Table">
+    <DrawingImage.Drawing>
+      <GeometryDrawing Pen="{StaticResource IconPen}">
+        <GeometryDrawing.Geometry>
+          <GeometryGroup>
+            <RectangleGeometry Rect="3,4,18,16" RadiusX="2" RadiusY="2" />
+            <PathGeometry Figures="M3,9.5 L21,9.5 M3,15 L21,15 M9.5,9.5 L9.5,20" />
+          </GeometryGroup>
+        </GeometryDrawing.Geometry>
+      </GeometryDrawing>
+    </DrawingImage.Drawing>
+  </DrawingImage>
+
+  <DrawingImage x:Key="Icon.Gallery">
+    <DrawingImage.Drawing>
+      <GeometryDrawing Pen="{StaticResource IconPen}">
+        <GeometryDrawing.Geometry>
+          <GeometryGroup>
+            <RectangleGeometry Rect="3,3,8,8" RadiusX="1.5" RadiusY="1.5" />
+            <RectangleGeometry Rect="13,3,8,8" RadiusX="1.5" RadiusY="1.5" />
+            <RectangleGeometry Rect="3,13,8,8" RadiusX="1.5" RadiusY="1.5" />
+            <RectangleGeometry Rect="13,13,8,8" RadiusX="1.5" RadiusY="1.5" />
+          </GeometryGroup>
+        </GeometryDrawing.Geometry>
+      </GeometryDrawing>
+    </DrawingImage.Drawing>
+  </DrawingImage>
+
+  <DrawingImage x:Key="Icon.ArrowRight">
+    <DrawingImage.Drawing>
+      <GeometryDrawing Pen="{StaticResource IconPen}">
+        <GeometryDrawing.Geometry>
+          <PathGeometry Figures="M4,12 L19,12 M13,6 L19,12 L13,18" />
+        </GeometryDrawing.Geometry>
+      </GeometryDrawing>
+    </DrawingImage.Drawing>
+  </DrawingImage>
+
+  <!-- White variants, for use on the accent-filled primary buttons. -->
+  <Pen x:Key="IconPenWhite" Brush="#FFFFFFFF" Thickness="1.8" StartLineCap="Round" EndLineCap="Round" LineJoin="Round" />
+
+  <DrawingImage x:Key="Icon.PrintWhite">
+    <DrawingImage.Drawing>
+      <GeometryDrawing Pen="{StaticResource IconPenWhite}">
+        <GeometryDrawing.Geometry>
+          <PathGeometry Figures="M8,4 L16,4 L16,9 L8,9 Z M5,9 L19,9 L19,16 L5,16 Z M8,16 L16,16 L16,21 L8,21 Z" />
+        </GeometryDrawing.Geometry>
+      </GeometryDrawing>
+    </DrawingImage.Drawing>
+  </DrawingImage>
+
+  <DrawingImage x:Key="Icon.ArrowRightWhite">
+    <DrawingImage.Drawing>
+      <GeometryDrawing Pen="{StaticResource IconPenWhite}">
+        <GeometryDrawing.Geometry>
+          <PathGeometry Figures="M4,12 L19,12 M13,6 L19,12 L13,18" />
+        </GeometryDrawing.Geometry>
+      </GeometryDrawing>
+    </DrawingImage.Drawing>
+  </DrawingImage>
+
+  <!-- White-on-accent variant for the app logo tile. -->
+  <DrawingImage x:Key="Icon.LogoGlyph">
+    <DrawingImage.Drawing>
+      <GeometryDrawing Brush="#FFFFFFFF">
+        <GeometryDrawing.Geometry>
+          <GeometryGroup>
+            <RectangleGeometry Rect="3,3,8,8" RadiusX="2" RadiusY="2" />
+            <RectangleGeometry Rect="13,3,8,8" RadiusX="2" RadiusY="2" />
+            <RectangleGeometry Rect="3,13,8,8" RadiusX="2" RadiusY="2" />
+            <RectangleGeometry Rect="13,13,8,8" RadiusX="2" RadiusY="2" />
+          </GeometryGroup>
+        </GeometryDrawing.Geometry>
+      </GeometryDrawing>
+    </DrawingImage.Drawing>
+  </DrawingImage>
+
 </ResourceDictionary>

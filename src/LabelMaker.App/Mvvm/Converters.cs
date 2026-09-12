@@ -59,6 +59,16 @@ public sealed class NotNullConverter : IValueConverter
         throw new NotSupportedException();
 }
 
+/// <summary>Resolves an icon resource key (e.g. "Icon.Sheet") to the drawing itself, for data-driven lists.</summary>
+public sealed class IconLookupConverter : IValueConverter
+{
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture) =>
+        value is string key ? Application.Current.TryFindResource(key) as ImageSource : null;
+
+    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) =>
+        throw new NotSupportedException();
+}
+
 /// <summary>Picks the locked/unlocked padlock icon for the Objects list' lock-toggle button.</summary>
 public sealed class LockIconConverter : IValueConverter
 {

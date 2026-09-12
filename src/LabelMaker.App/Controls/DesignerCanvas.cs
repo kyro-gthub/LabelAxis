@@ -33,7 +33,7 @@ public sealed class DesignerCanvas : FrameworkElement
     private const double MinZoom = 0.05;
     private const double MaxZoom = 60.0;
 
-    private static readonly Color Accent = Color.FromRgb(0x5A, 0x4F, 0xE0);
+    private static readonly Color Accent = Color.FromRgb(0x2C, 0x6F, 0xE8);
     private static readonly Color GuideColor = Color.FromRgb(0x12, 0xB5, 0xC9);
     private static readonly Color SnapColor = Color.FromRgb(0xFF, 0x2E, 0x88);
 
@@ -343,7 +343,7 @@ public sealed class DesignerCanvas : FrameworkElement
 
     protected override void OnRender(DrawingContext dc)
     {
-        dc.DrawRectangle(new SolidColorBrush(IsDark ? Color.FromRgb(0x15, 0x16, 0x20) : Color.FromRgb(0xE9, 0xEB, 0xF5)), null, new Rect(RenderSize));
+        dc.DrawRectangle(new SolidColorBrush(IsDark ? Color.FromRgb(0x15, 0x16, 0x20) : Color.FromRgb(0xE9, 0xEE, 0xF4)), null, new Rect(RenderSize));
         if (_session is null)
         {
             return;
@@ -397,7 +397,7 @@ public sealed class DesignerCanvas : FrameworkElement
             return;
         }
 
-        var pen = new Pen(new SolidColorBrush(Color.FromArgb(30, 90, 79, 224)), 0.6 / _zoom);
+        var pen = new Pen(new SolidColorBrush(Color.FromArgb(30, 44, 111, 232)), 0.6 / _zoom);
         pen.Freeze();
         for (double x = 0; x <= label.SizeMm.Width + 1e-6; x += stepMm)
         {

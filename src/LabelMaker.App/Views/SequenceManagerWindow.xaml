@@ -1,6 +1,7 @@
 <Window x:Class="LabelMaker.App.Views.SequenceManagerWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Background="{DynamicResource Br.Surface}" TextElement.Foreground="{DynamicResource Br.Text}"
         Title="Sequences" Height="420" Width="620" WindowStartupLocation="CenterOwner">
   <DockPanel Margin="10">
     <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">

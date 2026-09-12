@@ -23,6 +23,7 @@ public partial class MainWindow : Window
     {
         _env = env;
         InitializeComponent();
+        MaximiseFix.Attach(this);
 
         var shell = new DialogService(this, env);
         _vm = new MainViewModel(env, shell);
@@ -51,6 +52,9 @@ public partial class MainWindow : Window
             }
         };
         Title = _vm.Title;
+
+        _vm.DataChanged += (_, _) => RebuildRecordsGrid();
+        RebuildRecordsGrid();
 
         _autoSaveTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(Math.Max(30, env.Settings.AutoSaveSeconds)) };
         _autoSaveTimer.Tick += (_, _) => TryAutoSave();
@@ -118,6 +122,58 @@ public partial class MainWindow : Window
             _vm.Session.SetSelection(_vm.Session.ActiveLabel.Objects))));
 
         return menu;
+    }
+
+    // ---- shell chrome ----------------------------------------------------
+
+    private void OnMinimise(object sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
+
+    private void OnMaximise(object sender, RoutedEventArgs e) =>
+        WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+
+    private void OnClose(object sender, RoutedEventArgs e) => Close();
+
+    /// <summary>Drops the Align / Arrange split-button menu under the button that was clicked.</summary>
+    private void OnAlignMenu(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button { ContextMenu: { } menu } button)
+        {
+            menu.PlacementTarget = button;
+            menu.Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom;
+            menu.IsOpen = true;
+        }
+    }
+
+    /// <summary>Rebuilds the record table's columns from the imported dataset's own headers.</summary>
+    private void RebuildRecordsGrid()
+    {
+        RecordsGrid.Columns.Clear();
+        Core.Data.DataSet? data = _vm.Session.Data;
+        if (data is null || data.Columns.Count == 0)
+        {
+            RecordsGrid.ItemsSource = null;
+            return;
+        }
+
+        RecordsGrid.Columns.Add(new DataGridTextColumn
+        {
+            Header = "#",
+            Binding = new System.Windows.Data.Binding(nameof(Core.Data.DataRecord.SourceRowNumber)),
+            Width = 48,
+        });
+
+        foreach (Core.Data.DataColumn column in data.Columns)
+        {
+            RecordsGrid.Columns.Add(new DataGridTextColumn
+            {
+                Header = column.Name,
+                // DataRecord exposes a string indexer, so the cell reads straight from the row.
+                Binding = new System.Windows.Data.Binding($"[{column.Name}]"),
+                Width = new DataGridLength(1, DataGridLengthUnitType.Star),
+            });
+        }
+
+        RecordsGrid.ItemsSource = data.Rows;
     }
 
     private void OnCanvasContextMenuOpened(object? sender, RoutedEventArgs e) =>

@@ -1,6 +1,7 @@
 <Window x:Class="LabelMaker.App.Views.NewProjectWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Background="{DynamicResource Br.Surface}" TextElement.Foreground="{DynamicResource Br.Text}"
         Title="New Project — choose a label sheet" Height="560" Width="720"
         WindowStartupLocation="CenterOwner">
   <DockPanel Margin="10">
