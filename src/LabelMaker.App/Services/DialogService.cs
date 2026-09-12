@@ -143,8 +143,14 @@ public sealed class DialogService : IShellServices
         new SequenceManagerWindow(_vm.Session) { Owner = _owner }.ShowDialog();
     }
 
-    public void ShowTemplateManager() =>
-        new TemplateManagerWindow(_env) { Owner = _owner }.ShowDialog();
+    public void ShowTemplateManager()
+    {
+        var win = new TemplateManagerWindow(_env) { Owner = _owner };
+        if (win.ShowDialog() == true && win.SelectedTemplate is { } template)
+        {
+            _vm?.ApplyTemplate(template);
+        }
+    }
 
     public void ShowSettings()
     {

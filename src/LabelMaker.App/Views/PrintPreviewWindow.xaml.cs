@@ -60,6 +60,13 @@ public partial class PrintPreviewWindow : Window
             PrintSettings settings = _session.Project.PrintSettings;
             settings.PrintLabelOutlines = ShowOutlines.IsChecked == true;
 
+            // Variable-data mode with nothing imported produces zero sheets, which
+            // would show an empty preview for a document that prints perfectly well.
+            if (settings.Content == PrintContent.VariableData && (_session.Data?.RowCount ?? 0) == 0)
+            {
+                settings.Content = PrintContent.SheetFill;
+            }
+
             string? printer = settings.PrinterName ?? _printServer.DefaultPrinter();
 
             _paginator = settings.Content == PrintContent.Pages
@@ -170,6 +177,13 @@ public partial class PrintPreviewWindow : Window
         if (_pages.Count == 0)
         {
             PageText.Text = "— / —";
+            PageHost.Children.Add(new TextBlock
+            {
+                Text = "Nothing to print with the current settings.\nCheck “What to print” in Print settings.",
+                TextAlignment = TextAlignment.Center,
+                Margin = new Thickness(60),
+                Foreground = (Brush)FindResource("Br.TextMuted"),
+            });
             return;
         }
 

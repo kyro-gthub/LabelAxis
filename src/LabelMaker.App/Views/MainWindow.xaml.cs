@@ -88,7 +88,7 @@ public partial class MainWindow : Window
 
         menu.Items.Add(Item("Cu_t", _vm.CutCommand, "Ctrl+X"));
         menu.Items.Add(Item("_Copy", _vm.CopyCommand, "Ctrl+C"));
-        menu.Items.Add(Item("_Paste here", _vm.PasteCommand, "Ctrl+V"));
+        menu.Items.Add(Item("_Paste here", _vm.PasteHereCommand, "Ctrl+V"));
         menu.Items.Add(Item("_Duplicate", _vm.DuplicateCommand, "Ctrl+D"));
         menu.Items.Add(Item("De_lete", _vm.DeleteCommand, "Del"));
         menu.Items.Add(new Separator());

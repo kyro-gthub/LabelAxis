@@ -3,34 +3,112 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Style="{StaticResource AppWindow}"
         Background="{DynamicResource Br.Surface}" TextElement.Foreground="{DynamicResource Br.Text}"
-        Title="Formtec Template Manager" Height="560" Width="820" WindowStartupLocation="CenterOwner">
-  <DockPanel Margin="10">
-    <DockPanel DockPanel.Dock="Top" Margin="0,0,0,8">
-      <TextBlock Text="Search:" VerticalAlignment="Center" Margin="0,0,8,0" />
-      <TextBox x:Name="SearchBox" />
-    </DockPanel>
-    <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
-      <Button Content="Import JSON…" Padding="12,4" Click="OnImport" />
-      <Button Content="Import CSV…" Padding="12,4" Margin="8,0,0,0" Click="OnImportCsv" />
-      <Button Content="Export selected JSON…" Padding="12,4" Margin="8,0,0,0" Click="OnExport" />
-      <Button Content="Export all CSV…" Padding="12,4" Margin="8,0,0,0" Click="OnExportCsv" />
-      <Button Content="Close" Padding="12,4" Margin="8,0,0,0" IsCancel="True" />
-    </StackPanel>
-    <Grid>
-      <Grid.ColumnDefinitions><ColumnDefinition Width="1.4*" /><ColumnDefinition Width="8" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
-      <ListView x:Name="List" Grid.Column="0" SelectionChanged="OnSel">
-        <ListView.View>
-          <GridView>
-            <GridViewColumn Header="ID" Width="150" DisplayMemberBinding="{Binding Id}" />
-            <GridViewColumn Header="Brand" Width="70" DisplayMemberBinding="{Binding Brand}" />
-            <GridViewColumn Header="Grid" Width="60" DisplayMemberBinding="{Binding GridText}" />
-            <GridViewColumn Header="Label mm" Width="90" DisplayMemberBinding="{Binding LabelText}" />
-            <GridViewColumn Header="User" Width="45" DisplayMemberBinding="{Binding UserMark}" />
-          </GridView>
-        </ListView.View>
-      </ListView>
-      <TextBox Grid.Column="2" x:Name="Json" IsReadOnly="True" FontFamily="Consolas" TextWrapping="NoWrap"
-               VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" />
-    </Grid>
+        Title="Label manager" Height="640" Width="1000" MinHeight="480" MinWidth="820"
+        WindowStartupLocation="CenterOwner">
+  <DockPanel>
+
+    <!-- action bar -->
+    <Border DockPanel.Dock="Bottom" Background="{DynamicResource Br.Bg}"
+            BorderBrush="{DynamicResource Br.Border}" BorderThickness="0,1,0,0" Padding="14,10">
+      <DockPanel>
+        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+          <Button Content="Close" Style="{StaticResource GhostButton}" IsCancel="True" Margin="0,0,8,0" />
+          <Button x:Name="UseButton" Content="Use this sheet" Style="{StaticResource PrimaryButton}"
+                  IsDefault="True" Click="OnUse" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal">
+          <Button Content="Import JSON…" Style="{StaticResource GhostButton}" Margin="0,0,8,0" Click="OnImport" />
+          <Button Content="Import CSV…" Style="{StaticResource GhostButton}" Margin="0,0,8,0" Click="OnImportCsv" />
+          <Button Content="Export JSON…" Style="{StaticResource GhostButton}" Margin="0,0,8,0" Click="OnExport" />
+          <Button Content="Export all CSV…" Style="{StaticResource GhostButton}" Click="OnExportCsv" />
+        </StackPanel>
+      </DockPanel>
+    </Border>
+
+    <!-- categories -->
+    <Border DockPanel.Dock="Left" Width="236" Background="{DynamicResource Br.Bg}"
+            BorderBrush="{DynamicResource Br.Border}" BorderThickness="0,0,1,0">
+      <DockPanel>
+        <Border DockPanel.Dock="Top" Style="{StaticResource SearchField}" Margin="14,14,14,10">
+          <DockPanel>
+            <Image DockPanel.Dock="Left" Source="{StaticResource Icon.Search}" Width="15" Height="15" Margin="2,0,8,0" />
+            <TextBox x:Name="SearchBox" Style="{StaticResource PlainTextBox}" Tag="Search brand, code, size…" />
+          </DockPanel>
+        </Border>
+        <ListBox x:Name="Categories" Style="{StaticResource SidebarList}" Margin="8,0,8,8"
+                 SelectionChanged="OnCategory">
+          <ListBox.ItemContainerStyle>
+            <Style TargetType="ListBoxItem" BasedOn="{StaticResource SidebarItem}" />
+          </ListBox.ItemContainerStyle>
+          <ListBox.ItemTemplate>
+            <DataTemplate>
+              <DockPanel>
+                <Border DockPanel.Dock="Left" Width="32" Height="32" CornerRadius="9"
+                        Background="{DynamicResource Br.AccentSoft}" Margin="0,0,10,0">
+                  <Image Width="16" Height="16" Source="{Binding IconKey, Converter={StaticResource IconLookup}}" />
+                </Border>
+                <TextBlock DockPanel.Dock="Right" Text="{Binding Count}" VerticalAlignment="Center"
+                           FontFamily="{StaticResource Font.UiSemiBold}" FontSize="12"
+                           Foreground="{DynamicResource Br.TextMuted}" Margin="8,0,2,0" />
+                <StackPanel VerticalAlignment="Center">
+                  <TextBlock Text="{Binding Title}" FontFamily="{StaticResource Font.UiSemiBold}" FontSize="12.5"
+                             TextTrimming="CharacterEllipsis" />
+                  <TextBlock Text="{Binding Subtitle}" FontSize="11" Foreground="{DynamicResource Br.TextMuted}"
+                             TextTrimming="CharacterEllipsis" Margin="0,2,0,0" />
+                </StackPanel>
+              </DockPanel>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+      </DockPanel>
+    </Border>
+
+    <!-- preview -->
+    <Border DockPanel.Dock="Right" Width="340" Background="{DynamicResource Br.Bg}"
+            BorderBrush="{DynamicResource Br.Border}" BorderThickness="1,0,0,0">
+      <DockPanel Margin="14">
+        <TextBlock DockPanel.Dock="Top" Text="SHEET PREVIEW" Style="{StaticResource PanelSectionHeader}" />
+        <Border DockPanel.Dock="Bottom" Style="{StaticResource InsetPanel}" Padding="12,10" Margin="0,12,0,0">
+          <StackPanel>
+            <TextBlock x:Name="PreviewTitle" FontFamily="{StaticResource Font.UiSemiBold}" FontSize="13"
+                       TextWrapping="Wrap" />
+            <TextBlock x:Name="PreviewDetail" FontSize="12" Margin="0,6,0,0" TextWrapping="Wrap"
+                       Foreground="{DynamicResource Br.Text2}" />
+          </StackPanel>
+        </Border>
+        <Border Background="{DynamicResource CanvasBackground}" BorderBrush="{DynamicResource Br.Border}"
+                BorderThickness="1" CornerRadius="8" Padding="14">
+          <Grid x:Name="PreviewHost" />
+        </Border>
+      </DockPanel>
+    </Border>
+
+    <!-- sheet list -->
+    <ListBox x:Name="List" Margin="14" BorderThickness="1" BorderBrush="{DynamicResource Br.Border}"
+             Background="{DynamicResource Br.Bg}" HorizontalContentAlignment="Stretch"
+             SelectionChanged="OnSel">
+      <ListBox.InputBindings>
+        <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding UseCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
+      </ListBox.InputBindings>
+      <ListBox.ItemTemplate>
+        <DataTemplate>
+          <DockPanel Margin="4,6">
+            <Border DockPanel.Dock="Left" Width="34" Height="34" CornerRadius="9" Margin="0,0,12,0"
+                    Background="{DynamicResource Br.AccentSoft}">
+              <Image Width="17" Height="17" Source="{StaticResource Icon.Sheet}" />
+            </Border>
+            <TextBlock DockPanel.Dock="Right" Text="{Binding SizeText}" VerticalAlignment="Center"
+                       FontFamily="{StaticResource Font.Mono}" FontSize="12"
+                       Foreground="{DynamicResource Br.Text2}" Margin="10,0,4,0" />
+            <StackPanel VerticalAlignment="Center">
+              <TextBlock Text="{Binding Title}" FontFamily="{StaticResource Font.UiSemiBold}" FontSize="13"
+                         TextTrimming="CharacterEllipsis" />
+              <TextBlock Text="{Binding Subtitle}" FontSize="11.5" Foreground="{DynamicResource Br.TextMuted}"
+                         TextTrimming="CharacterEllipsis" Margin="0,2,0,0" />
+            </StackPanel>
+          </DockPanel>
+        </DataTemplate>
+      </ListBox.ItemTemplate>
+    </ListBox>
   </DockPanel>
 </Window>

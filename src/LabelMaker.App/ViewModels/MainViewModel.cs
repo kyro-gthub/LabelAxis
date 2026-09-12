@@ -362,7 +362,8 @@ public sealed class MainViewModel : ObservableObject
         }
     }
 
-    private void ApplyTemplate(LabelTemplate template)
+    /// <summary>Switches the project to another label sheet. Also used by the Label manager's "Use this sheet".</summary>
+    public void ApplyTemplate(LabelTemplate template)
     {
         _session.Project.Template = template;
         _session.Project.MasterLabel.SizeMm = new SizeMm(template.Grid.LabelWidthMm, template.Grid.LabelHeightMm);
@@ -581,6 +582,7 @@ public sealed class MainViewModel : ObservableObject
     public RelayCommand CopyCommand { get; private set; } = null!;
     public RelayCommand CutCommand { get; private set; } = null!;
     public RelayCommand PasteCommand { get; private set; } = null!;
+    public RelayCommand PasteHereCommand { get; private set; } = null!;
     public RelayCommand GroupCommand { get; private set; } = null!;
     public RelayCommand UngroupCommand { get; private set; } = null!;
     public RelayCommand AddPageCommand { get; private set; } = null!;
@@ -661,7 +663,8 @@ public sealed class MainViewModel : ObservableObject
         DuplicateCommand = new RelayCommand(DuplicateSelection, () => _session.Selection.Count > 0);
         CopyCommand = new RelayCommand(() => ObjectClipboard.Set(_session.Selection), () => _session.Selection.Count > 0);
         CutCommand = new RelayCommand(() => { ObjectClipboard.Set(_session.Selection); DeleteSelection(); }, () => _session.Selection.Count > 0);
-        PasteCommand = new RelayCommand(PasteObjects, () => ObjectClipboard.HasContent);
+        PasteCommand = new RelayCommand(() => PasteObjects(), () => ObjectClipboard.HasContent);
+        PasteHereCommand = new RelayCommand(() => PasteObjects(atContextPoint: true), () => ObjectClipboard.HasContent);
         GroupCommand = new RelayCommand(GroupSelection, () => _session.Selection.Count > 1);
         UngroupCommand = new RelayCommand(UngroupSelection, () => _session.Selection.Any(o => o.GroupId is not null));
 
@@ -1143,9 +1146,14 @@ public sealed class MainViewModel : ObservableObject
         RebuildObjectList();
     }
 
-    private void PasteObjects()
+    /// <summary>
+    /// Ctrl+V drops a copy near the original; "Paste here" on the canvas menu passes
+    /// true so it lands at the click point. The canvas remembers the last right-click
+    /// forever, so plain Ctrl+V must not use it or the paste jumps somewhere stale.
+    /// </summary>
+    private void PasteObjects(bool atContextPoint = false)
     {
-        var atMm = _canvas?.ContextMm;
+        var atMm = atContextPoint ? _canvas?.ContextMm : null;
         IReadOnlyList<LabelObject> pasted = atMm is { } p
             ? ObjectClipboard.PasteAt(new Core.Units.PointMm(p.X, p.Y))
             : ObjectClipboard.Paste();

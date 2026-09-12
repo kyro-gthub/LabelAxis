@@ -28,6 +28,11 @@ public partial class PrintSettingsWindow : Window
 
         LoadFrom(session.Project.PrintSettings);
 
+        LabelTemplate? t = session.Project.Template;
+        HeaderSubtitle.Text = t is null
+            ? "No sheet template selected"
+            : $"{t.Brand} {t.ProductCode} · {t.Grid.Columns} × {t.Grid.Rows} per {t.EffectivePage.Name}";
+
         foreach (var rb in new[] { ContentSheetFill, ContentVariableData, ContentPages, RecordsAll, RecordsRange, RecordsSelected })
         {
             rb.Checked += (_, _) => UpdateSummary();
@@ -39,6 +44,13 @@ public partial class PrintSettingsWindow : Window
         }
 
         UpdateSummary();
+    }
+
+    /// <summary>Saves what is on screen, then hands off to the full-sheet preview.</summary>
+    private void OnPreview(object sender, RoutedEventArgs e)
+    {
+        ApplyTo(_session.Project.PrintSettings);
+        _shell.ShowPrintPreview();
     }
 
     private void LoadFrom(PrintSettings s)
