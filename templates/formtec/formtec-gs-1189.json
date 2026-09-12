@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-gs-1189",
+  "brand": "Formtec",
+  "productCode": "GS-1189",
+  "name": "Formtec GS-1189 — Multi-purpose sticker label, 189-up",
+  "categories": ["General", "Multi-purpose", "Inventory", "Price labels"],
+  "page": { "size": "A4", "widthMm": 210.0, "heightMm": 297.0 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 7,
+    "rows": 27,
+    "labelWidthMm": 25.0,
+    "labelHeightMm": 10.0,
+    "marginTopMm": 13.5,
+    "marginLeftMm": 10.0,
+    "hGapMm": 2.5,
+    "vGapMm": 0.0,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "Formtec FT-GS-1189 multi-purpose A4 sticker sheet: 189 labels (7x27), each 25x10 mm.",
+  "source": "Product dimensions supplied by user; centered A4 margins and GS-series horizontal spacing inferred from the project catalogue"
+}

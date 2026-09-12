@@ -1,6 +1,7 @@
 <Window x:Class="LabelMaker.App.Views.BulkBarcodeWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Style="{StaticResource AppWindow}"
         Background="{DynamicResource Br.Surface}" TextElement.Foreground="{DynamicResource Br.Text}"
         Title="Bulk Barcode Generator" Height="520" Width="600" WindowStartupLocation="CenterOwner">
   <Grid Margin="12">

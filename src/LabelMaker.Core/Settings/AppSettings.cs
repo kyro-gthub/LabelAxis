@@ -14,6 +14,10 @@ public sealed class AppSettings
         WriteIndented = true,
         Converters = { new JsonStringEnumConverter() },
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+        // System.Text.Json matches property names case-sensitively by default, so a
+        // hand-edited settings.json with "darkTheme" instead of "DarkTheme" would drop
+        // the value silently. This file is meant to be editable, so accept either.
+        PropertyNameCaseInsensitive = true,
     };
 
     public Unit DisplayUnit { get; set; } = Unit.Mm;
