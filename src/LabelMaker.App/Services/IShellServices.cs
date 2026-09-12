@@ -59,8 +59,11 @@ public interface IShellServices
     /// <summary>Change the working label size without starting a new project. Returns true if it changed.</summary>
     bool ShowLabelSize();
 
-    /// <summary>Interactive crop for the selected image. Returns true if the crop changed.</summary>
-    bool ShowImageCrop();
+    /// <summary>
+    /// Interactive crop for <paramref name="image"/>. Returns the chosen normalised
+    /// rectangle, or null on cancel; the caller applies it through the undo stack.
+    /// </summary>
+    (double X, double Y, double Width, double Height)? ShowImageCrop(Core.Model.Objects.ImageObject image);
 
     /// <summary>Colour chooser with palette, RGBA sliders and an eyedropper. Null on cancel.</summary>
     Core.Model.ColorRgba? PickColor(Core.Model.ColorRgba initial, string title);

@@ -229,21 +229,27 @@ public sealed class DialogService : IShellServices
         return win.ShowDialog() == true;
     }
 
-    public bool ShowImageCrop()
+    public (double X, double Y, double Width, double Height)? ShowImageCrop(LabelMaker.Core.Model.Objects.ImageObject image)
     {
-        if (_vm is null || _vm.Session.Selection.FirstOrDefault() is not LabelMaker.Core.Model.Objects.ImageObject image)
+        if (_vm is null)
         {
-            return false;
+            return null;
         }
 
         if (_vm.SheetRenderer.Images.Get(image.AssetId) is not Rendering.WpfDecodedImage decoded)
         {
             Warn("That image could not be decoded, so it cannot be cropped.");
-            return false;
+            return null;
         }
 
         var win = new ImageCropWindow(image, decoded.Original) { Owner = _owner };
-        return win.ShowDialog() == true;
+        if (win.ShowDialog() != true)
+        {
+            return null;
+        }
+
+        System.Windows.Rect r = win.Result;
+        return (r.X, r.Y, r.Width, r.Height);
     }
 
     public LabelMaker.Core.Model.ColorRgba? PickColor(LabelMaker.Core.Model.ColorRgba initial, string title)

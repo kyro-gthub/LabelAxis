@@ -103,10 +103,12 @@ public sealed class DocumentSession
                 SizeMm = ActiveLabel.SizeMm,
             },
         };
-        Project.Pages.Add(page);
-        PagesChanged?.Invoke(this, EventArgs.Empty);
-        MarkDirty();
-        SelectPage(page.Id);
+
+        Execute(new PageStructureCommand(this, "Add page", () =>
+        {
+            Project.Pages.Add(page);
+            ActivePageId = page.Id;
+        }));
         return page;
     }
 
@@ -129,11 +131,12 @@ public sealed class DocumentSession
         copy.Name = source.Name + " copy";
         copy.Document.Name = copy.Name;
 
-        int index = ActivePageId is null ? Project.Pages.Count : Project.Pages.FindIndex(p => p.Id == ActivePageId) + 1;
-        Project.Pages.Insert(Math.Clamp(index, 0, Project.Pages.Count), copy);
-        PagesChanged?.Invoke(this, EventArgs.Empty);
-        MarkDirty();
-        SelectPage(copy.Id);
+        Execute(new PageStructureCommand(this, "Duplicate page", () =>
+        {
+            int index = ActivePageId is null ? Project.Pages.Count : Project.Pages.FindIndex(p => p.Id == ActivePageId) + 1;
+            Project.Pages.Insert(Math.Clamp(index, 0, Project.Pages.Count), copy);
+            ActivePageId = copy.Id;
+        }));
         return copy;
     }
 
@@ -144,35 +147,89 @@ public sealed class DocumentSession
             return false; // the master label cannot be removed
         }
 
-        int idx = Project.Pages.IndexOf(page);
-        Project.Pages.Remove(page);
-        string? next = Project.Pages.Count == 0
-            ? null
-            : Project.Pages[Math.Clamp(idx, 0, Project.Pages.Count - 1)].Id;
-
-        ActivePageId = null; // force a change event even if next is null
-        PagesChanged?.Invoke(this, EventArgs.Empty);
-        MarkDirty();
-        SelectPage(next);
-        ActivePageChanged?.Invoke(this, EventArgs.Empty);
+        Execute(new PageStructureCommand(this, "Remove page", () =>
+        {
+            int idx = Project.Pages.IndexOf(page);
+            Project.Pages.Remove(page);
+            ActivePageId = Project.Pages.Count == 0
+                ? null
+                : Project.Pages[Math.Clamp(idx, 0, Project.Pages.Count - 1)].Id;
+        }));
         return true;
     }
 
     public void RenameActivePage(string name)
     {
-        if (ActivePageId is { } id && Project.Pages.FirstOrDefault(p => p.Id == id) is { } page)
+        Execute(new PageStructureCommand(this, "Rename page", () =>
         {
-            page.Name = name;
-            page.Document.Name = name;
-        }
-        else
+            if (ActivePageId is { } id && Project.Pages.FirstOrDefault(p => p.Id == id) is { } page)
+            {
+                page.Name = name;
+                page.Document.Name = name;
+            }
+            else
+            {
+                // No standalone page selected: the master label is what is on screen.
+                Project.MasterLabel.Name = name;
+            }
+        }));
+    }
+
+    /// <summary>
+    /// Undo for page-list edits (add, duplicate, remove, rename). It snapshots the
+    /// page order, every page's name and the active page before and after the
+    /// change; the pages themselves are kept by reference, so a removed page comes
+    /// back with its objects intact.
+    /// </summary>
+    private sealed class PageStructureCommand : IUndoableCommand
+    {
+        private readonly DocumentSession _session;
+        private readonly Snapshot _before;
+        private readonly Snapshot _after;
+
+        public PageStructureCommand(DocumentSession session, string label, Action mutate)
         {
-            // No standalone page selected: the master label is what is on screen.
-            Project.MasterLabel.Name = name;
+            _session = session;
+            Label = label;
+            _before = Snapshot.Capture(session);
+            mutate();
+            _after = Snapshot.Capture(session);
         }
 
-        PagesChanged?.Invoke(this, EventArgs.Empty);
-        MarkDirty();
+        public string Label { get; }
+
+        public void Do() => _after.Restore(_session);
+
+        public void Undo() => _before.Restore(_session);
+
+        private sealed record Snapshot(
+            List<LabelPage> Pages, List<string> PageNames, string MasterName, string? ActivePageId)
+        {
+            public static Snapshot Capture(DocumentSession s) => new(
+                s.Project.Pages.ToList(),
+                s.Project.Pages.Select(p => p.Name).ToList(),
+                s.Project.MasterLabel.Name,
+                s.ActivePageId);
+
+            public void Restore(DocumentSession s)
+            {
+                s.Project.Pages.Clear();
+                s.Project.Pages.AddRange(Pages);
+                for (int i = 0; i < Pages.Count; i++)
+                {
+                    Pages[i].Name = PageNames[i];
+                    Pages[i].Document.Name = PageNames[i];
+                }
+
+                s.Project.MasterLabel.Name = MasterName;
+                s.ActivePageId = ActivePageId is not null && Pages.Any(p => p.Id == ActivePageId) ? ActivePageId : null;
+                s.Selection = Array.Empty<LabelObject>();
+
+                s.PagesChanged?.Invoke(s, EventArgs.Empty);
+                s.ActivePageChanged?.Invoke(s, EventArgs.Empty);
+                s.SelectionChanged?.Invoke(s, EventArgs.Empty);
+            }
+        }
     }
 
     public void MarkDirty()

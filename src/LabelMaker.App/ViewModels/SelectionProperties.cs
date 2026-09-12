@@ -751,12 +751,12 @@ public sealed class SelectionProperties : ObservableObject
     {
         if (Obj is ImageObject i)
         {
-            i.Adjustments.CropX = 0;
-            i.Adjustments.CropY = 0;
-            i.Adjustments.CropWidth = 1;
-            i.Adjustments.CropHeight = 1;
-            _session.MarkDirty();
-            RefreshAll();
+            ImageAdjustments next = i.Adjustments.Clone();
+            next.CropX = 0;
+            next.CropY = 0;
+            next.CropWidth = 1;
+            next.CropHeight = 1;
+            Set("Reset crop", () => i.Adjustments, v => i.Adjustments = v, next);
         }
     }
 

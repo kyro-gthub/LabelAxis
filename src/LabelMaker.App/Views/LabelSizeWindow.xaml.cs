@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using LabelMaker.App.Services;
+using LabelMaker.Core.Editing;
 using LabelMaker.Core.Formtec;
 using LabelMaker.Core.Model;
 using LabelMaker.Core.Units;
@@ -95,11 +96,12 @@ public partial class LabelSizeWindow : Window
         }
 
         var target = new SizeMm(Math.Round(_widthMm, 3), Math.Round(_heightMm, 3));
+        var commands = new List<IUndoableCommand>();
 
         foreach (LabelDocument doc in DocumentsToChange())
         {
             SizeMm from = doc.SizeMm;
-            doc.SizeMm = target;
+            commands.Add(new SetPropertyCommand<SizeMm>("Label size", () => doc.SizeMm, v => doc.SizeMm = v, target));
 
             if (ScaleObjects.IsChecked == true && from.Width > 0 && from.Height > 0)
             {
@@ -108,17 +110,21 @@ public partial class LabelSizeWindow : Window
                 foreach (LabelObject obj in doc.Objects)
                 {
                     RectMm b = obj.Bounds;
-                    obj.Bounds = new RectMm(b.X * sx, b.Y * sy, b.Width * sx, b.Height * sy);
+                    commands.Add(new TransformObjectCommand(
+                        obj, new RectMm(b.X * sx, b.Y * sy, b.Width * sx, b.Height * sy), obj.RotationDegrees));
                 }
             }
         }
 
         if (RefitSheet.IsChecked == true && _session.Project.Template is { } template)
         {
-            _session.Project.Template = RefitTemplate(template, target);
+            ProjectModel project = _session.Project;
+            commands.Add(new SetPropertyCommand<LabelTemplate?>(
+                "Re-fit sheet", () => project.Template, v => project.Template = v, RefitTemplate(template, target)));
         }
 
-        _session.MarkDirty();
+        // One undo step for the whole resize, however many pages and objects it touched.
+        _session.Execute(new CompositeCommand("Change label size", commands));
         DialogResult = true;
     }
 
