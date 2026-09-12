@@ -702,6 +702,36 @@ public sealed class SelectionProperties : ObservableObject
 
     public bool HasCrop => (Obj as ImageObject)?.Adjustments.HasCrop == true;
 
+    public static IReadOnlyList<ImageClipShape> ClipShapes { get; } = Enum.GetValues<ImageClipShape>();
+
+    /// <summary>Crop-to-shape: clips the image to a circle or rounded box.</summary>
+    public ImageClipShape ClipShape
+    {
+        get => (Obj as ImageObject)?.ClipShape ?? ImageClipShape.None;
+        set
+        {
+            if (Obj is ImageObject i)
+            {
+                Set(nameof(ClipShape), () => i.ClipShape, v => i.ClipShape = v, value);
+                OnPropertyChanged(nameof(IsRoundedClip));
+            }
+        }
+    }
+
+    public bool IsRoundedClip => (Obj as ImageObject)?.ClipShape == ImageClipShape.RoundedRectangle;
+
+    public double ClipCornerRadiusMm
+    {
+        get => Out((Obj as ImageObject)?.ClipCornerRadiusMm ?? 3);
+        set
+        {
+            if (Obj is ImageObject i)
+            {
+                Set(nameof(ClipCornerRadiusMm), () => i.ClipCornerRadiusMm, v => i.ClipCornerRadiusMm = Math.Max(0, v), In(value));
+            }
+        }
+    }
+
     /// <summary>Effective print resolution at the current placed size — under ~200 DPI looks soft.</summary>
     public string ImageResolution
     {

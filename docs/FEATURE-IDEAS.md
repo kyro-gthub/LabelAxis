@@ -7,6 +7,12 @@ Read alongside [OMISSIONS.md](OMISSIONS.md), which records what was left out of
 v1 **on purpose**; a few items below are omissions worth revisiting now, and they
 say so.
 
+> **Shipped since this list was written:** the Label manager (brand categories,
+> sheet previews, "use this sheet"), a full-sheet print preview, image cropping
+> and crop-to-shape, gradient fills, mm/cm/in/pt/px units, modifier-key
+> transforms, the shapes and lines menus, and changing the label size mid-project.
+> Items 1–5 below are still open.
+
 ---
 
 ## Tier 1 — biggest gain for the effort

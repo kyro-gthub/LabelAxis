@@ -18,6 +18,14 @@ public enum ImageFitMode
     Tile = 4,
 }
 
+/// <summary>Outline the image is clipped to ("crop to a shape").</summary>
+public enum ImageClipShape
+{
+    None = 0,
+    Ellipse = 1,
+    RoundedRectangle = 2,
+}
+
 /// <summary>Non-destructive per-image adjustments applied at render time.</summary>
 public sealed class ImageAdjustments
 {
@@ -59,6 +67,12 @@ public sealed class ImageObject : LabelObject
     public ImageFitMode FitMode { get; set; } = ImageFitMode.Fit;
     public ImageAdjustments Adjustments { get; set; } = new();
 
+    /// <summary>Clip the image to a circle or rounded box — a "shape crop".</summary>
+    public ImageClipShape ClipShape { get; set; } = ImageClipShape.None;
+
+    /// <summary>Corner radius in millimetres for <see cref="ImageClipShape.RoundedRectangle"/>.</summary>
+    public double ClipCornerRadiusMm { get; set; } = 3.0;
+
     /// <summary>Draw at reduced alpha as a watermark behind other objects.</summary>
     public bool IsWatermark { get; set; }
 
@@ -88,6 +102,8 @@ public sealed class ImageObject : LabelObject
             SourceFileName = SourceFileName,
             FitMode = FitMode,
             Adjustments = Adjustments.Clone(),
+            ClipShape = ClipShape,
+            ClipCornerRadiusMm = ClipCornerRadiusMm,
             IsWatermark = IsWatermark,
             SourcePixelWidth = SourcePixelWidth,
             SourcePixelHeight = SourcePixelHeight,

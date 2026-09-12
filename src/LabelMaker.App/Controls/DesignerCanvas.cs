@@ -551,7 +551,7 @@ public sealed class DesignerCanvas : FrameworkElement
             }
 
             dc.DrawLine(tick, new Point(x, RulerSize - 6), new Point(x, RulerSize));
-            var ft = Label(mm.ToString("0", CultureInfo.InvariantCulture), textBrush);
+            var ft = Label(RulerLabel(mm), textBrush);
             dc.DrawText(ft, new Point(x + 2, 2));
         }
 
@@ -571,7 +571,7 @@ public sealed class DesignerCanvas : FrameworkElement
             }
 
             dc.DrawLine(tick, new Point(RulerSize - 6, y), new Point(RulerSize, y));
-            var ft = Label(mm.ToString("0", CultureInfo.InvariantCulture), textBrush);
+            var ft = Label(RulerLabel(mm), textBrush);
             dc.PushTransform(new RotateTransform(-90, RulerSize - 12, y - 2));
             dc.DrawText(ft, new Point(RulerSize - 12, y - 2));
             dc.Pop();
@@ -591,6 +591,25 @@ public sealed class DesignerCanvas : FrameworkElement
         }
 
         _ = label;
+    }
+
+    /// <summary>
+    /// Ruler ticks are laid out in millimetres (the document unit) but labelled in
+    /// whatever unit the user picked, so the marks stay on round physical positions.
+    /// </summary>
+    private string RulerLabel(double millimetres)
+    {
+        Unit unit = Settings?.DisplayUnit ?? Unit.Mm;
+        double dpi = Math.Max(1, Settings?.ScreenDpiCalibration ?? 96);
+        double value = UnitConverter.FromMillimetres(millimetres, unit, dpi);
+        string format = unit switch
+        {
+            Unit.Cm => "0.#",
+            Unit.Inch => "0.##",
+            _ => "0",
+        };
+
+        return value.ToString(format, CultureInfo.InvariantCulture);
     }
 
     private double NiceStep()
