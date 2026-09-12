@@ -187,6 +187,26 @@ public sealed class DialogService : IShellServices
         }
     }
 
+    private FindReplaceWindow? _findReplace;
+
+    public void ShowFindReplace(bool replace, string? initialQuery)
+    {
+        if (_vm is null)
+        {
+            return;
+        }
+
+        // One window for the session: reopening keeps the query, options and results.
+        if (_findReplace is null || !_findReplace.IsLoaded)
+        {
+            _findReplace = new FindReplaceWindow(_vm.Session) { Owner = _owner };
+            _findReplace.Closed += (_, _) => _findReplace = null;
+            _findReplace.Show();
+        }
+
+        _findReplace.Present(replace, initialQuery);
+    }
+
     public bool ShowPrintDialog()
     {
         if (_vm is null)
