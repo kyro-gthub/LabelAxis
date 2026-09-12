@@ -123,6 +123,63 @@ public sealed class PdfDrawingSurface : IDrawingSurface
         }
     }
 
+    public void FillRectangleGradient(
+        RectMm r, ColorRgba from, ColorRgba to, double angleDegrees, double cornerRadiusMm = 0)
+    {
+        XBrush brush = Gradient(r, from, to, angleDegrees);
+        if (cornerRadiusMm > 0)
+        {
+            _gfx.DrawRoundedRectangle(brush, Pt(r), new XSize(cornerRadiusMm * MmToPt * 2, cornerRadiusMm * MmToPt * 2));
+        }
+        else
+        {
+            _gfx.DrawRectangle(brush, Pt(r));
+        }
+    }
+
+    public void FillEllipseGradient(RectMm r, ColorRgba from, ColorRgba to, double angleDegrees) =>
+        _gfx.DrawEllipse(Gradient(r, from, to, angleDegrees), Pt(r));
+
+    public void FillPolygonGradient(
+        IReadOnlyList<PointMm> points, ColorRgba from, ColorRgba to, double angleDegrees,
+        ColorRgba stroke, double strokeWidthMm)
+    {
+        if (points.Count < 3)
+        {
+            return;
+        }
+
+        double minX = points.Min(p => p.X), maxX = points.Max(p => p.X);
+        double minY = points.Min(p => p.Y), maxY = points.Max(p => p.Y);
+        var bounds = new RectMm(minX, minY, maxX - minX, maxY - minY);
+
+        XPoint[] pts = points.Select(p => new XPoint(p.X * MmToPt, p.Y * MmToPt)).ToArray();
+        XPen? pen = stroke.IsTransparent || strokeWidthMm <= 0 ? null : Pen(stroke, strokeWidthMm, DashStyle.Solid);
+        _gfx.DrawPolygon(pen, Gradient(bounds, from, to, angleDegrees), pts, XFillMode.Alternate);
+    }
+
+    /// <summary>
+    /// PdfSharp only offers four gradient directions, so the requested angle snaps to
+    /// the nearest of them. Everything else about the fill is exact.
+    /// </summary>
+    private XBrush Gradient(RectMm r, ColorRgba from, ColorRgba to, double angleDegrees)
+    {
+        double a = ((angleDegrees % 360) + 360) % 360;
+        XLinearGradientMode mode = a switch
+        {
+            < 22.5 or >= 337.5 => XLinearGradientMode.Horizontal,
+            < 67.5 => XLinearGradientMode.ForwardDiagonal,
+            < 112.5 => XLinearGradientMode.Vertical,
+            < 157.5 => XLinearGradientMode.BackwardDiagonal,
+            < 202.5 => XLinearGradientMode.Horizontal,
+            < 247.5 => XLinearGradientMode.ForwardDiagonal,
+            < 292.5 => XLinearGradientMode.Vertical,
+            _ => XLinearGradientMode.BackwardDiagonal,
+        };
+
+        return new XLinearGradientBrush(Pt(r), ApplyOpacity(from), ApplyOpacity(to), mode);
+    }
+
     public void FillEllipse(RectMm r, ColorRgba fill)
     {
         if (!fill.IsTransparent)

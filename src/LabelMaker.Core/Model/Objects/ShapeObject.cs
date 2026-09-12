@@ -30,6 +30,17 @@ public sealed class ShapeObject : LabelObject
     public ColorRgba Fill { get; set; } = ColorRgba.Transparent;
     public ColorRgba Stroke { get; set; } = ColorRgba.Black;
 
+    /// <summary>
+    /// Second stop of a linear gradient from <see cref="Fill"/>. Null means a plain
+    /// solid fill, which is what every shape is until a gradient is chosen.
+    /// </summary>
+    public ColorRgba? GradientTo { get; set; }
+
+    /// <summary>Gradient direction in degrees clockwise from "left to right".</summary>
+    public double GradientAngleDegrees { get; set; } = 90;
+
+    public bool HasGradient => GradientTo is not null;
+
     /// <summary>Stroke thickness in millimetres.</summary>
     public double StrokeWidthMm { get; set; } = 0.25;
 
@@ -59,6 +70,8 @@ public sealed class ShapeObject : LabelObject
             Shape = Shape,
             Fill = Fill,
             Stroke = Stroke,
+            GradientTo = GradientTo,
+            GradientAngleDegrees = GradientAngleDegrees,
             StrokeWidthMm = StrokeWidthMm,
             DashStyle = DashStyle,
             CornerRadiusMm = CornerRadiusMm,

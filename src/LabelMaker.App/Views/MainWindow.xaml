@@ -837,6 +837,27 @@
                     </ItemsControl.ItemTemplate>
                   </ItemsControl>
 
+                  <!-- Gradient -->
+                  <CheckBox Content="Gradient fill" IsChecked="{Binding UseGradient}" Margin="0,4,0,3" />
+                  <StackPanel Visibility="{Binding UseGradient, Converter={StaticResource BoolToVis}}">
+                    <DockPanel Margin="0,3">
+                      <TextBlock Text="To colour" Style="{StaticResource FieldLabel}" Width="86" />
+                      <Button DockPanel.Dock="Right" Content="…" MinWidth="30" Padding="6,4" Margin="6,0,0,0"
+                              Style="{StaticResource GhostButton}"
+                              Command="{Binding DataContext.PickColorCommand, RelativeSource={RelativeSource AncestorType=ScrollViewer}}"
+                              CommandParameter="gradient" />
+                      <TextBox Text="{Binding GradientToHex, UpdateSourceTrigger=LostFocus}" FontFamily="{StaticResource Font.Mono}" />
+                    </DockPanel>
+                    <DockPanel Margin="0,3">
+                      <TextBlock Text="Angle" Style="{StaticResource FieldLabel}" Width="86" />
+                      <TextBlock DockPanel.Dock="Right" Width="38" TextAlignment="Right" FontSize="11.5"
+                                 Foreground="{DynamicResource Br.TextMuted}" Text="{Binding GradientAngle, StringFormat={}{0:0}°}" />
+                      <Slider Minimum="0" Maximum="360" Value="{Binding GradientAngle}" Margin="0,0,8,0" />
+                    </DockPanel>
+                    <Border Height="26" CornerRadius="7" Margin="86,2,0,6" Background="{Binding GradientPreview}"
+                            BorderBrush="{DynamicResource Br.BorderStrong}" BorderThickness="1" />
+                  </StackPanel>
+
                   <!-- Stroke -->
                   <DockPanel Margin="0,3">
                     <TextBlock Text="Stroke" Style="{StaticResource FieldLabel}" Width="86" />

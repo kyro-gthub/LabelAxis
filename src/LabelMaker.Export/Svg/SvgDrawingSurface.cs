@@ -22,6 +22,7 @@ public sealed class SvgDrawingSurface : IDrawingSurface
     private readonly double _heightMm;
     private int _openGroups;
     private int _clipCounter;
+    private int _gradientCounter;
 
     public SvgDrawingSurface(double widthMm, double heightMm, ITextMeasurer measurer, IImageSource images)
     {
@@ -146,6 +147,71 @@ public sealed class SvgDrawingSurface : IDrawingSurface
 
         _body.Append("\" fill=\"none\" stroke=\"").Append(Rgb(stroke)).Append("\" stroke-width=\"").Append(F(w))
             .Append("\"").Append(Dash(dash, w)).Append("/>");
+    }
+
+    public void FillRectangleGradient(
+        RectMm r, ColorRgba from, ColorRgba to, double angleDegrees, double cornerRadiusMm = 0)
+    {
+        string id = Gradient(from, to, angleDegrees);
+        _body.Append("<rect x=\"").Append(F(r.X)).Append("\" y=\"").Append(F(r.Y)).Append("\" width=\"").Append(F(r.Width))
+            .Append("\" height=\"").Append(F(r.Height));
+        if (cornerRadiusMm > 0)
+        {
+            _body.Append("\" rx=\"").Append(F(cornerRadiusMm));
+        }
+
+        _body.Append("\" fill=\"url(#").Append(id).Append(")\"/>");
+    }
+
+    public void FillEllipseGradient(RectMm r, ColorRgba from, ColorRgba to, double angleDegrees)
+    {
+        string id = Gradient(from, to, angleDegrees);
+        _body.Append("<ellipse cx=\"").Append(F(r.Center.X)).Append("\" cy=\"").Append(F(r.Center.Y)).Append("\" rx=\"")
+            .Append(F(r.Width / 2)).Append("\" ry=\"").Append(F(r.Height / 2))
+            .Append("\" fill=\"url(#").Append(id).Append(")\"/>");
+    }
+
+    public void FillPolygonGradient(
+        IReadOnlyList<PointMm> points, ColorRgba from, ColorRgba to, double angleDegrees,
+        ColorRgba stroke, double w)
+    {
+        string id = Gradient(from, to, angleDegrees);
+        _body.Append("<polygon points=\"");
+        foreach (PointMm p in points)
+        {
+            _body.Append(F(p.X)).Append(',').Append(F(p.Y)).Append(' ');
+        }
+
+        _body.Append("\" fill=\"url(#").Append(id).Append(')').Append('"');
+        if (w > 0 && !stroke.IsTransparent)
+        {
+            _body.Append(" stroke=\"").Append(Rgb(stroke)).Append("\" stroke-width=\"").Append(F(w)).Append('"');
+        }
+
+        _body.Append("/>");
+    }
+
+    /// <summary>
+    /// Emits a &lt;linearGradient&gt; in objectBoundingBox units and returns its id,
+    /// so the gradient follows the shape whatever its size.
+    /// </summary>
+    private string Gradient(ColorRgba from, ColorRgba to, double angleDegrees)
+    {
+        string id = $"grad{_gradientCounter++}";
+        double radians = angleDegrees * Math.PI / 180.0;
+        double dx = Math.Cos(radians) / 2.0;
+        double dy = Math.Sin(radians) / 2.0;
+
+        _defs.Append("<linearGradient id=\"").Append(id).Append('"')
+            .Append(" x1=\"").Append(F(0.5 - dx)).Append("\" y1=\"").Append(F(0.5 - dy))
+            .Append("\" x2=\"").Append(F(0.5 + dx)).Append("\" y2=\"").Append(F(0.5 + dy)).Append("\">")
+            .Append("<stop offset=\"0\" stop-color=\"").Append(Rgb(from)).Append('"')
+            .Append(Alpha(from, "stop-opacity")).Append("/>")
+            .Append("<stop offset=\"1\" stop-color=\"").Append(Rgb(to)).Append('"')
+            .Append(Alpha(to, "stop-opacity")).Append("/>")
+            .Append("</linearGradient>");
+
+        return id;
     }
 
     public void FillEllipse(RectMm r, ColorRgba fill)
