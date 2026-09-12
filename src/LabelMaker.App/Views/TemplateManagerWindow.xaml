@@ -1,6 +1,7 @@
 <Window x:Class="LabelMaker.App.Views.TemplateManagerWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Style="{StaticResource AppWindow}"
         Background="{DynamicResource Br.Surface}" TextElement.Foreground="{DynamicResource Br.Text}"
         Title="Formtec Template Manager" Height="560" Width="820" WindowStartupLocation="CenterOwner">
   <DockPanel Margin="10">

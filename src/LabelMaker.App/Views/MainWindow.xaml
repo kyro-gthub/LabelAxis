@@ -6,6 +6,7 @@
         Icon="/Assets/icon.ico"
         WindowStartupLocation="CenterScreen"
         WindowStyle="None"
+        Style="{StaticResource AppWindow}"
         Background="{DynamicResource Br.Surface}"
         TextElement.Foreground="{DynamicResource Br.Text}"
         UseLayoutRounding="True" TextOptions.TextFormattingMode="Display">
@@ -48,7 +49,7 @@
           </TextBlock>
 
           <Menu Background="Transparent" VerticalAlignment="Center">
-            <MenuItem Header="_Design">
+            <MenuItem Header="_File">
               <MenuItem Header="_New Project…" InputGestureText="Ctrl+N" Command="{Binding NewCommand}" />
               <MenuItem Header="_Open…" InputGestureText="Ctrl+O" Command="{Binding OpenCommand}" />
               <MenuItem Header="Open _Recent" ItemsSource="{Binding RecentProjects}">
@@ -64,6 +65,15 @@
               <MenuItem Header="_Save" InputGestureText="Ctrl+S" Command="{Binding SaveCommand}" />
               <MenuItem Header="Save _As…" InputGestureText="Ctrl+Shift+S" Command="{Binding SaveAsCommand}" />
               <Separator />
+              <MenuItem Header="_Formtec template manager…" Command="{Binding TemplateManagerCommand}" />
+              <Separator />
+              <MenuItem Header="Se_ttings…" Command="{Binding SettingsCommand}" />
+              <MenuItem Header="_About Label Maker" Command="{Binding AboutCommand}" />
+              <Separator />
+              <MenuItem Header="E_xit" Command="{Binding ExitCommand}" />
+            </MenuItem>
+
+            <MenuItem Header="_Edit">
               <MenuItem Header="_Undo" InputGestureText="Ctrl+Z" Command="{Binding UndoCommand}" />
               <MenuItem Header="_Redo" InputGestureText="Ctrl+Y" Command="{Binding RedoCommand}" />
               <Separator />
@@ -75,8 +85,6 @@
               <Separator />
               <MenuItem Header="_Group" InputGestureText="Ctrl+G" Command="{Binding GroupCommand}" />
               <MenuItem Header="U_ngroup" InputGestureText="Ctrl+Shift+G" Command="{Binding UngroupCommand}" />
-              <Separator />
-              <MenuItem Header="E_xit" Command="{Binding ExitCommand}" />
             </MenuItem>
 
             <MenuItem Header="D_ata">
@@ -123,25 +131,13 @@
               <MenuItem Header="Snap to grid" IsCheckable="True" IsChecked="{Binding SnapToGrid}" />
               <MenuItem Header="Snap to guides" IsCheckable="True" IsChecked="{Binding SnapToGuides}" />
               <MenuItem Header="Snap to objects" IsCheckable="True" IsChecked="{Binding SnapToObjects}" />
-              <Separator />
-              <MenuItem Header="_Formtec template manager…" Command="{Binding TemplateManagerCommand}" />
-              <MenuItem Header="_Settings…" Command="{Binding SettingsCommand}" />
-              <MenuItem Header="_About Label Maker" Command="{Binding AboutCommand}" />
             </MenuItem>
           </Menu>
         </StackPanel>
 
-        <!-- edition pill + window buttons -->
+        <!-- window buttons -->
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center"
                     shell:WindowChrome.IsHitTestVisibleInChrome="True">
-          <Border Background="{DynamicResource Br.Bg}" BorderBrush="{DynamicResource Br.BorderStrong}" BorderThickness="1"
-                  CornerRadius="8" Padding="12,5" Margin="0,0,12,0">
-            <StackPanel Orientation="Horizontal">
-              <TextBlock Text="Standard Edition" FontFamily="{StaticResource Font.UiMedium}" FontSize="12.5"
-                         Foreground="{DynamicResource Br.Text}" VerticalAlignment="Center" />
-              <Path Data="M 0,0 L 8,0 L 4,5 Z" Fill="{DynamicResource Br.TextMuted}" Margin="9,2,0,0" VerticalAlignment="Center" />
-            </StackPanel>
-          </Border>
           <Button Style="{StaticResource WindowChromeButton}" Click="OnMinimise" ToolTip="Minimise">
             <Path Data="M 0,0 L 10,0" Stroke="{DynamicResource Br.Text2}" StrokeThickness="1.2" />
           </Button>
@@ -333,29 +329,14 @@
               </DockPanel>
             </Border>
 
-            <Border DockPanel.Dock="Bottom" Style="{StaticResource PromoCard}" Margin="14,10,14,14">
-              <StackPanel>
-                <DockPanel Margin="0,0,0,8">
-                  <Border DockPanel.Dock="Right" Width="56" Height="42" CornerRadius="8"
-                          Background="{DynamicResource Br.AccentSoft}">
-                    <Image Source="{StaticResource Icon.Gallery}" Width="20" Height="20" />
-                  </Border>
-                  <StackPanel Margin="0,0,10,0">
-                    <TextBlock Text="More templates online" FontFamily="{StaticResource Font.UiSemiBold}"
-                               FontSize="13" Foreground="{DynamicResource Br.Accent}" />
-                    <TextBlock Text="Discover more professional label templates" TextWrapping="Wrap"
-                               FontSize="11.5" Foreground="{DynamicResource Br.Text2}" Margin="0,3,0,0" />
-                  </StackPanel>
-                </DockPanel>
-                <Button Style="{StaticResource PrimaryButton}" HorizontalAlignment="Stretch" Padding="12,7"
-                        Command="{Binding TemplateManagerCommand}">
-                  <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                    <TextBlock Text="Browse Gallery" VerticalAlignment="Center" Margin="0,0,8,0" />
-                    <Image Source="{StaticResource Icon.ArrowRightWhite}" Width="15" Height="15" />
-                  </StackPanel>
-                </Button>
+            <!-- Browses the sheets that are actually installed; there is no online gallery. -->
+            <Button DockPanel.Dock="Bottom" Style="{StaticResource PrimaryButton}" HorizontalAlignment="Stretch"
+                    Padding="12,8" Margin="14,10,14,14" Command="{Binding TemplateManagerCommand}">
+              <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <TextBlock Text="Browse all templates" VerticalAlignment="Center" Margin="0,0,8,0" />
+                <Image Source="{StaticResource Icon.ArrowRightWhite}" Width="15" Height="15" />
               </StackPanel>
-            </Border>
+            </Button>
 
             <ListBox ItemsSource="{Binding TemplateCategories}" SelectedItem="{Binding SelectedCategory}"
                      Style="{StaticResource SidebarList}" Margin="8,0,8,0">

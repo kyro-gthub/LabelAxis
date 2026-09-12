@@ -18,6 +18,13 @@ public partial class App : Application
         Environment = new AppEnvironment();
         ThemeManager.Apply(Environment.Settings.DarkTheme ? AppTheme.Dark : AppTheme.Light);
 
+        // A class handler catches every Window, derived types included -- an implicit
+        // style would not, which is the same trap that left the dialogs light earlier.
+        EventManager.RegisterClassHandler(
+            typeof(Window),
+            FrameworkElement.LoadedEvent,
+            new RoutedEventHandler((sender, _) => ThemeManager.ApplyTitleBar((Window)sender)));
+
         DispatcherUnhandledException += OnUnhandledException;
 
         var window = new MainWindow(Environment);

@@ -62,12 +62,19 @@
     <GradientStop Color="{DynamicResource Clr.TitleBarB}" Offset="1" />
   </LinearGradientBrush>
 
-  <FontFamily x:Key="Font.Ui">./Assets/Fonts/#Plus Jakarta Sans, Segoe UI, sans-serif</FontFamily>
-  <FontFamily x:Key="Font.UiMedium">./Assets/Fonts/#Plus Jakarta Sans Medium, Segoe UI, sans-serif</FontFamily>
-  <FontFamily x:Key="Font.UiSemiBold">./Assets/Fonts/#Plus Jakarta Sans SemiBold, Segoe UI Semibold, Segoe UI, sans-serif</FontFamily>
-  <FontFamily x:Key="Font.UiExtraBold">./Assets/Fonts/#Plus Jakarta Sans ExtraBold, Segoe UI Black, Segoe UI, sans-serif</FontFamily>
-  <FontFamily x:Key="Font.Mono">./Assets/Fonts/#DM Mono, Consolas, monospace</FontFamily>
-  <FontFamily x:Key="Font.MonoMedium">./Assets/Fonts/#DM Mono Medium, Consolas, monospace</FontFamily>
+  <!--
+    The UI runs on Segoe UI, not an embedded webfont. Embedded OpenType faces are
+    hinted for the browser's renderer, so at WPF's UI sizes (11-13px) their stems
+    land between pixels and the text reads soft/blurry no matter what ClearType
+    settings are applied. Segoe UI ships with Windows, is hinted for exactly these
+    sizes, and is what every other Windows app draws with.
+  -->
+  <FontFamily x:Key="Font.Ui">Segoe UI</FontFamily>
+  <FontFamily x:Key="Font.UiMedium">Segoe UI</FontFamily>
+  <FontFamily x:Key="Font.UiSemiBold">Segoe UI Semibold, Segoe UI</FontFamily>
+  <FontFamily x:Key="Font.UiExtraBold">Segoe UI Black, Segoe UI</FontFamily>
+  <FontFamily x:Key="Font.Mono">Consolas, Courier New</FontFamily>
+  <FontFamily x:Key="Font.MonoMedium">Consolas, Courier New</FontFamily>
   <sys:Double x:Key="Font.Size">13</sys:Double>
 
   <BooleanToVisibilityConverter x:Key="BoolVisConv" />
@@ -85,7 +92,14 @@
   </Style>
 
   <!-- ============================ Window ============================ -->
-  <Style TargetType="Window">
+  <!--
+    An implicit style is keyed by the EXACT type, so "TargetType=Window" never
+    reaches SettingsWindow, PrintSettingsWindow or any other derived class,
+    which is why the dialogs used to miss the ClearType / Display-formatting
+    setters and looked blurry next to the shell. Every dialog therefore carries
+    Style="{StaticResource AppWindow}" explicitly.
+  -->
+  <Style x:Key="AppWindow" TargetType="Window">
     <Setter Property="Background" Value="{DynamicResource Br.Bg}" />
     <Setter Property="FontFamily" Value="{StaticResource Font.Ui}" />
     <Setter Property="FontSize" Value="{StaticResource Font.Size}" />
@@ -96,6 +110,8 @@
     <Setter Property="UseLayoutRounding" Value="True" />
     <Setter Property="SnapsToDevicePixels" Value="True" />
   </Style>
+
+  <Style TargetType="Window" BasedOn="{StaticResource AppWindow}" />
 
   <Style TargetType="TextBlock">
     <Setter Property="Foreground" Value="{DynamicResource Br.Text}" />

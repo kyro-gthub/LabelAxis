@@ -1,6 +1,7 @@
 <Window x:Class="LabelMaker.App.Views.BarcodeImageWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Style="{StaticResource AppWindow}"
         Background="{DynamicResource Br.Surface}" TextElement.Foreground="{DynamicResource Br.Text}"
         Title="Barcode image generator" Height="440" Width="560" WindowStartupLocation="CenterOwner">
   <Grid Margin="12">

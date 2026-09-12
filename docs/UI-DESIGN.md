@@ -45,8 +45,10 @@ Theme.xaml           ALL design tokens and control styles: colors, gradients,
                      Change the app's visual style here, nowhere else.
 Icons.xaml           Vector line-icons (DrawingImage resources) used by the
                      ribbon toolbar and a few buttons elsewhere.
-Assets/              Fonts/ (embedded Plus Jakarta Sans + DM Mono .ttf), the
-                     app icon.ico and logo.png.
+Assets/              The app icon.ico and logo.png, plus Fonts/ — .ttf files kept
+                     for reference only. The UI is drawn in Segoe UI (Consolas for
+                     monospace); the `Font.*` keys at the top of Theme.xaml decide
+                     that, and nothing else references the bundled faces.
 
 Views/               *.xaml (layout) + *.xaml.cs (thin code-behind — dialog
                      wiring only, no business logic). MainWindow.xaml is the
