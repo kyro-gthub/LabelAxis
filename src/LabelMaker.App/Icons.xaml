@@ -1,9 +1,14 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-  <!-- Shared line-icon pen: simple 24x24-grid stroke icons for the ribbon toolbar. -->
-  <Pen x:Key="IconPen" Brush="#FF5A4FE3" Thickness="1.8" StartLineCap="Round" EndLineCap="Round" LineJoin="Round" />
-  <SolidColorBrush x:Key="IconFill" Color="#FF5A4FE3" />
+  <!--
+    Shared line-icon pen: simple 24x24-grid stroke icons for the toolbar. The colour
+    tracks the palette (DynamicResource, so it follows a theme switch) rather than
+    the old hard-coded indigo, which no longer matched the blue accent.
+  -->
+  <Pen x:Key="IconPen" Brush="{DynamicResource Br.Accent}" Thickness="1.8"
+       StartLineCap="Round" EndLineCap="Round" LineJoin="Round" />
+  <SolidColorBrush x:Key="IconFill" Color="{DynamicResource Clr.Accent}" />
 
   <DrawingImage x:Key="Icon.New">
     <DrawingImage.Drawing>
