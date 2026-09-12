@@ -818,7 +818,10 @@ public sealed class MainViewModel : ObservableObject
         LastRecordCommand = new RelayCommand(() => _session.RecordIndex = _session.RecordCount - 1);
 
         AboutCommand = new RelayCommand(() => _shell.Info(
-            "Label Maker 1.0\n\nWindows-first label design & printing.\nFormtec templates · barcodes · variable data · accurate printing.",
+            "Label Maker 1.0\n\nWindows-first label design & printing.\n" +
+            "Label sheet templates · barcodes · variable data · accurate printing.\n\n" +
+            (_env.IsPortable ? "Portable build — settings and templates live in " : "Settings and templates live in ") +
+            _env.Paths.RoamingDirectory,
             "About Label Maker"));
         SettingsCommand = new RelayCommand(() => _shell.ShowSettings());
         ReplaceImageCommand = new RelayCommand(ReplaceSelectedImage, () => Properties.IsImage);

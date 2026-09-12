@@ -57,7 +57,11 @@ public partial class ColorPickerWindow : Window
     {
         foreach (string hex in SelectionProperties.Swatches)
         {
-            ColorRgba.TryParse(hex, out ColorRgba c);
+            if (!ColorRgba.TryParse(hex, out ColorRgba c))
+            {
+                continue;
+            }
+
             var cell = new Border
             {
                 Width = 30,

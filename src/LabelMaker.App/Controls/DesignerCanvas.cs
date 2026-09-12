@@ -860,6 +860,11 @@ public sealed class DesignerCanvas : FrameworkElement
     /// <summary>Alt-dragging a handle rotates about the object's centre; Shift snaps to 15°.</summary>
     private void RotateSelection(Point pointerMm, bool snapAngle)
     {
+        if (_session is null)
+        {
+            return;
+        }
+
         _rotating = true;
         foreach (LabelObject obj in _session.Selection)
         {
