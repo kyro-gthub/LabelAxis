@@ -40,6 +40,13 @@ public sealed class PdfDrawingSurface : IDrawingSurface
 
     private double Opacity => _opacity.Peek();
 
+    public void PushMatrix(LabelMaker.Core.Model.Affine m)
+    {
+        _states.Push(_gfx.Save());
+        _opacity.Push(Opacity);
+        _gfx.MultiplyTransform(new XMatrix(m.A, m.B, m.C, m.D, m.E * MmToPt, m.F * MmToPt));
+    }
+
     public void PushTransform(double tx, double ty, double rot, double sx, double sy)
     {
         _states.Push(_gfx.Save());

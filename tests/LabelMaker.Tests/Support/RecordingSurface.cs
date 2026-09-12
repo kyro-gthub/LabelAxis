@@ -24,6 +24,7 @@ internal sealed class RecordingSurface : IDrawingSurface
         Images = new StubImages(new StubImage(pixelWidth, pixelHeight));
 
     public void PushTransform(double tx, double ty, double rot, double sx, double sy) => Ops.Add($"push({tx:0.##},{ty:0.##},{rot:0.##})");
+    public void PushMatrix(Affine m) => Ops.Add($"matrix({m.A:0.##},{m.B:0.##},{m.C:0.##},{m.D:0.##})");
     public void Pop() => Ops.Add("pop");
     public void PushOpacity(double opacity) => Ops.Add($"opacity({opacity:0.##})");
     public void PushClipRectangle(RectMm rectMm, double cornerRadiusMm = 0) => Ops.Add("clipRect");

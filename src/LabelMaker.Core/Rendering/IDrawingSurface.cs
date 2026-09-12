@@ -79,6 +79,15 @@ public interface IDrawingSurface
 
     void PushTransform(double translateXMm, double translateYMm, double rotationDegrees, double scaleX, double scaleY);
 
+    /// <summary>
+    /// Pushes a general affine transform (needed for skew). <paramref name="m"/>'s
+    /// translation is in millimetres. The default only keeps translation and
+    /// rotation, so a surface that cannot shear still draws the object in place;
+    /// every shipping surface overrides it.
+    /// </summary>
+    void PushMatrix(Model.Affine m) =>
+        PushTransform(m.E, m.F, Math.Atan2(m.B, m.A) * 180.0 / Math.PI, 1, 1);
+
     void Pop();
 
     void PushOpacity(double opacity);

@@ -87,22 +87,32 @@ public sealed class RemoveObjectsCommand : IUndoableCommand
     }
 }
 
-/// <summary>Move / resize / rotate one object. Consecutive drags on the same object merge.</summary>
+/// <summary>Move / resize / rotate / skew one object. Consecutive drags on the same object merge.</summary>
 public sealed class TransformObjectCommand : IUndoableCommand
 {
     private readonly LabelObject _object;
     private readonly RectMm _oldBounds;
     private readonly double _oldRotation;
+    private readonly double _oldSkewX;
+    private readonly double _oldSkewY;
     private RectMm _newBounds;
     private double _newRotation;
+    private double _newSkewX;
+    private double _newSkewY;
 
-    public TransformObjectCommand(LabelObject obj, RectMm newBounds, double newRotation)
+    /// <param name="newSkewX">New horizontal skew; null keeps the object's current value.</param>
+    /// <param name="newSkewY">New vertical skew; null keeps the object's current value.</param>
+    public TransformObjectCommand(LabelObject obj, RectMm newBounds, double newRotation, double? newSkewX = null, double? newSkewY = null)
     {
         _object = obj;
         _oldBounds = obj.Bounds;
         _oldRotation = obj.RotationDegrees;
+        _oldSkewX = obj.SkewXDegrees;
+        _oldSkewY = obj.SkewYDegrees;
         _newBounds = newBounds;
         _newRotation = newRotation;
+        _newSkewX = newSkewX ?? obj.SkewXDegrees;
+        _newSkewY = newSkewY ?? obj.SkewYDegrees;
     }
 
     public string Label => "Move / resize";
@@ -111,12 +121,16 @@ public sealed class TransformObjectCommand : IUndoableCommand
     {
         _object.Bounds = _newBounds;
         _object.RotationDegrees = _newRotation;
+        _object.SkewXDegrees = _newSkewX;
+        _object.SkewYDegrees = _newSkewY;
     }
 
     public void Undo()
     {
         _object.Bounds = _oldBounds;
         _object.RotationDegrees = _oldRotation;
+        _object.SkewXDegrees = _oldSkewX;
+        _object.SkewYDegrees = _oldSkewY;
     }
 
     public bool TryMergeWith(IUndoableCommand next)
@@ -125,6 +139,8 @@ public sealed class TransformObjectCommand : IUndoableCommand
         {
             _newBounds = t._newBounds;
             _newRotation = t._newRotation;
+            _newSkewX = t._newSkewX;
+            _newSkewY = t._newSkewY;
             return true;
         }
 

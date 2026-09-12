@@ -62,6 +62,15 @@ public sealed class SvgDrawingSurface : IDrawingSurface
         return sb.ToString();
     }
 
+    public void PushMatrix(Affine m)
+    {
+        _body.Append("<g transform=\"matrix(")
+            .Append(F(m.A)).Append(' ').Append(F(m.B)).Append(' ')
+            .Append(F(m.C)).Append(' ').Append(F(m.D)).Append(' ')
+            .Append(F(m.E)).Append(' ').Append(F(m.F)).Append(")\">");
+        _openGroups++;
+    }
+
     public void PushTransform(double tx, double ty, double rot, double sx, double sy)
     {
         var t = new StringBuilder("translate(").Append(F(tx)).Append(' ').Append(F(ty)).Append(')');
