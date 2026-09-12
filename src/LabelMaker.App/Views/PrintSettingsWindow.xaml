@@ -3,75 +3,126 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Style="{StaticResource AppWindow}"
         Background="{DynamicResource Br.Surface}" TextElement.Foreground="{DynamicResource Br.Text}"
-        Title="Advanced Print Settings" Height="620" Width="560" WindowStartupLocation="CenterOwner"
-        ResizeMode="NoResize">
-  <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="18">
-    <StackPanel>
-      <TextBlock Text="What to print" FontWeight="SemiBold" FontSize="13" Margin="0,0,0,8" Foreground="{DynamicResource Br.TextMuted}" />
-      <GroupBox>
-        <StackPanel>
-          <RadioButton x:Name="ContentSheetFill" GroupName="content" Content="Fill sheet — repeat the master label in every slot" Margin="0,4" />
-          <RadioButton x:Name="ContentVariableData" GroupName="content" Content="Variable data — one label per data record" Margin="0,4" />
-          <RadioButton x:Name="ContentPages" GroupName="content" Content="Standalone pages — multiple pages on one sheet" Margin="0,4" />
+        Title="Print settings" Height="680" Width="600" WindowStartupLocation="CenterOwner"
+        ResizeMode="CanResize" MinHeight="520" MinWidth="520">
+  <DockPanel>
+
+    <!-- header -->
+    <Border DockPanel.Dock="Top" Background="{DynamicResource Br.Bg}"
+            BorderBrush="{DynamicResource Br.Border}" BorderThickness="0,0,0,1" Padding="18,14">
+      <DockPanel>
+        <Border DockPanel.Dock="Left" Width="36" Height="36" CornerRadius="10" Margin="0,0,12,0"
+                Background="{DynamicResource Br.AccentSoft}">
+          <Image Source="{StaticResource Icon.Print}" Width="18" Height="18" />
+        </Border>
+        <StackPanel VerticalAlignment="Center">
+          <TextBlock Text="Print settings" FontFamily="{StaticResource Font.UiSemiBold}" FontSize="15" />
+          <TextBlock x:Name="HeaderSubtitle" FontSize="12" Foreground="{DynamicResource Br.TextMuted}" Margin="0,2,0,0" />
         </StackPanel>
-      </GroupBox>
+      </DockPanel>
+    </Border>
 
-      <TextBlock Text="Sheet position" FontWeight="SemiBold" FontSize="13" Margin="0,14,0,8" Foreground="{DynamicResource Br.TextMuted}" />
-      <GroupBox>
-        <StackPanel>
-          <DockPanel Margin="0,3">
-            <TextBlock Text="Start at label position" Style="{StaticResource FieldLabel}" Width="170" />
-            <TextBox x:Name="StartPositionBox" Text="1" Width="70" HorizontalAlignment="Left" HorizontalContentAlignment="Right" />
-          </DockPanel>
-          <DockPanel Margin="0,3">
-            <TextBlock Text="Skip positions (comma list)" Style="{StaticResource FieldLabel}" Width="170" />
-            <TextBox x:Name="SkipPositionsBox" Text="" ToolTip="e.g. 1,2,3 for already-used labels" />
-          </DockPanel>
+    <!-- footer -->
+    <Border DockPanel.Dock="Bottom" Background="{DynamicResource Br.Bg}"
+            BorderBrush="{DynamicResource Br.Border}" BorderThickness="0,1,0,0" Padding="18,12">
+      <DockPanel>
+        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+          <Button Content="Cancel" Style="{StaticResource GhostButton}" IsCancel="True" Margin="0,0,8,0" />
+          <Button Style="{StaticResource PrimaryButton}" IsDefault="True" Click="OnPrint">
+            <StackPanel Orientation="Horizontal">
+              <Image Source="{StaticResource Icon.PrintWhite}" Width="15" Height="15" Margin="0,0,7,0" />
+              <TextBlock Text="Print" VerticalAlignment="Center" />
+            </StackPanel>
+          </Button>
         </StackPanel>
-      </GroupBox>
+        <Button Content="Preview…" Style="{StaticResource GhostButton}" HorizontalAlignment="Left" Click="OnPreview" />
+      </DockPanel>
+    </Border>
 
-      <TextBlock Text="Records / pages to print" FontWeight="SemiBold" FontSize="13" Margin="0,14,0,8" Foreground="{DynamicResource Br.TextMuted}" />
-      <GroupBox>
-        <StackPanel>
-          <RadioButton x:Name="RecordsAll" GroupName="records" Content="All" IsChecked="True" Margin="0,3" />
-          <RadioButton x:Name="RecordsRange" GroupName="records" Content="Range" Margin="0,3" />
-          <DockPanel Margin="20,0,0,4">
-            <TextBlock Text="First" Style="{StaticResource FieldLabel}" Width="40" />
-            <TextBox x:Name="FirstRecordBox" Width="60" HorizontalContentAlignment="Right" Margin="0,0,14,0" />
-            <TextBlock Text="Last" Style="{StaticResource FieldLabel}" Width="34" />
-            <TextBox x:Name="LastRecordBox" Width="60" HorizontalContentAlignment="Right" />
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="18,16">
+      <StackPanel>
+
+        <TextBlock Text="WHAT TO PRINT" Style="{StaticResource PanelSectionHeader}" />
+        <Border Style="{StaticResource InsetPanel}" Padding="14,12" Margin="0,0,0,16">
+          <StackPanel>
+            <RadioButton x:Name="ContentSheetFill" GroupName="content" Margin="0,4"
+                         Content="Fill sheet — repeat the master label in every slot" />
+            <RadioButton x:Name="ContentVariableData" GroupName="content" Margin="0,4"
+                         Content="Variable data — one label per data record" />
+            <RadioButton x:Name="ContentPages" GroupName="content" Margin="0,4"
+                         Content="Standalone pages — several pages on one sheet" />
+          </StackPanel>
+        </Border>
+
+        <TextBlock Text="SHEET POSITION" Style="{StaticResource PanelSectionHeader}" />
+        <Border Style="{StaticResource InsetPanel}" Padding="14,12" Margin="0,0,0,16">
+          <StackPanel>
+            <DockPanel Margin="0,3">
+              <TextBlock Text="Start at label position" Style="{StaticResource FieldLabel}" Width="180" />
+              <TextBox x:Name="StartPositionBox" Style="{StaticResource NumberBox}" Text="1" Width="80"
+                       HorizontalAlignment="Left" />
+            </DockPanel>
+            <DockPanel Margin="0,6,0,3">
+              <TextBlock Text="Skip positions" Style="{StaticResource FieldLabel}" Width="180" />
+              <TextBox x:Name="SkipPositionsBox" ToolTip="Comma list of already-used labels, e.g. 1,2,3" />
+            </DockPanel>
+            <TextBlock Text="Use these to print onto a part-used sheet." Margin="180,6,0,0"
+                       FontSize="11.5" Foreground="{DynamicResource Br.TextMuted}" TextWrapping="Wrap" />
+          </StackPanel>
+        </Border>
+
+        <TextBlock Text="RECORDS / PAGES TO PRINT" Style="{StaticResource PanelSectionHeader}" />
+        <Border Style="{StaticResource InsetPanel}" Padding="14,12" Margin="0,0,0,16">
+          <StackPanel>
+            <RadioButton x:Name="RecordsAll" GroupName="records" Content="All" IsChecked="True" Margin="0,3" />
+            <RadioButton x:Name="RecordsRange" GroupName="records" Content="Range" Margin="0,3" />
+            <DockPanel Margin="22,2,0,4">
+              <TextBlock Text="First" Style="{StaticResource FieldLabel}" Width="40" />
+              <TextBox x:Name="FirstRecordBox" Style="{StaticResource NumberBox}" Width="70" Margin="0,0,14,0" />
+              <TextBlock Text="Last" Style="{StaticResource FieldLabel}" Width="34" />
+              <TextBox x:Name="LastRecordBox" Style="{StaticResource NumberBox}" Width="70"
+                       HorizontalAlignment="Left" />
+            </DockPanel>
+            <RadioButton x:Name="RecordsSelected" GroupName="records" Margin="0,3"
+                         Content="Selected only (comma list, 1-based)" />
+            <TextBox x:Name="SelectedRecordsBox" Margin="22,2,0,0" />
+          </StackPanel>
+        </Border>
+
+        <TextBlock Text="PHYSICAL OUTPUT" Style="{StaticResource PanelSectionHeader}" />
+        <Border Style="{StaticResource InsetPanel}" Padding="14,12" Margin="0,0,0,16">
+          <StackPanel>
+            <DockPanel Margin="0,3">
+              <TextBlock Text="Scale" Style="{StaticResource FieldLabel}" Width="180" />
+              <TextBlock DockPanel.Dock="Right" Width="52" TextAlignment="Right" FontSize="11.5"
+                         Foreground="{DynamicResource Br.TextMuted}"
+                         Text="{Binding Text, ElementName=ScaleBox, StringFormat={}{0}%}" />
+              <TextBox x:Name="ScaleBox" Style="{StaticResource NumberBox}" Text="100" Width="80"
+                       HorizontalAlignment="Left" ToolTip="100% is physical size; never scale to fit" />
+            </DockPanel>
+            <DockPanel Margin="0,6,0,3">
+              <TextBlock Text="Copies" Style="{StaticResource FieldLabel}" Width="180" />
+              <TextBox x:Name="CopiesBox" Style="{StaticResource NumberBox}" Text="1" Width="80"
+                       HorizontalAlignment="Left" />
+            </DockPanel>
+            <CheckBox x:Name="LandscapeBox" Content="Landscape orientation" Margin="0,8,0,3" />
+            <CheckBox x:Name="OutlinesBox" Content="Print label outlines" Margin="0,3" />
+            <CheckBox x:Name="CropMarksBox" Content="Print crop marks" Margin="0,3" />
+            <Button Content="Printer calibration wizard…" Style="{StaticResource GhostButton}"
+                    HorizontalAlignment="Left" Margin="0,10,0,0" Click="OnCalibration" />
+          </StackPanel>
+        </Border>
+
+        <Border Background="{DynamicResource Br.AccentSoft}" CornerRadius="10" Padding="14,12">
+          <DockPanel>
+            <Image DockPanel.Dock="Left" Source="{StaticResource Icon.Check}" Width="16" Height="16"
+                   Margin="0,1,10,0" VerticalAlignment="Top" />
+            <TextBlock x:Name="SummaryText" TextWrapping="Wrap"
+                       FontFamily="{StaticResource Font.UiSemiBold}" FontSize="12.5"
+                       Foreground="{DynamicResource Br.Accent}" />
           </DockPanel>
-          <RadioButton x:Name="RecordsSelected" GroupName="records" Content="Selected only (comma list, 1-based)" Margin="0,3" />
-          <TextBox x:Name="SelectedRecordsBox" Margin="20,0,0,0" />
-        </StackPanel>
-      </GroupBox>
-
-      <TextBlock Text="Physical output" FontWeight="SemiBold" FontSize="13" Margin="0,14,0,8" Foreground="{DynamicResource Br.TextMuted}" />
-      <GroupBox>
-        <StackPanel>
-          <DockPanel Margin="0,3">
-            <TextBlock Text="Scale (100% = physical size)" Style="{StaticResource FieldLabel}" Width="190" />
-            <TextBox x:Name="ScaleBox" Text="100" Width="70" HorizontalAlignment="Left" HorizontalContentAlignment="Right" />
-          </DockPanel>
-          <DockPanel Margin="0,3">
-            <TextBlock Text="Copies" Style="{StaticResource FieldLabel}" Width="190" />
-            <TextBox x:Name="CopiesBox" Text="1" Width="70" HorizontalAlignment="Left" HorizontalContentAlignment="Right" />
-          </DockPanel>
-          <CheckBox x:Name="LandscapeBox" Content="Landscape orientation" Margin="0,6,0,3" />
-          <CheckBox x:Name="OutlinesBox" Content="Print label outlines" Margin="0,3" />
-          <CheckBox x:Name="CropMarksBox" Content="Print crop marks" Margin="0,3" />
-          <Button Content="Printer Calibration Wizard…" HorizontalAlignment="Left" Margin="0,8,0,0" Padding="12,5" Click="OnCalibration" />
-        </StackPanel>
-      </GroupBox>
-
-      <Border Margin="0,14,0,0" Background="{DynamicResource Br.AccentSoft}" CornerRadius="10" Padding="12">
-        <TextBlock x:Name="SummaryText" TextWrapping="Wrap" FontWeight="SemiBold" Foreground="{DynamicResource Br.Accent}" />
-      </Border>
-
-      <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
-        <Button Content="Cancel" IsCancel="True" Padding="16,6" Margin="0,0,8,0" />
-        <Button Content="Print…" Style="{StaticResource AccentButton}" IsDefault="True" Padding="20,6" Click="OnPrint" />
+        </Border>
       </StackPanel>
-    </StackPanel>
-  </ScrollViewer>
+    </ScrollViewer>
+  </DockPanel>
 </Window>
