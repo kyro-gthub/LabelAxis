@@ -47,6 +47,9 @@ public interface IShellServices
     /// <summary>Full-sheet print preview: every sheet exactly as it will print.</summary>
     void ShowPrintPreview();
 
+    /// <summary>The app's own print dialog (printer, copies, scale). Returns true if a job was sent.</summary>
+    bool ShowPrintDialog();
+
     /// <summary>Change the working label size without starting a new project. Returns true if it changed.</summary>
     bool ShowLabelSize();
 

@@ -1501,7 +1501,9 @@ public sealed class MainViewModel : ObservableObject
                 settings.Content = _session.Data is { RowCount: > 0 } ? PrintContent.VariableData : PrintContent.SheetFill;
             }
 
-            if (_printServer.Print(_session.Project, _session.Data, settings))
+            // The app's own print dialog, not the Windows one; it still offers the
+            // driver dialog for duplex/tray options the printer alone knows about.
+            if (_shell.ShowPrintDialog())
             {
                 StatusText = "Sent to printer";
                 _env.SaveSettings();
