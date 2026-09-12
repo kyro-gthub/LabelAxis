@@ -52,4 +52,7 @@ public interface IShellServices
 
     /// <summary>Interactive crop for the selected image. Returns true if the crop changed.</summary>
     bool ShowImageCrop();
+
+    /// <summary>Colour chooser with palette, RGBA sliders and an eyedropper. Null on cancel.</summary>
+    Core.Model.ColorRgba? PickColor(Core.Model.ColorRgba initial, string title);
 }

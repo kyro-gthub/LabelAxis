@@ -208,4 +208,10 @@ public sealed class DialogService : IShellServices
         var win = new ImageCropWindow(image, decoded.Original) { Owner = _owner };
         return win.ShowDialog() == true;
     }
+
+    public LabelMaker.Core.Model.ColorRgba? PickColor(LabelMaker.Core.Model.ColorRgba initial, string title)
+    {
+        var win = new ColorPickerWindow(initial, title) { Owner = _owner };
+        return win.ShowDialog() == true ? win.Result : null;
+    }
 }

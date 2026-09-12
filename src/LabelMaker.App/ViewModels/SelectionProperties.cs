@@ -18,12 +18,40 @@ namespace LabelMaker.App.ViewModels;
 public sealed class SelectionProperties : ObservableObject
 {
     private readonly DocumentSession _session;
+    private readonly LabelMaker.Core.Settings.AppSettings _settings;
 
-    public SelectionProperties(DocumentSession session)
+    public SelectionProperties(DocumentSession session, LabelMaker.Core.Settings.AppSettings settings)
     {
         _session = session;
+        _settings = settings;
         _session.SelectionChanged += (_, _) => RefreshAll();
         _session.DocumentChanged += (_, _) => RefreshAll();
+    }
+
+    // ---- units ------------------------------------------------------------
+
+    /// <summary>
+    /// The unit every length in this panel is shown in. Storage is always
+    /// millimetres; only the display and parsing change (spec: mm is canonical).
+    /// </summary>
+    public Unit DisplayUnit => _settings.DisplayUnit;
+
+    public string UnitSymbol => DisplayUnit.Symbol();
+
+    /// <summary>Pixels are meaningless without a DPI, so they use the screen calibration.</summary>
+    private double? Dpi => DisplayUnit == Unit.Pixel ? Math.Max(1, _settings.ScreenDpiCalibration) : null;
+
+    private double Out(double millimetres) =>
+        Math.Round(UnitConverter.FromMillimetres(millimetres, DisplayUnit, Dpi), DisplayUnit == Unit.Inch ? 3 : 2);
+
+    private double In(double display) => UnitConverter.ToMillimetres(display, DisplayUnit, Dpi);
+
+    /// <summary>Raised by the shell when the unit setting changes.</summary>
+    public void NotifyUnitChanged()
+    {
+        OnPropertyChanged(nameof(DisplayUnit));
+        OnPropertyChanged(nameof(UnitSymbol));
+        RefreshAll();
     }
 
     private LabelObject? Obj => _session.Selection.Count > 0 ? _session.Selection[0] : null;
@@ -66,26 +94,51 @@ public sealed class SelectionProperties : ObservableObject
 
     public double X
     {
-        get => Round(Obj?.Bounds.X ?? 0);
-        set => SetBounds(b => b with { X = value });
+        get => Out(Obj?.Bounds.X ?? 0);
+        set => SetBounds(b => b with { X = In(value) });
     }
 
     public double Y
     {
-        get => Round(Obj?.Bounds.Y ?? 0);
-        set => SetBounds(b => b with { Y = value });
+        get => Out(Obj?.Bounds.Y ?? 0);
+        set => SetBounds(b => b with { Y = In(value) });
     }
 
     public double Width
     {
-        get => Round(Obj?.Bounds.Width ?? 0);
-        set => SetBounds(b => b with { Width = Math.Max(0.1, value) });
+        get => Out(Obj?.Bounds.Width ?? 0);
+        set => SetBounds(b => Resize(b, Math.Max(0.1, In(value)), null));
     }
 
     public double Height
     {
-        get => Round(Obj?.Bounds.Height ?? 0);
-        set => SetBounds(b => b with { Height = Math.Max(0.1, value) });
+        get => Out(Obj?.Bounds.Height ?? 0);
+        set => SetBounds(b => Resize(b, null, Math.Max(0.1, In(value))));
+    }
+
+    private bool _lockAspect;
+
+    /// <summary>
+    /// When set, typing a width also updates the height (and vice versa) so the
+    /// object keeps its proportions — the same rule the Shift key applies on canvas.
+    /// </summary>
+    public bool LockAspect
+    {
+        get => _lockAspect;
+        set { _lockAspect = value; OnPropertyChanged(); }
+    }
+
+    private RectMm Resize(RectMm b, double? width, double? height)
+    {
+        if (!_lockAspect || b.Width <= 0 || b.Height <= 0)
+        {
+            return width is { } w ? b with { Width = w } : b with { Height = height!.Value };
+        }
+
+        double aspect = b.Width / b.Height;
+        return width is { } nw
+            ? b with { Width = nw, Height = nw / aspect }
+            : b with { Height = height!.Value, Width = height!.Value * aspect };
     }
 
     public double RotationDegrees
@@ -274,6 +327,89 @@ public sealed class SelectionProperties : ObservableObject
     }
 
     // ---- Shape ----
+    public static IReadOnlyList<ShapeKind> ShapeKinds { get; } = Enum.GetValues<ShapeKind>();
+
+    public static IReadOnlyList<LabelMaker.Core.Model.Objects.DashStyle> DashStyles { get; } =
+        Enum.GetValues<LabelMaker.Core.Model.Objects.DashStyle>();
+
+    /// <summary>
+    /// A compact palette for one-click fill/stroke colours. ColorRgba is #RRGGBB(AA),
+    /// alpha last — "#00000000" is the transparent entry, not a black one.
+    /// </summary>
+    public static IReadOnlyList<string> Swatches { get; } = new[]
+    {
+        "#00000000", "#FFFFFF", "#000000", "#5B667C", "#B0B8C6",
+        "#2C6FE8", "#12B5C9", "#22B268", "#F5A524", "#E0555F",
+        "#7C4DFF", "#E91E8C", "#8D6E63", "#FFE082", "#C8E6C9",
+    };
+
+    public ShapeKind ShapeKindValue
+    {
+        get => (Obj as ShapeObject)?.Shape ?? ShapeKind.Rectangle;
+        set
+        {
+            if (Obj is ShapeObject s)
+            {
+                Set(nameof(ShapeKindValue), () => s.Shape, v => s.Shape = v, value);
+                OnPropertyChanged(nameof(IsPolygon));
+                OnPropertyChanged(nameof(IsRoundRect));
+            }
+        }
+    }
+
+    public bool IsPolygon => (Obj as ShapeObject)?.Shape == ShapeKind.Polygon;
+
+    public bool IsRoundRect => (Obj as ShapeObject)?.Shape == ShapeKind.RoundRectangle;
+
+    public LabelMaker.Core.Model.Objects.DashStyle DashStyleValue
+    {
+        get => (Obj as ShapeObject)?.DashStyle ?? LabelMaker.Core.Model.Objects.DashStyle.Solid;
+        set
+        {
+            if (Obj is ShapeObject s)
+            {
+                Set(nameof(DashStyleValue), () => s.DashStyle, v => s.DashStyle = v, value);
+            }
+        }
+    }
+
+    public double PolygonPoints
+    {
+        get => (Obj as ShapeObject)?.PolygonPoints ?? 5;
+        set
+        {
+            if (Obj is ShapeObject s)
+            {
+                Set(nameof(PolygonPoints), () => s.PolygonPoints, v => s.PolygonPoints = v, (int)Math.Clamp(value, 3, 64));
+            }
+        }
+    }
+
+    /// <summary>0 = plain N-gon; 0.1..0.9 turns it into a star with that inner radius.</summary>
+    public double StarInnerRatio
+    {
+        get => Round((Obj as ShapeObject)?.StarInnerRatio ?? 0);
+        set
+        {
+            if (Obj is ShapeObject s)
+            {
+                Set(nameof(StarInnerRatio), () => s.StarInnerRatio, v => s.StarInnerRatio = v, Math.Clamp(value, 0, 0.95));
+            }
+        }
+    }
+
+    public double ArrowHeadSizeMm
+    {
+        get => Out((Obj as ShapeObject)?.ArrowHeadSizeMm ?? 3);
+        set
+        {
+            if (Obj is ShapeObject s)
+            {
+                Set(nameof(ArrowHeadSizeMm), () => s.ArrowHeadSizeMm, v => s.ArrowHeadSizeMm = Math.Clamp(v, 0.5, 50), In(value));
+            }
+        }
+    }
+
     public string FillHex
     {
         get => (Obj as ShapeObject)?.Fill.ToHex() ?? "#00000000";
@@ -282,6 +418,8 @@ public sealed class SelectionProperties : ObservableObject
             if (Obj is ShapeObject s && ColorRgba.TryParse(value, out ColorRgba c))
             {
                 Set(nameof(FillHex), () => s.Fill, v => s.Fill = v, c);
+                OnPropertyChanged(nameof(FillBrush));
+                OnPropertyChanged(nameof(FillAlpha));
             }
         }
     }
@@ -294,33 +432,72 @@ public sealed class SelectionProperties : ObservableObject
             if (Obj is ShapeObject s && ColorRgba.TryParse(value, out ColorRgba c))
             {
                 Set(nameof(StrokeHex), () => s.Stroke, v => s.Stroke = v, c);
+                OnPropertyChanged(nameof(StrokeBrush));
+            }
+        }
+    }
+
+    /// <summary>Live preview swatches for the two colour buttons.</summary>
+    public Brush FillBrush => ToBrush((Obj as ShapeObject)?.Fill ?? ColorRgba.Transparent);
+
+    public Brush StrokeBrush => ToBrush((Obj as ShapeObject)?.Stroke ?? ColorRgba.Black);
+
+    /// <summary>Fill opacity as 0..100, so it can sit on a slider.</summary>
+    public double FillAlpha
+    {
+        get => Math.Round(((Obj as ShapeObject)?.Fill.A ?? 0) / 255.0 * 100);
+        set
+        {
+            if (Obj is ShapeObject s)
+            {
+                ColorRgba c = s.Fill;
+                var next = new ColorRgba(c.R, c.G, c.B, (byte)Math.Clamp(Math.Round(value / 100 * 255), 0, 255));
+                Set(nameof(FillAlpha), () => s.Fill, v => s.Fill = v, next);
+                OnPropertyChanged(nameof(FillBrush));
+                OnPropertyChanged(nameof(FillHex));
             }
         }
     }
 
     public double StrokeWidthMm
     {
-        get => (Obj as ShapeObject)?.StrokeWidthMm ?? 0.25;
+        get => Out((Obj as ShapeObject)?.StrokeWidthMm ?? 0.25);
         set
         {
             if (Obj is ShapeObject s)
             {
-                Set(nameof(StrokeWidthMm), () => s.StrokeWidthMm, v => s.StrokeWidthMm = Math.Clamp(v, 0, 20), value);
+                Set(nameof(StrokeWidthMm), () => s.StrokeWidthMm, v => s.StrokeWidthMm = Math.Clamp(v, 0, 20), In(value));
             }
         }
     }
 
     public double CornerRadiusMm
     {
-        get => (Obj as ShapeObject)?.CornerRadiusMm ?? 0;
+        get => Out((Obj as ShapeObject)?.CornerRadiusMm ?? 0);
         set
         {
             if (Obj is ShapeObject s)
             {
-                Set(nameof(CornerRadiusMm), () => s.CornerRadiusMm, v => s.CornerRadiusMm = Math.Max(0, v), value);
+                Set(nameof(CornerRadiusMm), () => s.CornerRadiusMm, v => s.CornerRadiusMm = Math.Max(0, v), In(value));
             }
         }
     }
+
+    /// <summary>Applies a palette swatch to the fill or the stroke ("fill|#AARRGGBB").</summary>
+    public void ApplySwatch(string target, string hex)
+    {
+        if (target == "fill")
+        {
+            FillHex = hex;
+        }
+        else
+        {
+            StrokeHex = hex;
+        }
+    }
+
+    private static Brush ToBrush(ColorRgba c) =>
+        new SolidColorBrush(Color.FromArgb(c.A, c.R, c.G, c.B));
 
     // ---- Image ----
     public IReadOnlyList<ImageFitMode> ImageFitModes { get; } = Enum.GetValues<ImageFitMode>();
@@ -405,6 +582,70 @@ public sealed class SelectionProperties : ObservableObject
     }
 
     public string? ImageSourceFileName => (Obj as ImageObject)?.SourceFileName;
+
+    /// <summary>
+    /// Stretch means "fill the box, ignore the aspect ratio". Exposed as a plain
+    /// switch because that is the question people actually ask when resizing.
+    /// </summary>
+    public bool AllowStretch
+    {
+        get => (Obj as ImageObject)?.FitMode == ImageFitMode.Stretch;
+        set
+        {
+            if (Obj is ImageObject i)
+            {
+                Set(nameof(AllowStretch), () => i.FitMode, v => i.FitMode = v,
+                    value ? ImageFitMode.Stretch : ImageFitMode.Fit);
+                OnPropertyChanged(nameof(FitMode));
+            }
+        }
+    }
+
+    public string CropSummary
+    {
+        get
+        {
+            if (Obj is not ImageObject i)
+            {
+                return "—";
+            }
+
+            ImageAdjustments a = i.Adjustments;
+            return a.HasCrop
+                ? $"{a.CropWidth * 100:0}% × {a.CropHeight * 100:0}% from ({a.CropX * 100:0}%, {a.CropY * 100:0}%)"
+                : "Whole image";
+        }
+    }
+
+    public bool HasCrop => (Obj as ImageObject)?.Adjustments.HasCrop == true;
+
+    /// <summary>Effective print resolution at the current placed size — under ~200 DPI looks soft.</summary>
+    public string ImageResolution
+    {
+        get
+        {
+            if (Obj is not ImageObject i || i.SourcePixelWidth <= 0)
+            {
+                return "—";
+            }
+
+            double dpi = i.EffectiveDpiAt(i.Bounds.Width * Math.Clamp(i.Adjustments.CropWidth, 0.01, 1));
+            return $"{i.SourcePixelWidth} × {i.SourcePixelHeight} px · {dpi:0} DPI at this size";
+        }
+    }
+
+    public void ClearCrop()
+    {
+        if (Obj is ImageObject i)
+        {
+            i.Adjustments.CropX = 0;
+            i.Adjustments.CropY = 0;
+            i.Adjustments.CropWidth = 1;
+            i.Adjustments.CropHeight = 1;
+            _session.MarkDirty();
+            RefreshAll();
+        }
+    }
 
     public void RefreshAll() => OnPropertyChanged(null);
 

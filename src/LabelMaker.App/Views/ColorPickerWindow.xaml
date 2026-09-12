@@ -1,0 +1,69 @@
+<Window x:Class="LabelMaker.App.Views.ColorPickerWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Style="{StaticResource AppWindow}"
+        Background="{DynamicResource Br.Surface}" TextElement.Foreground="{DynamicResource Br.Text}"
+        Title="Colour" Height="508" Width="372" WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize">
+  <DockPanel Margin="16">
+    <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,14,0,0">
+      <Button Content="Transparent" Style="{StaticResource GhostButton}" Margin="0,0,8,0" Click="OnTransparent" />
+      <Button Content="Cancel" Style="{StaticResource GhostButton}" IsCancel="True" Margin="0,0,8,0" />
+      <Button Content="Use colour" Style="{StaticResource PrimaryButton}" IsDefault="True" Click="OnOk" />
+    </StackPanel>
+
+    <StackPanel>
+      <!-- live preview over a checkerboard so alpha is visible -->
+      <Border Height="62" CornerRadius="10" BorderThickness="1" Margin="0,0,0,14"
+              BorderBrush="{DynamicResource Br.BorderStrong}" ClipToBounds="True">
+        <Grid>
+          <Rectangle x:Name="Checker" />
+          <Rectangle x:Name="Preview" />
+        </Grid>
+      </Border>
+
+      <TextBlock Text="PALETTE" Style="{StaticResource PanelSectionHeader}" />
+      <ItemsControl x:Name="Palette" Margin="0,0,0,14">
+        <ItemsControl.ItemsPanel>
+          <ItemsPanelTemplate><WrapPanel /></ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+      </ItemsControl>
+
+      <TextBlock Text="CHANNELS" Style="{StaticResource PanelSectionHeader}" />
+      <Grid Margin="0,0,0,10">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="26" />
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="46" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+          <RowDefinition /><RowDefinition /><RowDefinition /><RowDefinition />
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="R" Style="{StaticResource FieldLabel}" />
+        <Slider x:Name="RSlider" Grid.Row="0" Grid.Column="1" Minimum="0" Maximum="255" ValueChanged="OnChannel" />
+        <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding Value, ElementName=RSlider, StringFormat=0}" TextAlignment="Right" />
+
+        <TextBlock Grid.Row="1" Grid.Column="0" Text="G" Style="{StaticResource FieldLabel}" />
+        <Slider x:Name="GSlider" Grid.Row="1" Grid.Column="1" Minimum="0" Maximum="255" ValueChanged="OnChannel" />
+        <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding Value, ElementName=GSlider, StringFormat=0}" TextAlignment="Right" />
+
+        <TextBlock Grid.Row="2" Grid.Column="0" Text="B" Style="{StaticResource FieldLabel}" />
+        <Slider x:Name="BSlider" Grid.Row="2" Grid.Column="1" Minimum="0" Maximum="255" ValueChanged="OnChannel" />
+        <TextBlock Grid.Row="2" Grid.Column="2" Text="{Binding Value, ElementName=BSlider, StringFormat=0}" TextAlignment="Right" />
+
+        <TextBlock Grid.Row="3" Grid.Column="0" Text="A" Style="{StaticResource FieldLabel}" />
+        <Slider x:Name="ASlider" Grid.Row="3" Grid.Column="1" Minimum="0" Maximum="255" ValueChanged="OnChannel" />
+        <TextBlock Grid.Row="3" Grid.Column="2" Text="{Binding Value, ElementName=ASlider, StringFormat=0}" TextAlignment="Right" />
+      </Grid>
+
+      <DockPanel>
+        <TextBlock Text="Hex" Style="{StaticResource FieldLabel}" Width="34" />
+        <Button DockPanel.Dock="Right" Content="Pick from screen" Style="{StaticResource GhostButton}"
+                Margin="8,0,0,0" Click="OnPickFromScreen"
+                ToolTip="Click anywhere on the screen to take that pixel's colour" />
+        <TextBox x:Name="HexBox" FontFamily="{StaticResource Font.Mono}" LostFocus="OnHexCommitted" />
+      </DockPanel>
+    </StackPanel>
+  </DockPanel>
+</Window>
