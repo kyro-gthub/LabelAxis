@@ -1,0 +1,224 @@
+<Window x:Class="LabelMaker.App.Views.DataConnectionWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Style="{StaticResource AppWindow}"
+        Background="{DynamicResource Br.Surface}" TextElement.Foreground="{DynamicResource Br.Text}"
+        Title="Connect to a database" Height="700" Width="1040" MinHeight="560" MinWidth="880"
+        WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
+  <DockPanel>
+
+    <!-- header -->
+    <Border DockPanel.Dock="Top" Background="{DynamicResource Br.Bg}"
+            BorderBrush="{DynamicResource Br.Border}" BorderThickness="0,0,0,1" Padding="18,14">
+      <DockPanel>
+        <Border DockPanel.Dock="Left" Width="36" Height="36" CornerRadius="10" Margin="0,0,12,0"
+                Background="{DynamicResource Br.AccentSoft}">
+          <Image Source="{StaticResource Icon.Database}" Width="18" Height="18" />
+        </Border>
+        <StackPanel VerticalAlignment="Center">
+          <TextBlock Text="Connect to a database" FontFamily="{StaticResource Font.UiSemiBold}" FontSize="15" />
+          <TextBlock FontSize="12" Foreground="{DynamicResource Br.TextMuted}" Margin="0,2,0,0"
+                     Text="Records are read, never changed. A copy is kept in the project so it opens offline; Refresh reads the database again." />
+        </StackPanel>
+      </DockPanel>
+    </Border>
+
+    <!-- footer -->
+    <Border DockPanel.Dock="Bottom" Background="{DynamicResource Br.Bg}"
+            BorderBrush="{DynamicResource Br.Border}" BorderThickness="0,1,0,0" Padding="18,12">
+      <DockPanel>
+        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+          <Button Content="Cancel" Style="{StaticResource GhostButton}" IsCancel="True" Margin="0,0,8,0" />
+          <Button x:Name="UseButton" Content="Use these records" Style="{StaticResource PrimaryButton}"
+                  IsDefault="True" Click="OnUse" />
+        </StackPanel>
+        <Ellipse x:Name="StatusDot" Width="8" Height="8" Margin="0,0,8,0" VerticalAlignment="Center"
+                 Fill="{DynamicResource Br.TextMuted}" />
+        <Button x:Name="StopButton" DockPanel.Dock="Right" Content="Stop" Style="{StaticResource GhostButton}"
+                Margin="0,0,12,0" Visibility="Collapsed" Click="OnStop" />
+        <TextBlock x:Name="StatusText" VerticalAlignment="Center" FontSize="12.5" TextTrimming="CharacterEllipsis"
+                   Foreground="{DynamicResource Br.Text2}" />
+      </DockPanel>
+    </Border>
+
+    <!-- database kinds -->
+    <Border DockPanel.Dock="Left" Width="200" Background="{DynamicResource Br.Bg}"
+            BorderBrush="{DynamicResource Br.Border}" BorderThickness="0,0,1,0">
+      <DockPanel Margin="12,14">
+        <TextBlock DockPanel.Dock="Top" Text="DATABASE" Style="{StaticResource PanelSectionHeader}" Margin="4,0,0,8" />
+        <ListBox x:Name="KindList" BorderThickness="0" Background="Transparent" SelectionChanged="OnKindChanged"
+                 HorizontalContentAlignment="Stretch">
+          <ListBox.ItemContainerStyle>
+            <Style TargetType="ListBoxItem">
+              <Setter Property="Margin" Value="0,0,0,3" />
+              <Setter Property="Template">
+                <Setter.Value>
+                  <ControlTemplate TargetType="ListBoxItem">
+                    <Border x:Name="Card" CornerRadius="8" Padding="10,8" Background="Transparent">
+                      <ContentPresenter />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                      <Trigger Property="IsMouseOver" Value="True">
+                        <Setter TargetName="Card" Property="Background" Value="{DynamicResource Br.Hover}" />
+                      </Trigger>
+                      <Trigger Property="IsSelected" Value="True">
+                        <Setter TargetName="Card" Property="Background" Value="{DynamicResource Br.AccentSoft}" />
+                      </Trigger>
+                    </ControlTemplate.Triggers>
+                  </ControlTemplate>
+                </Setter.Value>
+              </Setter>
+            </Style>
+          </ListBox.ItemContainerStyle>
+          <ListBox.ItemTemplate>
+            <DataTemplate>
+              <StackPanel>
+                <TextBlock Text="{Binding Title}" FontFamily="{StaticResource Font.UiSemiBold}" FontSize="13" />
+                <TextBlock Text="{Binding Hint}" FontSize="11.5" Foreground="{DynamicResource Br.TextMuted}"
+                           TextWrapping="Wrap" Margin="0,1,0,0" />
+              </StackPanel>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+      </DockPanel>
+    </Border>
+
+    <Grid>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="400" MinWidth="340" />
+        <ColumnDefinition Width="6" />
+        <ColumnDefinition Width="*" MinWidth="260" />
+      </Grid.ColumnDefinitions>
+
+      <!-- connection form -->
+      <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto" Padding="18,14,12,14">
+        <StackPanel>
+          <TextBlock Text="CONNECTION" Style="{StaticResource PanelSectionHeader}" />
+          <Border Style="{StaticResource InsetPanel}" Padding="14,12" Margin="0,0,0,14">
+            <StackPanel>
+              <DockPanel Margin="0,0,0,8">
+                <TextBlock Text="Name" Style="{StaticResource FieldLabel}" Width="96" />
+                <TextBox x:Name="NameBox" ToolTip="Shown in the Data panel and the print history" />
+              </DockPanel>
+
+              <!-- file databases -->
+              <DockPanel x:Name="FileRow" Margin="0,0,0,8">
+                <TextBlock Text="File" Style="{StaticResource FieldLabel}" Width="96" />
+                <Button DockPanel.Dock="Right" Content="Browse…" Style="{StaticResource GhostButton}" Margin="6,0,0,0"
+                        Click="OnBrowse" />
+                <TextBox x:Name="FileBox" TextChanged="OnFormChanged" />
+              </DockPanel>
+
+              <!-- server databases -->
+              <StackPanel x:Name="ServerRows">
+                <DockPanel Margin="0,0,0,8">
+                  <TextBlock Text="Server" Style="{StaticResource FieldLabel}" Width="96" />
+                  <TextBox x:Name="PortBox" DockPanel.Dock="Right" Width="64" Margin="6,0,0,0" Style="{StaticResource NumberBox}"
+                           ToolTip="Port (leave empty for the default)" TextChanged="OnFormChanged" />
+                  <TextBox x:Name="ServerBox" TextChanged="OnFormChanged" />
+                </DockPanel>
+                <DockPanel Margin="0,0,0,8">
+                  <TextBlock Text="Database" Style="{StaticResource FieldLabel}" Width="96" />
+                  <TextBox x:Name="DatabaseBox" TextChanged="OnFormChanged" />
+                </DockPanel>
+              </StackPanel>
+
+              <!-- ODBC -->
+              <StackPanel x:Name="OdbcRows">
+                <DockPanel Margin="0,0,0,8">
+                  <TextBlock Text="Data source" Style="{StaticResource FieldLabel}" Width="96" />
+                  <ComboBox x:Name="DsnBox" IsEditable="True" ToolTip="An ODBC data source (DSN) set up in Windows"
+                            SelectionChanged="OnFormChanged" />
+                </DockPanel>
+              </StackPanel>
+
+              <DockPanel x:Name="AuthRow" Margin="0,0,0,8">
+                <TextBlock Text="Sign in" Style="{StaticResource FieldLabel}" Width="96" />
+                <ComboBox x:Name="AuthBox" SelectionChanged="OnAuthChanged">
+                  <ComboBoxItem Content="User name and password" IsSelected="True" />
+                  <ComboBoxItem Content="Windows account" />
+                </ComboBox>
+              </DockPanel>
+              <StackPanel x:Name="LoginRows">
+                <DockPanel Margin="0,0,0,8">
+                  <TextBlock Text="User name" Style="{StaticResource FieldLabel}" Width="96" />
+                  <TextBox x:Name="UserBox" TextChanged="OnFormChanged" />
+                </DockPanel>
+              </StackPanel>
+              <DockPanel x:Name="PasswordRow" Margin="0,0,0,6">
+                <TextBlock Text="Password" Style="{StaticResource FieldLabel}" Width="96" />
+                <PasswordBox x:Name="PasswordBox" MinHeight="30" VerticalContentAlignment="Center" />
+              </DockPanel>
+              <CheckBox x:Name="RememberBox" Content="Remember password (encrypted for this Windows user)" Margin="96,2,0,6" />
+              <CheckBox x:Name="TrustCertBox" Content="Trust the server certificate" Margin="96,2,0,6"
+                        ToolTip="For servers inside your network with a self-signed certificate. Leave off for internet servers." />
+
+              <Expander Header="More options" Margin="0,4,0,0">
+                <StackPanel Margin="0,8,0,0">
+                  <TextBlock Text="Extra connection options" Style="{StaticResource FieldLabel}" Margin="0,0,0,4" />
+                  <TextBox x:Name="OptionsBox" FontFamily="{StaticResource Font.Mono}" TextWrapping="Wrap" AcceptsReturn="False"
+                           ToolTip="Key=Value; pairs added to the connection string, e.g. Encrypt=False. For ODBC without a DSN, the whole connection string." />
+                  <DockPanel Margin="0,8,0,0">
+                    <TextBlock Text="Time limit (s)" Style="{StaticResource FieldLabel}" Width="96" />
+                    <TextBox x:Name="TimeoutBox" Style="{StaticResource NumberBox}" Width="64" HorizontalAlignment="Left" Text="30" />
+                  </DockPanel>
+                </StackPanel>
+              </Expander>
+
+              <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                <Button x:Name="TestButton" Content="Test connection" Style="{StaticResource GhostButton}" Click="OnTest" />
+              </StackPanel>
+            </StackPanel>
+          </Border>
+
+          <TextBlock Text="RECORDS" Style="{StaticResource PanelSectionHeader}" />
+          <Border Style="{StaticResource InsetPanel}" Padding="14,12">
+            <StackPanel>
+              <RadioButton x:Name="TableMode" Content="A table or view" IsChecked="True" GroupName="Mode" Checked="OnModeChanged" />
+              <DockPanel Margin="22,6,0,10" x:Name="TableRow">
+                <Button DockPanel.Dock="Right" Content="List tables" Style="{StaticResource GhostButton}" Margin="6,0,0,0"
+                        Click="OnListTables" />
+                <ComboBox x:Name="TableBox" IsEditable="True" SelectionChanged="OnTableChosen" />
+              </DockPanel>
+              <RadioButton x:Name="QueryMode" Content="A SELECT query" GroupName="Mode" Checked="OnModeChanged" />
+              <TextBox x:Name="QueryBox" Style="{StaticResource MultiLineTextBox}" Margin="22,6,0,4" Height="110" AcceptsTab="True"
+                       TextWrapping="NoWrap" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
+                       FontFamily="{StaticResource Font.Mono}" FontSize="12"
+                       TextChanged="OnQueryChanged" />
+              <TextBlock x:Name="QueryProblem" Margin="22,0,0,6" FontSize="11.5" TextWrapping="Wrap"
+                         Foreground="{DynamicResource Br.Danger}" />
+              <DockPanel Margin="0,6,0,0">
+                <TextBlock Text="Row limit" Style="{StaticResource FieldLabel}" Width="96" />
+                <TextBlock DockPanel.Dock="Right" Text="0 reads every row" FontSize="11.5" VerticalAlignment="Center"
+                           Foreground="{DynamicResource Br.TextMuted}" Margin="8,0,0,0" />
+                <TextBox x:Name="LimitBox" Style="{StaticResource NumberBox}" Width="80" HorizontalAlignment="Left" Text="0" />
+              </DockPanel>
+            </StackPanel>
+          </Border>
+        </StackPanel>
+      </ScrollViewer>
+
+      <GridSplitter Grid.Column="1" Width="6" HorizontalAlignment="Stretch" Background="Transparent" />
+
+      <!-- preview -->
+      <DockPanel Grid.Column="2" Margin="6,14,18,14">
+        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,8">
+          <Button DockPanel.Dock="Right" x:Name="PreviewButton" Content="Preview" Style="{StaticResource GhostButton}"
+                  Click="OnPreview" />
+          <TextBlock Text="PREVIEW" Style="{StaticResource PanelSectionHeader}" VerticalAlignment="Center" Margin="0" />
+          <TextBlock x:Name="PreviewCaption" FontSize="11.5" Foreground="{DynamicResource Br.TextMuted}"
+                     VerticalAlignment="Center" Margin="10,0,0,0" TextTrimming="CharacterEllipsis" />
+        </DockPanel>
+        <Grid>
+          <DataGrid x:Name="PreviewGrid" AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column"
+                    GridLinesVisibility="Horizontal" CanUserAddRows="False" Background="Transparent"
+                    BorderThickness="1" BorderBrush="{DynamicResource Br.Border}"
+                    EnableRowVirtualization="True" EnableColumnVirtualization="True" />
+          <TextBlock x:Name="PreviewEmpty" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center"
+                     TextWrapping="Wrap" MaxWidth="280" FontSize="12.5" Foreground="{DynamicResource Br.TextMuted}"
+                     Text="Fill in the connection, choose a table or type a query, then Preview to see the first rows." />
+        </Grid>
+      </DockPanel>
+    </Grid>
+  </DockPanel>
+</Window>

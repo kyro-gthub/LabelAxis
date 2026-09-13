@@ -175,6 +175,7 @@ public partial class MainWindow : Window
         {
             if (_vm.Session.Document.HasUnsavedChanges)
             {
+                _vm.Session.SyncDataCache();
                 _env.AutoSave.Snapshot(_vm.Session.Document);
                 _vm.StatusText = $"Auto-saved recovery snapshot at {DateTime.Now:T}";
             }

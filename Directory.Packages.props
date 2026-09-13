@@ -12,11 +12,19 @@
     <PackageVersion Include="CsvHelper" Version="33.1.0" />
     <PackageVersion Include="ClosedXML" Version="0.105.1" />
 
+    <!-- Live data connections (LabelMaker.Data) -->
+    <PackageVersion Include="Microsoft.Data.Sqlite" Version="10.0.12" />
+    <PackageVersion Include="Microsoft.Data.SqlClient" Version="7.0.3" />
+    <PackageVersion Include="MySqlConnector" Version="2.6.2" />
+    <PackageVersion Include="Npgsql" Version="10.0.3" />
+    <PackageVersion Include="System.Data.Odbc" Version="10.0.12" />
+    <PackageVersion Include="System.Data.OleDb" Version="10.0.12" />
+
     <!-- Vector PDF export -->
     <PackageVersion Include="PdfSharp" Version="6.2.4" />
 
     <!-- Logging abstraction only (no sinks pulled into Core) -->
-    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.12" />
 
     <!-- Test stack -->
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />

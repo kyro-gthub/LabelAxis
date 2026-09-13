@@ -22,6 +22,9 @@ public sealed class DialogService : IShellServices
 
     public void Bind(MainViewModel vm) => _vm = vm;
 
+    /// <summary>The window in front, so a message raised from a dialog appears over that dialog rather than behind it.</summary>
+    private Window Front => Application.Current.Windows.OfType<Window>().FirstOrDefault(w => w.IsActive && w.IsVisible) ?? _owner;
+
     public string? PickOpenFile(string filter, string? title = null)
     {
         var dlg = new OpenFileDialog { Filter = filter, Title = title ?? "Open" };
@@ -57,7 +60,7 @@ public sealed class DialogService : IShellServices
     }
 
     public T RunJob<T>(string heading, string unit, int total, Func<IProgress<int>, CancellationToken, Task<T>> job) =>
-        JobProgressWindow.Run(_owner, heading, unit, total, job);
+        JobProgressWindow.Run(Front, heading, unit, total, job);
 
     public string? PickFolder(string? title = null)
     {
@@ -72,13 +75,25 @@ public sealed class DialogService : IShellServices
     }
 
     public void Info(string message, string title = "Label Maker") =>
-        MessageBox.Show(_owner, message, title, MessageBoxButton.OK, MessageBoxImage.Information);
+        MessageBox.Show(Front, message, title, MessageBoxButton.OK, MessageBoxImage.Information);
 
     public void Warn(string message, string title = "Label Maker") =>
-        MessageBox.Show(_owner, message, title, MessageBoxButton.OK, MessageBoxImage.Warning);
+        MessageBox.Show(Front, message, title, MessageBoxButton.OK, MessageBoxImage.Warning);
 
     public bool Confirm(string message, string title = "Label Maker") =>
-        MessageBox.Show(_owner, message, title, MessageBoxButton.OKCancel, MessageBoxImage.Question) == MessageBoxResult.OK;
+        MessageBox.Show(Front, message, title, MessageBoxButton.OKCancel, MessageBoxImage.Question) == MessageBoxResult.OK;
+
+    public string? PromptPassword(string title, string message)
+    {
+        var win = new PasswordWindow(title, message) { Owner = Front };
+        return win.ShowDialog() == true ? win.Password : null;
+    }
+
+    public DataConnectionChoice? ShowDataConnection(LabelMaker.Core.Model.DataConnectionModel? existing, string? knownPassword)
+    {
+        var win = new DataConnectionWindow(existing, knownPassword) { Owner = Front };
+        return win.ShowDialog() == true ? win.Result : null;
+    }
 
     public bool? ConfirmSaveChanges(string projectTitle)
     {
@@ -132,7 +147,7 @@ public sealed class DialogService : IShellServices
             return false;
         }
 
-        var win = new PrintSettingsWindow(_vm.Session, this) { Owner = _owner };
+        var win = new PrintSettingsWindow(_vm.Session, this) { Owner = Front };
         return win.ShowDialog() == true;
     }
 
@@ -182,7 +197,7 @@ public sealed class DialogService : IShellServices
 
         try
         {
-            new PrintPreviewWindow(_vm.Session, _vm.PrintServer, this) { Owner = _owner }.ShowDialog();
+            new PrintPreviewWindow(_vm.Session, _vm.PrintServer, this) { Owner = Front }.ShowDialog();
         }
         catch (Exception ex)
         {
@@ -217,7 +232,7 @@ public sealed class DialogService : IShellServices
             return false;
         }
 
-        var win = new PrintWindow(_vm.Session, _vm.PrintServer, this, _env.PrintHistory) { Owner = _owner };
+        var win = new PrintWindow(_vm.Session, _vm.PrintServer, this, _env.PrintHistory) { Owner = Front };
         bool sent = win.ShowDialog() == true;
 
         // Reprint chosen from the history inside the dialog: run it now that the dialog is closed.

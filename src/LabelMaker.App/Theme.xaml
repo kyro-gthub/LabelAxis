@@ -264,6 +264,61 @@
     </Setter>
   </Style>
 
+  <!-- Multi-line text (queries, notes): content starts at the top instead of centring. -->
+  <Style x:Key="MultiLineTextBox" TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+    <Setter Property="AcceptsReturn" Value="True" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="TextBox">
+          <Border x:Name="bd" CornerRadius="6" Background="{TemplateBinding Background}"
+                  BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+            <ScrollViewer x:Name="PART_ContentHost" Margin="{TemplateBinding Padding}" />
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="bd" Property="BorderBrush" Value="{DynamicResource Br.Accent}" />
+            </Trigger>
+            <Trigger Property="IsKeyboardFocused" Value="True">
+              <Setter TargetName="bd" Property="BorderBrush" Value="{DynamicResource Br.Accent}" />
+              <Setter TargetName="bd" Property="BorderThickness" Value="1.4" />
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <!-- ============================ PasswordBox ============================ -->
+  <Style TargetType="PasswordBox">
+    <Setter Property="FontFamily" Value="{StaticResource Font.Ui}" />
+    <Setter Property="FontSize" Value="{StaticResource Font.Size}" />
+    <Setter Property="Foreground" Value="{DynamicResource Br.Text}" />
+    <Setter Property="Background" Value="{DynamicResource Br.Bg}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource Br.BorderStrong}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="Padding" Value="7,4" />
+    <Setter Property="CaretBrush" Value="{DynamicResource Br.Accent}" />
+    <Setter Property="SelectionBrush" Value="{DynamicResource Br.Accent}" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="PasswordBox">
+          <Border x:Name="bd" CornerRadius="6" Background="{TemplateBinding Background}"
+                  BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+            <ScrollViewer x:Name="PART_ContentHost" Margin="{TemplateBinding Padding}" VerticalAlignment="Center" />
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="bd" Property="BorderBrush" Value="{DynamicResource Br.Accent}" />
+            </Trigger>
+            <Trigger Property="IsKeyboardFocused" Value="True">
+              <Setter TargetName="bd" Property="BorderBrush" Value="{DynamicResource Br.Accent}" />
+              <Setter TargetName="bd" Property="BorderThickness" Value="1.4" />
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
   <!-- ============================ CheckBox ============================ -->
   <Style TargetType="CheckBox">
     <Setter Property="Foreground" Value="{DynamicResource Br.Text}" />

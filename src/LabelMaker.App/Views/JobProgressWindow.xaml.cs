@@ -24,6 +24,7 @@ public partial class JobProgressWindow : Window, IDisposable
         _unit = unit;
         _total = Math.Max(0, total);
         Bar.Maximum = Math.Max(1, _total);
+        Bar.IsIndeterminate = _total == 0;   // reading a database: the row count is not known up front
         Report(0);
         Closing += (_, e) =>
         {

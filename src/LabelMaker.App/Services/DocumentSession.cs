@@ -69,6 +69,9 @@ public sealed class DocumentSession
     public event EventHandler? SelectionChanged;
     public event EventHandler? RecordChanged;
     public event EventHandler? DataChanged;
+
+    /// <summary>Cells or rows of the current data were edited in place (the table is the same object).</summary>
+    public event EventHandler? RecordsEdited;
     public event EventHandler? HistoryChanged;
     public event EventHandler? ActivePageChanged;
     public event EventHandler? PagesChanged;
@@ -279,12 +282,64 @@ public sealed class DocumentSession
             Project.ActiveDataConnectionId = connection.Id;
         }
 
+        if (data is null)
+        {
+            Document.DataCaches.Clear();
+            Project.ActiveDataConnectionId = null;
+            _dataCacheStale = false;
+        }
+        else
+        {
+            _dataCacheStale = true;
+        }
+
         RebuildSearchIndex();
         DataChanged?.Invoke(this, EventArgs.Empty);
         RecordChanged?.Invoke(this, EventArgs.Empty);
         if (markDirty)
         {
             MarkDirty();
+        }
+    }
+
+    private bool _dataCacheStale;
+
+    /// <summary>The active connection, when the records came from one.</summary>
+    public DataConnectionModel? ActiveConnection =>
+        Project.DataConnections.FirstOrDefault(c => c.Id == Project.ActiveDataConnectionId);
+
+    /// <summary>Called by record edits (and their undo) after changing <see cref="Data"/> in place.</summary>
+    public void NotifyRecordsEdited()
+    {
+        _dataCacheStale = true;
+        if (Data is { } data)
+        {
+            _recordIndex = Math.Clamp(_recordIndex, 0, Math.Max(0, data.RowCount - 1));
+        }
+
+        RebuildSearchIndex();
+        RecordsEdited?.Invoke(this, EventArgs.Empty);
+        RecordChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    /// <summary>
+    /// Writes the snapshot of the records into the document before it is saved, so the
+    /// project reopens with exactly these records (edits included) even offline.
+    /// Done lazily: rebuilding the CSV on every cell edit would be wasted work.
+    /// </summary>
+    public void SyncDataCache()
+    {
+        if (!_dataCacheStale)
+        {
+            return;
+        }
+
+        _dataCacheStale = false;
+        Document.DataCaches.Clear();
+        if (Data is { } data)
+        {
+            string id = Project.ActiveDataConnectionId ?? "manual";
+            Document.DataCaches.Add(new ProjectDataCache(id, data.ToCsv(), "{}"));
         }
     }
 

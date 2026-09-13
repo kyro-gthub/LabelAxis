@@ -1,5 +1,8 @@
 namespace LabelMaker.App.Services;
 
+/// <summary>A database connection chosen in the connect dialog, with the password typed for it.</summary>
+public sealed record DataConnectionChoice(Core.Model.DataConnectionModel Connection, string? Password);
+
 /// <summary>Chrome the view model needs from the shell: file pickers, message boxes, sub-windows.</summary>
 public interface IShellServices
 {
@@ -77,6 +80,16 @@ public interface IShellServices
     /// if the user cancelled, or whatever the job threw.
     /// </summary>
     T RunJob<T>(string heading, string unit, int total, Func<IProgress<int>, CancellationToken, Task<T>> job);
+
+    /// <summary>
+    /// Connect to a database: choose the kind, sign in, pick a table or type a query and
+    /// preview it. Returns what to read, or null on cancel. <paramref name="existing"/>
+    /// opens the form filled in, to change the current connection.
+    /// </summary>
+    DataConnectionChoice? ShowDataConnection(Core.Model.DataConnectionModel? existing, string? knownPassword);
+
+    /// <summary>Asks for a password (masked). Null on cancel.</summary>
+    string? PromptPassword(string title, string message);
 
     /// <summary>Colour chooser with palette, RGBA sliders and an eyedropper. Null on cancel.</summary>
     Core.Model.ColorRgba? PickColor(Core.Model.ColorRgba initial, string title);

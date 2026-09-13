@@ -134,6 +134,10 @@ public partial class PrintWindow : Window
 
         ContentText.Text = s.Content switch
         {
+            PrintContent.VariableData when s.SelectedRecords.Count > 0 =>
+                $"One label for each of {s.SelectedRecords.Count:N0} chosen record(s), out of {_session.RecordCount:N0}.",
+            PrintContent.VariableData when s.FirstRecord is not null || s.LastRecord is not null =>
+                $"One label per record, records {(s.FirstRecord ?? 0) + 1:N0}–{(s.LastRecord ?? _session.RecordCount - 1) + 1:N0} of {_session.RecordCount:N0}.",
             PrintContent.VariableData => $"One label per record — {_session.RecordCount:N0} record(s) loaded.",
             PrintContent.Pages => $"The project's {_session.Project.Pages.Count} standalone page(s), several to a sheet.",
             _ => "The master label repeated in every slot on the sheet.",
