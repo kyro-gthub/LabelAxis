@@ -26,7 +26,7 @@ using LabelMaker.Export.Svg;
 
 namespace LabelMaker.App.ViewModels;
 
-public sealed class MainViewModel : ObservableObject
+public sealed partial class MainViewModel : ObservableObject
 {
     private readonly AppEnvironment _env;
     private readonly IShellServices _shell;
@@ -134,6 +134,13 @@ public sealed class MainViewModel : ObservableObject
             DataChanged?.Invoke(this, EventArgs.Empty);
             RefreshSearch();
         };
+        _session.RecordsEdited += (_, _) =>
+        {
+            OnPropertyChanged(nameof(RecordText));
+            OnPropertyChanged(nameof(DataSourceSummary));
+            OnPropertyChanged(nameof(RecordsReadyText));
+            RecordsEdited?.Invoke(this, EventArgs.Empty);
+        };
         _session.HistoryChanged += (_, _) => RaiseAllCanExecute();
         _session.PagesChanged += (_, _) => RebuildPages();
         _session.ActivePageChanged += (_, _) => OnActivePageChanged();
@@ -176,12 +183,14 @@ public sealed class MainViewModel : ObservableObject
         try
         {
             var service = new DataImportService();
-            RawTable raw = service.ReadRaw(new MemoryStream(System.Text.Encoding.UTF8.GetBytes(cache.Csv)), DataSourceKind.Csv);
+            RawTable raw = service.ReadRaw(new MemoryStream(System.Text.Encoding.UTF8.GetBytes(cache.Csv)), DataSourceKind.Csv,
+                new TabularReadOptions { Delimiter = "," });
 
             // The snapshot is already the built table (header row first, mapped names),
             // so read it back as plain CSV rather than re-applying the source's options.
             var snapshot = new DataConnectionModel { Id = connection.Id, Name = connection.Name, Kind = DataSourceKind.Csv };
             _session.SetData(service.BuildDataSet(raw, snapshot), null, markDirty: false);
+            DescribeRestoredData(project.DataConnections.FirstOrDefault(c => c.Id == cache.ConnectionId));
         }
         catch (Exception ex)
         {
@@ -321,9 +330,27 @@ public sealed class MainViewModel : ObservableObject
         }
     }
 
-    public string DataSourceSummary => _session.RecordCount > 0
-        ? $"{_session.RecordCount} record{(_session.RecordCount == 1 ? "" : "s")} loaded"
-        : "No data source connected";
+    public string DataSourceSummary
+    {
+        get
+        {
+            if (_session.RecordCount == 0)
+            {
+                return "No data source connected";
+            }
+
+            string records = $"{_session.RecordCount:N0} record{(_session.RecordCount == 1 ? "" : "s")}";
+            if (_session.ActiveConnection is not { } connection)
+            {
+                return records + " loaded";
+            }
+
+            string read = connection.LastRefreshedUtc is { } when
+                ? $"\nRead {when.ToLocalTime():d MMM yyyy, HH:mm}"
+                : string.Empty;
+            return $"{records} · {connection.Describe()}{read}";
+        }
+    }
 
     // ---------- shell chrome (title bar, tab strip, status bar) ----------
 
@@ -829,6 +856,7 @@ public sealed class MainViewModel : ObservableObject
         PrintSettingsCommand = new RelayCommand(OpenPrintSettingsThenPrint);
         PrintPreviewCommand = new RelayCommand(() => _shell.ShowPrintPreview());
         PrintHistoryCommand = new RelayCommand(ShowPrintHistory);
+        BuildDataCommands();
         DataTableCommand = new RelayCommand(() => _shell.ShowDataTable());
         SelectAllCommand = new RelayCommand(
             () => _session.SetSelection(_session.ActiveLabel.Objects.Where(o => o.Visible).ToList()),
@@ -1662,6 +1690,7 @@ public sealed class MainViewModel : ObservableObject
 
         try
         {
+            _session.SyncDataCache();
             ProjectFile.Save(_session.Document, path);
             _env.Settings.AddRecent(path, _session.Project.Metadata.Title);
             _env.Settings.LastTemplateId = _session.Project.Template?.Id;
@@ -1717,11 +1746,9 @@ public sealed class MainViewModel : ObservableObject
             RawTable raw = service.ReadRaw(path, new TabularReadOptions());
             DataSet data = service.BuildDataSet(raw, connection);
 
-            // cache a CSV snapshot inside the project
-            _session.Document.DataCaches.RemoveAll(c => c.ConnectionId == connection.Id);
-            _session.Document.DataCaches.Add(new ProjectDataCache(connection.Id, ToCsv(data), "{}"));
 
-            _session.SetData(data, connection);
+            connection.LastRefreshedUtc = DateTimeOffset.UtcNow;
+            UseRecords(data, connection);
             StatusText = $"Imported {data.RowCount} records, {data.Columns.Count} columns from {Path.GetFileName(path)}";
         }
         catch (Exception ex)
@@ -2114,21 +2141,6 @@ public sealed class MainViewModel : ObservableObject
         }
 
         return n == 0 ? "label" : new string(buffer[..n]);
-    }
-
-    private static string ToCsv(DataSet data)
-    {
-        var sb = new System.Text.StringBuilder();
-        sb.AppendLine(string.Join(',', data.Columns.Select(c => Escape(c.Name))));
-        foreach (var row in data.Rows)
-        {
-            sb.AppendLine(string.Join(',', data.Columns.Select(c => Escape(row[c.Name]))));
-        }
-
-        return sb.ToString();
-
-        static string Escape(string v) =>
-            v.Contains(',') || v.Contains('"') || v.Contains('\n') ? '"' + v.Replace("\"", "\"\"") + '"' : v;
     }
 }
 

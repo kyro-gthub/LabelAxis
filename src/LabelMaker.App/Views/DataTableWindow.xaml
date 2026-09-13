@@ -3,40 +3,90 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Style="{StaticResource AppWindow}"
         Background="{DynamicResource Br.Surface}" TextElement.Foreground="{DynamicResource Br.Text}"
-        Title="Data table" Height="560" Width="900" WindowStartupLocation="CenterOwner">
-  <DockPanel Margin="14">
-    <Border DockPanel.Dock="Top" Padding="0,0,0,10">
+        Title="Records" Height="640" Width="1040" MinHeight="420" MinWidth="720"
+        WindowStartupLocation="CenterOwner">
+  <Window.InputBindings>
+    <KeyBinding Key="Z" Modifiers="Control" Command="{Binding UndoCommand}" />
+    <KeyBinding Key="Y" Modifiers="Control" Command="{Binding RedoCommand}" />
+    <KeyBinding Key="F" Modifiers="Control" Command="{Binding FocusFilter, RelativeSource={RelativeSource AncestorType=Window}}" />
+  </Window.InputBindings>
+
+  <DockPanel>
+
+    <!-- header -->
+    <Border DockPanel.Dock="Top" Background="{DynamicResource Br.Bg}"
+            BorderBrush="{DynamicResource Br.Border}" BorderThickness="0,0,0,1" Padding="16,12">
       <DockPanel>
-        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
-          <Ellipse Width="8" Height="8" Fill="{DynamicResource Br.Ok}" VerticalAlignment="Center" Margin="0,0,7,0" />
-          <TextBlock x:Name="Summary" VerticalAlignment="Center" FontSize="12.5" />
+        <Border DockPanel.Dock="Left" Width="36" Height="36" CornerRadius="10" Margin="0,0,12,0"
+                Background="{DynamicResource Br.AccentSoft}">
+          <Image Source="{StaticResource Icon.Table}" Width="18" Height="18" />
+        </Border>
+        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+          <Button Content="Import file…" Style="{StaticResource GhostButton}" Margin="0,0,6,0" Click="OnImport" />
+          <Button Content="Connect database…" Style="{StaticResource GhostButton}" Margin="0,0,6,0" Click="OnConnect" />
+          <Button x:Name="RefreshButton" Content="Refresh" Style="{StaticResource GhostButton}" Click="OnRefresh"
+                  ToolTip="Read the file or database again" />
         </StackPanel>
-        <StackPanel Orientation="Horizontal">
-          <Button Content="Import CSV/XLSX…" Style="{StaticResource GhostButton}" Margin="0,0,8,0" Click="OnImport" />
-          <Button Content="Add field…" Style="{StaticResource GhostButton}" Margin="0,0,8,0" Click="OnAddField" />
-          <Button Content="Generate barcodes…" Style="{StaticResource GhostButton}" Margin="0,0,8,0" Click="OnBulkBarcode" />
-          <Button Content="Go to record" Style="{StaticResource GhostButton}" Click="OnGoToRecord" />
+        <StackPanel VerticalAlignment="Center">
+          <TextBlock Text="Records" FontFamily="{StaticResource Font.UiSemiBold}" FontSize="15" />
+          <TextBlock x:Name="SourceText" FontSize="12" Foreground="{DynamicResource Br.TextMuted}" Margin="0,2,0,0"
+                     TextTrimming="CharacterEllipsis" />
         </StackPanel>
       </DockPanel>
     </Border>
 
-    <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
-      <Button Content="Close" Style="{StaticResource PrimaryButton}" IsCancel="True" />
-    </StackPanel>
+    <!-- toolbar -->
+    <Border DockPanel.Dock="Top" Padding="16,10,16,8">
+      <DockPanel>
+        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+          <Button Content="Add record" Style="{StaticResource GhostButton}" Margin="0,0,6,0" Click="OnAddRecord"
+                  ToolTip="Insert an empty record below the selected one" />
+          <Button x:Name="DeleteButton" Content="Delete" Style="{StaticResource GhostButton}" Margin="0,0,6,0"
+                  Click="OnDelete" ToolTip="Delete the selected records (Delete)" />
+          <Button Content="Add field to label" Style="{StaticResource GhostButton}" Margin="0,0,6,0" Click="OnAddField" />
+          <Button Content="Show on canvas" Style="{StaticResource GhostButton}" Click="OnGoToRecord"
+                  ToolTip="Show the selected record on the label (double-click a row)" />
+        </StackPanel>
+        <Border Style="{StaticResource SearchField}" Width="300" HorizontalAlignment="Left">
+          <DockPanel>
+            <Image DockPanel.Dock="Left" Source="{StaticResource Icon.Search}" Width="15" Height="15" Margin="2,0,8,0" />
+            <TextBox x:Name="FilterBox" Style="{StaticResource PlainTextBox}" Tag="Filter records…"
+                     TextChanged="OnFilterChanged" />
+          </DockPanel>
+        </Border>
+      </DockPanel>
+    </Border>
 
-    <Grid>
-      <DataGrid x:Name="Grid" AutoGenerateColumns="False" IsReadOnly="True"
+    <!-- footer -->
+    <Border DockPanel.Dock="Bottom" Background="{DynamicResource Br.Bg}"
+            BorderBrush="{DynamicResource Br.Border}" BorderThickness="0,1,0,0" Padding="16,10">
+      <DockPanel>
+        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+          <Button x:Name="PrintSelectedButton" Style="{StaticResource GhostButton}" Margin="0,0,6,0" Click="OnPrintSelected"
+                  ToolTip="One label for each selected record" />
+          <Button x:Name="PrintShownButton" Style="{StaticResource GhostButton}" Margin="0,0,12,0" Click="OnPrintShown"
+                  ToolTip="One label for each record the filter shows" />
+          <Button Content="Close" Style="{StaticResource PrimaryButton}" IsCancel="True" />
+        </StackPanel>
+        <Ellipse Width="8" Height="8" Fill="{DynamicResource Br.Ok}" VerticalAlignment="Center" Margin="0,0,8,0" />
+        <TextBlock x:Name="Summary" VerticalAlignment="Center" FontSize="12.5" Foreground="{DynamicResource Br.Text2}"
+                   TextTrimming="CharacterEllipsis" />
+      </DockPanel>
+    </Border>
+
+    <Grid Margin="16,0,16,12">
+      <DataGrid x:Name="Grid" AutoGenerateColumns="False" IsReadOnly="False"
                 HeadersVisibility="Column" GridLinesVisibility="Horizontal"
-                CanUserAddRows="False" SelectionMode="Single"
-                Background="Transparent" BorderThickness="1"
-                BorderBrush="{DynamicResource Br.Border}">
-        <DataGrid.InputBindings>
-          <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding GoToRecord, RelativeSource={RelativeSource AncestorType=Window}}" />
-        </DataGrid.InputBindings>
-      </DataGrid>
-      <TextBlock x:Name="Empty" Text="No data source connected — use Import CSV/XLSX to load records."
-                 Foreground="{DynamicResource Br.TextMuted}" FontSize="12.5"
-                 HorizontalAlignment="Center" VerticalAlignment="Center" />
+                CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False"
+                SelectionMode="Extended" SelectionUnit="FullRow"
+                EnableRowVirtualization="True" EnableColumnVirtualization="True"
+                VirtualizingPanel.VirtualizationMode="Recycling"
+                Background="Transparent" BorderThickness="1" BorderBrush="{DynamicResource Br.Border}"
+                CellEditEnding="OnCellEditEnding" SelectionChanged="OnSelectionChanged"
+                PreviewKeyDown="OnGridKeyDown" MouseDoubleClick="OnRowDoubleClick" />
+      <TextBlock x:Name="Empty" Foreground="{DynamicResource Br.TextMuted}" FontSize="12.5" TextAlignment="Center"
+                 HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="360"
+                 Text="No records yet. Import a CSV or Excel file, or connect to a database, to print one label per record." />
     </Grid>
   </DockPanel>
 </Window>

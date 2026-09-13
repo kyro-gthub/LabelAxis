@@ -14,11 +14,13 @@
     <PackageReference Include="coverlet.collector" />
     <PackageReference Include="FluentAssertions" />
     <PackageReference Include="ZXing.Net" />
+    <PackageReference Include="Microsoft.Data.Sqlite" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\LabelMaker.Core\LabelMaker.Core.csproj" />
     <ProjectReference Include="..\..\src\LabelMaker.Export\LabelMaker.Export.csproj" />
+    <ProjectReference Include="..\..\src\LabelMaker.Data\LabelMaker.Data.csproj" />
   </ItemGroup>
 
   <ItemGroup>

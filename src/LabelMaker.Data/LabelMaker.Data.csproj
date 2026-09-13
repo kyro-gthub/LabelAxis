@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>LabelMaker.Data</RootNamespace>
+    <AssemblyName>LabelMaker.Data</AssemblyName>
+    <Description>Live data connections for variable-data printing: SQLite, SQL Server, MySQL/MariaDB, PostgreSQL, ODBC and Access, read-only.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Data.Sqlite" />
+    <PackageReference Include="Microsoft.Data.SqlClient" />
+    <PackageReference Include="MySqlConnector" />
+    <PackageReference Include="Npgsql" />
+    <PackageReference Include="System.Data.Odbc" />
+    <PackageReference Include="System.Data.OleDb" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LabelMaker.Core\LabelMaker.Core.csproj" />
+  </ItemGroup>
+
+</Project>

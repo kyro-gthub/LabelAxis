@@ -35,6 +35,7 @@
     <KeyBinding Key="T" Modifiers="Control+Shift" Command="{Binding FreeTransformCommand}" />
     <KeyBinding Key="H" Modifiers="Control" Command="{Binding FindReplaceCommand}" />
     <KeyBinding Key="T" Modifiers="Control" Command="{Binding DataTableCommand}" />
+    <KeyBinding Key="F5" Command="{Binding RefreshDataCommand}" />
     <KeyBinding Key="F2" Command="{Binding RenamePageCommand}" />
     <KeyBinding Key="P" Modifiers="Control+Shift" Command="{Binding PrintPreviewCommand}" />
     <KeyBinding Key="L" Modifiers="Control" Command="{Binding ToggleObjectLockCommand}" />
@@ -114,7 +115,10 @@
 
             <MenuItem Header="D_ata">
               <MenuItem Header="_Import CSV / Excel…" Command="{Binding ImportDataCommand}" />
-              <MenuItem Header="_Data table…" InputGestureText="Ctrl+T" Command="{Binding DataTableCommand}" />
+              <MenuItem Header="Connect to _database…" Command="{Binding ConnectDatabaseCommand}" />
+              <MenuItem Header="_Edit connection…" Command="{Binding EditConnectionCommand}" />
+              <MenuItem Header="_Refresh records" InputGestureText="F5" Command="{Binding RefreshDataCommand}" />
+              <MenuItem Header="_Records…" InputGestureText="Ctrl+T" Command="{Binding DataTableCommand}" />
               <MenuItem Header="_Clear data source" Command="{Binding ClearDataCommand}" />
               <Separator />
               <MenuItem Header="Manage _sequences…" Command="{Binding SequencesCommand}" />
@@ -539,10 +543,16 @@
               <StackPanel>
                 <TextBlock Text="DATA SOURCE" Style="{StaticResource PanelSectionHeader}" Margin="0,0,0,6" />
                 <TextBlock Text="{Binding DataSourceSummary}" FontSize="12.5" Margin="0,0,0,10" TextWrapping="Wrap" />
-                <StackPanel Orientation="Horizontal">
-                  <Button Content="Import…" Command="{Binding ImportDataCommand}" Style="{StaticResource PrimaryButton}" Margin="0,0,8,0" />
-                  <Button Content="Clear" Command="{Binding ClearDataCommand}" Style="{StaticResource GhostButton}" />
-                </StackPanel>
+                <WrapPanel Orientation="Horizontal">
+                  <Button Content="Import file…" Command="{Binding ImportDataCommand}" Style="{StaticResource PrimaryButton}" Margin="0,0,6,6" />
+                  <Button Content="Database…" Command="{Binding ConnectDatabaseCommand}" Style="{StaticResource GhostButton}" Margin="0,0,6,6"
+                          ToolTip="Read records from SQLite, SQL Server, MySQL, PostgreSQL, Access or ODBC" />
+                  <Button Content="Records…" Command="{Binding DataTableCommand}" Style="{StaticResource GhostButton}" Margin="0,0,6,6"
+                          ToolTip="See, edit, filter and print chosen records (Ctrl+T)" />
+                  <Button Content="Refresh" Command="{Binding RefreshDataCommand}" Style="{StaticResource GhostButton}" Margin="0,0,6,6"
+                          ToolTip="Read the file or database again (F5)" />
+                  <Button Content="Clear" Command="{Binding ClearDataCommand}" Style="{StaticResource GhostButton}" Margin="0,0,6,6" />
+                </WrapPanel>
               </StackPanel>
             </Border>
 
