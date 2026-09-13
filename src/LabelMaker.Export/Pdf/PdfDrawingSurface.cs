@@ -288,8 +288,25 @@ public sealed class PdfDrawingSurface : IDrawingSurface
             {
                 XFont font = MakeFont(span);
                 var brush = Brush(span.Foreground);
-                _gfx.DrawString(span.Text, font, brush, x * MmToPt, baseline * MmToPt, XStringFormats.BaseLineLeft);
-                double advance = TextMeasurer.MeasureWidthMm(span.Text, span.FontFamily, span.FontSizePt, span.Bold, span.Italic);
+                double advance;
+                double trackingMm = span.LetterSpacingEm * UnitConverter.PointsToMm(span.FontSizePt);
+                if (Math.Abs(trackingMm) < 1e-6)
+                {
+                    _gfx.DrawString(span.Text, font, brush, x * MmToPt, baseline * MmToPt, XStringFormats.BaseLineLeft);
+                    advance = TextMeasurer.MeasureWidthMm(span.Text, span.FontFamily, span.FontSizePt, span.Bold, span.Italic);
+                }
+                else
+                {
+                    // Letter spacing: place each character with the extra gap after it.
+                    advance = 0;
+                    System.Globalization.TextElementEnumerator characters = System.Globalization.StringInfo.GetTextElementEnumerator(span.Text);
+                    while (characters.MoveNext())
+                    {
+                        string c = characters.GetTextElement();
+                        _gfx.DrawString(c, font, brush, (x + advance) * MmToPt, baseline * MmToPt, XStringFormats.BaseLineLeft);
+                        advance += TextMeasurer.MeasureWidthMm(c, span.FontFamily, span.FontSizePt, span.Bold, span.Italic) + trackingMm;
+                    }
+                }
 
                 if (span.Underline)
                 {

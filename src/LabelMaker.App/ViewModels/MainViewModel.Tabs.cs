@@ -3,6 +3,7 @@ using System.IO;
 using LabelMaker.App.Mvvm;
 using LabelMaker.App.Rendering;
 using LabelMaker.App.Services;
+using LabelMaker.Core.Model;
 using LabelMaker.Core.Serialization;
 
 namespace LabelMaker.App.ViewModels;
@@ -98,7 +99,50 @@ public sealed partial class MainViewModel
         var session = new DocumentSession(document, images);
         var tab = new DocumentTab(session, images, new SelectionProperties(session, _env.Settings));
         RestoreCachedData(session, document);
+        UpgradeGuessedTemplate(session);
         return tab;
+    }
+
+    /// <summary>
+    /// Projects keep their own copy of the sheet layout. Early Formtec GS layouts were
+    /// estimates (with a 2.5 mm gap between columns that the real sheets do not have);
+    /// when a project still carries one, swap in the corrected layout, provided the
+    /// label size itself is unchanged so the design still fits.
+    /// </summary>
+    private void UpgradeGuessedTemplate(DocumentSession session)
+    {
+        ProjectModel project = session.Project;
+        if (project.Template is not { Source: { } source } old ||
+            !(source.Contains("approximate geometry", StringComparison.OrdinalIgnoreCase) ||
+              source.Contains("inferred from the project catalogue", StringComparison.OrdinalIgnoreCase)))
+        {
+            return;
+        }
+
+        if (_env.Templates.Get(old.Id) is not { } fresh)
+        {
+            StatusText = $"This project uses an estimated {old.ProductCode} layout that is not in the Formtec list. Check the sheet in Label manager before printing.";
+            return;
+        }
+
+        if (fresh.Grid == old.Grid)
+        {
+            return;
+        }
+
+        bool sameLabel = Math.Abs(fresh.Grid.LabelWidthMm - old.Grid.LabelWidthMm) < 0.01 &&
+                         Math.Abs(fresh.Grid.LabelHeightMm - old.Grid.LabelHeightMm) < 0.01;
+        if (sameLabel)
+        {
+            project.Template = fresh;
+            session.Document.HasUnsavedChanges = true;
+            StatusText = $"Corrected the {fresh.ProductCode} sheet layout: labels now sit edge to edge with no gaps. Save to keep it.";
+        }
+        else
+        {
+            StatusText = $"{fresh.ProductCode} labels are {fresh.Grid.LabelWidthMm:0.##} × {fresh.Grid.LabelHeightMm:0.##} mm (this project has " +
+                         $"{old.Grid.LabelWidthMm:0.##} × {old.Grid.LabelHeightMm:0.##}). Choose the sheet again in Label manager to update it.";
+        }
     }
 
     /// <summary>The tab showing the project saved at <paramref name="path"/>, if it is open.</summary>

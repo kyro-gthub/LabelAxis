@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-gs-1116",
+  "brand": "Formtec",
+  "productCode": "GS-1116",
+  "name": "Formtec GS-1116 — 105 × 37 mm, 16-up",
+  "categories": ["General", "Formtec GS"],
+  "page": { "size": "A4", "widthMm": 210.0, "heightMm": 297.0 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 2,
+    "rows": 8,
+    "labelWidthMm": 105,
+    "labelHeightMm": 37,
+    "marginTopMm": 0.5,
+    "marginLeftMm": 0,
+    "hGapMm": 0.0,
+    "vGapMm": 0.0,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "Formtec GS-1116 A4 sheet: 16 labels (2 x 8), each 105 x 37 mm, butted together with no gaps and centred on the page.",
+  "source": "Formtec GS dimensions list (label size); layout counted from the product code; no gaps, centred on A4 (GS-1065 confirmed by a test print)"
+}

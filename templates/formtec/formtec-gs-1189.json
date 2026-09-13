@@ -3,24 +3,24 @@
   "id": "formtec-gs-1189",
   "brand": "Formtec",
   "productCode": "GS-1189",
-  "name": "Formtec GS-1189 — Multi-purpose sticker label, 189-up",
-  "categories": ["General", "Multi-purpose", "Inventory", "Price labels"],
+  "name": "Formtec GS-1189 — 25 × 10 mm, 189-up",
+  "categories": ["General", "Formtec GS"],
   "page": { "size": "A4", "widthMm": 210.0, "heightMm": 297.0 },
   "orientation": "Portrait",
   "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
   "grid": {
     "columns": 7,
     "rows": 27,
-    "labelWidthMm": 25.0,
-    "labelHeightMm": 10.0,
+    "labelWidthMm": 25,
+    "labelHeightMm": 10,
     "marginTopMm": 13.5,
-    "marginLeftMm": 10.0,
-    "hGapMm": 2.5,
+    "marginLeftMm": 17.5,
+    "hGapMm": 0.0,
     "vGapMm": 0.0,
     "cornerRadiusMm": 0.0,
     "labelShape": "Rectangle"
   },
   "fillOrder": "RowMajor",
-  "notes": "Formtec FT-GS-1189 multi-purpose A4 sticker sheet: 189 labels (7x27), each 25x10 mm.",
-  "source": "Product dimensions supplied by user; centered A4 margins and GS-series horizontal spacing inferred from the project catalogue"
+  "notes": "Formtec GS-1189 A4 sheet: 189 labels (7 x 27), each 25 x 10 mm, butted together with no gaps and centred on the page.",
+  "source": "Formtec GS dimensions list (label size); layout counted from the product code; no gaps, centred on A4 (GS-1065 confirmed by a test print)"
 }
