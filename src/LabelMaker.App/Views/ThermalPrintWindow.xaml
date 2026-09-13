@@ -1,0 +1,191 @@
+<Window x:Class="LabelMaker.App.Views.ThermalPrintWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Style="{StaticResource AppWindow}"
+        Background="{DynamicResource Br.Surface}" TextElement.Foreground="{DynamicResource Br.Text}"
+        Title="Thermal print" Height="740" Width="1060" MinHeight="600" MinWidth="900"
+        WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
+  <DockPanel>
+    <Border DockPanel.Dock="Top" Background="{DynamicResource Br.Bg}"
+            BorderBrush="{DynamicResource Br.Border}" BorderThickness="0,0,0,1" Padding="18,14">
+      <DockPanel>
+        <Border DockPanel.Dock="Left" Width="36" Height="36" CornerRadius="10" Margin="0,0,12,0"
+                Background="{DynamicResource Br.AccentSoft}">
+          <Image Source="{StaticResource Icon.Print}" Width="18" Height="18" />
+        </Border>
+        <StackPanel VerticalAlignment="Center">
+          <TextBlock Text="Thermal print" FontFamily="{StaticResource Font.UiSemiBold}" FontSize="15" />
+          <TextBlock x:Name="HeaderSubtitle" FontSize="12" Foreground="{DynamicResource Br.TextMuted}" Margin="0,2,0,0" />
+        </StackPanel>
+      </DockPanel>
+    </Border>
+
+    <Border DockPanel.Dock="Bottom" Background="{DynamicResource Br.Bg}"
+            BorderBrush="{DynamicResource Br.Border}" BorderThickness="0,1,0,0" Padding="18,12">
+      <DockPanel>
+        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+          <Button Content="Cancel" Style="{StaticResource GhostButton}" IsCancel="True" Margin="0,0,8,0" />
+          <Button x:Name="PrintButton" Style="{StaticResource PrimaryButton}" IsDefault="True" Click="OnPrint">
+            <StackPanel Orientation="Horizontal">
+              <Image Source="{StaticResource Icon.PrintWhite}" Width="15" Height="15" Margin="0,0,7,0" />
+              <TextBlock x:Name="PrintButtonText" Text="Print" VerticalAlignment="Center" />
+            </StackPanel>
+          </Button>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal">
+          <Button Content="Use Windows driver instead…" Style="{StaticResource GhostButton}" Click="OnDriver"
+                  ToolTip="Print through the printer's normal Windows driver, as pages" />
+        </StackPanel>
+        <TextBlock x:Name="SummaryText" VerticalAlignment="Center" Margin="16,0" FontSize="12.5" TextTrimming="CharacterEllipsis"
+                   Foreground="{DynamicResource Br.Text2}" />
+      </DockPanel>
+    </Border>
+
+    <Grid>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="430" />
+        <ColumnDefinition Width="*" />
+      </Grid.ColumnDefinitions>
+
+      <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto" Padding="18,14,12,14">
+        <StackPanel>
+          <TextBlock Text="PRINTER" Style="{StaticResource PanelSectionHeader}" />
+          <Border Style="{StaticResource InsetPanel}" Padding="14,10" Margin="0,0,0,14">
+            <StackPanel>
+              <DockPanel Margin="0,3">
+                <TextBlock Text="Printer language" Style="{StaticResource FieldLabel}" Width="130" />
+                <ComboBox x:Name="LanguageBox" SelectionChanged="OnChanged">
+                  <ComboBoxItem Content="ZPL (Zebra)" />
+                  <ComboBoxItem Content="TSPL (TSC, Xprinter)" />
+                </ComboBox>
+              </DockPanel>
+              <DockPanel Margin="0,3">
+                <TextBlock Text="Send to" Style="{StaticResource FieldLabel}" Width="130" />
+                <ComboBox x:Name="DestinationBox" SelectionChanged="OnDestinationChanged">
+                  <ComboBoxItem Content="Windows printer" />
+                  <ComboBoxItem Content="Network (IP address)" />
+                  <ComboBoxItem Content="File (.zpl / .prn)" />
+                </ComboBox>
+              </DockPanel>
+              <DockPanel x:Name="PrinterRow" Margin="0,3">
+                <TextBlock Text="Printer" Style="{StaticResource FieldLabel}" Width="130" />
+                <ComboBox x:Name="PrinterBox" SelectionChanged="OnChanged" />
+              </DockPanel>
+              <DockPanel x:Name="AddressRow" Margin="0,3">
+                <TextBlock Text="Address" Style="{StaticResource FieldLabel}" Width="130" />
+                <Button DockPanel.Dock="Right" Content="Test" Style="{StaticResource GhostButton}" Margin="6,0,0,0" Click="OnTestNetwork"
+                        ToolTip="Check that the printer answers on this address" />
+                <TextBox x:Name="AddressBox" ToolTip="For example 192.168.1.50 or 192.168.1.50:9100" TextChanged="OnTextChanged" />
+              </DockPanel>
+              <DockPanel Margin="0,3">
+                <TextBlock Text="Resolution" Style="{StaticResource FieldLabel}" Width="130" />
+                <ComboBox x:Name="DpiBox" SelectionChanged="OnChanged">
+                  <ComboBoxItem Content="203 dpi (8 dots/mm)" Tag="203" />
+                  <ComboBoxItem Content="300 dpi (12 dots/mm)" Tag="300" />
+                  <ComboBoxItem Content="600 dpi (24 dots/mm)" Tag="600" />
+                </ComboBox>
+              </DockPanel>
+            </StackPanel>
+          </Border>
+
+          <TextBlock Text="MEDIA" Style="{StaticResource PanelSectionHeader}" />
+          <Border Style="{StaticResource InsetPanel}" Padding="14,10" Margin="0,0,0,14">
+            <StackPanel>
+              <DockPanel Margin="0,3">
+                <TextBlock Text="Label detection" Style="{StaticResource FieldLabel}" Width="130" />
+                <ComboBox x:Name="SensingBox" SelectionChanged="OnChanged">
+                  <ComboBoxItem Content="Gap between labels" />
+                  <ComboBoxItem Content="Black mark" />
+                  <ComboBoxItem Content="Continuous" />
+                </ComboBox>
+              </DockPanel>
+              <DockPanel Margin="0,3">
+                <TextBlock Text="After printing" Style="{StaticResource FieldLabel}" Width="130" />
+                <ComboBox x:Name="AfterBox" SelectionChanged="OnChanged">
+                  <ComboBoxItem Content="Tear off" />
+                  <ComboBoxItem Content="Peel off (dispenser)" />
+                  <ComboBoxItem Content="Cut (cutter fitted)" />
+                </ComboBox>
+              </DockPanel>
+              <DockPanel Margin="0,3">
+                <TextBlock Text="Move print (mm)" Style="{StaticResource FieldLabel}" Width="130" />
+                <TextBlock Text="right" VerticalAlignment="Center" Margin="0,0,6,0" Foreground="{DynamicResource Br.TextMuted}" />
+                <TextBox x:Name="OffsetXBox" Style="{StaticResource NumberBox}" Width="60" TextChanged="OnTextChanged" />
+                <TextBlock Text="down" VerticalAlignment="Center" Margin="12,0,6,0" Foreground="{DynamicResource Br.TextMuted}" />
+                <TextBox x:Name="OffsetYBox" Style="{StaticResource NumberBox}" Width="60" HorizontalAlignment="Left" TextChanged="OnTextChanged" />
+              </DockPanel>
+              <CheckBox x:Name="RotateBox" Content="Print upside down" Margin="130,6,0,2" Click="OnClickChanged" />
+            </StackPanel>
+          </Border>
+
+          <TextBlock Text="QUALITY" Style="{StaticResource PanelSectionHeader}" />
+          <Border Style="{StaticResource InsetPanel}" Padding="14,10" Margin="0,0,0,14">
+            <StackPanel>
+              <DockPanel Margin="0,3">
+                <TextBlock Text="Darkness" Style="{StaticResource FieldLabel}" Width="130" />
+                <TextBlock DockPanel.Dock="Right" Width="30" TextAlignment="Right" Text="{Binding Value, ElementName=DarknessSlider, StringFormat=0}" />
+                <Slider x:Name="DarknessSlider" Minimum="0" Maximum="30" IsSnapToTickEnabled="True" TickFrequency="1" ValueChanged="OnSliderChanged" />
+              </DockPanel>
+              <DockPanel Margin="0,3">
+                <TextBlock Text="Speed (in/s)" Style="{StaticResource FieldLabel}" Width="130" />
+                <TextBlock DockPanel.Dock="Right" Width="30" TextAlignment="Right" Text="{Binding Value, ElementName=SpeedSlider, StringFormat=0}" />
+                <Slider x:Name="SpeedSlider" Minimum="1" Maximum="12" IsSnapToTickEnabled="True" TickFrequency="1" ValueChanged="OnSliderChanged" />
+              </DockPanel>
+              <DockPanel Margin="0,3">
+                <TextBlock Text="Greys become" Style="{StaticResource FieldLabel}" Width="130" />
+                <ComboBox x:Name="DitherBox" SelectionChanged="OnChanged">
+                  <ComboBoxItem Content="Crisp (text, barcodes)" />
+                  <ComboBoxItem Content="Shaded (photos, logos)" />
+                </ComboBox>
+              </DockPanel>
+              <DockPanel x:Name="ThresholdRow" Margin="0,3">
+                <TextBlock Text="Black from" Style="{StaticResource FieldLabel}" Width="130" />
+                <TextBlock DockPanel.Dock="Right" Width="30" TextAlignment="Right" Text="{Binding Value, ElementName=ThresholdSlider, StringFormat=0}" />
+                <Slider x:Name="ThresholdSlider" Minimum="30" Maximum="230" ValueChanged="OnSliderChanged"
+                        ToolTip="Higher prints lighter greys as black" />
+              </DockPanel>
+            </StackPanel>
+          </Border>
+
+          <TextBlock Text="JOB" Style="{StaticResource PanelSectionHeader}" />
+          <Border Style="{StaticResource InsetPanel}" Padding="14,10">
+            <StackPanel>
+              <TextBlock x:Name="ContentText" TextWrapping="Wrap" FontSize="12.5" Margin="0,0,0,6" />
+              <DockPanel Margin="0,3">
+                <TextBlock Text="Copies of each" Style="{StaticResource FieldLabel}" Width="130" />
+                <TextBox x:Name="CopiesBox" Style="{StaticResource NumberBox}" Width="70" HorizontalAlignment="Left" TextChanged="OnTextChanged" />
+              </DockPanel>
+              <DockPanel Margin="0,3">
+                <TextBlock Text="Rows" Style="{StaticResource FieldLabel}" Width="130" />
+                <TextBox x:Name="FirstRowBox" Style="{StaticResource NumberBox}" Width="64" TextChanged="OnTextChanged"
+                         ToolTip="First row to print; leave both empty for all" />
+                <TextBlock Text="to" VerticalAlignment="Center" Margin="8,0" Foreground="{DynamicResource Br.TextMuted}" />
+                <TextBox x:Name="LastRowBox" Style="{StaticResource NumberBox}" Width="64" HorizontalAlignment="Left" TextChanged="OnTextChanged" />
+              </DockPanel>
+              <Button Content="Change what to print…" Style="{StaticResource GhostButton}" HorizontalAlignment="Left" Margin="0,8,0,0" Click="OnAdvanced" />
+            </StackPanel>
+          </Border>
+        </StackPanel>
+      </ScrollViewer>
+
+      <DockPanel Grid.Column="1" Margin="6,14,18,14">
+        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,8">
+          <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+            <Button Content="◀" Style="{StaticResource GhostButton}" Padding="10,3" Click="OnPrevious" />
+            <TextBlock x:Name="PositionText" VerticalAlignment="Center" Margin="10,0" FontSize="12.5" />
+            <Button Content="▶" Style="{StaticResource GhostButton}" Padding="10,3" Click="OnNext" />
+          </StackPanel>
+          <TextBlock Text="WHAT THE PRINTER RECEIVES" Style="{StaticResource PanelSectionHeader}" VerticalAlignment="Center" Margin="0" />
+        </DockPanel>
+        <TextBlock DockPanel.Dock="Bottom" x:Name="PreviewCaption" FontSize="11.5" Margin="0,8,0,0" TextWrapping="Wrap"
+                   Foreground="{DynamicResource Br.TextMuted}" />
+        <Border Background="{DynamicResource CanvasBackground}" CornerRadius="8" BorderBrush="{DynamicResource Br.Border}" BorderThickness="1" Padding="16">
+          <Border HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="{DynamicResource Br.BorderStrong}" BorderThickness="1"
+                  Background="White">
+            <Image x:Name="PreviewImage" Stretch="Uniform" RenderOptions.BitmapScalingMode="NearestNeighbor" />
+          </Border>
+        </Border>
+      </DockPanel>
+    </Grid>
+  </DockPanel>
+</Window>

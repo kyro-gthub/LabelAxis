@@ -71,7 +71,9 @@
 
           <Menu Background="Transparent" VerticalAlignment="Center">
             <MenuItem Header="_File">
+              <MenuItem Header="_Welcome…" Command="{Binding WelcomeCommand}" />
               <MenuItem Header="_New Project…" InputGestureText="Ctrl+N" Command="{Binding NewCommand}" />
+              <MenuItem Header="New _thermal label…" Command="{Binding NewThermalLabelCommand}" />
               <MenuItem Header="_Open…" InputGestureText="Ctrl+O" Command="{Binding OpenCommand}" />
               <MenuItem Header="Open _Recent" ItemsSource="{Binding RecentProjects}">
                 <MenuItem.ItemContainerStyle>
@@ -144,6 +146,7 @@
               <MenuItem Header="_Advanced Print Settings…" Command="{Binding PrintSettingsCommand}" />
               <MenuItem Header="Print Pre_view…" Command="{Binding PrintPreviewCommand}" />
               <MenuItem Header="Print _History…" Command="{Binding PrintHistoryCommand}" />
+              <MenuItem Header="_Thermal print (ZPL / TSPL)…" Command="{Binding ThermalPrintCommand}" />
               <MenuItem Header="Printer _Calibration Wizard…" Command="{Binding CalibrationCommand}" />
               <Separator />
               <MenuItem Header="Pre_flight check…" Command="{Binding PreflightCommand}" />

@@ -28,6 +28,9 @@ public interface IShellServices
 
     void ShowNewProject(Action<Core.Formtec.LabelTemplate> onChosen);
 
+    /// <summary>The start window (new, open, recent, sheets); runs the chosen action on <paramref name="vm"/>.</summary>
+    void ShowWelcome(ViewModels.MainViewModel vm);
+
     void ShowBulkBarcode();
 
     void ShowBarcodeImage();
@@ -52,6 +55,12 @@ public interface IShellServices
 
     /// <summary>The app's own print dialog (printer, copies, scale). Returns true if a job was sent.</summary>
     bool ShowPrintDialog();
+
+    /// <summary>Thermal printing (ZPL/TSPL, dot preview). Returns true if a job was sent.</summary>
+    bool ShowThermalPrint();
+
+    /// <summary>Define a thermal roll. Null on cancel.</summary>
+    (Core.Formtec.LabelTemplate Template, bool Save)? ShowThermalLabel();
 
     /// <summary>
     /// The print log. Returns the job the user chose to print again, or null; the

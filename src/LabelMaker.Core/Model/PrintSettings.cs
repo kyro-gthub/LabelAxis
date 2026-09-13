@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using LabelMaker.Core.Printing.Thermal;
 
 namespace LabelMaker.Core.Model;
 
@@ -52,6 +53,9 @@ public sealed class PrintSettings
     public bool PrintLabelOutlines { get; set; }
 
     public bool PrintCropMarks { get; set; }
+
+    /// <summary>Settings for thermal label printers (language, resolution, darkness, where to send).</summary>
+    public ThermalPrintSettings Thermal { get; set; } = new();
 
     /// <summary>
     /// 1-based sheet range for this job only — reprinting a jammed sheet, or finishing a
@@ -107,6 +111,7 @@ public sealed class PrintSettings
         PrintCropMarks = other.PrintCropMarks;
         FirstSheet = other.FirstSheet;
         LastSheet = other.LastSheet;
+        Thermal = (other.Thermal ?? new ThermalPrintSettings()).Clone();
     }
 
     public PrintSettings Clone() => new()
@@ -127,5 +132,6 @@ public sealed class PrintSettings
         PrintCropMarks = PrintCropMarks,
         FirstSheet = FirstSheet,
         LastSheet = LastSheet,
+        Thermal = (Thermal ?? new ThermalPrintSettings()).Clone(),
     };
 }

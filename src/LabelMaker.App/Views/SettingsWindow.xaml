@@ -49,6 +49,7 @@
       <GroupBox>
         <StackPanel>
           <CheckBox x:Name="ReopenLastProjectBox" Content="Reopen the last project automatically" Margin="0,4" />
+          <CheckBox x:Name="ShowWelcomeBox" Content="Show the welcome window when Label Maker starts" Margin="0,4" />
         </StackPanel>
       </GroupBox>
 

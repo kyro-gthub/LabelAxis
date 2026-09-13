@@ -654,6 +654,9 @@ public sealed partial class MainViewModel : ObservableObject
     public RelayCommand PrintSettingsCommand { get; private set; } = null!;
     public RelayCommand PrintPreviewCommand { get; private set; } = null!;
     public RelayCommand PrintHistoryCommand { get; private set; } = null!;
+    public RelayCommand WelcomeCommand { get; private set; } = null!;
+    public RelayCommand NewThermalLabelCommand { get; private set; } = null!;
+    public RelayCommand ThermalPrintCommand { get; private set; } = null!;
     public RelayCommand CalibrationCommand { get; private set; } = null!;
     public RelayCommand ExportSheetPdfCommand { get; private set; } = null!;
     public RelayCommand ExportLabelPngCommand { get; private set; } = null!;
@@ -809,6 +812,16 @@ public sealed partial class MainViewModel : ObservableObject
         PrintSettingsCommand = new RelayCommand(OpenPrintSettingsThenPrint);
         PrintPreviewCommand = new RelayCommand(() => _shell.ShowPrintPreview());
         PrintHistoryCommand = new RelayCommand(ShowPrintHistory);
+        WelcomeCommand = new RelayCommand(ShowWelcome);
+        NewThermalLabelCommand = new RelayCommand(NewThermalLabel);
+        ThermalPrintCommand = new RelayCommand(() =>
+        {
+            if (_shell.ShowThermalPrint())
+            {
+                StatusText = "Sent to the label printer";
+                _env.SaveSettings();
+            }
+        });
         BuildDataCommands();
         BuildTabCommands();
         BuildPublisherCommands();
@@ -1570,14 +1583,51 @@ public sealed partial class MainViewModel : ObservableObject
 
     private void NewProject()
     {
-        _shell.ShowNewProject(template =>
+        _shell.ShowNewProject(NewProjectFromTemplate);
+    }
+
+    /// <summary>A new project on <paramref name="template"/>, in its own tab.</summary>
+    public void NewProjectFromTemplate(LabelTemplate template)
+    {
+        _env.Settings.LastTemplateId = template.Id;
+        ProjectModel project = ProjectModel.CreateNew(template, "Untitled");
+        SeedStarterLabel(project);
+        LoadSession(new ProjectDocument { Project = project });
+        StatusText = $"New project · {template.Name}";
+    }
+
+    /// <summary>A new project on a thermal roll defined in the thermal label window.</summary>
+    private void NewThermalLabel()
+    {
+        if (_shell.ShowThermalLabel() is not { } choice)
         {
-            _env.Settings.LastTemplateId = template.Id;
-            ProjectModel project = ProjectModel.CreateNew(template, "Untitled");
-            SeedStarterLabel(project);
-            LoadSession(new ProjectDocument { Project = project });
-            StatusText = $"New project · {template.Name}";
-        });
+            return;
+        }
+
+        if (choice.Save)
+        {
+            try
+            {
+                LabelTemplate saved = choice.Template with { IsUserDefined = true };
+                _env.Templates.SaveUserTemplate(saved, _env.Paths.UserTemplatesDirectory);
+                _env.Templates.AddOrReplace(saved, validate: false);
+                RebuildTemplateCategories();
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or InvalidOperationException)
+            {
+                StatusText = "The roll could not be saved to your templates: " + ex.Message;
+            }
+        }
+
+        NewProjectFromTemplate(choice.Template);
+        _activeTab.Session.Project.PrintSettings.Content = PrintContent.SheetFill;
+    }
+
+    /// <summary>The welcome window, and whatever the user chose on it.</summary>
+    public void ShowWelcome()
+    {
+        _shell.ShowWelcome(this);
+        _env.SaveSettings();
     }
 
     private void OpenProject()
@@ -1784,6 +1834,19 @@ public sealed partial class MainViewModel : ObservableObject
             if (!_activeTab.HasConfiguredPrintSettings)
             {
                 settings.Content = _session.Data is { RowCount: > 0 } ? PrintContent.VariableData : PrintContent.SheetFill;
+            }
+
+            // A roll goes to the thermal dialog (printer commands, dot-exact preview);
+            // it can still hand over to the Windows driver from there.
+            if (_session.Project.Template is { IsRoll: true })
+            {
+                if (_shell.ShowThermalPrint())
+                {
+                    StatusText = "Sent to the label printer";
+                    _env.SaveSettings();
+                }
+
+                return;
             }
 
             // The app's own print dialog, not the Windows one; it still offers the

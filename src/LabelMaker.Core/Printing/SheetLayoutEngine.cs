@@ -55,9 +55,20 @@ public static class SheetLayoutEngine
         PrintSettings settings)
     {
         ArgumentNullException.ThrowIfNull(project);
+        return CreatePlan(project, data, settings, project.Template
+            ?? throw new InvalidOperationException("The project has no Formtec template selected."));
+    }
+
+    /// <summary>The same plan laid out on another <paramref name="template"/> (a thermal roll, say).</summary>
+    public static BulkRenderPlan CreatePlan(
+        ProjectModel project,
+        LabelMaker.Core.Data.DataSet? data,
+        PrintSettings settings,
+        LabelTemplate template)
+    {
+        ArgumentNullException.ThrowIfNull(project);
         ArgumentNullException.ThrowIfNull(settings);
-        LabelTemplate template = project.Template
-            ?? throw new InvalidOperationException("The project has no Formtec template selected.");
+        ArgumentNullException.ThrowIfNull(template);
 
         IReadOnlyList<int>? recordSelection = null;
         if (settings.Content == PrintContent.VariableData && data is { RowCount: > 0 })

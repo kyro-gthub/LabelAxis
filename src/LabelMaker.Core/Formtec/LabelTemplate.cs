@@ -24,6 +24,38 @@ public enum SheetFillOrder
     ColumnMajor = 1,
 }
 
+/// <summary>What the labels come on.</summary>
+public enum LabelMedia
+{
+    /// <summary>A sheet of labels (A4, Letter) for office printers.</summary>
+    Sheet = 0,
+
+    /// <summary>A roll or fanfold strip for a thermal label printer; each "page" is one row of labels.</summary>
+    Roll = 1,
+}
+
+/// <summary>How a thermal printer finds the start of each label.</summary>
+public enum MediaSensing
+{
+    /// <summary>A see-through gap between die-cut labels.</summary>
+    Gap = 0,
+
+    /// <summary>A black mark printed on the back of the liner.</summary>
+    BlackMark = 1,
+
+    /// <summary>Continuous stock with no marks; the printer feeds the label length.</summary>
+    Continuous = 2,
+}
+
+/// <summary>Roll geometry for <see cref="LabelMedia.Roll"/> templates.</summary>
+public sealed record RollMedia
+{
+    /// <summary>Distance between one label (or row of labels) and the next along the roll.</summary>
+    public double GapMm { get; init; } = 3.0;
+
+    public MediaSensing Sensing { get; init; } = MediaSensing.Gap;
+}
+
 /// <summary>Physical page size in millimetres.</summary>
 public readonly record struct PageSize(string Name, double WidthMm, double HeightMm)
 {
@@ -127,6 +159,53 @@ public sealed record LabelTemplate
 
     /// <summary>True for user/imported templates, false for the shipped built-ins.</summary>
     public bool IsUserDefined { get; init; }
+
+    public LabelMedia Media { get; init; } = LabelMedia.Sheet;
+
+    /// <summary>Gap and sensing for roll media; null for sheets.</summary>
+    public RollMedia? Roll { get; init; }
+
+    public bool IsRoll => Media == LabelMedia.Roll;
+
+    /// <summary>
+    /// A roll template for a thermal printer: <paramref name="across"/> labels side by side
+    /// on a liner as wide as the labels plus the side margins, one row per printed "page".
+    /// </summary>
+    public static LabelTemplate CreateRoll(
+        string id, string name, double labelWidthMm, double labelHeightMm, int across = 1,
+        double columnGapMm = 2.0, double sideMarginMm = 0.0, double rollGapMm = 3.0,
+        MediaSensing sensing = MediaSensing.Gap, double cornerRadiusMm = 0.0)
+    {
+        across = Math.Max(1, across);
+        double width = (sideMarginMm * 2) + (labelWidthMm * across) + (columnGapMm * (across - 1));
+        return new LabelTemplate
+        {
+            Id = id,
+            Name = name,
+            Brand = "Thermal roll",
+            ProductCode = across == 1 ? $"{labelWidthMm:0.#} × {labelHeightMm:0.#}" : $"{labelWidthMm:0.#} × {labelHeightMm:0.#} ×{across}",
+            Categories = new List<string> { "Thermal" },
+            Page = new PageSize("Roll", width, labelHeightMm),
+            Orientation = width >= labelHeightMm ? PageOrientation.Landscape : PageOrientation.Portrait,
+            PrintableMarginMm = MarginsMm.Zero,
+            Grid = new LabelGrid
+            {
+                Columns = across,
+                Rows = 1,
+                LabelWidthMm = labelWidthMm,
+                LabelHeightMm = labelHeightMm,
+                MarginLeftMm = sideMarginMm,
+                MarginTopMm = 0,
+                HGapMm = across > 1 ? columnGapMm : 0,
+                VGapMm = 0,
+                CornerRadiusMm = cornerRadiusMm,
+                LabelShape = cornerRadiusMm > 0 ? LabelShape.RoundRectangle : LabelShape.Rectangle,
+            },
+            Media = LabelMedia.Roll,
+            Roll = new RollMedia { GapMm = rollGapMm, Sensing = sensing },
+            Source = "Thermal roll defined in Label Maker",
+        };
+    }
 
     /// <summary>The oriented page size actually used for layout.</summary>
     public PageSize EffectivePage => Page.Oriented(Orientation);
