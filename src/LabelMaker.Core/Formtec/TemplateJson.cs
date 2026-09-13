@@ -23,6 +23,15 @@ public sealed class TemplateDto
     [JsonPropertyName("fillOrder")] public string FillOrder { get; set; } = "RowMajor";
     [JsonPropertyName("notes")] public string? Notes { get; set; }
     [JsonPropertyName("source")] public string? Source { get; set; }
+    [JsonPropertyName("media")] public MediaDto? Media { get; set; }
+
+    /// <summary>Only written for roll templates; sheet files stay as they were.</summary>
+    public sealed class MediaDto
+    {
+        [JsonPropertyName("kind")] public string Kind { get; set; } = "Sheet";
+        [JsonPropertyName("gapMm")] public double GapMm { get; set; } = 3.0;
+        [JsonPropertyName("sensing")] public string Sensing { get; set; } = "Gap";
+    }
 
     public sealed class PageDto
     {
@@ -133,6 +142,10 @@ public static class TemplateJson
             Notes = dto.Notes,
             Source = dto.Source,
             IsUserDefined = isUserDefined,
+            Media = ParseEnum(dto.Media?.Kind, LabelMedia.Sheet),
+            Roll = dto.Media is { } m && ParseEnum(m.Kind, LabelMedia.Sheet) == LabelMedia.Roll
+                ? new RollMedia { GapMm = Math.Max(0, m.GapMm), Sensing = ParseEnum(m.Sensing, MediaSensing.Gap) }
+                : null,
         };
     }
 
@@ -164,6 +177,9 @@ public static class TemplateJson
         FillOrder = t.FillOrder.ToString(),
         Notes = t.Notes,
         Source = t.Source,
+        Media = t.IsRoll
+            ? new TemplateDto.MediaDto { Kind = "Roll", GapMm = t.Roll?.GapMm ?? 3.0, Sensing = (t.Roll?.Sensing ?? MediaSensing.Gap).ToString() }
+            : null,
     };
 
     private static TEnum ParseEnum<TEnum>(string? value, TEnum fallback) where TEnum : struct =>

@@ -26,6 +26,7 @@ public partial class SettingsWindow : Window
         GridSizeBox.Text = s.GridSizeMm.ToString("0.##", CultureInfo.InvariantCulture);
         ConfirmDestructiveBox.IsChecked = s.ConfirmDestructiveActions;
         ReopenLastProjectBox.IsChecked = s.ReopenLastProjectOnStart;
+        ShowWelcomeBox.IsChecked = s.ShowWelcomeOnStart;
         AutoSaveEnabledBox.IsChecked = s.AutoSaveEnabled;
         AutoSaveSecondsBox.Text = s.AutoSaveSeconds.ToString(CultureInfo.InvariantCulture);
         MaxRecentBox.Text = s.MaxRecentProjects.ToString(CultureInfo.InvariantCulture);
@@ -43,6 +44,7 @@ public partial class SettingsWindow : Window
         s.GridSizeMm = Math.Clamp(ParseDouble(GridSizeBox.Text, s.GridSizeMm), 0.1, 50);
         s.ConfirmDestructiveActions = ConfirmDestructiveBox.IsChecked == true;
         s.ReopenLastProjectOnStart = ReopenLastProjectBox.IsChecked == true;
+        s.ShowWelcomeOnStart = ShowWelcomeBox.IsChecked == true;
         s.AutoSaveEnabled = AutoSaveEnabledBox.IsChecked == true;
         s.AutoSaveSeconds = Math.Max(30, ParseInt(AutoSaveSecondsBox.Text, s.AutoSaveSeconds));
         s.MaxRecentProjects = Math.Clamp(ParseInt(MaxRecentBox.Text, s.MaxRecentProjects), 1, 50);

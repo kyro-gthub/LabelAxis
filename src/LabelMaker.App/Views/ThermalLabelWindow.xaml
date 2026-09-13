@@ -1,0 +1,148 @@
+<Window x:Class="LabelMaker.App.Views.ThermalLabelWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Style="{StaticResource AppWindow}"
+        Background="{DynamicResource Br.Surface}" TextElement.Foreground="{DynamicResource Br.Text}"
+        Title="New thermal label" Height="660" Width="900" MinHeight="560" MinWidth="780"
+        WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
+  <DockPanel>
+    <Border DockPanel.Dock="Top" Background="{DynamicResource Br.Bg}"
+            BorderBrush="{DynamicResource Br.Border}" BorderThickness="0,0,0,1" Padding="18,14">
+      <DockPanel>
+        <Border DockPanel.Dock="Left" Width="36" Height="36" CornerRadius="10" Margin="0,0,12,0"
+                Background="{DynamicResource Br.AccentSoft}">
+          <Image Source="{StaticResource Icon.Barcode}" Width="18" Height="18" />
+        </Border>
+        <StackPanel VerticalAlignment="Center">
+          <TextBlock Text="New thermal label" FontFamily="{StaticResource Font.UiSemiBold}" FontSize="15" />
+          <TextBlock FontSize="12" Foreground="{DynamicResource Br.TextMuted}" Margin="0,2,0,0"
+                     Text="Labels on a roll for a thermal label printer (Zebra, TSC, Xprinter, Godex, Honeywell…)." />
+        </StackPanel>
+      </DockPanel>
+    </Border>
+
+    <Border DockPanel.Dock="Bottom" Background="{DynamicResource Br.Bg}"
+            BorderBrush="{DynamicResource Br.Border}" BorderThickness="0,1,0,0" Padding="18,12">
+      <DockPanel>
+        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+          <Button Content="Cancel" Style="{StaticResource GhostButton}" IsCancel="True" Margin="0,0,8,0" />
+          <Button Content="Create label" Style="{StaticResource PrimaryButton}" IsDefault="True" Click="OnCreate" />
+        </StackPanel>
+        <CheckBox x:Name="SaveTemplateBox" Content="Save this roll to my templates" VerticalAlignment="Center" IsChecked="True" />
+        <TextBlock x:Name="Problem" VerticalAlignment="Center" Margin="16,0,0,0" FontSize="12" Foreground="{DynamicResource Br.Danger}" />
+      </DockPanel>
+    </Border>
+
+    <!-- presets -->
+    <Border DockPanel.Dock="Left" Width="230" Background="{DynamicResource Br.Bg}"
+            BorderBrush="{DynamicResource Br.Border}" BorderThickness="0,0,1,0">
+      <DockPanel Margin="12,14">
+        <TextBlock DockPanel.Dock="Top" Text="COMMON SIZES" Style="{StaticResource PanelSectionHeader}" Margin="4,0,0,8" />
+        <ListBox x:Name="PresetList" BorderThickness="0" Background="Transparent" SelectionChanged="OnPreset"
+                 HorizontalContentAlignment="Stretch">
+          <ListBox.ItemContainerStyle>
+            <Style TargetType="ListBoxItem">
+              <Setter Property="Margin" Value="0,0,0,2" />
+              <Setter Property="Template">
+                <Setter.Value>
+                  <ControlTemplate TargetType="ListBoxItem">
+                    <Border x:Name="Card" CornerRadius="8" Padding="10,7" Background="Transparent">
+                      <ContentPresenter />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                      <Trigger Property="IsMouseOver" Value="True">
+                        <Setter TargetName="Card" Property="Background" Value="{DynamicResource Br.Hover}" />
+                      </Trigger>
+                      <Trigger Property="IsSelected" Value="True">
+                        <Setter TargetName="Card" Property="Background" Value="{DynamicResource Br.AccentSoft}" />
+                      </Trigger>
+                    </ControlTemplate.Triggers>
+                  </ControlTemplate>
+                </Setter.Value>
+              </Setter>
+            </Style>
+          </ListBox.ItemContainerStyle>
+          <ListBox.ItemTemplate>
+            <DataTemplate>
+              <StackPanel>
+                <TextBlock Text="{Binding Title}" FontFamily="{StaticResource Font.UiSemiBold}" FontSize="12.5" />
+                <TextBlock Text="{Binding Hint}" FontSize="11" Foreground="{DynamicResource Br.TextMuted}" />
+              </StackPanel>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+      </DockPanel>
+    </Border>
+
+    <Grid Margin="18,14">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="330" />
+        <ColumnDefinition Width="18" />
+        <ColumnDefinition Width="*" />
+      </Grid.ColumnDefinitions>
+
+      <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto">
+        <StackPanel>
+          <TextBlock Text="LABEL" Style="{StaticResource PanelSectionHeader}" />
+          <Border Style="{StaticResource InsetPanel}" Padding="14,10" Margin="0,0,0,14">
+            <StackPanel>
+              <DockPanel Margin="0,3">
+                <TextBlock Text="Width (mm)" Style="{StaticResource FieldLabel}" Width="150" />
+                <TextBox x:Name="WidthBox" Style="{StaticResource NumberBox}" TextChanged="OnChanged" />
+              </DockPanel>
+              <DockPanel Margin="0,3">
+                <TextBlock Text="Height (mm)" Style="{StaticResource FieldLabel}" Width="150" />
+                <TextBox x:Name="HeightBox" Style="{StaticResource NumberBox}" TextChanged="OnChanged" />
+              </DockPanel>
+              <DockPanel Margin="0,3">
+                <TextBlock Text="Corner radius (mm)" Style="{StaticResource FieldLabel}" Width="150" />
+                <TextBox x:Name="RadiusBox" Style="{StaticResource NumberBox}" Text="0" TextChanged="OnChanged" />
+              </DockPanel>
+            </StackPanel>
+          </Border>
+
+          <TextBlock Text="ROLL" Style="{StaticResource PanelSectionHeader}" />
+          <Border Style="{StaticResource InsetPanel}" Padding="14,10">
+            <StackPanel>
+              <DockPanel Margin="0,3">
+                <TextBlock Text="Labels across" Style="{StaticResource FieldLabel}" Width="150" />
+                <TextBox x:Name="AcrossBox" Style="{StaticResource NumberBox}" Text="1" TextChanged="OnChanged" />
+              </DockPanel>
+              <DockPanel Margin="0,3">
+                <TextBlock Text="Gap across (mm)" Style="{StaticResource FieldLabel}" Width="150" />
+                <TextBox x:Name="ColumnGapBox" Style="{StaticResource NumberBox}" Text="2" TextChanged="OnChanged"
+                         ToolTip="Space between labels side by side" />
+              </DockPanel>
+              <DockPanel Margin="0,3">
+                <TextBlock Text="Liner edge (mm)" Style="{StaticResource FieldLabel}" Width="150" />
+                <TextBox x:Name="SideBox" Style="{StaticResource NumberBox}" Text="0" TextChanged="OnChanged"
+                         ToolTip="Backing paper showing on each side of the labels" />
+              </DockPanel>
+              <DockPanel Margin="0,3">
+                <TextBlock Text="Gap between labels (mm)" Style="{StaticResource FieldLabel}" Width="150" />
+                <TextBox x:Name="RollGapBox" Style="{StaticResource NumberBox}" Text="3" TextChanged="OnChanged" />
+              </DockPanel>
+              <DockPanel Margin="0,3">
+                <TextBlock Text="Label detection" Style="{StaticResource FieldLabel}" Width="150" />
+                <ComboBox x:Name="SensingBox" SelectionChanged="OnSensingChanged">
+                  <ComboBoxItem Content="Gap between labels" IsSelected="True" />
+                  <ComboBoxItem Content="Black mark" />
+                  <ComboBoxItem Content="Continuous" />
+                </ComboBox>
+              </DockPanel>
+            </StackPanel>
+          </Border>
+        </StackPanel>
+      </ScrollViewer>
+
+      <DockPanel Grid.Column="2">
+        <TextBlock DockPanel.Dock="Top" Text="ROLL PREVIEW" Style="{StaticResource PanelSectionHeader}" />
+        <TextBlock DockPanel.Dock="Bottom" x:Name="Summary" FontSize="12" TextWrapping="Wrap" Margin="0,10,0,0"
+                   Foreground="{DynamicResource Br.Text2}" />
+        <Border Background="{DynamicResource CanvasBackground}" CornerRadius="8" BorderBrush="{DynamicResource Br.Border}" BorderThickness="1">
+          <Canvas x:Name="PreviewCanvas" ClipToBounds="True" SizeChanged="OnPreviewSize" />
+        </Border>
+      </DockPanel>
+    </Grid>
+  </DockPanel>
+</Window>

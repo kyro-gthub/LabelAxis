@@ -69,6 +69,11 @@ public partial class App : Application
         {
             window.OpenProjectPath(last.Path);
         }
+        else if (!restoredFromRecovery && Environment.Settings.ShowWelcomeOnStart)
+        {
+            // After the main window has drawn, so the welcome window sits over it.
+            window.Dispatcher.BeginInvoke(DispatcherPriority.ApplicationIdle, window.ViewModel.ShowWelcome);
+        }
     }
 
     protected override void OnExit(ExitEventArgs e)

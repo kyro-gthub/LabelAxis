@@ -49,6 +49,9 @@ public sealed class AppSettings
     /// <summary>Restore the last-open project automatically when the app starts.</summary>
     public bool ReopenLastProjectOnStart { get; set; }
 
+    /// <summary>Show the welcome window (new, open, recent, sheet templates) when the app starts.</summary>
+    public bool ShowWelcomeOnStart { get; set; } = true;
+
     /// <summary>Assumed screen DPI for the actual-size preview, tuned by the ruler calibration.</summary>
     public double ScreenDpiCalibration { get; set; } = 96.0;
 

@@ -132,6 +132,40 @@ public sealed class DialogService : IShellServices
         }
     }
 
+    public void ShowWelcome(MainViewModel vm)
+    {
+        var win = new WelcomeWindow(_env) { Owner = _owner };
+        if (win.ShowDialog() != true)
+        {
+            return;
+        }
+
+        switch (win.Action)
+        {
+            case WelcomeAction.NewFromTemplateDialog:
+                vm.NewCommand.Execute(null);
+                break;
+            case WelcomeAction.NewFromTemplate when win.ChosenTemplate is { } template:
+                vm.NewProjectFromTemplate(template);
+                break;
+            case WelcomeAction.NewThermal:
+                vm.NewThermalLabelCommand.Execute(null);
+                break;
+            case WelcomeAction.OpenDialog:
+                vm.OpenCommand.Execute(null);
+                break;
+            case WelcomeAction.OpenRecent when win.ProjectPath is { } path:
+                vm.OpenProjectPath(path);
+                break;
+            case WelcomeAction.ImportPublisher:
+                vm.ImportPublisherCommand.Execute(null);
+                break;
+            case WelcomeAction.LabelManager:
+                vm.TemplateManagerCommand.Execute(null);
+                break;
+        }
+    }
+
     public void ShowBulkBarcode() =>
         new BulkBarcodeWindow(_env) { Owner = _owner }.ShowDialog();
 
@@ -251,6 +285,24 @@ public sealed class DialogService : IShellServices
 
         // Reprint chosen from the history inside the dialog: run it now that the dialog is closed.
         return win.Reprint is { } reprint ? _vm.Reprint(reprint) : sent;
+    }
+
+    public bool ShowThermalPrint()
+    {
+        if (_vm is null)
+        {
+            return false;
+        }
+
+        var win = new ThermalPrintWindow(_vm.Session, _vm.SheetRenderer, _vm.PrintServer, this, _env.PrintHistory) { Owner = Front };
+        bool sent = win.ShowDialog() == true;
+        return win.UseDriverInstead ? ShowPrintDialog() : sent;
+    }
+
+    public (LabelTemplate Template, bool Save)? ShowThermalLabel()
+    {
+        var win = new ThermalLabelWindow { Owner = Front };
+        return win.ShowDialog() == true && win.Result is { } roll ? (roll, win.SaveAsTemplate) : null;
     }
 
     public LabelMaker.Core.Printing.ReprintRequest? ShowPrintHistory()
