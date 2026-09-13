@@ -131,6 +131,7 @@
               <MenuItem Header="_Print…" InputGestureText="Ctrl+P" Command="{Binding PrintCommand}" />
               <MenuItem Header="_Advanced Print Settings…" Command="{Binding PrintSettingsCommand}" />
               <MenuItem Header="Print Pre_view…" Command="{Binding PrintPreviewCommand}" />
+              <MenuItem Header="Print _History…" Command="{Binding PrintHistoryCommand}" />
               <MenuItem Header="Printer _Calibration Wizard…" Command="{Binding CalibrationCommand}" />
               <Separator />
               <MenuItem Header="Pre_flight check…" Command="{Binding PreflightCommand}" />

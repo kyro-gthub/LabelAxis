@@ -115,7 +115,8 @@ public sealed class WpfPrintServer
         PageSize page = template.EffectivePage;
 
         BulkRenderPlan plan = SheetLayoutEngine.CreatePlan(project, data, settings);
-        var sheets = SheetLayoutEngine.PlanSheets(plan).ToList();
+        var all = SheetLayoutEngine.PlanSheets(plan).ToList();
+        (IReadOnlyList<PlannedSheet> sheets, int firstSheet) = settings.ApplySheetRange<PlannedSheet>(all);
 
         SheetMedia media = GetMedia(printerName, page.WidthMm, page.HeightMm);
         PrinterCalibration calibration = printerName is null
@@ -127,7 +128,10 @@ public sealed class WpfPrintServer
             : LabelOutlineStyle.None;
 
         return new LabelSheetPaginator(sheets, template, project.MasterLabel, _renderer, media, calibration,
-            settings.ScalePercent, outline);
+            settings.ScalePercent, outline)
+        {
+            Summary = PrintJobSummary.FromSheets(all, sheets, firstSheet),
+        };
     }
 
     /// <summary>
@@ -159,7 +163,8 @@ public sealed class WpfPrintServer
             StartPosition = settings.StartPosition,
             SkipPositions = new HashSet<int>(settings.SkipPositions),
         };
-        var sheets = MultiDocumentSheetLayout.PlanSheets(plan).ToList();
+        var all = MultiDocumentSheetLayout.PlanSheets(plan).ToList();
+        (IReadOnlyList<PlannedMultiSheet> sheets, int firstSheet) = settings.ApplySheetRange<PlannedMultiSheet>(all);
 
         SheetMedia media = GetMedia(printerName, page.WidthMm, page.HeightMm);
         PrinterCalibration calibration = printerName is null
@@ -170,7 +175,16 @@ public sealed class WpfPrintServer
             : settings.PrintLabelOutlines ? LabelOutlineStyle.Hairline
             : LabelOutlineStyle.None;
 
-        return new MultiPageSheetPaginator(sheets, template, _renderer, media, calibration, settings.ScalePercent, outline);
+        return new MultiPageSheetPaginator(sheets, template, _renderer, media, calibration, settings.ScalePercent, outline)
+        {
+            Summary = new PrintJobSummary
+            {
+                Sheets = sheets.Count,
+                TotalSheets = all.Count,
+                Labels = sheets.Sum(s => s.Documents.Count),
+                FirstSheet = firstSheet,
+            },
+        };
     }
 
     /// <summary>
@@ -203,10 +217,21 @@ public sealed class WpfPrintServer
         }
 
         settings.PrinterName = queue.FullName;
-        DocumentPaginator paginator = settings.Content == PrintContent.Pages
-            ? BuildPagesPaginator(project, settings, queue.FullName)
-            : BuildPaginator(project, data, settings, queue.FullName);
+        (DocumentPaginator paginator, PrintJobSummary summary) = BuildJob(project, data, settings, queue.FullName);
+        return new PrintJobRequest(queue, ticket, paginator, $"Label Maker — {project.Metadata.Title}", Math.Max(1, settings.Copies), summary);
+    }
 
-        return new PrintJobRequest(queue, ticket, paginator, $"Label Maker — {project.Metadata.Title}", Math.Max(1, settings.Copies));
+    /// <summary>The paginator for whatever the settings print (records, sheet fill or standalone pages), with its summary.</summary>
+    public (DocumentPaginator Paginator, PrintJobSummary Summary) BuildJob(
+        ProjectModel project, DataSet? data, PrintSettings settings, string? printerName)
+    {
+        if (settings.Content == PrintContent.Pages)
+        {
+            MultiPageSheetPaginator pages = BuildPagesPaginator(project, settings, printerName);
+            return (pages, pages.Summary);
+        }
+
+        LabelSheetPaginator labels = BuildPaginator(project, data, settings, printerName);
+        return (labels, labels.Summary);
     }
 }

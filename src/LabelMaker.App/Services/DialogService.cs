@@ -217,8 +217,21 @@ public sealed class DialogService : IShellServices
             return false;
         }
 
-        var win = new PrintWindow(_vm.Session, _vm.PrintServer, this) { Owner = _owner };
-        return win.ShowDialog() == true;
+        var win = new PrintWindow(_vm.Session, _vm.PrintServer, this, _env.PrintHistory) { Owner = _owner };
+        bool sent = win.ShowDialog() == true;
+
+        // Reprint chosen from the history inside the dialog: run it now that the dialog is closed.
+        return win.Reprint is { } reprint ? _vm.Reprint(reprint) : sent;
+    }
+
+    public LabelMaker.Core.Printing.ReprintRequest? ShowPrintHistory()
+    {
+        var win = new PrintHistoryWindow(_env.PrintHistory, _vm?.Session.Project.Metadata.Id ?? string.Empty)
+        {
+            // Opened from the print dialog too, so sit over whichever window is in front.
+            Owner = Application.Current.Windows.OfType<Window>().FirstOrDefault(w => w.IsActive) ?? _owner,
+        };
+        return win.ShowDialog() == true ? win.Result : null;
     }
 
     public bool ShowLabelSize()

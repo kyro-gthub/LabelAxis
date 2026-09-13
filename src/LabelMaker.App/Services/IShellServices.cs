@@ -51,6 +51,12 @@ public interface IShellServices
     bool ShowPrintDialog();
 
     /// <summary>
+    /// The print log. Returns the job the user chose to print again, or null; the
+    /// caller runs the reprint (it may need to open another project first).
+    /// </summary>
+    Core.Printing.ReprintRequest? ShowPrintHistory();
+
+    /// <summary>
     /// Opens (or brings back) the modeless find-and-replace window, focused on the
     /// replace field when <paramref name="replace"/> is set.
     /// </summary>

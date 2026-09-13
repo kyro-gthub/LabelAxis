@@ -22,6 +22,7 @@ public sealed class AppPaths
         UserLabelTemplatesDirectory = Path.Combine(RoamingDirectory, "label-templates");
         SettingsFilePath = Path.Combine(RoamingDirectory, "settings.json");
         CalibrationFilePath = Path.Combine(RoamingDirectory, "calibration.json");
+        PrintHistoryFilePath = Path.Combine(RoamingDirectory, "print-history.json");
         RecoveryDirectory = Path.Combine(LocalDirectory, "recovery");
         LogDirectory = Path.Combine(LocalDirectory, "logs");
         CacheDirectory = Path.Combine(LocalDirectory, "cache");
@@ -38,6 +39,9 @@ public sealed class AppPaths
 
     public string SettingsFilePath { get; }
     public string CalibrationFilePath { get; }
+
+    /// <summary>The print log (what was printed, when, where) behind Print history and reprint.</summary>
+    public string PrintHistoryFilePath { get; }
     public string RecoveryDirectory { get; }
     public string LogDirectory { get; }
     public string CacheDirectory { get; }

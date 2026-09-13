@@ -37,6 +37,8 @@
         </StackPanel>
         <StackPanel Orientation="Horizontal">
           <Button Content="Preview…" Style="{StaticResource GhostButton}" Margin="0,0,8,0" Click="OnPreview" />
+          <Button Content="History…" Style="{StaticResource GhostButton}" Margin="0,0,8,0" Click="OnHistory"
+                  ToolTip="Earlier print jobs; reprint or finish one that stopped" />
           <Button Content="Advanced…" Style="{StaticResource GhostButton}" Margin="0,0,8,0" Click="OnAdvanced" />
           <Button Content="Windows dialog…" Style="{StaticResource GhostButton}" Click="OnSystemDialog"
                   ToolTip="Opens the printer driver's own dialog for duplex, tray and paper options" />
@@ -87,6 +89,16 @@
               <TextBox x:Name="ScaleBox" Style="{StaticResource NumberBox}" Text="100" Width="80"
                        HorizontalAlignment="Left" TextChanged="OnFieldChanged"
                        ToolTip="100% is physical size. Only change this to correct a printer that is off." />
+            </DockPanel>
+            <DockPanel Margin="0,6,0,3">
+              <TextBlock Text="Sheets" Style="{StaticResource FieldLabel}" Width="120" />
+              <TextBox x:Name="FirstSheetBox" Style="{StaticResource NumberBox}" Width="64" TextChanged="OnFieldChanged"
+                       ToolTip="First sheet to print. Leave both boxes empty to print every sheet." />
+              <TextBlock Text="to" VerticalAlignment="Center" Margin="8,0" Foreground="{DynamicResource Br.TextMuted}" />
+              <TextBox x:Name="LastSheetBox" Style="{StaticResource NumberBox}" Width="64" TextChanged="OnFieldChanged"
+                       ToolTip="Last sheet to print. Use this to reprint a jammed sheet or finish a job that stopped." />
+              <TextBlock x:Name="SheetRangeHint" VerticalAlignment="Center" Margin="10,0,0,0" FontSize="11.5"
+                         Foreground="{DynamicResource Br.TextMuted}" TextTrimming="CharacterEllipsis" />
             </DockPanel>
             <CheckBox x:Name="LandscapeBox" Content="Landscape orientation" Margin="0,8,0,0" Click="OnFieldChanged" />
           </StackPanel>

@@ -78,17 +78,26 @@ public partial class JobProgressWindow : Window, IDisposable
         return result;
     }
 
-    /// <summary>Sends a print job with progress. True when it finished, false when the user cancelled.</summary>
-    public static bool RunPrint(Window? owner, Printing.PrintJobRequest request)
+    /// <summary>
+    /// Sends a print job with progress. Returns how it ended; <paramref name="sheetsDone"/>
+    /// is how many sheets reached the spooler, also when the job fails or is cancelled.
+    /// </summary>
+    public static Printing.PrintJobOutcome RunPrint(Window? owner, Printing.PrintJobRequest request, out int sheetsDone)
     {
         string heading = request.Copies > 1
             ? $"Printing {request.Sheets:N0} sheets × {request.Copies} copies"
             : $"Printing {request.Sheets:N0} sheet{(request.Sheets == 1 ? "" : "s")}";
 
-        Printing.PrintJobOutcome outcome = Run(owner, heading, "sheets sent to " + request.Queue.Name, request.Sheets,
-            (progress, token) => Printing.PrintJob.RunAsync(request, progress, token));
-
-        return outcome == Printing.PrintJobOutcome.Completed;
+        Printing.CountingProgress? counter = null;
+        try
+        {
+            return Run(owner, heading, "sheets sent to " + request.Queue.Name, request.Sheets,
+                (progress, token) => Printing.PrintJob.RunAsync(request, counter = new Printing.CountingProgress(progress), token));
+        }
+        finally
+        {
+            sheetsDone = counter?.Max ?? 0;
+        }
     }
 
     private void Report(int done)

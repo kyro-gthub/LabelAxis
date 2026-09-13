@@ -91,9 +91,21 @@ public sealed class PdfExporter
 
         PageSize media = template.EffectivePage;
 
+        int number = 0;
         foreach (PlannedSheet sheet in SheetLayoutEngine.PlanSheets(plan))
         {
             cancellation.ThrowIfCancellationRequested();
+            number++;
+            if (number < (request.FirstSheet ?? 1))
+            {
+                continue;
+            }
+
+            if (request.LastSheet is { } last && number > last)
+            {
+                break;
+            }
+
             PdfPage page = document.AddPage();
             page.Width = XUnit.FromMillimeter(media.WidthMm);
             page.Height = XUnit.FromMillimeter(media.HeightMm);

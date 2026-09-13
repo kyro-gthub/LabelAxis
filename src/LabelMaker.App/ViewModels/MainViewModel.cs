@@ -673,6 +673,7 @@ public sealed class MainViewModel : ObservableObject
     public RelayCommand PrintCommand { get; private set; } = null!;
     public RelayCommand PrintSettingsCommand { get; private set; } = null!;
     public RelayCommand PrintPreviewCommand { get; private set; } = null!;
+    public RelayCommand PrintHistoryCommand { get; private set; } = null!;
     public RelayCommand CalibrationCommand { get; private set; } = null!;
     public RelayCommand ExportSheetPdfCommand { get; private set; } = null!;
     public RelayCommand ExportLabelPngCommand { get; private set; } = null!;
@@ -827,6 +828,7 @@ public sealed class MainViewModel : ObservableObject
         PrintCommand = new RelayCommand(Print);
         PrintSettingsCommand = new RelayCommand(OpenPrintSettingsThenPrint);
         PrintPreviewCommand = new RelayCommand(() => _shell.ShowPrintPreview());
+        PrintHistoryCommand = new RelayCommand(ShowPrintHistory);
         DataTableCommand = new RelayCommand(() => _shell.ShowDataTable());
         SelectAllCommand = new RelayCommand(
             () => _session.SetSelection(_session.ActiveLabel.Objects.Where(o => o.Visible).ToList()),
@@ -1815,6 +1817,74 @@ public sealed class MainViewModel : ObservableObject
         }
     }
 
+    private void ShowPrintHistory()
+    {
+        if (_shell.ShowPrintHistory() is { } reprint)
+        {
+            Reprint(reprint);
+        }
+    }
+
+    /// <summary>
+    /// Sends a job from the print history again: opens its project if another one is
+    /// showing, restores the settings it printed with (and the sheet range to finish
+    /// a stopped job), then shows the print dialog so the user confirms before paper moves.
+    /// </summary>
+    public bool Reprint(ReprintRequest request)
+    {
+        PrintHistoryEntry entry = request.Entry;
+
+        if (entry.ProjectId != _session.Project.Metadata.Id)
+        {
+            if (entry.ProjectPath is not { } path || !File.Exists(path))
+            {
+                _shell.Warn($"The project \"{entry.ProjectTitle}\" is not open and its file could not be found, so the job cannot be reprinted.");
+                return false;
+            }
+
+            if (!_shell.Confirm($"This job was printed from \"{entry.ProjectTitle}\". Open that project to reprint it?\n\n{path}") ||
+                !ConfirmDiscard())
+            {
+                return false;
+            }
+
+            OpenProjectPath(path);
+            if (_session.Project.Metadata.Id != entry.ProjectId)
+            {
+                return false;
+            }
+        }
+
+        if (entry.Content == PrintContent.VariableData && entry.DataRecordCount != _session.RecordCount &&
+            !_shell.Confirm($"When this job printed, {entry.DataRecordCount:N0} record(s) were loaded; now there are {_session.RecordCount:N0}. " +
+                            "The same sheet numbers may hold different records.\n\nContinue to the print dialog?"))
+        {
+            return false;
+        }
+
+        _session.Project.PrintSettings.CopyFrom(request.BuildSettings());
+        _hasConfiguredPrintSettings = true;
+        StatusText = request.RemainingOnly
+            ? $"Ready to print sheets {entry.ResumeSheet:N0}–{entry.LastSheet:N0} of \"{entry.ProjectTitle}\""
+            : $"Reprint of \"{entry.ProjectTitle}\" ready";
+
+        try
+        {
+            if (_shell.ShowPrintDialog())
+            {
+                StatusText = "Sent to printer";
+                _env.SaveSettings();
+                return true;
+            }
+        }
+        catch (Exception ex)
+        {
+            _shell.Warn("Printing failed:\n\n" + ex.Message);
+        }
+
+        return false;
+    }
+
     private void OpenPrintSettingsThenPrint()
     {
         if (_shell.ShowPrintSettings())
@@ -1832,10 +1902,12 @@ public sealed class MainViewModel : ObservableObject
             return;
         }
 
+        PrintLog? log = null;
+        CountingProgress? counter = null;
         try
         {
             // The PDF follows the same print settings as a printed job (start slot,
-            // skipped slots, record range, outlines), so it is a faithful proof.
+            // skipped slots, record range, sheet range, outlines), so it is a faithful proof.
             PrintSettings settings = _session.Project.PrintSettings;
             if (settings.Content == PrintContent.VariableData && (_session.Data?.RowCount ?? 0) == 0)
             {
@@ -1843,6 +1915,11 @@ public sealed class MainViewModel : ObservableObject
             }
 
             BulkRenderPlan plan = SheetLayoutEngine.CreatePlan(_session.Project, _session.Data, settings);
+            var allSheets = SheetLayoutEngine.PlanSheets(plan).ToList();
+            (IReadOnlyList<PlannedSheet> slice, int firstSheet) = settings.ApplySheetRange<PlannedSheet>(allSheets);
+            PrintJobSummary summary = PrintJobSummary.FromSheets(allSheets, slice, firstSheet);
+            int sheets = summary.Sheets;
+
             var request = new ExportRequest
             {
                 Project = _session.Project,
@@ -1855,33 +1932,40 @@ public sealed class MainViewModel : ObservableObject
                 FillSheetWhenNoData = plan.FillSheetWhenNoData,
                 DrawLabelOutlines = settings.PrintLabelOutlines,
                 DrawCropMarks = settings.PrintCropMarks,
+                FirstSheet = settings.HasSheetRange ? firstSheet : null,
+                LastSheet = settings.HasSheetRange ? firstSheet + Math.Max(0, sheets - 1) : null,
             };
-            int sheets = SheetLayoutEngine.PlanSheets(plan).Count();
             AssetStore assets = _session.Document.Assets;
+
+            log = PrintLog.Start(_env.PrintHistory, _session, settings, summary, PrintHistoryKind.Pdf, null, path);
 
             // Rendering and writing run off the UI thread; the progress window is modal,
             // so the project cannot change underneath the export.
-            int pages = _shell.RunJob($"Exporting {sheets:N0} sheet{(sheets == 1 ? "" : "s")} to PDF", "sheets rendered", sheets,
+            _shell.RunJob($"Exporting {sheets:N0} sheet{(sheets == 1 ? "" : "s")} to PDF", "sheets rendered", sheets,
                 (progress, token) => Task.Run(() =>
                 {
-                    byte[] pdf = new PdfExporter().Export(request, assets, progress, token);
+                    byte[] pdf = new PdfExporter().Export(request, assets, counter = new CountingProgress(progress), token);
                     token.ThrowIfCancellationRequested();
                     File.WriteAllBytes(path, pdf);
                     return sheets;
                 }, token));
 
-            StatusText = $"Exported {pages:N0} sheet(s) to {Path.GetFileName(path)}";
+            log.Completed();
+            settings.FirstSheet = null;
+            settings.LastSheet = null;
+            StatusText = $"Exported {sheets:N0} sheet(s) to {Path.GetFileName(path)}";
         }
         catch (OperationCanceledException)
         {
+            log?.Cancelled(counter?.Max ?? 0);
             StatusText = "PDF export cancelled";
         }
         catch (Exception ex)
         {
+            log?.Failed(counter?.Max ?? 0, ex);
             _shell.Warn("PDF export failed:\n\n" + ex.Message);
         }
     }
-
 
     private void ExportLabelPng()
     {

@@ -24,6 +24,7 @@ public partial class PrintWindow : Window
     private readonly DocumentSession _session;
     private readonly WpfPrintServer _printServer;
     private readonly IShellServices _shell;
+    private readonly PrintHistoryStore _history;
     private bool _loading = true;
 
     // Typing in Copies or Scale rebuilds the job summary and thumbnail; wait until
@@ -31,11 +32,12 @@ public partial class PrintWindow : Window
     private readonly System.Windows.Threading.DispatcherTimer _refreshDelay =
         new() { Interval = TimeSpan.FromMilliseconds(300) };
 
-    public PrintWindow(DocumentSession session, WpfPrintServer printServer, IShellServices shell)
+    public PrintWindow(DocumentSession session, WpfPrintServer printServer, IShellServices shell, PrintHistoryStore history)
     {
         _session = session;
         _printServer = printServer;
         _shell = shell;
+        _history = history;
         InitializeComponent();
 
         LabelTemplate? t = session.Project.Template;
@@ -50,6 +52,8 @@ public partial class PrintWindow : Window
         CopiesBox.Text = Math.Max(1, s.Copies).ToString(CultureInfo.InvariantCulture);
         ScaleBox.Text = s.ScalePercent.ToString("0.#", CultureInfo.InvariantCulture);
         LandscapeBox.IsChecked = s.Landscape;
+        FirstSheetBox.Text = s.FirstSheet?.ToString(CultureInfo.InvariantCulture) ?? string.Empty;
+        LastSheetBox.Text = s.LastSheet?.ToString(CultureInfo.InvariantCulture) ?? string.Empty;
 
         _refreshDelay.Tick += (_, _) => { _refreshDelay.Stop(); Refresh(); };
         Closed += (_, _) => _refreshDelay.Stop();
@@ -107,6 +111,8 @@ public partial class PrintWindow : Window
         s.Copies = Math.Clamp(ParseInt(CopiesBox.Text, 1), 1, 999);
         s.ScalePercent = Math.Clamp(ParseDouble(ScaleBox.Text, 100), 10, 400);
         s.Landscape = LandscapeBox.IsChecked == true;
+        s.FirstSheet = ParseSheet(FirstSheetBox.Text);
+        s.LastSheet = ParseSheet(LastSheetBox.Text);
 
         // Variable data with nothing imported prints nothing at all; fall back to
         // filling the sheet, which is what the preview does too.
@@ -146,12 +152,19 @@ public partial class PrintWindow : Window
 
             int sheets = paginator.PageCount;
             int copies = Math.Max(1, s.Copies);
+            PrintJobSummary summary = paginator switch
+            {
+                LabelSheetPaginator l => l.Summary,
+                MultiPageSheetPaginator m => m.Summary,
+                _ => new PrintJobSummary { Sheets = sheets, TotalSheets = sheets },
+            };
+            SheetRangeHint.Text = s.HasSheetRange ? $"of {summary.TotalSheets:N0}" : $"all {summary.TotalSheets:N0}";
             SummaryText.Text = copies > 1
                 ? $"{sheets} sheet(s) × {copies} copies = {sheets * copies} pages to {SelectedPrinter ?? "no printer"}."
                 : $"{sheets} sheet(s) to {SelectedPrinter ?? "no printer"}.";
             PrintButtonText.Text = sheets * copies > 1 ? $"Print {sheets * copies} pages" : "Print";
 
-            ShowThumbnail(paginator, sheets);
+            ShowThumbnail(paginator, summary);
             PrintButton.IsEnabled = sheets > 0 && SelectedPrinter is not null;
         }
         catch (Exception ex)
@@ -175,8 +188,9 @@ public partial class PrintWindow : Window
                $"from ({media.ImageableOriginXMm:0.#}, {media.ImageableOriginYMm:0.#}) on {page.Name}.";
     }
 
-    private void ShowThumbnail(DocumentPaginator paginator, int sheets)
+    private void ShowThumbnail(DocumentPaginator paginator, PrintJobSummary summary)
     {
+        int sheets = summary.Sheets;
         ThumbHost.Children.Clear();
         if (sheets == 0)
         {
@@ -216,9 +230,11 @@ public partial class PrintWindow : Window
         };
 
         ThumbHost.Children.Add(frame);
-        ThumbCaption.Text = sheets > 1
-            ? $"Sheet 1 of {sheets}. Open Preview to page through the rest."
-            : "The only sheet in this job.";
+        ThumbCaption.Text = summary.TotalSheets != sheets
+            ? $"Sheet {summary.FirstSheet:N0} of {summary.TotalSheets:N0}; this job prints {sheets:N0} of them."
+            : sheets > 1
+                ? $"Sheet 1 of {sheets:N0}. Open Preview to page through the rest."
+                : "The only sheet in this job.";
     }
 
     // ---- actions ----------------------------------------------------------
@@ -280,14 +296,56 @@ public partial class PrintWindow : Window
         }
     }
 
-    /// <summary>Spools with a progress window; the dialog closes only if the job was not cancelled.</summary>
+    /// <summary>
+    /// Spools with a progress window and records the job in the print history; the
+    /// dialog closes only if the job was not cancelled.
+    /// </summary>
     private void Send(PrintJobRequest job)
     {
-        if (JobProgressWindow.RunPrint(this, job))
+        PrintSettings settings = _session.Project.PrintSettings;
+        PrintLog log = PrintLog.Start(_history, _session, settings, job.Summary, PrintHistoryKind.Printer, job.Queue.FullName, null);
+
+        int sheetsDone = 0;
+        try
         {
-            DialogResult = true;
+            if (JobProgressWindow.RunPrint(this, job, out sheetsDone) == PrintJobOutcome.Completed)
+            {
+                log.Completed();
+
+                // A sheet range is for one job only.
+                settings.FirstSheet = null;
+                settings.LastSheet = null;
+                DialogResult = true;
+            }
+            else
+            {
+                log.Cancelled(sheetsDone);
+                SummaryText.Text = $"Cancelled after {sheetsDone:N0} of {job.Sheets:N0} sheet(s). " +
+                                   "Print history can finish the rest.";
+            }
+        }
+        catch (Exception ex)
+        {
+            log.Failed(sheetsDone, ex);
+            throw;
         }
     }
+
+    /// <summary>Set when the user picked a job to reprint from the history; the caller runs it after this dialog closes.</summary>
+    public ReprintRequest? Reprint { get; private set; }
+
+    private void OnHistory(object sender, RoutedEventArgs e)
+    {
+        Apply();
+        if (_shell.ShowPrintHistory() is { } reprint)
+        {
+            Reprint = reprint;
+            DialogResult = false;
+        }
+    }
+
+    private static int? ParseSheet(string s) =>
+        int.TryParse(s.Trim(), NumberStyles.Integer, CultureInfo.InvariantCulture, out int v) && v > 0 ? v : null;
 
     private void Fail(Exception ex) =>
         MessageBox.Show(this, "Printing failed:\n\n" + ex.Message, "Label Maker",

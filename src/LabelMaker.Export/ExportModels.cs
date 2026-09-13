@@ -38,6 +38,11 @@ public sealed class ExportRequest
 
     public bool DrawCropMarks { get; init; }
 
+    /// <summary>1-based range of sheets to write (null = from the first / to the last). Sheet scope only.</summary>
+    public int? FirstSheet { get; init; }
+
+    public int? LastSheet { get; init; }
+
     /// <summary>Fill every sheet slot with the master label when there is no data.</summary>
     public bool FillSheetWhenNoData { get; init; } = true;
 

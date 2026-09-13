@@ -22,6 +22,9 @@ namespace LabelMaker.App.Printing;
 /// </summary>
 public sealed class LabelSheetPaginator : DocumentPaginator
 {
+    /// <summary>Sheets, labels and records in this job, for the dialog and the print log.</summary>
+    public PrintJobSummary Summary { get; init; } = new();
+
     private const double K = UnitConverter.DiuPerInch / UnitConverter.MmPerInch;
 
     private readonly List<PlannedSheet> _sheets;

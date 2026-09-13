@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace LabelMaker.Core.Model;
 
 public enum PrintContent
@@ -51,6 +53,62 @@ public sealed class PrintSettings
 
     public bool PrintCropMarks { get; set; }
 
+    /// <summary>
+    /// 1-based sheet range for this job only — reprinting a jammed sheet, or finishing a
+    /// job that stopped part-way. Deliberately not saved with the project, so a range
+    /// used once never silently shortens the next print.
+    /// </summary>
+    [JsonIgnore]
+    public int? FirstSheet { get; set; }
+
+    [JsonIgnore]
+    public int? LastSheet { get; set; }
+
+    [JsonIgnore]
+    public bool HasSheetRange => FirstSheet is not null || LastSheet is not null;
+
+    /// <summary>The sheets this job prints out of the whole job's <paramref name="sheets"/>, and the 1-based first one.</summary>
+    public (IReadOnlyList<T> Sheets, int FirstSheet) ApplySheetRange<T>(IReadOnlyList<T> sheets)
+    {
+        ArgumentNullException.ThrowIfNull(sheets);
+        if (!HasSheetRange || sheets.Count == 0)
+        {
+            return (sheets, 1);
+        }
+
+        int first = Math.Clamp(FirstSheet ?? 1, 1, sheets.Count);
+        int last = Math.Clamp(LastSheet ?? sheets.Count, first, sheets.Count);
+        var slice = new List<T>(last - first + 1);
+        for (int i = first - 1; i < last; i++)
+        {
+            slice.Add(sheets[i]);
+        }
+
+        return (slice, first);
+    }
+
+    /// <summary>Overwrites every setting with <paramref name="other"/>'s (the project keeps its instance).</summary>
+    public void CopyFrom(PrintSettings other)
+    {
+        ArgumentNullException.ThrowIfNull(other);
+        PrinterName = other.PrinterName;
+        PaperSizeName = other.PaperSizeName;
+        Landscape = other.Landscape;
+        Copies = other.Copies;
+        Content = other.Content;
+        StartPosition = other.StartPosition;
+        SkipPositions = new List<int>(other.SkipPositions);
+        SelectedPositions = new List<int>(other.SelectedPositions);
+        FirstRecord = other.FirstRecord;
+        LastRecord = other.LastRecord;
+        SelectedRecords = new List<int>(other.SelectedRecords);
+        ScalePercent = other.ScalePercent;
+        PrintLabelOutlines = other.PrintLabelOutlines;
+        PrintCropMarks = other.PrintCropMarks;
+        FirstSheet = other.FirstSheet;
+        LastSheet = other.LastSheet;
+    }
+
     public PrintSettings Clone() => new()
     {
         PrinterName = PrinterName,
@@ -67,5 +125,7 @@ public sealed class PrintSettings
         ScalePercent = ScalePercent,
         PrintLabelOutlines = PrintLabelOutlines,
         PrintCropMarks = PrintCropMarks,
+        FirstSheet = FirstSheet,
+        LastSheet = LastSheet,
     };
 }
