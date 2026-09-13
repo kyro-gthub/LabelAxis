@@ -3,24 +3,24 @@
   "id": "formtec-gs-1024",
   "brand": "Formtec",
   "productCode": "GS-1024",
-  "name": "Formtec GS-1024 — General label, 24-up",
-  "categories": ["General","Address","Product"],
+  "name": "Formtec GS-1024 — 64.6 × 33.8 mm, 24-up",
+  "categories": ["General", "Formtec GS"],
   "page": { "size": "A4", "widthMm": 210.0, "heightMm": 297.0 },
   "orientation": "Portrait",
   "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
   "grid": {
     "columns": 3,
     "rows": 8,
-    "labelWidthMm": 63.5,
-    "labelHeightMm": 33.9,
-    "marginTopMm": 12.9,
-    "marginLeftMm": 7.25,
-    "hGapMm": 2.5,
+    "labelWidthMm": 64.6,
+    "labelHeightMm": 33.8,
+    "marginTopMm": 13.3,
+    "marginLeftMm": 8.1,
+    "hGapMm": 0.0,
     "vGapMm": 0.0,
     "cornerRadiusMm": 0.0,
     "labelShape": "Rectangle"
   },
   "fillOrder": "RowMajor",
-  "notes": "Formtec GS general-purpose A4 label sheet (3x8).",
-  "source": "Formtec GS series catalogue (approximate geometry)"
+  "notes": "Formtec GS-1024 A4 sheet: 24 labels (3 x 8), each 64.6 x 33.8 mm, butted together with no gaps and centred on the page.",
+  "source": "Formtec GS dimensions list (label size); layout counted from the product code; no gaps, centred on A4 (GS-1065 confirmed by a test print)"
 }

@@ -147,6 +147,43 @@ public sealed class LabelRendererTests
     }
 
     [Fact]
+    public void Text_box_line_spacing_applies_even_when_paragraphs_carry_single_spacing()
+    {
+        var content = RichTextContent.FromPlainText("one\ntwo\nthree");
+        foreach (Paragraph p in content.Paragraphs)
+        {
+            p.LineSpacing = 1.0; // what older files stored on every paragraph
+        }
+
+        var measurer = new RecordingSurface().TextMeasurer;
+        TextBlock single = TextLayouter.Layout(content, new TextObject { FontSizePt = 10, LineSpacing = 1.0 }, new RectMm(0, 0, 80, 80), measurer);
+        TextBlock doubled = TextLayouter.Layout(content, new TextObject { FontSizePt = 10, LineSpacing = 2.0 }, new RectMm(0, 0, 80, 80), measurer);
+
+        doubled.TotalHeightMm.Should().BeApproximately(single.TotalHeightMm * 2, 0.01);
+
+        content.Paragraphs[1].LineSpacing = 3.0; // a real per-paragraph override still wins
+        TextBlock overridden = TextLayouter.Layout(content, new TextObject { FontSizePt = 10, LineSpacing = 1.0 }, new RectMm(0, 0, 80, 80), measurer);
+        overridden.Lines[1].HeightMm.Should().BeApproximately(single.Lines[1].HeightMm * 3, 0.01);
+    }
+
+    [Fact]
+    public void Letter_spacing_widens_lines_and_reaches_the_svg_output()
+    {
+        var content = RichTextContent.FromPlainText("SPACED");
+        var measurer = new RecordingSurface().TextMeasurer;
+        TextBlock normal = TextLayouter.Layout(content, new TextObject { FontSizePt = 10 }, new RectMm(0, 0, 80, 20), measurer);
+        TextBlock spaced = TextLayouter.Layout(content, new TextObject { FontSizePt = 10, LetterSpacingEm = 0.5 }, new RectMm(0, 0, 80, 20), measurer);
+
+        double extra = 6 * 0.5 * Core.Units.UnitConverter.PointsToMm(10);
+        spaced.Lines[0].WidthMm.Should().BeApproximately(normal.Lines[0].WidthMm + extra, 0.01);
+
+        var doc = new LabelDocument { SizeMm = new SizeMm(80, 20) };
+        doc.Objects.Add(new TextObject { Bounds = new RectMm(0, 0, 80, 20), Content = content, FontSizePt = 10, LetterSpacingEm = 0.5 });
+        string svg = new LabelMaker.Export.Svg.SvgExporter().ExportLabel(doc, new ResolveContext());
+        svg.Should().Contain("letter-spacing=\"");
+    }
+
+    [Fact]
     public void Rotation_pushes_a_transform_for_the_object()
     {
         var doc = new LabelDocument { SizeMm = new SizeMm(60, 30) };

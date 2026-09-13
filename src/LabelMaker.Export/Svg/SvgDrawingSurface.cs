@@ -314,6 +314,13 @@ public sealed class SvgDrawingSurface : IDrawingSurface
                 _body.Append("<text x=\"").Append(F(x)).Append("\" y=\"").Append(F(baseline)).Append("\" font-family=\"")
                     .Append(Escape(span.FontFamily)).Append("\" font-size=\"").Append(F(UnitConverter.PointsToMm(span.FontSizePt)))
                     .Append("\" fill=\"").Append(Rgb(span.Foreground)).Append('"');
+                double trackingMm = span.LetterSpacingEm * UnitConverter.PointsToMm(span.FontSizePt);
+                if (Math.Abs(trackingMm) >= 1e-6)
+                {
+                    _body.Append(" letter-spacing=\"").Append(F(trackingMm)).Append('"');
+                    spanWidth += span.Text.Length * trackingMm;
+                }
+
                 if (span.Bold)
                 {
                     _body.Append(" font-weight=\"bold\"");

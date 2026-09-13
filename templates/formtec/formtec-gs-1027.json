@@ -3,24 +3,24 @@
   "id": "formtec-gs-1027",
   "brand": "Formtec",
   "productCode": "GS-1027",
-  "name": "Formtec GS-1027 — General label, 27-up",
-  "categories": ["General","Address"],
+  "name": "Formtec GS-1027 — 70 × 30 mm, 27-up",
+  "categories": ["General", "Formtec GS"],
   "page": { "size": "A4", "widthMm": 210.0, "heightMm": 297.0 },
   "orientation": "Portrait",
   "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
   "grid": {
     "columns": 3,
     "rows": 9,
-    "labelWidthMm": 63.5,
-    "labelHeightMm": 30.5,
-    "marginTopMm": 11.25,
-    "marginLeftMm": 7.25,
-    "hGapMm": 2.5,
+    "labelWidthMm": 70,
+    "labelHeightMm": 30,
+    "marginTopMm": 13.5,
+    "marginLeftMm": 0,
+    "hGapMm": 0.0,
     "vGapMm": 0.0,
     "cornerRadiusMm": 0.0,
     "labelShape": "Rectangle"
   },
   "fillOrder": "RowMajor",
-  "notes": "Formtec GS general-purpose A4 label sheet (3x9).",
-  "source": "Formtec GS series catalogue (approximate geometry)"
+  "notes": "Formtec GS-1027 A4 sheet: 27 labels (3 x 9), each 70 x 30 mm, butted together with no gaps and centred on the page.",
+  "source": "Formtec GS dimensions list (label size); layout counted from the product code; no gaps, centred on A4 (GS-1065 confirmed by a test print)"
 }

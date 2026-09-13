@@ -63,6 +63,9 @@ public sealed class DesignerCanvas : FrameworkElement
     private Dictionary<string, RectMm> _dragStartBounds = new();
     private Dictionary<string, double> _dragStartRotation = new();
     private Dictionary<string, (double X, double Y)> _dragStartSkew = new();
+
+    // Resizing a whole group: its box when the drag began; members scale inside it.
+    private RectMm? _groupResizeStart;
     private double _rotateStartAngle;
     private bool _skewing;
 
@@ -540,6 +543,41 @@ public sealed class DesignerCanvas : FrameworkElement
         handlePen.Freeze();
         double hs = HandleSize / _zoom;
 
+        if (SelectedGroupBounds() is { } group)
+        {
+            // Members get a faint outline; the group itself has one box and one set of handles.
+            var memberPen = new Pen(new SolidColorBrush(Color.FromArgb(0x90, Accent.R, Accent.G, Accent.B)), 0.8 / _zoom)
+            {
+                DashStyle = MarqueeDash,
+            };
+            memberPen.Freeze();
+            foreach (LabelObject obj in _session.Selection)
+            {
+                PointMm[] c = ObjectGeometry.Corners(obj);
+                var g = new StreamGeometry();
+                using (StreamGeometryContext ctx = g.Open())
+                {
+                    ctx.BeginFigure(ToCanvas(c[0]), false, true);
+                    ctx.PolyLineTo(c.Skip(1).Select(ToCanvas).ToList(), true, true);
+                }
+
+                g.Freeze();
+                dc.DrawGeometry(null, memberPen, g);
+            }
+
+            dc.DrawRectangle(null, stroke, new Rect(group.X * K, group.Y * K, group.Width * K, group.Height * K));
+            if (!_session.Selection.Any(o => o.Locked))
+            {
+                foreach ((Handle _, PointMm p) in RectHandles(group))
+                {
+                    Point c = ToCanvas(p);
+                    dc.DrawRectangle(Brushes.White, handlePen, new Rect(c.X - (hs / 2), c.Y - (hs / 2), hs, hs));
+                }
+            }
+
+            return;
+        }
+
         foreach (LabelObject obj in _session.Selection)
         {
             // Outline and handles follow the real (rotated, skewed) shape.
@@ -591,6 +629,97 @@ public sealed class DesignerCanvas : FrameworkElement
                     dc.DrawRectangle(Brushes.White, handlePen, new Rect(p.X - (hs / 2), p.Y - (hs / 2), hs, hs));
                 }
             }
+        }
+    }
+
+    // ---- groups ---------------------------------------------------------------------
+
+    /// <summary>The objects plus every other member of any group they belong to.</summary>
+    private IReadOnlyList<LabelObject> WithGroups(IEnumerable<LabelObject> objects)
+    {
+        var result = new List<LabelObject>();
+        foreach (LabelObject obj in objects)
+        {
+            IEnumerable<LabelObject> members = obj.GroupId is { } id
+                ? _session!.ActiveLabel.GroupMembers(id).Where(m => m.Visible)
+                : new[] { obj };
+            result.AddRange(members.Where(m => !result.Contains(m)));
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// When the selection is exactly one group, the box around all its members (their
+    /// real rotated shapes); otherwise null.
+    /// </summary>
+    private RectMm? SelectedGroupBounds()
+    {
+        if (_session is not { Selection.Count: > 1 } s || s.Selection[0].GroupId is not { } id ||
+            s.Selection.Any(o => o.GroupId != id) ||
+            s.ActiveLabel.GroupMembers(id).Count(m => m.Visible) != s.Selection.Count)
+        {
+            return null;
+        }
+
+        RectMm box = ObjectGeometry.Bounds(s.Selection[0]);
+        foreach (LabelObject obj in s.Selection.Skip(1))
+        {
+            RectMm b = ObjectGeometry.Bounds(obj);
+            box = RectMm.FromLtrb(Math.Min(box.X, b.X), Math.Min(box.Y, b.Y), Math.Max(box.Right, b.Right), Math.Max(box.Bottom, b.Bottom));
+        }
+
+        return box;
+    }
+
+    /// <summary>Objects that show their own handles: none when a whole group is selected.</summary>
+    private IEnumerable<LabelObject> SelectionWithHandles() =>
+        SelectedGroupBounds() is null ? _session!.Selection : Array.Empty<LabelObject>();
+
+    private static IEnumerable<(Handle Handle, PointMm Point)> RectHandles(RectMm r)
+    {
+        double cx = r.X + (r.Width / 2), cy = r.Y + (r.Height / 2);
+        yield return (Handle.TopLeft, new PointMm(r.X, r.Y));
+        yield return (Handle.Top, new PointMm(cx, r.Y));
+        yield return (Handle.TopRight, new PointMm(r.Right, r.Y));
+        yield return (Handle.Right, new PointMm(r.Right, cy));
+        yield return (Handle.BottomRight, new PointMm(r.Right, r.Bottom));
+        yield return (Handle.Bottom, new PointMm(cx, r.Bottom));
+        yield return (Handle.BottomLeft, new PointMm(r.X, r.Bottom));
+        yield return (Handle.Left, new PointMm(r.X, cy));
+    }
+
+    private Handle HitRectHandle(RectMm r, Point screen)
+    {
+        double tol = (HandleSize / 2.0) + 4;
+        foreach ((Handle handle, PointMm p) in RectHandles(r))
+        {
+            Point s = MmToScreen(p.X, p.Y);
+            if (Math.Abs(s.X - screen.X) <= tol && Math.Abs(s.Y - screen.Y) <= tol)
+            {
+                return handle;
+            }
+        }
+
+        return Handle.None;
+    }
+
+    /// <summary>Scales every member's box from the group's starting box into <paramref name="to"/>.</summary>
+    private void ResizeGroup(RectMm from, RectMm to)
+    {
+        double sx = from.Width > 0.001 ? to.Width / from.Width : 1;
+        double sy = from.Height > 0.001 ? to.Height / from.Height : 1;
+        foreach (LabelObject obj in _session!.Selection)
+        {
+            if (!_dragStartBounds.TryGetValue(obj.Id, out RectMm start))
+            {
+                continue;
+            }
+
+            // Keep each member's centre in the same relative place and scale its size.
+            PointMm c = start.Center;
+            var centre = new PointMm(to.X + ((c.X - from.X) * sx), to.Y + ((c.Y - from.Y) * sy));
+            obj.Bounds = RectMm.FromCenter(centre, new SizeMm(Math.Max(0.2, start.Width * sx), Math.Max(0.2, start.Height * sy)));
         }
     }
 
@@ -861,8 +990,21 @@ public sealed class DesignerCanvas : FrameworkElement
         Point mm = ScreenToMm(screen);
         _dragStartMm = mm;
 
+        // A selected group has one box with its own handles; they come first.
+        if (SelectedGroupBounds() is { } groupBox && !_session.Selection.Any(o => o.Locked) &&
+            HitRectHandle(groupBox, screen) is var gh and not Handle.None)
+        {
+            _resizing = true;
+            _activeHandle = gh;
+            _groupResizeStart = groupBox;
+            CaptureStart();
+            CaptureMouse();
+            e.Handled = true;
+            return;
+        }
+
         // Handles on the current selection take priority over everything else.
-        foreach (LabelObject obj in _session.Selection)
+        foreach (LabelObject obj in SelectionWithHandles())
         {
             Handle h = obj.Locked ? Handle.None : HitHandle(obj, screen);
             if (h == Handle.None)
@@ -926,19 +1068,28 @@ public sealed class DesignerCanvas : FrameworkElement
             return;
         }
 
+        // Clicking any member of a group picks up the whole group; Ctrl+click reaches
+        // into the group for just that one object.
+        bool member = Keyboard.Modifiers.HasFlag(ModifierKeys.Control);
+        IReadOnlyList<LabelObject> picked = member ? new[] { hit } : WithGroups(new[] { hit });
+
         if (Keyboard.Modifiers.HasFlag(ModifierKeys.Shift))
         {
             var sel = _session.Selection.ToList();
-            if (!sel.Remove(hit))
+            if (picked.All(sel.Contains))
             {
-                sel.Add(hit);
+                sel.RemoveAll(picked.Contains);
+            }
+            else
+            {
+                sel.AddRange(picked.Where(o => !sel.Contains(o)));
             }
 
             _session.SetSelection(sel);
         }
-        else if (!_session.Selection.Contains(hit))
+        else if (!_session.Selection.Contains(hit) || (member && _session.Selection.Count > 1))
         {
-            _session.SetSelection(new[] { hit });
+            _session.SetSelection(picked);
         }
 
         if (!hit.Locked)
@@ -1030,6 +1181,13 @@ public sealed class DesignerCanvas : FrameworkElement
             {
                 dx = 0;
             }
+        }
+
+        if (_resizing && _groupResizeStart is { } groupStart)
+        {
+            ResizeGroup(groupStart, ResizeRect(groupStart, _activeHandle, dx, dy, proportional: shift, fromCentre: ctrl));
+            InvalidateVisual();
+            return;
         }
 
         foreach (LabelObject obj in _session.Selection)
@@ -1169,9 +1327,8 @@ public sealed class DesignerCanvas : FrameworkElement
         Point b = ScreenToMm(r.BottomRight);
         RectMm box = RectMm.FromLtrb(a.X, a.Y, b.X, b.Y);
 
-        var picked = _session.ActiveLabel.Objects
-            .Where(o => o.Visible && ObjectGeometry.Intersects(o, box))
-            .ToList();
+        IReadOnlyList<LabelObject> picked = WithGroups(_session.ActiveLabel.Objects
+            .Where(o => o.Visible && ObjectGeometry.Intersects(o, box)));
 
         _session.SetSelection(_marqueeBase.Concat(picked.Where(o => !_marqueeBase.Contains(o))).ToList());
     }
@@ -1312,6 +1469,7 @@ public sealed class DesignerCanvas : FrameworkElement
         _dragStartBounds.Clear();
         _dragStartRotation.Clear();
         _dragStartSkew.Clear();
+        _groupResizeStart = null;
         _activeSnapLines = Array.Empty<SnapLine>();
     }
 
@@ -1673,7 +1831,19 @@ public sealed class DesignerCanvas : FrameworkElement
         }
 
         Point mm = ScreenToMm(screen);
-        foreach (LabelObject obj in _session.Selection)
+        if (SelectedGroupBounds() is { } group && HitRectHandle(group, screen) is var gh and not Handle.None)
+        {
+            Cursor = gh switch
+            {
+                Handle.Top or Handle.Bottom => Cursors.SizeNS,
+                Handle.Left or Handle.Right => Cursors.SizeWE,
+                Handle.TopLeft or Handle.BottomRight => Cursors.SizeNWSE,
+                _ => Cursors.SizeNESW,
+            };
+            return;
+        }
+
+        foreach (LabelObject obj in SelectionWithHandles())
         {
             if (!obj.Locked && HitHandle(obj, screen) is var h and not Handle.None)
             {

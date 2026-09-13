@@ -61,8 +61,11 @@ public sealed class Paragraph
     public List<TextRun> Runs { get; set; } = new();
     public HorizontalAlignment? Alignment { get; set; }
 
-    /// <summary>Line height multiplier (1.0 = single spacing).</summary>
-    public double LineSpacing { get; set; } = 1.0;
+    /// <summary>
+    /// Line height multiplier for this paragraph only; null (or 1.0, which older files
+    /// stored on every paragraph) uses the text box's own line spacing.
+    /// </summary>
+    public double? LineSpacing { get; set; }
 
     public double SpaceBeforePt { get; set; }
     public double SpaceAfterPt { get; set; }

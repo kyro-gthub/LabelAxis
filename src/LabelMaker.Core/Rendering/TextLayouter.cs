@@ -56,7 +56,11 @@ public static class TextLayouter
         foreach (Paragraph paragraph in content.Paragraphs)
         {
             HorizontalAlignment align = paragraph.Alignment ?? style.HorizontalAlignment;
-            double lineSpacing = paragraph.LineSpacing > 0 ? paragraph.LineSpacing : style.LineSpacing;
+            // A paragraph value only counts when it really differs from single spacing: every
+            // paragraph used to carry 1.0, which silently overrode the text box's setting.
+            double lineSpacing = paragraph.LineSpacing is { } own && own > 0 && Math.Abs(own - 1.0) > 0.001
+                ? own
+                : style.LineSpacing;
             if (lineSpacing <= 0)
             {
                 lineSpacing = 1.0;

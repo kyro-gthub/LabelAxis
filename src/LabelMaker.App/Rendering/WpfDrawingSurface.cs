@@ -289,10 +289,24 @@ public sealed class WpfDrawingSurface : IDrawingSurface
 
             foreach (TextSpan span in line.Spans)
             {
-                FormattedText ft = BuildFormattedText(span);
                 double baseline = lineTop + line.BaselineOffsetMm;
-                _dc.DrawText(ft, new Point(x * K, (baseline * K) - ft.Baseline));
-                x += ft.WidthIncludingTrailingWhitespace / K;
+                double trackingMm = span.LetterSpacingEm * UnitConverter.PointsToMm(span.FontSizePt);
+                if (Math.Abs(trackingMm) < 1e-6)
+                {
+                    FormattedText ft = BuildFormattedText(span);
+                    _dc.DrawText(ft, new Point(x * K, (baseline * K) - ft.Baseline));
+                    x += ft.WidthIncludingTrailingWhitespace / K;
+                    continue;
+                }
+
+                // Letter spacing: each character is placed with the extra gap after it.
+                TextElementEnumerator characters = StringInfo.GetTextElementEnumerator(span.Text);
+                while (characters.MoveNext())
+                {
+                    FormattedText ft = BuildFormattedText(span with { Text = characters.GetTextElement() });
+                    _dc.DrawText(ft, new Point(x * K, (baseline * K) - ft.Baseline));
+                    x += (ft.WidthIncludingTrailingWhitespace / K) + trackingMm;
+                }
             }
         }
     }
