@@ -157,7 +157,9 @@ public sealed class DataConnectionModel
             return $"{Kind.DisplayName()} · {where} · {what}";
         }
 
-        return Kind.DisplayName();
+        return Kind is DataSourceKind.Manual or DataSourceKind.Clipboard && !string.IsNullOrWhiteSpace(Name) && Name != "Data"
+            ? Name
+            : Kind.DisplayName();
     }
 
     public DataConnectionModel Clone() => new()

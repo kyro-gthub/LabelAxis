@@ -15,6 +15,7 @@
     <PackageReference Include="FluentAssertions" />
     <PackageReference Include="ZXing.Net" />
     <PackageReference Include="Microsoft.Data.Sqlite" />
+    <PackageReference Include="OpenMcdf" />
   </ItemGroup>
 
   <ItemGroup>
