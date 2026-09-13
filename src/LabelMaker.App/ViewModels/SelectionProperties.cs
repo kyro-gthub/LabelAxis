@@ -544,6 +544,296 @@ public sealed class SelectionProperties : ObservableObject
         }
     }
 
+    // ---- Barcode: the rest of the spec ----
+
+    public static IReadOnlyList<HumanReadablePosition> HriPositions { get; } = Enum.GetValues<HumanReadablePosition>();
+
+    public static IReadOnlyList<QrErrorCorrection> QrLevels { get; } = Enum.GetValues<QrErrorCorrection>();
+
+    public static IReadOnlyList<string> Encodings { get; } = new[] { "UTF-8", "ISO-8859-1", "Windows-1252", "US-ASCII", "Shift_JIS", "EUC-KR" };
+
+    private BarcodeSpec? Spec => (Obj as BarcodeObject)?.Spec;
+
+    private void SetSpec<T>(string name, Func<BarcodeSpec, T> get, Action<BarcodeSpec, T> set, T value)
+    {
+        if (Spec is { } spec)
+        {
+            Set(name, () => get(spec), v => set(spec, v), value);
+        }
+    }
+
+    /// <summary>Where the digits go: under, above, or hidden.</summary>
+    public HumanReadablePosition HriPosition
+    {
+        get => Spec?.HumanReadable ?? HumanReadablePosition.Below;
+        set
+        {
+            SetSpec(nameof(HriPosition), s => s.HumanReadable, (s, v) => s.HumanReadable = v, value);
+            OnPropertyChanged(nameof(ShowHumanReadable));
+        }
+    }
+
+    public string HriFontFamily
+    {
+        get => Spec?.HumanReadableFontFamily ?? "Consolas";
+        set => SetSpec(nameof(HriFontFamily), s => s.HumanReadableFontFamily, (s, v) => s.HumanReadableFontFamily = v, value);
+    }
+
+    public double QuietZoneModules
+    {
+        get => Spec?.QuietZoneModules ?? 10;
+        set => SetSpec(nameof(QuietZoneModules), s => s.QuietZoneModules, (s, v) => s.QuietZoneModules = v, (int)Math.Clamp(Math.Round(value), 0, 40));
+    }
+
+    public bool AddCheckDigit
+    {
+        get => Spec?.AddCheckDigit ?? false;
+        set => SetSpec(nameof(AddCheckDigit), s => s.AddCheckDigit, (s, v) => s.AddCheckDigit = v, value);
+    }
+
+    /// <summary>Only Code 39, Interleaved 2 of 5 and MSI make a check digit optional.</summary>
+    public bool CheckDigitIsOptional => Spec?.Symbology is BarcodeSymbology.Code39 or BarcodeSymbology.Interleaved2of5 or BarcodeSymbology.MsiPlessey;
+
+    public bool Gs1Mode
+    {
+        get => Spec?.Gs1Mode ?? false;
+        set => SetSpec(nameof(Gs1Mode), s => s.Gs1Mode, (s, v) => s.Gs1Mode = v, value);
+    }
+
+    public QrErrorCorrection QrEcLevel
+    {
+        get => Spec?.QrEcLevel ?? QrErrorCorrection.Medium;
+        set => SetSpec(nameof(QrEcLevel), s => s.QrEcLevel, (s, v) => s.QrEcLevel = v, value);
+    }
+
+    public string CharacterEncoding
+    {
+        get => Spec?.CharacterEncoding ?? "UTF-8";
+        set => SetSpec(nameof(CharacterEncoding), s => s.CharacterEncoding, (s, v) => s.CharacterEncoding = v, value);
+    }
+
+    public double Pdf417Columns
+    {
+        get => Spec?.Pdf417Columns ?? 0;
+        set => SetSpec(nameof(Pdf417Columns), s => s.Pdf417Columns, (s, v) => s.Pdf417Columns = v, (int)Math.Clamp(Math.Round(value), 0, 30));
+    }
+
+    public string BarColorHex
+    {
+        get => (Spec?.Foreground ?? ColorRgba.Black).ToHex();
+        set
+        {
+            if (ColorRgba.TryParse(value, out ColorRgba c))
+            {
+                SetSpec(nameof(BarColorHex), s => s.Foreground, (s, v) => s.Foreground = v, c);
+            }
+        }
+    }
+
+    public string BarBackgroundHex
+    {
+        get => (Spec?.Background ?? ColorRgba.White).ToHex();
+        set
+        {
+            if (ColorRgba.TryParse(value, out ColorRgba c))
+            {
+                SetSpec(nameof(BarBackgroundHex), s => s.Background, (s, v) => s.Background = v, c);
+            }
+        }
+    }
+
+    public Brush BarColorBrush => ToBrush(Spec?.Foreground ?? ColorRgba.Black);
+
+    public Brush BarBackgroundBrush => ToBrush(Spec?.Background ?? ColorRgba.White);
+
+    /// <summary>Which symbology-specific options apply, so the panel only shows relevant ones.</summary>
+    public bool IsQr => Spec?.Symbology is BarcodeSymbology.QrCode;
+
+    public bool IsPdf417 => Spec?.Symbology is BarcodeSymbology.Pdf417;
+
+    public bool Is2D => Spec is { } s && s.Symbology.Is2D();
+
+    public bool IsLinear => Spec is not null && !Is2D;
+
+    // ---- Table ----
+
+    public bool IsTable => Obj is TableObject;
+
+    public double TableRows
+    {
+        get => (Obj as TableObject)?.Rows ?? 2;
+        set => ResizeTable(rows: (int)Math.Clamp(Math.Round(value), 1, 50), columns: null);
+    }
+
+    public double TableColumns
+    {
+        get => (Obj as TableObject)?.Columns ?? 2;
+        set => ResizeTable(rows: null, columns: (int)Math.Clamp(Math.Round(value), 1, 20));
+    }
+
+    /// <summary>One editable box per cell, laid out row by row.</summary>
+    public IReadOnlyList<TableCellItem> TableCells =>
+        Obj is TableObject t
+            ? Enumerable.Range(0, t.Rows * t.Columns).Select(i => new TableCellItem(this, t, i)).ToList()
+            : Array.Empty<TableCellItem>();
+
+    public bool TableHeader
+    {
+        get => (Obj as TableObject)?.FirstRowIsHeader ?? false;
+        set
+        {
+            if (Obj is TableObject t)
+            {
+                Set(nameof(TableHeader), () => t.FirstRowIsHeader, v => t.FirstRowIsHeader = v, value);
+            }
+        }
+    }
+
+    public string TableHeaderFillHex
+    {
+        get => ((Obj as TableObject)?.HeaderFill ?? ColorRgba.Transparent).ToHex();
+        set
+        {
+            if (Obj is TableObject t && ColorRgba.TryParse(value, out ColorRgba c))
+            {
+                Set(nameof(TableHeaderFillHex), () => t.HeaderFill, v => t.HeaderFill = v, c);
+            }
+        }
+    }
+
+    public string TableBorderHex
+    {
+        get => ((Obj as TableObject)?.BorderColor ?? ColorRgba.Black).ToHex();
+        set
+        {
+            if (Obj is TableObject t && ColorRgba.TryParse(value, out ColorRgba c))
+            {
+                Set(nameof(TableBorderHex), () => t.BorderColor, v => t.BorderColor = v, c);
+            }
+        }
+    }
+
+    public double TableBorderWidth
+    {
+        get => Out((Obj as TableObject)?.BorderWidthMm ?? 0.2);
+        set
+        {
+            if (Obj is TableObject t)
+            {
+                Set(nameof(TableBorderWidth), () => t.BorderWidthMm, v => t.BorderWidthMm = v, Math.Clamp(In(value), 0, 5));
+            }
+        }
+    }
+
+    public string TableFontFamily
+    {
+        get => (Obj as TableObject)?.FontFamily ?? "Segoe UI";
+        set
+        {
+            if (Obj is TableObject t && !string.IsNullOrWhiteSpace(value))
+            {
+                Set(nameof(TableFontFamily), () => t.FontFamily, v => t.FontFamily = v, value);
+            }
+        }
+    }
+
+    public double TableFontSize
+    {
+        get => (Obj as TableObject)?.FontSizePt ?? 8;
+        set
+        {
+            if (Obj is TableObject t)
+            {
+                Set(nameof(TableFontSize), () => t.FontSizePt, v => t.FontSizePt = v, Math.Clamp(value, 3, 72));
+            }
+        }
+    }
+
+    public HorizontalAlignment TableAlign
+    {
+        get => (Obj as TableObject)?.CellAlignment ?? HorizontalAlignment.Left;
+        set
+        {
+            if (Obj is TableObject t)
+            {
+                Set(nameof(TableAlign), () => t.CellAlignment, v => t.CellAlignment = v, value);
+            }
+        }
+    }
+
+    public double TablePadding
+    {
+        get => Out((Obj as TableObject)?.CellPaddingMm ?? 1);
+        set
+        {
+            if (Obj is TableObject t)
+            {
+                Set(nameof(TablePadding), () => t.CellPaddingMm, v => t.CellPaddingMm = v, Math.Clamp(In(value), 0, 20));
+            }
+        }
+    }
+
+    internal void SetTableCell(TableObject table, int index, string value)
+    {
+        if (index < 0 || index >= table.Cells.Count || table.Cells[index] == value)
+        {
+            return;
+        }
+
+        var cells = new List<string>(table.Cells) { [index] = value };
+        _session.Execute(new SetPropertyCommand<List<string>>("Edit cell", () => table.Cells, v => table.Cells = v, cells));
+    }
+
+    /// <summary>
+    /// Adds or removes rows/columns keeping existing cell text in place (the cell
+    /// list is row-major, so changing the column count has to re-lay it out).
+    /// </summary>
+    private void ResizeTable(int? rows, int? columns)
+    {
+        if (Obj is not TableObject t)
+        {
+            return;
+        }
+
+        int newRows = rows ?? t.Rows;
+        int newCols = columns ?? t.Columns;
+        if (newRows == t.Rows && newCols == t.Columns)
+        {
+            return;
+        }
+
+        var cells = new List<string>(newRows * newCols);
+        for (int r = 0; r < newRows; r++)
+        {
+            for (int c = 0; c < newCols; c++)
+            {
+                cells.Add(r < t.Rows && c < t.Columns ? t.CellAt(r, c) : string.Empty);
+            }
+        }
+
+        var before = new TableLayout(t.Rows, t.Columns, t.Cells, t.ColumnWeights, t.RowWeights);
+        var after = new TableLayout(
+            newRows, newCols, cells,
+            Enumerable.Range(0, newCols).Select(i => i < t.ColumnWeights.Count ? t.ColumnWeights[i] : 1.0).ToList(),
+            Enumerable.Range(0, newRows).Select(i => i < t.RowWeights.Count ? t.RowWeights[i] : 1.0).ToList());
+
+        _session.Execute(new SetPropertyCommand<TableLayout>(
+            "Resize table", () => before, v => v.ApplyTo(t), after));
+        RefreshAll();
+    }
+
+    private sealed record TableLayout(int Rows, int Columns, List<string> Cells, List<double> ColumnWeights, List<double> RowWeights)
+    {
+        public void ApplyTo(TableObject t)
+        {
+            t.Rows = Rows;
+            t.Columns = Columns;
+            t.Cells = new List<string>(Cells);
+            t.ColumnWeights = new List<double>(ColumnWeights);
+            t.RowWeights = new List<double>(RowWeights);
+        }
+    }
+
     public string? BarcodeValidationMessage
     {
         get
@@ -813,6 +1103,18 @@ public sealed class SelectionProperties : ObservableObject
                 break;
             case "highlight":
                 HighlightHex = hex;
+                break;
+            case "bar":
+                BarColorHex = hex;
+                break;
+            case "barbg":
+                BarBackgroundHex = hex;
+                break;
+            case "tablefill":
+                TableHeaderFillHex = hex;
+                break;
+            case "tableborder":
+                TableBorderHex = hex;
                 break;
             default:
                 FillHex = hex;
