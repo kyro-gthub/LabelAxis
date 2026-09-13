@@ -655,6 +655,7 @@ public sealed class MainViewModel : ObservableObject
     public RelayCommand ReplaceImageCommand { get; private set; } = null!;
     public RelayCommand ToggleObjectLockCommand { get; private set; } = null!;
     public RelayCommand AddShapeCommand { get; private set; } = null!;
+    public RelayCommand AddTableCommand { get; private set; } = null!;
     public RelayCommand DataTableCommand { get; private set; } = null!;
     public RelayCommand LabelSizeCommand { get; private set; } = null!;
     public RelayCommand SelectAllCommand { get; private set; } = null!;
@@ -730,6 +731,22 @@ public sealed class MainViewModel : ObservableObject
         AddEllipseCommand = new RelayCommand(() => AddShape("ellipse"));
         AddLineCommand = new RelayCommand(() => AddShape("line"));
         AddShapeCommand = new RelayCommand(p => AddShape(p as string ?? "rectangle"));
+        AddTableCommand = new RelayCommand(() =>
+        {
+            var table = new TableObject
+            {
+                Name = "Table",
+                Rows = 3,
+                Columns = 2,
+                Cells = new List<string> { "Item", "Value", "Size", "{Size}", "Batch", "{Batch}" },
+                ColumnWeights = new List<double> { 1, 1 },
+                RowWeights = new List<double> { 1, 1, 1 },
+                FirstRowIsHeader = true,
+                HeaderFill = new ColorRgba(0xE8, 0xF1, 0xFE),
+                Bounds = NewBounds(50, 18),
+            };
+            AddObject(table);
+        });
         AddDataFieldCommand = new RelayCommand(AddDataField);
         AddDateFieldCommand = new RelayCommand(() => AddObject(new TextObject { Name = "Date", Content = RichTextContent.FromPlainText("{CurrentDate}"), Bounds = NewBounds(30, 6) }));
 
@@ -810,6 +827,10 @@ public sealed class MainViewModel : ObservableObject
                 "gradient" => _properties.GradientToHex,
                 "text" => _properties.TextColorHex,
                 "highlight" => _properties.HighlightHex,
+                "bar" => _properties.BarColorHex,
+                "barbg" => _properties.BarBackgroundHex,
+                "tablefill" => _properties.TableHeaderFillHex,
+                "tableborder" => _properties.TableBorderHex,
                 _ => _properties.FillHex,
             };
 
@@ -824,6 +845,10 @@ public sealed class MainViewModel : ObservableObject
                 "gradient" => "Gradient end colour",
                 "text" => "Text colour",
                 "highlight" => "Highlight colour",
+                "bar" => "Bar colour",
+                "barbg" => "Barcode background",
+                "tablefill" => "Header fill",
+                "tableborder" => "Table border",
                 _ => "Fill colour",
             };
 

@@ -197,6 +197,9 @@
           <Button Style="{StaticResource ToolTileButton}" Command="{Binding AddQrCodeCommand}" ToolTip="Add a QR code">
             <StackPanel><Image Style="{StaticResource ToolTileIcon}" Source="{StaticResource Icon.QrCode}" /><TextBlock Style="{StaticResource ToolTileLabel}" Text="QR Code" /></StackPanel>
           </Button>
+          <Button Style="{StaticResource ToolTileButton}" Command="{Binding AddTableCommand}" ToolTip="Add a table">
+            <StackPanel><Image Style="{StaticResource ToolTileIcon}" Source="{StaticResource Icon.Table}" /><TextBlock Style="{StaticResource ToolTileLabel}" Text="Table" /></StackPanel>
+          </Button>
           <Button Style="{StaticResource ToolTileButton}" ToolTip="Add a shape" Click="OnAlignMenu">
             <StackPanel Orientation="Horizontal">
               <StackPanel><Image Style="{StaticResource ToolTileIcon}" Source="{StaticResource Icon.Shape}" /><TextBlock Style="{StaticResource ToolTileLabel}" Text="Shapes" /></StackPanel>
@@ -830,10 +833,68 @@
                     <TextBlock Text="Value" Style="{StaticResource FieldLabel}" Width="86" />
                     <TextBox Text="{Binding BarcodeData, UpdateSourceTrigger=LostFocus}" FontFamily="{StaticResource Font.Mono}" />
                   </DockPanel>
-                  <CheckBox Content="Show value text" IsChecked="{Binding ShowHumanReadable}" Margin="0,8,0,2" />
-                  <DockPanel Margin="0,3" Visibility="{Binding ShowHumanReadable, Converter={StaticResource BoolToVis}}">
-                    <TextBlock Text="Text size (pt)" Style="{StaticResource FieldLabel}" Width="86" />
-                    <TextBox Style="{StaticResource NumberBox}" Text="{Binding HriFontSizePt, StringFormat=0.#, UpdateSourceTrigger=LostFocus}" />
+                  <!-- digits under / above the bars (linear codes only) -->
+                  <DockPanel Margin="0,8,0,3" Visibility="{Binding IsLinear, Converter={StaticResource BoolToVis}}">
+                    <TextBlock Text="Digits" Style="{StaticResource FieldLabel}" Width="86" />
+                    <ComboBox ItemsSource="{Binding HriPositions}" SelectedItem="{Binding HriPosition}" />
+                  </DockPanel>
+                  <StackPanel Visibility="{Binding ShowHumanReadable, Converter={StaticResource BoolToVis}}">
+                    <DockPanel Margin="0,3" Visibility="{Binding IsLinear, Converter={StaticResource BoolToVis}}">
+                      <TextBlock Text="Digit font" Style="{StaticResource FieldLabel}" Width="86" />
+                      <ComboBox IsEditable="True" IsTextSearchEnabled="True" ItemsSource="{Binding FontFamilies}"
+                                SelectedItem="{Binding HriFontFamily}" />
+                    </DockPanel>
+                    <DockPanel Margin="0,3" Visibility="{Binding IsLinear, Converter={StaticResource BoolToVis}}">
+                      <TextBlock Text="Text size (pt)" Style="{StaticResource FieldLabel}" Width="86" />
+                      <TextBox Style="{StaticResource NumberBox}" Text="{Binding HriFontSizePt, StringFormat=0.#, UpdateSourceTrigger=LostFocus}" />
+                    </DockPanel>
+                  </StackPanel>
+
+                  <!-- colours -->
+                  <DockPanel Margin="0,6,0,3">
+                    <TextBlock Text="Bar colour" Style="{StaticResource FieldLabel}" Width="86" />
+                    <Button DockPanel.Dock="Right" Content="…" MinWidth="30" Padding="6,4" Margin="6,0,0,0" Style="{StaticResource GhostButton}"
+                            Command="{Binding DataContext.PickColorCommand, RelativeSource={RelativeSource AncestorType=ScrollViewer}}" CommandParameter="bar" />
+                    <Border Width="26" Background="{Binding BarColorBrush}" CornerRadius="6" Margin="0,0,6,0"
+                            BorderBrush="{DynamicResource Br.BorderStrong}" BorderThickness="1" />
+                    <TextBox Text="{Binding BarColorHex, UpdateSourceTrigger=LostFocus}" FontFamily="{StaticResource Font.Mono}" />
+                  </DockPanel>
+                  <DockPanel Margin="0,3">
+                    <TextBlock Text="Background" Style="{StaticResource FieldLabel}" Width="86" />
+                    <Button DockPanel.Dock="Right" Content="…" MinWidth="30" Padding="6,4" Margin="6,0,0,0" Style="{StaticResource GhostButton}"
+                            Command="{Binding DataContext.PickColorCommand, RelativeSource={RelativeSource AncestorType=ScrollViewer}}" CommandParameter="barbg" />
+                    <Border Width="26" Background="{Binding BarBackgroundBrush}" CornerRadius="6" Margin="0,0,6,0"
+                            BorderBrush="{DynamicResource Br.BorderStrong}" BorderThickness="1" />
+                    <TextBox Text="{Binding BarBackgroundHex, UpdateSourceTrigger=LostFocus}" FontFamily="{StaticResource Font.Mono}" />
+                  </DockPanel>
+                  <TextBlock FontSize="11.5" Foreground="{DynamicResource Br.TextMuted}" TextWrapping="Wrap" Margin="86,2,0,4"
+                             Text="Dark bars on a light background scan most reliably." />
+
+                  <!-- encoding options -->
+                  <DockPanel Margin="0,6,0,3">
+                    <TextBlock Text="Quiet zone" Style="{StaticResource FieldLabel}" Width="86" ToolTip="Blank margin each side, in modules" />
+                    <TextBlock DockPanel.Dock="Right" Width="38" TextAlignment="Right" FontSize="11.5"
+                               Foreground="{DynamicResource Br.TextMuted}" Text="{Binding QuietZoneModules, StringFormat=0}" />
+                    <Slider Minimum="0" Maximum="20" TickFrequency="1" IsSnapToTickEnabled="True"
+                            Value="{Binding QuietZoneModules, Delay=250}" Margin="0,0,8,0" />
+                  </DockPanel>
+                  <CheckBox Content="Add check digit" IsChecked="{Binding AddCheckDigit}" Margin="0,4,0,3"
+                            Visibility="{Binding CheckDigitIsOptional, Converter={StaticResource BoolToVis}}"
+                            ToolTip="Code 39, Interleaved 2 of 5 and MSI make the check digit optional" />
+                  <CheckBox Content="GS1 mode — treat (nn) groups as Application Identifiers" IsChecked="{Binding Gs1Mode}"
+                            Margin="0,4,0,3" Visibility="{Binding IsLinear, Converter={StaticResource BoolToVis}}" />
+                  <DockPanel Margin="0,3" Visibility="{Binding IsQr, Converter={StaticResource BoolToVis}}">
+                    <TextBlock Text="Error correction" Style="{StaticResource FieldLabel}" Width="86" TextWrapping="Wrap"
+                               ToolTip="Higher levels survive more damage but make the code denser" />
+                    <ComboBox ItemsSource="{Binding QrLevels}" SelectedItem="{Binding QrEcLevel}" />
+                  </DockPanel>
+                  <DockPanel Margin="0,3" Visibility="{Binding IsPdf417, Converter={StaticResource BoolToVis}}">
+                    <TextBlock Text="Columns" Style="{StaticResource FieldLabel}" Width="86" ToolTip="0 = automatic" />
+                    <TextBox Style="{StaticResource NumberBox}" Text="{Binding Pdf417Columns, StringFormat=0, UpdateSourceTrigger=LostFocus}" />
+                  </DockPanel>
+                  <DockPanel Margin="0,3" Visibility="{Binding Is2D, Converter={StaticResource BoolToVis}}">
+                    <TextBlock Text="Encoding" Style="{StaticResource FieldLabel}" Width="86" />
+                    <ComboBox IsEditable="True" ItemsSource="{Binding Encodings}" Text="{Binding CharacterEncoding, UpdateSourceTrigger=LostFocus}" />
                   </DockPanel>
                   <DockPanel Margin="0,3">
                     <TextBlock Text="Barcode height" Style="{StaticResource FieldLabel}" Width="86" />
@@ -850,6 +911,78 @@
                 <TextBlock Text="Select a barcode or QR code to edit its symbology and value."
                            Visibility="{Binding IsBarcode, Converter={StaticResource InverseBool}}"
                            Foreground="{DynamicResource Br.TextMuted}" FontSize="12" TextWrapping="Wrap" />
+              </StackPanel>
+
+              <!-- Table Settings -->
+              <ToggleButton x:Name="SecTable" Style="{StaticResource SectionHeader}" IsChecked="{Binding IsTable, Mode=OneWay}"
+                            Visibility="{Binding IsTable, Converter={StaticResource BoolToVis}}">
+                <StackPanel Orientation="Horizontal">
+                  <Image Source="{StaticResource Icon.Table}" Width="16" Height="16" Margin="0,0,9,0" />
+                  <TextBlock Text="Table Settings" VerticalAlignment="Center" />
+                </StackPanel>
+              </ToggleButton>
+              <StackPanel Style="{StaticResource SectionBody}" Visibility="{Binding IsChecked, ElementName=SecTable, Converter={StaticResource BoolToVis}}">
+                <StackPanel Visibility="{Binding IsTable, Converter={StaticResource BoolToVis}}">
+                  <Grid Margin="0,0,0,6">
+                    <Grid.ColumnDefinitions>
+                      <ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" /><ColumnDefinition Width="14" />
+                      <ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Rows" Style="{StaticResource FieldLabel}" Width="40" />
+                    <TextBox Grid.Column="1" Style="{StaticResource NumberBox}" Text="{Binding TableRows, StringFormat=0, UpdateSourceTrigger=LostFocus}" />
+                    <TextBlock Grid.Column="3" Text="Columns" Style="{StaticResource FieldLabel}" Width="54" />
+                    <TextBox Grid.Column="4" Style="{StaticResource NumberBox}" Text="{Binding TableColumns, StringFormat=0, UpdateSourceTrigger=LostFocus}" />
+                  </Grid>
+
+                  <TextBlock Text="CELLS" Style="{StaticResource PanelSectionHeader}" Margin="0,6,0,4" />
+                  <ItemsControl ItemsSource="{Binding TableCells}" Margin="0,0,0,4">
+                    <ItemsControl.ItemsPanel>
+                      <ItemsPanelTemplate>
+                        <UniformGrid Columns="{Binding DataContext.TableColumns, RelativeSource={RelativeSource AncestorType=ItemsControl}}" />
+                      </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate>
+                        <TextBox Text="{Binding Text, UpdateSourceTrigger=LostFocus}" Margin="0,0,3,3" FontSize="11.5"
+                                 ToolTip="Cell text — {Field} tokens work here too" />
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+
+                  <CheckBox Content="First row is a header" IsChecked="{Binding TableHeader}" Margin="0,6,0,3" />
+                  <DockPanel Margin="0,3">
+                    <TextBlock Text="Header fill" Style="{StaticResource FieldLabel}" Width="86" />
+                    <Button DockPanel.Dock="Right" Content="…" MinWidth="30" Padding="6,4" Margin="6,0,0,0" Style="{StaticResource GhostButton}"
+                            Command="{Binding DataContext.PickColorCommand, RelativeSource={RelativeSource AncestorType=ScrollViewer}}" CommandParameter="tablefill" />
+                    <TextBox Text="{Binding TableHeaderFillHex, UpdateSourceTrigger=LostFocus}" FontFamily="{StaticResource Font.Mono}" />
+                  </DockPanel>
+                  <DockPanel Margin="0,3">
+                    <TextBlock Text="Border" Style="{StaticResource FieldLabel}" Width="86" />
+                    <Button DockPanel.Dock="Right" Content="…" MinWidth="30" Padding="6,4" Margin="6,0,0,0" Style="{StaticResource GhostButton}"
+                            Command="{Binding DataContext.PickColorCommand, RelativeSource={RelativeSource AncestorType=ScrollViewer}}" CommandParameter="tableborder" />
+                    <TextBox Text="{Binding TableBorderHex, UpdateSourceTrigger=LostFocus}" FontFamily="{StaticResource Font.Mono}" />
+                  </DockPanel>
+                  <DockPanel Margin="0,3">
+                    <TextBlock Text="Border width" Style="{StaticResource FieldLabel}" Width="86" />
+                    <TextBox Style="{StaticResource NumberBox}" Text="{Binding TableBorderWidth, StringFormat=0.##, UpdateSourceTrigger=LostFocus}" />
+                  </DockPanel>
+                  <DockPanel Margin="0,3">
+                    <TextBlock Text="Font" Style="{StaticResource FieldLabel}" Width="86" />
+                    <ComboBox IsEditable="True" IsTextSearchEnabled="True" ItemsSource="{Binding FontFamilies}" SelectedItem="{Binding TableFontFamily}" />
+                  </DockPanel>
+                  <DockPanel Margin="0,3">
+                    <TextBlock Text="Size (pt)" Style="{StaticResource FieldLabel}" Width="86" />
+                    <TextBox Style="{StaticResource NumberBox}" Text="{Binding TableFontSize, StringFormat=0.#, UpdateSourceTrigger=LostFocus}" />
+                  </DockPanel>
+                  <DockPanel Margin="0,3">
+                    <TextBlock Text="Align" Style="{StaticResource FieldLabel}" Width="86" />
+                    <ComboBox ItemsSource="{Binding HorizontalAlignments}" SelectedItem="{Binding TableAlign}" />
+                  </DockPanel>
+                  <DockPanel Margin="0,3">
+                    <TextBlock Text="Cell padding" Style="{StaticResource FieldLabel}" Width="86" />
+                    <TextBox Style="{StaticResource NumberBox}" Text="{Binding TablePadding, StringFormat=0.##, UpdateSourceTrigger=LostFocus}" />
+                  </DockPanel>
+                </StackPanel>
               </StackPanel>
 
               <!-- Image Settings -->
