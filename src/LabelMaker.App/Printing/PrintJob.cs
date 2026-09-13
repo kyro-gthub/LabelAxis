@@ -7,7 +7,7 @@ namespace LabelMaker.App.Printing;
 
 /// <summary>Everything needed to send one job: where, how, and the sheets.</summary>
 public sealed record PrintJobRequest(
-    PrintQueue Queue, PrintTicket Ticket, DocumentPaginator Paginator, string Title, int Copies)
+    PrintQueue Queue, PrintTicket Ticket, DocumentPaginator Paginator, string Title, int Copies, Core.Printing.PrintJobSummary Summary)
 {
     public int Sheets => Paginator.PageCount;
 }

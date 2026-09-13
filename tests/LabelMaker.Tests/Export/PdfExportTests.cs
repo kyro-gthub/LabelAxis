@@ -104,6 +104,20 @@ public sealed class PdfExportTests
         act.Should().Throw<OperationCanceledException>();
     }
 
+    [Fact]
+    public void Sheet_range_writes_only_those_sheets()
+    {
+        ProjectModel project = MakeProject("formtec-3103"); // 24-up
+        var rows = Enumerable.Range(1, 24 * 6).Select(i => new[] { $"Item {i}", $"ABC{i:000000}" }).ToList();
+        DataSet data = DataSet.FromRows(new[] { "Product", "Barcode" }, rows);
+        var request = new ExportRequest { Project = project, Data = data, Scope = ExportScope.Sheet, FirstSheet = 3, LastSheet = 4 };
+
+        byte[] pdf = new PdfExporter().Export(request, new AssetStore());
+
+        using var read = PdfReader.Open(new MemoryStream(pdf), PdfDocumentOpenMode.Import);
+        read.PageCount.Should().Be(2);
+    }
+
     /// <summary>Progress&lt;T&gt; posts to a context; tests need the callback inline.</summary>
     private sealed class SyncProgress(Action<int> report) : IProgress<int>
     {

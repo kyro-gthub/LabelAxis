@@ -29,6 +29,7 @@ public sealed class AppEnvironment
         Templates = TemplateStore.CreateWithBuiltIns();
         Templates.LoadUserDirectory(Paths.UserTemplatesDirectory);
         Calibration = CalibrationStore.Load(Paths.CalibrationFilePath);
+        PrintHistory = PrintHistoryStore.Load(Paths.PrintHistoryFilePath);
         AutoSave = new AutoSaveService(Paths.RecoveryDirectory)
         {
             Interval = TimeSpan.FromSeconds(Math.Max(30, Settings.AutoSaveSeconds)),
@@ -45,6 +46,8 @@ public sealed class AppEnvironment
     public TemplateStore Templates { get; }
 
     public CalibrationStore Calibration { get; }
+
+    public PrintHistoryStore PrintHistory { get; }
 
     public AutoSaveService AutoSave { get; }
 
