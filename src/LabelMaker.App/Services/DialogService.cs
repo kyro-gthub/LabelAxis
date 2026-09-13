@@ -158,7 +158,7 @@ public sealed class DialogService : IShellServices
                 vm.OpenProjectPath(path);
                 break;
             case WelcomeAction.ImportPublisher:
-                vm.ImportPublisherCommand.Execute(null);
+                vm.OpenPublisherPagesCommand.Execute(null);
                 break;
             case WelcomeAction.LabelManager:
                 vm.TemplateManagerCommand.Execute(null);

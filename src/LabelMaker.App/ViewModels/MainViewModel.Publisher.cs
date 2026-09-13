@@ -16,11 +16,76 @@ public sealed partial class MainViewModel
 {
     public RelayCommand ImportPublisherCommand { get; private set; } = null!;
 
-    private void BuildPublisherCommands() => ImportPublisherCommand = new RelayCommand(ImportPublisher);
+    public RelayCommand OpenPublisherPagesCommand { get; private set; } = null!;
 
-    private void ImportPublisher()
+    private void BuildPublisherCommands()
     {
-        string? path = _shell.PickOpenFile("Microsoft Publisher files|*.pub|All files|*.*", "Import from Publisher");
+        ImportPublisherCommand = new RelayCommand(() => ImportPublisher(null));
+        OpenPublisherPagesCommand = new RelayCommand(OpenPublisherPages);
+    }
+
+    /// <summary>
+    /// Opens a .pub file as a project with every page laid out as in Publisher. That needs
+    /// Microsoft Publisher on this PC; without it, offers the text-and-pictures import.
+    /// </summary>
+    private void OpenPublisherPages()
+    {
+        string? path = _shell.PickOpenFile("Microsoft Publisher files|*.pub|All files|*.*", "Open Publisher file");
+        if (path is null)
+        {
+            return;
+        }
+
+        if (!Services.PublisherAutomation.IsInstalled)
+        {
+            if (_shell.Confirm("Bringing in the pages exactly as they are laid out uses Microsoft Publisher, which is not installed on this PC.\n\n" +
+                               "Import the text and pictures from the file instead?", "Open Publisher file"))
+            {
+                ImportPublisher(path);
+            }
+
+            return;
+        }
+
+        try
+        {
+            PubLayout layout = _shell.RunJob($"Opening {Path.GetFileName(path)} in Microsoft Publisher", "pages read", 0,
+                (progress, token) => Services.PublisherAutomation.ReadAsync(path, progress, token));
+
+            if (layout.Pages.Count == 0)
+            {
+                _shell.Info("Publisher opened the file but it has no pages.");
+                return;
+            }
+
+            Core.Serialization.ProjectDocument document = PublisherLayoutConverter.ToProject(layout);
+            LoadSession(document);
+            _session.SelectPage(document.Project.Pages[0].Id);
+
+            int shapes = layout.Pages.Sum(p => p.Shapes.Count);
+            StatusText = $"Opened {layout.Pages.Count} page(s) with {shapes} item(s) from {Path.GetFileName(path)}. Save it as a Label Maker project to keep it.";
+            if (layout.Notes.Count > 0)
+            {
+                _shell.ShowTextReport("Publisher import notes",
+                    $"{layout.Pages.Count} page(s) came across. A few items needed attention:\n\n" + string.Join("\n", layout.Notes));
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            StatusText = "Publisher import cancelled";
+        }
+        catch (Exception ex) when (ex is InvalidOperationException or System.Runtime.InteropServices.COMException or IOException or UnauthorizedAccessException)
+        {
+            if (_shell.Confirm($"Microsoft Publisher could not open the pages:\n\n{ex.Message}\n\nImport the text and pictures from the file instead?", "Open Publisher file"))
+            {
+                ImportPublisher(path);
+            }
+        }
+    }
+
+    private void ImportPublisher(string? chosenPath)
+    {
+        string? path = chosenPath ?? _shell.PickOpenFile("Microsoft Publisher files|*.pub|All files|*.*", "Import from Publisher");
         if (path is null)
         {
             return;
