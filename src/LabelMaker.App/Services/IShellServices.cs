@@ -88,6 +88,9 @@ public interface IShellServices
     /// </summary>
     DataConnectionChoice? ShowDataConnection(Core.Model.DataConnectionModel? existing, string? knownPassword);
 
+    /// <summary>What was read from a Publisher file, to tick and bring into the label or the records.</summary>
+    void ShowPublisherImport(LabelMaker.Data.Publisher.PublisherContent content, string path);
+
     /// <summary>Asks for a password (masked). Null on cancel.</summary>
     string? PromptPassword(string title, string message);
 

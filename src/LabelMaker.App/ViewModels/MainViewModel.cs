@@ -811,6 +811,7 @@ public sealed partial class MainViewModel : ObservableObject
         PrintHistoryCommand = new RelayCommand(ShowPrintHistory);
         BuildDataCommands();
         BuildTabCommands();
+        BuildPublisherCommands();
         DataTableCommand = new RelayCommand(() => _shell.ShowDataTable());
         SelectAllCommand = new RelayCommand(
             () => _session.SetSelection(_session.ActiveLabel.Objects.Where(o => o.Visible).ToList()),

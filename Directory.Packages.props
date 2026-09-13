@@ -20,6 +20,9 @@
     <PackageVersion Include="System.Data.Odbc" Version="10.0.12" />
     <PackageVersion Include="System.Data.OleDb" Version="10.0.12" />
 
+    <!-- Compound files (Microsoft Publisher .pub content import) -->
+    <PackageVersion Include="OpenMcdf" Version="3.3.0" />
+
     <!-- Vector PDF export -->
     <PackageVersion Include="PdfSharp" Version="6.2.4" />
 

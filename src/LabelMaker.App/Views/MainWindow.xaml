@@ -86,6 +86,8 @@
               <MenuItem Header="_Save" InputGestureText="Ctrl+S" Command="{Binding SaveCommand}" />
               <MenuItem Header="Save _As…" InputGestureText="Ctrl+Shift+S" Command="{Binding SaveAsCommand}" />
               <Separator />
+              <MenuItem Header="_Import from Publisher (.pub)…" Command="{Binding ImportPublisherCommand}" />
+              <Separator />
               <MenuItem Header="_Label manager…" Command="{Binding TemplateManagerCommand}" />
               <MenuItem Header="Label si_ze…" Command="{Binding LabelSizeCommand}" />
               <Separator />

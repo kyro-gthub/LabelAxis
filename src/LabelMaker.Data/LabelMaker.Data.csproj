@@ -4,7 +4,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <RootNamespace>LabelMaker.Data</RootNamespace>
     <AssemblyName>LabelMaker.Data</AssemblyName>
-    <Description>Live data connections for variable-data printing: SQLite, SQL Server, MySQL/MariaDB, PostgreSQL, ODBC and Access, read-only.</Description>
+    <Description>Data sources for variable-data printing: SQLite, SQL Server, MySQL/MariaDB, PostgreSQL, ODBC and Access (read-only), and text and pictures from Microsoft Publisher files.</Description>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,6 +14,7 @@
     <PackageReference Include="Npgsql" />
     <PackageReference Include="System.Data.Odbc" />
     <PackageReference Include="System.Data.OleDb" />
+    <PackageReference Include="OpenMcdf" />
   </ItemGroup>
 
   <ItemGroup>

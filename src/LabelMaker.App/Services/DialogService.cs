@@ -83,6 +83,14 @@ public sealed class DialogService : IShellServices
     public bool Confirm(string message, string title = "Label Maker") =>
         MessageBox.Show(Front, message, title, MessageBoxButton.OKCancel, MessageBoxImage.Question) == MessageBoxResult.OK;
 
+    public void ShowPublisherImport(LabelMaker.Data.Publisher.PublisherContent content, string path)
+    {
+        if (_vm is not null)
+        {
+            new PublisherImportWindow(_vm, content, path) { Owner = Front }.ShowDialog();
+        }
+    }
+
     public string? PromptPassword(string title, string message)
     {
         var win = new PasswordWindow(title, message) { Owner = Front };
