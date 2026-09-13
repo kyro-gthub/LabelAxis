@@ -26,6 +26,11 @@ public partial class PrintWindow : Window
     private readonly IShellServices _shell;
     private bool _loading = true;
 
+    // Typing in Copies or Scale rebuilds the job summary and thumbnail; wait until
+    // the typing pauses instead of doing that on every keystroke.
+    private readonly System.Windows.Threading.DispatcherTimer _refreshDelay =
+        new() { Interval = TimeSpan.FromMilliseconds(300) };
+
     public PrintWindow(DocumentSession session, WpfPrintServer printServer, IShellServices shell)
     {
         _session = session;
@@ -46,8 +51,17 @@ public partial class PrintWindow : Window
         ScaleBox.Text = s.ScalePercent.ToString("0.#", CultureInfo.InvariantCulture);
         LandscapeBox.IsChecked = s.Landscape;
 
+        _refreshDelay.Tick += (_, _) => { _refreshDelay.Stop(); Refresh(); };
+        Closed += (_, _) => _refreshDelay.Stop();
+
         _loading = false;
         Refresh();
+    }
+
+    private void RefreshSoon()
+    {
+        _refreshDelay.Stop();
+        _refreshDelay.Start();
     }
 
     private void LoadPrinters()
@@ -83,7 +97,7 @@ public partial class PrintWindow : Window
 
     private void OnFieldChanged(object sender, RoutedEventArgs e) => Refresh();
 
-    private void OnFieldChanged(object sender, TextChangedEventArgs e) => Refresh();
+    private void OnFieldChanged(object sender, TextChangedEventArgs e) => RefreshSoon();
 
     /// <summary>Writes the form back into the project's settings and recalculates the job.</summary>
     private void Apply()
@@ -234,9 +248,9 @@ public partial class PrintWindow : Window
         Apply();
         try
         {
-            if (_printServer.Print(_session.Project, _session.Data, _session.Project.PrintSettings))
+            if (_printServer.PrepareWithSystemDialog(_session.Project, _session.Data, _session.Project.PrintSettings) is { } job)
             {
-                DialogResult = true;
+                Send(job);
             }
         }
         catch (Exception ex)
@@ -258,12 +272,20 @@ public partial class PrintWindow : Window
             // The queue must outlive the write, so the server is disposed only after it.
             using var server = new LocalPrintServer();
             PrintQueue queue = server.GetPrintQueue(printer);
-            _printServer.PrintDirect(_session.Project, _session.Data, _session.Project.PrintSettings, queue);
-            DialogResult = true;
+            Send(_printServer.PrepareDirect(_session.Project, _session.Data, _session.Project.PrintSettings, queue));
         }
         catch (Exception ex)
         {
             Fail(ex);
+        }
+    }
+
+    /// <summary>Spools with a progress window; the dialog closes only if the job was not cancelled.</summary>
+    private void Send(PrintJobRequest job)
+    {
+        if (JobProgressWindow.RunPrint(this, job))
+        {
+            DialogResult = true;
         }
     }
 

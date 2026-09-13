@@ -65,6 +65,13 @@ public interface IShellServices
     /// </summary>
     (double X, double Y, double Width, double Height)? ShowImageCrop(Core.Model.Objects.ImageObject image);
 
+    /// <summary>
+    /// Runs a long job with a progress window (count so far of <paramref name="total"/>
+    /// <paramref name="unit"/>) and Cancel. Throws <see cref="OperationCanceledException"/>
+    /// if the user cancelled, or whatever the job threw.
+    /// </summary>
+    T RunJob<T>(string heading, string unit, int total, Func<IProgress<int>, CancellationToken, Task<T>> job);
+
     /// <summary>Colour chooser with palette, RGBA sliders and an eyedropper. Null on cancel.</summary>
     Core.Model.ColorRgba? PickColor(Core.Model.ColorRgba initial, string title);
 }

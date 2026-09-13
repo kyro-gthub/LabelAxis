@@ -323,11 +323,7 @@ public sealed class WpfDrawingSurface : IDrawingSurface
 
     private FormattedText BuildFormattedText(TextSpan span)
     {
-        var typeface = new Typeface(
-            new FontFamily(span.FontFamily),
-            span.Italic ? FontStyles.Italic : FontStyles.Normal,
-            span.Bold ? FontWeights.Bold : FontWeights.Normal,
-            FontStretches.Normal);
+        Typeface typeface = WpfFontCache.Typeface(span.FontFamily, span.Bold, span.Italic);
 
         double emDiu = UnitConverter.PointsToMm(span.FontSizePt) * K;
         var ft = new FormattedText(
@@ -336,7 +332,7 @@ public sealed class WpfDrawingSurface : IDrawingSurface
             FlowDirection.LeftToRight,
             typeface,
             Math.Max(0.1, emDiu),
-            new SolidColorBrush(Color(span.Foreground)),
+            WpfFontCache.Brush(span.Foreground),
             1.0)
         {
             TextAlignment = TextAlignment.Left,

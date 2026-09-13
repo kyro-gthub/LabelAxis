@@ -6,6 +6,7 @@ using LabelMaker.App.Printing;
 using LabelMaker.App.Rendering;
 using LabelMaker.App.Services;
 using LabelMaker.Core.Barcodes;
+using LabelMaker.Core.Bulk;
 using LabelMaker.Core.Data;
 using LabelMaker.Core.Data.Import;
 using LabelMaker.Core.Editing;
@@ -14,6 +15,7 @@ using LabelMaker.Core.Model;
 using LabelMaker.Core.Model.Objects;
 using LabelMaker.Core.Model.Text;
 using LabelMaker.Core.Preflight;
+using LabelMaker.Core.Printing;
 using LabelMaker.Core.Rendering;
 using LabelMaker.Core.Serialization;
 using LabelMaker.Core.Units;
@@ -137,6 +139,7 @@ public sealed class MainViewModel : ObservableObject
         _session.ActivePageChanged += (_, _) => OnActivePageChanged();
 
         Properties = new SelectionProperties(_session, _env.Settings);
+        RestoreCachedData(document);
         _canvas?.Attach(_session);
 
         RebuildPages();
@@ -151,6 +154,39 @@ public sealed class MainViewModel : ObservableObject
         OnPropertyChanged(nameof(LockGuides));
         OnPropertyChanged(nameof(RecordText));
         OnPropertyChanged(nameof(DataSourceSummary));
+    }
+
+    /// <summary>
+    /// A saved project carries a snapshot of the records it was designed with; bring
+    /// them back on open so the preview, record navigator and printing work straight
+    /// away, without re-importing the source file.
+    /// </summary>
+    private void RestoreCachedData(ProjectDocument document)
+    {
+        if (document.DataCaches.Count == 0)
+        {
+            return;
+        }
+
+        ProjectModel project = document.Project;
+        ProjectDataCache cache = document.DataCaches.FirstOrDefault(c => c.ConnectionId == project.ActiveDataConnectionId)
+                                 ?? document.DataCaches[0];
+        DataConnectionModel connection = project.DataConnections.FirstOrDefault(c => c.Id == cache.ConnectionId)
+                                         ?? new DataConnectionModel { Kind = DataSourceKind.Csv };
+        try
+        {
+            var service = new DataImportService();
+            RawTable raw = service.ReadRaw(new MemoryStream(System.Text.Encoding.UTF8.GetBytes(cache.Csv)), DataSourceKind.Csv);
+
+            // The snapshot is already the built table (header row first, mapped names),
+            // so read it back as plain CSV rather than re-applying the source's options.
+            var snapshot = new DataConnectionModel { Id = connection.Id, Name = connection.Name, Kind = DataSourceKind.Csv };
+            _session.SetData(service.BuildDataSet(raw, snapshot), null, markDirty: false);
+        }
+        catch (Exception ex)
+        {
+            StatusText = "Saved records could not be restored: " + ex.Message;
+        }
     }
 
     private void OnActivePageChanged()
@@ -1798,21 +1834,54 @@ public sealed class MainViewModel : ObservableObject
 
         try
         {
+            // The PDF follows the same print settings as a printed job (start slot,
+            // skipped slots, record range, outlines), so it is a faithful proof.
+            PrintSettings settings = _session.Project.PrintSettings;
+            if (settings.Content == PrintContent.VariableData && (_session.Data?.RowCount ?? 0) == 0)
+            {
+                settings.Content = PrintContent.SheetFill;
+            }
+
+            BulkRenderPlan plan = SheetLayoutEngine.CreatePlan(_session.Project, _session.Data, settings);
             var request = new ExportRequest
             {
                 Project = _session.Project,
-                Data = _session.Data,
+                Data = plan.Data,
                 Scope = ExportScope.Sheet,
                 Title = _session.Project.Metadata.Title,
+                StartPosition = plan.StartPosition,
+                SkipPositions = plan.SkipPositions,
+                RecordSelection = plan.RecordSelection,
+                FillSheetWhenNoData = plan.FillSheetWhenNoData,
+                DrawLabelOutlines = settings.PrintLabelOutlines,
+                DrawCropMarks = settings.PrintCropMarks,
             };
-            File.WriteAllBytes(path, new PdfExporter().Export(request, _session.Document.Assets));
-            StatusText = $"Exported {Path.GetFileName(path)}";
+            int sheets = SheetLayoutEngine.PlanSheets(plan).Count();
+            AssetStore assets = _session.Document.Assets;
+
+            // Rendering and writing run off the UI thread; the progress window is modal,
+            // so the project cannot change underneath the export.
+            int pages = _shell.RunJob($"Exporting {sheets:N0} sheet{(sheets == 1 ? "" : "s")} to PDF", "sheets rendered", sheets,
+                (progress, token) => Task.Run(() =>
+                {
+                    byte[] pdf = new PdfExporter().Export(request, assets, progress, token);
+                    token.ThrowIfCancellationRequested();
+                    File.WriteAllBytes(path, pdf);
+                    return sheets;
+                }, token));
+
+            StatusText = $"Exported {pages:N0} sheet(s) to {Path.GetFileName(path)}";
+        }
+        catch (OperationCanceledException)
+        {
+            StatusText = "PDF export cancelled";
         }
         catch (Exception ex)
         {
             _shell.Warn("PDF export failed:\n\n" + ex.Message);
         }
     }
+
 
     private void ExportLabelPng()
     {

@@ -19,7 +19,14 @@ public sealed class PdfExporter
 {
     private readonly LabelRenderer _renderer = new();
 
-    public byte[] Export(ExportRequest request, AssetStore assets)
+    public byte[] Export(ExportRequest request, AssetStore assets) =>
+        Export(request, assets, null, CancellationToken.None);
+
+    /// <summary>
+    /// Exports with progress (pages written so far) and cancellation checked between
+    /// pages, so a job of thousands of sheets can run in the background.
+    /// </summary>
+    public byte[] Export(ExportRequest request, AssetStore assets, IProgress<int>? progress, CancellationToken cancellation)
     {
         ArgumentNullException.ThrowIfNull(request);
         WindowsFontResolver.Register();
@@ -46,11 +53,11 @@ public sealed class PdfExporter
         switch (request.Scope)
         {
             case ExportScope.Sheet:
-                ExportSheets(document, request, template, Resolver);
+                ExportSheets(document, request, template, Resolver, progress, cancellation);
                 break;
             case ExportScope.IndividualLabels:
             case ExportScope.PerRecord:
-                ExportPerLabel(document, request, template, Resolver);
+                ExportPerLabel(document, request, template, Resolver, progress, cancellation);
                 break;
         }
 
@@ -66,7 +73,8 @@ public sealed class PdfExporter
 
     private void ExportSheets(
         PdfDocument document, ExportRequest request, LabelTemplate template,
-        Func<string, (byte[] Bytes, int Width, int Height)?> resolver)
+        Func<string, (byte[] Bytes, int Width, int Height)?> resolver,
+        IProgress<int>? progress, CancellationToken cancellation)
     {
         var plan = new BulkRenderPlan
         {
@@ -85,6 +93,7 @@ public sealed class PdfExporter
 
         foreach (PlannedSheet sheet in SheetLayoutEngine.PlanSheets(plan))
         {
+            cancellation.ThrowIfCancellationRequested();
             PdfPage page = document.AddPage();
             page.Width = XUnit.FromMillimeter(media.WidthMm);
             page.Height = XUnit.FromMillimeter(media.HeightMm);
@@ -96,12 +105,15 @@ public sealed class PdfExporter
             {
                 RenderLabelAt(surface, request, template, label.PageRectMm, label.ResolveContext);
             }
+
+            progress?.Report(document.PageCount);
         }
     }
 
     private void ExportPerLabel(
         PdfDocument document, ExportRequest request, LabelTemplate template,
-        Func<string, (byte[] Bytes, int Width, int Height)?> resolver)
+        Func<string, (byte[] Bytes, int Width, int Height)?> resolver,
+        IProgress<int>? progress, CancellationToken cancellation)
     {
         var plan = new BulkRenderPlan
         {
@@ -121,6 +133,7 @@ public sealed class PdfExporter
 
         foreach (PlacedLabel label in labels)
         {
+            cancellation.ThrowIfCancellationRequested();
             any = true;
             PdfPage page = document.AddPage();
             page.Width = XUnit.FromMillimeter(size.Width);
@@ -129,6 +142,7 @@ public sealed class PdfExporter
             using XGraphics gfx = XGraphics.FromPdfPage(page);
             var surface = new PdfDrawingSurface(gfx, resolver);
             RenderLabelAt(surface, request, template, new RectMm(0, 0, size.Width, size.Height), label.ResolveContext);
+            progress?.Report(document.PageCount);
         }
 
         if (!any)

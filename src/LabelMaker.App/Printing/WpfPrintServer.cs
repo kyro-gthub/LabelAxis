@@ -2,6 +2,7 @@ using System.IO;
 using System.Printing;
 using PrintOrientation = System.Printing.PageOrientation;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using LabelMaker.App.Rendering;
 using LabelMaker.Core.Bulk;
 using LabelMaker.Core.Data;
@@ -53,8 +54,28 @@ public sealed class WpfPrintServer
         }
     }
 
-    /// <summary>Physical media geometry for a printer, including its unprintable border.</summary>
+    private readonly Dictionary<(string Printer, double W, double H), SheetMedia> _mediaCache = new();
+
+    /// <summary>
+    /// Physical media geometry for a printer, including its unprintable border.
+    /// Asking the driver for capabilities is slow (tens to hundreds of ms, more for
+    /// network printers) and the answer does not change during a session, so it is
+    /// cached — the print dialog and preview used to query it on every keystroke.
+    /// </summary>
     public SheetMedia GetMedia(string? printerName, double pageWidthMm, double pageHeightMm)
+    {
+        var key = (printerName ?? string.Empty, Math.Round(pageWidthMm, 2), Math.Round(pageHeightMm, 2));
+        if (_mediaCache.TryGetValue(key, out SheetMedia? cached))
+        {
+            return cached;
+        }
+
+        SheetMedia media = QueryMedia(printerName, pageWidthMm, pageHeightMm);
+        _mediaCache[key] = media;
+        return media;
+    }
+
+    private static SheetMedia QueryMedia(string? printerName, double pageWidthMm, double pageHeightMm)
     {
         try
         {
@@ -152,16 +173,28 @@ public sealed class WpfPrintServer
         return new MultiPageSheetPaginator(sheets, template, _renderer, media, calibration, settings.ScalePercent, outline);
     }
 
-    /// <summary>Show the system print dialog and print. Returns false if the user cancelled.</summary>
-    public bool Print(ProjectModel project, DataSet? data, PrintSettings settings)
+    /// <summary>
+    /// Shows the Windows print dialog and returns the job ready to run, or null if
+    /// the user cancelled. The job is run by <see cref="PrintJob.RunAsync"/> so the
+    /// app stays responsive (and cancellable) while a long job spools.
+    /// </summary>
+    public PrintJobRequest? PrepareWithSystemDialog(ProjectModel project, DataSet? data, PrintSettings settings)
     {
         var dialog = new PrintDialog { UserPageRangeEnabled = false };
         if (dialog.ShowDialog() != true)
         {
-            return false;
+            return null;
         }
 
-        PrintTicket ticket = dialog.PrintTicket;
+        return Prepare(project, data, settings, dialog.PrintQueue, dialog.PrintTicket);
+    }
+
+    /// <summary>A job for an already-chosen printer, skipping the system dialog.</summary>
+    public PrintJobRequest PrepareDirect(ProjectModel project, DataSet? data, PrintSettings settings, PrintQueue queue) =>
+        Prepare(project, data, settings, queue, queue.DefaultPrintTicket);
+
+    private PrintJobRequest Prepare(ProjectModel project, DataSet? data, PrintSettings settings, PrintQueue queue, PrintTicket ticket)
+    {
         ticket.PageScalingFactor = 100;           // never "fit to page" (spec §16)
         ticket.PageOrientation = settings.Landscape ? PrintOrientation.Landscape : PrintOrientation.Portrait;
         if (settings.Copies > 1)
@@ -169,48 +202,11 @@ public sealed class WpfPrintServer
             ticket.CopyCount = settings.Copies;
         }
 
-        string printerName = dialog.PrintQueue.FullName;
-        settings.PrinterName = printerName;
-        string title = $"Label Maker — {project.Metadata.Title}";
-
-        if (settings.Content == PrintContent.Pages)
-        {
-            MultiPageSheetPaginator pagesPaginator = BuildPagesPaginator(project, settings, printerName);
-            dialog.PrintDocument(pagesPaginator, title);
-        }
-        else
-        {
-            LabelSheetPaginator paginator = BuildPaginator(project, data, settings, printerName);
-            dialog.PrintDocument(paginator, title);
-        }
-
-        return true;
-    }
-
-    /// <summary>Print directly to an already-chosen printer/ticket, skipping the system dialog (Advanced Print Settings).</summary>
-    public void PrintDirect(ProjectModel project, DataSet? data, PrintSettings settings, PrintQueue queue)
-    {
-        var ticket = queue.DefaultPrintTicket;
-        ticket.PageScalingFactor = 100;
-        ticket.PageOrientation = settings.Landscape ? PrintOrientation.Landscape : PrintOrientation.Portrait;
-        if (settings.Copies > 1)
-        {
-            ticket.CopyCount = settings.Copies;
-        }
-
         settings.PrinterName = queue.FullName;
-        string title = $"Label Maker — {project.Metadata.Title}";
-        var writer = System.Printing.PrintQueue.CreateXpsDocumentWriter(queue);
+        DocumentPaginator paginator = settings.Content == PrintContent.Pages
+            ? BuildPagesPaginator(project, settings, queue.FullName)
+            : BuildPaginator(project, data, settings, queue.FullName);
 
-        if (settings.Content == PrintContent.Pages)
-        {
-            MultiPageSheetPaginator pagesPaginator = BuildPagesPaginator(project, settings, queue.FullName);
-            writer.Write(pagesPaginator, ticket);
-        }
-        else
-        {
-            LabelSheetPaginator paginator = BuildPaginator(project, data, settings, queue.FullName);
-            writer.Write(paginator, ticket);
-        }
+        return new PrintJobRequest(queue, ticket, paginator, $"Label Maker — {project.Metadata.Title}", Math.Max(1, settings.Copies));
     }
 }

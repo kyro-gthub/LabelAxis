@@ -87,6 +87,30 @@ public sealed class PdfExportTests
     }
 
     [Fact]
+    public void Export_reports_each_sheet_and_stops_when_cancelled()
+    {
+        ProjectModel project = MakeProject("formtec-3103"); // 24-up
+        var rows = Enumerable.Range(1, 24 * 5).Select(i => new[] { $"Item {i}", $"ABC{i:000000}" }).ToList();
+        DataSet data = DataSet.FromRows(new[] { "Product", "Barcode" }, rows);
+        var request = new ExportRequest { Project = project, Data = data, Scope = ExportScope.Sheet };
+
+        var reported = new List<int>();
+        new PdfExporter().Export(request, new AssetStore(), new SyncProgress(reported.Add), CancellationToken.None);
+        reported.Should().Equal(1, 2, 3, 4, 5);
+
+        using var cts = new CancellationTokenSource();
+        var cancelAfterTwo = new SyncProgress(n => { if (n == 2) { cts.Cancel(); } });
+        Action act = () => new PdfExporter().Export(request, new AssetStore(), cancelAfterTwo, cts.Token);
+        act.Should().Throw<OperationCanceledException>();
+    }
+
+    /// <summary>Progress&lt;T&gt; posts to a context; tests need the callback inline.</summary>
+    private sealed class SyncProgress(Action<int> report) : IProgress<int>
+    {
+        public void Report(int value) => report(value);
+    }
+
+    [Fact]
     public void Svg_label_export_declares_physical_size_in_millimetres()
     {
         ProjectModel project = MakeProject("formtec-3200");
