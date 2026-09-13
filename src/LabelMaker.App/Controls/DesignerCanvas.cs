@@ -124,6 +124,26 @@ public sealed class DesignerCanvas : FrameworkElement
 
     private Point? _contextScreen;
 
+    /// <summary>Zoom and scroll position, kept per document tab so switching back returns to the same view.</summary>
+    public readonly record struct ViewState(double Zoom, Vector Pan);
+
+    /// <summary>The current view, or null before the canvas has been laid out.</summary>
+    public ViewState? CaptureView() => _viewInitialised ? new ViewState(_zoom, _pan) : null;
+
+    /// <summary>Shows <paramref name="session"/>, restoring <paramref name="view"/> when given, or fitting the label otherwise.</summary>
+    public void Attach(DocumentSession session, ViewState? view)
+    {
+        Attach(session);
+        if (view is { } v)
+        {
+            _zoom = Math.Clamp(v.Zoom, MinZoom, MaxZoom);
+            _pan = v.Pan;
+            _viewInitialised = true;
+            ZoomChanged?.Invoke(this, EventArgs.Empty);
+            InvalidateVisual();
+        }
+    }
+
     public void Attach(DocumentSession session)
     {
         if (_session is not null)

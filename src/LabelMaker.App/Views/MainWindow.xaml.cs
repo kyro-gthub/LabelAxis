@@ -25,6 +25,7 @@ public partial class MainWindow : Window
         _env = env;
         InitializeComponent();
         MaximiseFix.Attach(this);
+        AllowDrop = true;
 
         var shell = new DialogService(this, env);
         _vm = new MainViewModel(env, shell);
@@ -44,6 +45,15 @@ public partial class MainWindow : Window
         CanvasHost.Child = stack;
         _textEditor = new InlineTextEditor(_canvas, overlay, () => _vm.Session);
         _vm.AttachCanvas(_canvas);
+
+        // Text being typed on the canvas belongs to the tab it was started in.
+        _vm.ActiveTabChanging += (_, _) =>
+        {
+            if (_textEditor.IsEditing)
+            {
+                _textEditor.Commit();
+            }
+        };
         Loaded += (_, _) => _canvas.Focus();
         _canvas.MouseEnter += (_, _) =>
         {
@@ -139,6 +149,45 @@ public partial class MainWindow : Window
 
     private void OnClose(object sender, RoutedEventArgs e) => Close();
 
+    /// <summary>Middle-click closes a document tab, as in browsers.</summary>
+    private void OnTabMouseUp(object sender, MouseButtonEventArgs e)
+    {
+        if (e.ChangedButton == MouseButton.Middle && sender is FrameworkElement { DataContext: DocumentTab tab })
+        {
+            _vm.CloseTab(tab);
+            e.Handled = true;
+        }
+    }
+
+    private void OnTabMouseDown(object sender, MouseButtonEventArgs e)
+    {
+        if (e.ChangedButton == MouseButton.Left && sender is FrameworkElement { DataContext: DocumentTab tab })
+        {
+            _vm.ActivateTab(tab);
+        }
+    }
+
+    /// <summary>Dropping .labelproj files on the window opens each in its own tab.</summary>
+    protected override void OnDrop(DragEventArgs e)
+    {
+        if (e.Data.GetData(DataFormats.FileDrop) is string[] files)
+        {
+            string[] projects = files.Where(f => f.EndsWith(".labelproj", StringComparison.OrdinalIgnoreCase)).ToArray();
+            if (projects.Length > 0)
+            {
+                foreach (string file in projects)
+                {
+                    _vm.OpenProjectPath(file);
+                }
+
+                e.Handled = true;
+                return;
+            }
+        }
+
+        base.OnDrop(e);
+    }
+
     /// <summary>Drops the Align / Arrange split-button menu under the button that was clicked.</summary>
     private void OnAlignMenu(object sender, RoutedEventArgs e)
     {
@@ -173,11 +222,19 @@ public partial class MainWindow : Window
     {
         try
         {
-            if (_vm.Session.Document.HasUnsavedChanges)
+            int saved = 0;
+            foreach (DocumentTab tab in _vm.Tabs.Where(t => t.HasUnsavedChanges))
             {
-                _vm.Session.SyncDataCache();
-                _env.AutoSave.Snapshot(_vm.Session.Document);
-                _vm.StatusText = $"Auto-saved recovery snapshot at {DateTime.Now:T}";
+                tab.Session.SyncDataCache();
+                _env.AutoSave.Snapshot(tab.Session.Document);
+                saved++;
+            }
+
+            if (saved > 0)
+            {
+                _vm.StatusText = saved == 1
+                    ? $"Auto-saved recovery snapshot at {DateTime.Now:T}"
+                    : $"Auto-saved {saved} projects at {DateTime.Now:T}";
             }
         }
         catch (Exception)
@@ -188,14 +245,23 @@ public partial class MainWindow : Window
 
     protected override void OnClosing(CancelEventArgs e)
     {
-        if (!_vm.ConfirmDiscard())
+        if (_textEditor.IsEditing)
+        {
+            _textEditor.Commit();
+        }
+
+        if (!_vm.ConfirmCloseAll())
         {
             e.Cancel = true;
             return;
         }
 
         _autoSaveTimer.Stop();
-        _env.AutoSave.ClearFor(_vm.Session.Project.Metadata.Id);
+        foreach (DocumentTab tab in _vm.Tabs)
+        {
+            _env.AutoSave.ClearFor(tab.Session.Project.Metadata.Id);
+        }
+
         _env.SaveSettings();
         base.OnClosing(e);
     }

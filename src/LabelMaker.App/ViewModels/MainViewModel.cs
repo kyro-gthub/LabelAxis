@@ -45,7 +45,6 @@ public sealed partial class MainViewModel : ObservableObject
     private ObjectListItem? _selectedObjectItem;
     private PageListItem? _selectedPage;
     private bool _suppressPageSelection;
-    private bool _hasConfiguredPrintSettings;
     private int _selectedLeftTab;
 
     public MainViewModel(AppEnvironment env, IShellServices shell)
@@ -117,58 +116,12 @@ public sealed partial class MainViewModel : ObservableObject
         });
     }
 
-    public void LoadSession(ProjectDocument document)
-    {
-        _imageSource = new WpfImageSource(document.Assets);
-        _sheetRenderer.Images = _imageSource;
-
-        _session = new DocumentSession(document, _imageSource);
-        _session.DocumentChanged += (_, _) => OnDocumentChanged();
-        _session.SelectionChanged += (_, _) => OnSelectionChanged();
-        _session.RecordChanged += (_, _) => { RefreshCanvas(); OnPropertyChanged(nameof(RecordText)); };
-        _session.DataChanged += (_, _) =>
-        {
-            OnPropertyChanged(nameof(RecordText));
-            OnPropertyChanged(nameof(DataSourceSummary));
-            OnPropertyChanged(nameof(RecordsReadyText));
-            DataChanged?.Invoke(this, EventArgs.Empty);
-            RefreshSearch();
-        };
-        _session.RecordsEdited += (_, _) =>
-        {
-            OnPropertyChanged(nameof(RecordText));
-            OnPropertyChanged(nameof(DataSourceSummary));
-            OnPropertyChanged(nameof(RecordsReadyText));
-            RecordsEdited?.Invoke(this, EventArgs.Empty);
-        };
-        _session.HistoryChanged += (_, _) => RaiseAllCanExecute();
-        _session.PagesChanged += (_, _) => RebuildPages();
-        _session.ActivePageChanged += (_, _) => OnActivePageChanged();
-
-        Properties = new SelectionProperties(_session, _env.Settings);
-        RestoreCachedData(document);
-        _canvas?.Attach(_session);
-
-        RebuildPages();
-        RebuildObjectList();
-        RefreshSearch();
-        RebuildTemplateCategories();
-        OnDocumentChanged();
-        OnPropertyChanged(nameof(PrinterName));
-        OnPropertyChanged(nameof(CalibrationStatus));
-        OnPropertyChanged(nameof(RecordsReadyText));
-        OnPropertyChanged(nameof(TemplateSummary));
-        OnPropertyChanged(nameof(LockGuides));
-        OnPropertyChanged(nameof(RecordText));
-        OnPropertyChanged(nameof(DataSourceSummary));
-    }
-
     /// <summary>
     /// A saved project carries a snapshot of the records it was designed with; bring
     /// them back on open so the preview, record navigator and printing work straight
     /// away, without re-importing the source file.
     /// </summary>
-    private void RestoreCachedData(ProjectDocument document)
+    private void RestoreCachedData(DocumentSession session, ProjectDocument document)
     {
         if (document.DataCaches.Count == 0)
         {
@@ -189,7 +142,7 @@ public sealed partial class MainViewModel : ObservableObject
             // The snapshot is already the built table (header row first, mapped names),
             // so read it back as plain CSV rather than re-applying the source's options.
             var snapshot = new DataConnectionModel { Id = connection.Id, Name = connection.Name, Kind = DataSourceKind.Csv };
-            _session.SetData(service.BuildDataSet(raw, snapshot), null, markDirty: false);
+            session.SetData(service.BuildDataSet(raw, snapshot), null, markDirty: false);
             DescribeRestoredData(project.DataConnections.FirstOrDefault(c => c.Id == cache.ConnectionId));
         }
         catch (Exception ex)
@@ -857,6 +810,7 @@ public sealed partial class MainViewModel : ObservableObject
         PrintPreviewCommand = new RelayCommand(() => _shell.ShowPrintPreview());
         PrintHistoryCommand = new RelayCommand(ShowPrintHistory);
         BuildDataCommands();
+        BuildTabCommands();
         DataTableCommand = new RelayCommand(() => _shell.ShowDataTable());
         SelectAllCommand = new RelayCommand(
             () => _session.SetSelection(_session.ActiveLabel.Objects.Where(o => o.Visible).ToList()),
@@ -1615,11 +1569,6 @@ public sealed partial class MainViewModel : ObservableObject
 
     private void NewProject()
     {
-        if (!ConfirmDiscard())
-        {
-            return;
-        }
-
         _shell.ShowNewProject(template =>
         {
             _env.Settings.LastTemplateId = template.Id;
@@ -1632,11 +1581,6 @@ public sealed partial class MainViewModel : ObservableObject
 
     private void OpenProject()
     {
-        if (!ConfirmDiscard())
-        {
-            return;
-        }
-
         string? path = _shell.PickOpenFile("Label Maker project|*.labelproj|All files|*.*", "Open project");
         if (path is not null)
         {
@@ -1646,6 +1590,13 @@ public sealed partial class MainViewModel : ObservableObject
 
     public void OpenProjectPath(string path)
     {
+        if (TabForPath(path) is { } open)
+        {
+            ActivateTab(open);
+            StatusText = $"{Path.GetFileName(path)} is already open";
+            return;
+        }
+
         try
         {
             ProjectDocument doc = ProjectFile.Load(path);
@@ -1697,7 +1648,11 @@ public sealed partial class MainViewModel : ObservableObject
             _env.SaveSettings();
             _env.AutoSave.ClearFor(_session.Project.Metadata.Id);
             RefreshRecent();
+            _activeTab.RefreshHeader();
             OnPropertyChanged(nameof(Title));
+            OnPropertyChanged(nameof(DocumentTabTitle));
+            OnPropertyChanged(nameof(SaveStateText));
+            OnPropertyChanged(nameof(HasUnsavedChanges));
             StatusText = $"Saved {Path.GetFileName(path)}";
             return true;
         }
@@ -1715,7 +1670,7 @@ public sealed partial class MainViewModel : ObservableObject
             return true;
         }
 
-        bool? choice = _shell.ConfirmSaveChanges(_session.Project.Metadata.Title);
+        bool? choice = _shell.ConfirmSaveChanges(_activeTab.Title);
         return choice switch
         {
             true => Save(false),
@@ -1825,7 +1780,7 @@ public sealed partial class MainViewModel : ObservableObject
         try
         {
             var settings = _session.Project.PrintSettings;
-            if (!_hasConfiguredPrintSettings)
+            if (!_activeTab.HasConfiguredPrintSettings)
             {
                 settings.Content = _session.Data is { RowCount: > 0 } ? PrintContent.VariableData : PrintContent.SheetFill;
             }
@@ -1861,7 +1816,11 @@ public sealed partial class MainViewModel : ObservableObject
     {
         PrintHistoryEntry entry = request.Entry;
 
-        if (entry.ProjectId != _session.Project.Metadata.Id)
+        if (TabForProject(entry.ProjectId) is { } openTab)
+        {
+            ActivateTab(openTab);
+        }
+        else
         {
             if (entry.ProjectPath is not { } path || !File.Exists(path))
             {
@@ -1869,8 +1828,7 @@ public sealed partial class MainViewModel : ObservableObject
                 return false;
             }
 
-            if (!_shell.Confirm($"This job was printed from \"{entry.ProjectTitle}\". Open that project to reprint it?\n\n{path}") ||
-                !ConfirmDiscard())
+            if (!_shell.Confirm($"This job was printed from \"{entry.ProjectTitle}\". Open that project in a new tab to reprint it?\n\n{path}"))
             {
                 return false;
             }
@@ -1890,7 +1848,7 @@ public sealed partial class MainViewModel : ObservableObject
         }
 
         _session.Project.PrintSettings.CopyFrom(request.BuildSettings());
-        _hasConfiguredPrintSettings = true;
+        _activeTab.HasConfiguredPrintSettings = true;
         StatusText = request.RemainingOnly
             ? $"Ready to print sheets {entry.ResumeSheet:N0}–{entry.LastSheet:N0} of \"{entry.ProjectTitle}\""
             : $"Reprint of \"{entry.ProjectTitle}\" ready";
@@ -1916,7 +1874,7 @@ public sealed partial class MainViewModel : ObservableObject
     {
         if (_shell.ShowPrintSettings())
         {
-            _hasConfiguredPrintSettings = true;
+            _activeTab.HasConfiguredPrintSettings = true;
             Print();
         }
     }
@@ -2098,6 +2056,7 @@ public sealed partial class MainViewModel : ObservableObject
 
     private void OnDocumentChanged()
     {
+        _activeTab?.RefreshHeader();
         OnPropertyChanged(nameof(Title));
         OnPropertyChanged(nameof(SelectionInfo));
         OnPropertyChanged(nameof(DocumentTabTitle));

@@ -36,6 +36,12 @@
     <KeyBinding Key="H" Modifiers="Control" Command="{Binding FindReplaceCommand}" />
     <KeyBinding Key="T" Modifiers="Control" Command="{Binding DataTableCommand}" />
     <KeyBinding Key="F5" Command="{Binding RefreshDataCommand}" />
+    <KeyBinding Key="Tab" Modifiers="Control" Command="{Binding NextTabCommand}" />
+    <KeyBinding Key="Tab" Modifiers="Control+Shift" Command="{Binding PreviousTabCommand}" />
+    <KeyBinding Key="PageDown" Modifiers="Control" Command="{Binding NextTabCommand}" />
+    <KeyBinding Key="PageUp" Modifiers="Control" Command="{Binding PreviousTabCommand}" />
+    <KeyBinding Key="W" Modifiers="Control" Command="{Binding CloseTabCommand}" />
+    <KeyBinding Key="F4" Modifiers="Control" Command="{Binding CloseTabCommand}" />
     <KeyBinding Key="F2" Command="{Binding RenamePageCommand}" />
     <KeyBinding Key="P" Modifiers="Control+Shift" Command="{Binding PrintPreviewCommand}" />
     <KeyBinding Key="L" Modifiers="Control" Command="{Binding ToggleObjectLockCommand}" />
@@ -586,21 +592,81 @@
         <!-- document tab strip -->
         <Border DockPanel.Dock="Top" Background="{DynamicResource Br.Surface2}"
                 BorderBrush="{DynamicResource Br.Border}" BorderThickness="0,0,0,1" Padding="10,6,10,0">
-          <StackPanel Orientation="Horizontal">
-            <Border Style="{StaticResource DocumentTab}">
+          <DockPanel>
+            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center" Margin="6,0,0,4">
+              <Button Style="{StaticResource IconGhost}" MinWidth="28" Command="{Binding OpenCommand}"
+                      ToolTip="Open a project in a new tab (Ctrl+O)">
+                <Image Source="{StaticResource Icon.Open}" Width="14" Height="14" />
+              </Button>
+            </StackPanel>
+            <ScrollViewer HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled"
+                          PanningMode="HorizontalOnly">
               <StackPanel Orientation="Horizontal">
-                <TextBlock Text="{Binding DocumentTabTitle}" VerticalAlignment="Center"
-                           FontFamily="{StaticResource Font.UiSemiBold}" FontSize="12.5"
-                           Foreground="{DynamicResource Br.Accent}" />
-                <Button Content="✕" Style="{StaticResource IconGhost}" MinWidth="20" Padding="4,0" Margin="10,0,0,0"
-                        Command="{Binding NewCommand}" ToolTip="Close document" />
+                <ItemsControl ItemsSource="{Binding Tabs}" Focusable="False">
+                  <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                      <StackPanel Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                  </ItemsControl.ItemsPanel>
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                      <Border x:Name="Tab" CornerRadius="9,9,0,0" BorderThickness="1,1,1,0" Padding="12,7,6,7"
+                              Margin="0,0,4,0" MaxWidth="240" Cursor="Hand" ToolTip="{Binding ToolTip}"
+                              Background="Transparent" BorderBrush="Transparent"
+                              MouseLeftButtonDown="OnTabMouseDown" MouseUp="OnTabMouseUp">
+                        <Border.ContextMenu>
+                          <ContextMenu>
+                            <MenuItem Header="_Close" InputGestureText="Ctrl+W"
+                                      Command="{Binding PlacementTarget.Tag.CloseTabCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                      CommandParameter="{Binding}" />
+                            <MenuItem Header="Close _others"
+                                      Command="{Binding PlacementTarget.Tag.CloseOtherTabsCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                      CommandParameter="{Binding}" />
+                          </ContextMenu>
+                        </Border.ContextMenu>
+                        <Border.Tag>
+                          <Binding Path="DataContext" RelativeSource="{RelativeSource AncestorType=ItemsControl}" />
+                        </Border.Tag>
+                        <DockPanel>
+                          <Button x:Name="CloseButton" DockPanel.Dock="Right" Content="✕" Style="{StaticResource IconGhost}"
+                                  MinWidth="20" Padding="4,0" Margin="8,0,0,0" ToolTip="Close (Ctrl+W)"
+                                  Command="{Binding DataContext.CloseTabCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                  CommandParameter="{Binding}" Opacity="0.55" />
+                          <Ellipse x:Name="Dirty" DockPanel.Dock="Right" Width="7" Height="7" Margin="8,0,0,0"
+                                   Fill="{DynamicResource Br.Accent}" VerticalAlignment="Center" Visibility="Collapsed"
+                                   ToolTip="Unsaved changes" />
+                          <Image DockPanel.Dock="Left" Source="{StaticResource Icon.FileDoc}" Width="13" Height="13"
+                                 Margin="0,0,7,0" VerticalAlignment="Center" Opacity="0.7" />
+                          <TextBlock x:Name="Caption" Text="{Binding Title}" VerticalAlignment="Center"
+                                     FontSize="12.5" TextTrimming="CharacterEllipsis"
+                                     Foreground="{DynamicResource Br.Text2}" />
+                        </DockPanel>
+                      </Border>
+                      <DataTemplate.Triggers>
+                        <DataTrigger Binding="{Binding IsActive}" Value="True">
+                          <Setter TargetName="Tab" Property="Background" Value="{DynamicResource Br.Bg}" />
+                          <Setter TargetName="Tab" Property="BorderBrush" Value="{DynamicResource Br.Border}" />
+                          <Setter TargetName="Caption" Property="Foreground" Value="{DynamicResource Br.Accent}" />
+                          <Setter TargetName="Caption" Property="FontFamily" Value="{StaticResource Font.UiSemiBold}" />
+                          <Setter TargetName="CloseButton" Property="Opacity" Value="1" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding HasUnsavedChanges}" Value="True">
+                          <Setter TargetName="Dirty" Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                        <Trigger SourceName="Tab" Property="IsMouseOver" Value="True">
+                          <Setter TargetName="CloseButton" Property="Opacity" Value="1" />
+                        </Trigger>
+                      </DataTemplate.Triggers>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <Button Style="{StaticResource IconGhost}" MinWidth="28" Margin="2,0,0,4" Command="{Binding NewCommand}"
+                        ToolTip="New project in a new tab (Ctrl+N)" VerticalAlignment="Center">
+                  <Image Source="{StaticResource Icon.Plus}" Width="14" Height="14" />
+                </Button>
               </StackPanel>
-            </Border>
-            <Button Style="{StaticResource IconGhost}" MinWidth="28" Margin="6,0,0,4" Command="{Binding NewCommand}"
-                    ToolTip="New document" VerticalAlignment="Center">
-              <Image Source="{StaticResource Icon.Plus}" Width="14" Height="14" />
-            </Button>
-          </StackPanel>
+            </ScrollViewer>
+          </DockPanel>
         </Border>
 
 

@@ -55,9 +55,14 @@ public partial class App : Application
             }
         }
 
-        if (e.Args.Length > 0 && File.Exists(e.Args[0]))
+        string[] projects = e.Args.Where(File.Exists).ToArray();
+        if (projects.Length > 0)
         {
-            window.OpenProjectPath(e.Args[0]);
+            // Each project named on the command line (or several files opened from Explorer) gets its own tab.
+            foreach (string path in projects)
+            {
+                window.OpenProjectPath(path);
+            }
         }
         else if (!restoredFromRecovery && Environment.Settings.ReopenLastProjectOnStart &&
                  Environment.Settings.RecentProjects.FirstOrDefault() is { } last && File.Exists(last.Path))
