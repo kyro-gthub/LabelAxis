@@ -218,7 +218,13 @@ public sealed class DialogService : IShellServices
         if (_findReplace is null || !_findReplace.IsLoaded)
         {
             _findReplace = new FindReplaceWindow(_vm.Session) { Owner = _owner };
-            _findReplace.Closed += (_, _) => _findReplace = null;
+            EventHandler follow = (_, _) => _findReplace?.Retarget(_vm.Session);
+            _vm.ActiveTabChanged += follow;
+            _findReplace.Closed += (_, _) =>
+            {
+                _vm.ActiveTabChanged -= follow;
+                _findReplace = null;
+            };
             _findReplace.Show();
         }
 

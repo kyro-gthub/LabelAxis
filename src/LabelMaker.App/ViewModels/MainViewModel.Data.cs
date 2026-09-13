@@ -99,7 +99,7 @@ public sealed partial class MainViewModel
         print.LastRecord = null;
 
         _session.SetData(data, connection);
-        _recordsEditedSinceLoad = false;
+        _activeTab.RecordsEditedSinceLoad = false;
         OnPropertyChanged(nameof(CanRefreshData));
         RaiseAllCanExecute();
 
@@ -110,8 +110,6 @@ public sealed partial class MainViewModel
     }
 
     // ---- refresh ------------------------------------------------------------
-
-    private bool _recordsEditedSinceLoad;
 
     /// <summary>Reads the current source again: the database, or the file the records were imported from.</summary>
     public bool RefreshData()
@@ -177,7 +175,7 @@ public sealed partial class MainViewModel
     }
 
     private bool ConfirmReplacingEditedRecords() =>
-        !_recordsEditedSinceLoad ||
+        !_activeTab.RecordsEditedSinceLoad ||
         _shell.Confirm("You have edited these records in Label Maker. Reading the source again replaces them with its current rows, and those edits are lost.\n\nContinue?");
 
     /// <summary>After a project opens with saved records, say where they came from and whether they may be out of date.</summary>
@@ -242,7 +240,7 @@ public sealed partial class MainViewModel
         }
 
         _session.Execute(new EditRecordCellCommand(_session, data, record, column, value));
-        _recordsEditedSinceLoad = true;
+        _activeTab.RecordsEditedSinceLoad = true;
     }
 
     public DataRecord? AddRecord(int atIndex)
@@ -254,7 +252,7 @@ public sealed partial class MainViewModel
 
         DataRecord record = data.CreateRecord();
         _session.Execute(new InsertRecordsCommand(_session, data, atIndex, new[] { record }));
-        _recordsEditedSinceLoad = true;
+        _activeTab.RecordsEditedSinceLoad = true;
         OnPropertyChanged(nameof(RecordsReadyText));
         return record;
     }
@@ -267,7 +265,7 @@ public sealed partial class MainViewModel
         }
 
         _session.Execute(new RemoveRecordsCommand(_session, data, records));
-        _recordsEditedSinceLoad = true;
+        _activeTab.RecordsEditedSinceLoad = true;
 
         // Row numbers chosen for printing may now point at other rows.
         _session.Project.PrintSettings.SelectedRecords.Clear();
@@ -289,7 +287,7 @@ public sealed partial class MainViewModel
         settings.LastRecord = null;
         settings.FirstSheet = null;
         settings.LastSheet = null;
-        _hasConfiguredPrintSettings = true;
+        _activeTab.HasConfiguredPrintSettings = true;
         Print();
     }
 }
