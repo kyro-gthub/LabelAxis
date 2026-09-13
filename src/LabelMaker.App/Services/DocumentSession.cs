@@ -266,7 +266,9 @@ public sealed class DocumentSession
 
     public void ClearSelection() => SetSelection(Array.Empty<LabelObject>());
 
-    public void SetData(DataSet? data, DataConnectionModel? connection)
+    public void SetData(DataSet? data, DataConnectionModel? connection) => SetData(data, connection, markDirty: true);
+
+    public void SetData(DataSet? data, DataConnectionModel? connection, bool markDirty)
     {
         Data = data;
         _recordIndex = 0;
@@ -280,7 +282,10 @@ public sealed class DocumentSession
         RebuildSearchIndex();
         DataChanged?.Invoke(this, EventArgs.Empty);
         RecordChanged?.Invoke(this, EventArgs.Empty);
-        MarkDirty();
+        if (markDirty)
+        {
+            MarkDirty();
+        }
     }
 
     public void RebuildSearchIndex() => SearchIndex.Rebuild(Project, Data);

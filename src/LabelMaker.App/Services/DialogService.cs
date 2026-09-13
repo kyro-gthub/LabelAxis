@@ -56,6 +56,9 @@ public sealed class DialogService : IShellServices
         return null;
     }
 
+    public T RunJob<T>(string heading, string unit, int total, Func<IProgress<int>, CancellationToken, Task<T>> job) =>
+        JobProgressWindow.Run(_owner, heading, unit, total, job);
+
     public string? PickFolder(string? title = null)
     {
         var dlg = new OpenFolderDialog { Title = title ?? "Choose folder" };

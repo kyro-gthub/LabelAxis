@@ -26,13 +26,40 @@ public partial class PrintPreviewWindow : Window
     private readonly IShellServices _shell;
 
     private DocumentPaginator? _paginator;
-    private readonly List<DocumentPage> _pages = new();
+    private int _count;
     private int _index;
     private double _zoom = 1.0;
     private bool _fitMode = true;
     private bool _building;
 
-    private const int MaxThumbnails = 60;
+    // Sheets are rendered only when shown (the page itself, or a thumbnail scrolled
+    // into view), and only the most recent few are kept. Building every sheet up
+    // front made a 715-sheet job take ten seconds to open.
+    private const int CachedPages = 12;
+    private readonly Dictionary<int, DocumentPage> _pageCache = new();
+    private readonly LinkedList<int> _pageOrder = new();
+
+    /// <summary>A sheet from the paginator, rendered on first use and kept in a small recent cache.</summary>
+    private DocumentPage Page(int index)
+    {
+        if (_pageCache.TryGetValue(index, out DocumentPage? cached))
+        {
+            _pageOrder.Remove(index);
+            _pageOrder.AddFirst(index);
+            return cached;
+        }
+
+        DocumentPage page = _paginator!.GetPage(index);
+        _pageCache[index] = page;
+        _pageOrder.AddFirst(index);
+        while (_pageOrder.Count > CachedPages)
+        {
+            _pageCache.Remove(_pageOrder.Last!.Value);
+            _pageOrder.RemoveLast();
+        }
+
+        return page;
+    }
 
     public PrintPreviewWindow(DocumentSession session, WpfPrintServer printServer, IShellServices shell)
     {
@@ -74,14 +101,11 @@ public partial class PrintPreviewWindow : Window
                 ? _printServer.BuildPagesPaginator(_session.Project, settings, printer)
                 : _printServer.BuildPaginator(_session.Project, _session.Data, settings, printer);
 
-            _pages.Clear();
-            int count = _paginator.PageCount;
-            for (int i = 0; i < count; i++)
-            {
-                _pages.Add(_paginator.GetPage(i));
-            }
+            _pageCache.Clear();
+            _pageOrder.Clear();
+            _count = _paginator.PageCount;
 
-            _index = Math.Clamp(_index, 0, Math.Max(0, _pages.Count - 1));
+            _index = Math.Clamp(_index, 0, Math.Max(0, _count - 1));
             BuildThumbnails();
             ShowPage();
 
@@ -95,8 +119,10 @@ public partial class PrintPreviewWindow : Window
         }
         catch (Exception ex)
         {
-            _pages.Clear();
-            Thumbs.Items.Clear();
+            _count = 0;
+            _pageCache.Clear();
+            _pageOrder.Clear();
+            Thumbs.ItemsSource = null;
             PageHost.Children.Clear();
             LeftStatus.Text = "Preview unavailable";
             RightStatus.Text = ex.Message;
@@ -118,64 +144,41 @@ public partial class PrintPreviewWindow : Window
     private void BuildThumbnails()
     {
         Thumbs.SelectionChanged -= OnThumbSelected;
-        Thumbs.Items.Clear();
 
-        for (int i = 0; i < _pages.Count && i < MaxThumbnails; i++)
-        {
-            DocumentPage page = _pages[i];
-            double w = 132;
-            double h = page.Size.Width > 0 ? w * page.Size.Height / page.Size.Width : w * 1.414;
-
-            var panel = new StackPanel { Margin = new Thickness(2, 4, 2, 4) };
-            panel.Children.Add(new Border
-            {
-                Width = w,
-                Height = h,
-                Background = new VisualBrush(page.Visual) { Stretch = Stretch.Uniform },
-                BorderThickness = new Thickness(1),
-                BorderBrush = (Brush)FindResource("Br.BorderStrong"),
-                SnapsToDevicePixels = true,
-            });
-            panel.Children.Add(new TextBlock
-            {
-                Text = $"Sheet {i + 1}",
-                FontSize = 11.5,
-                HorizontalAlignment = HorizontalAlignment.Center,
-                Margin = new Thickness(0, 4, 0, 0),
-                Foreground = (Brush)FindResource("Br.TextMuted"),
-            });
-
-            Thumbs.Items.Add(new ListBoxItem { Content = panel, Padding = new Thickness(4) });
-        }
-
-        if (_pages.Count > MaxThumbnails)
-        {
-            Thumbs.Items.Add(new ListBoxItem
-            {
-                Content = new TextBlock
-                {
-                    Text = $"+{_pages.Count - MaxThumbnails} more sheets",
-                    FontSize = 11.5,
-                    TextWrapping = TextWrapping.Wrap,
-                    Foreground = (Brush)FindResource("Br.TextMuted"),
-                },
-                IsEnabled = false,
-                Padding = new Thickness(8),
-            });
-        }
-
-        if (_index < Thumbs.Items.Count)
-        {
-            Thumbs.SelectedIndex = _index;
-        }
+        // The list is virtualised, so a thumbnail's sheet is only rendered when its
+        // row is scrolled into view — a 700-sheet job opens as fast as a 1-sheet one.
+        double aspect = _paginator is { } p && p.PageSize.Width > 0 ? p.PageSize.Height / p.PageSize.Width : 1.414;
+        Thumbs.ItemsSource = Enumerable.Range(0, _count).Select(i => new SheetThumb(i, aspect, Page)).ToList();
+        Thumbs.SelectedIndex = _count > 0 ? _index : -1;
 
         Thumbs.SelectionChanged += OnThumbSelected;
     }
 
+    /// <summary>One row in the sheet list. <see cref="Preview"/> renders its sheet the first time the row is shown.</summary>
+    private sealed class SheetThumb
+    {
+        private readonly Func<int, DocumentPage> _page;
+        private Brush? _preview;
+
+        public SheetThumb(int index, double aspect, Func<int, DocumentPage> page)
+        {
+            Index = index;
+            _page = page;
+            ThumbHeight = 132 * aspect;
+        }
+
+        public int Index { get; }
+
+        public string Label => $"Sheet {Index + 1}";
+
+        public double ThumbHeight { get; }
+
+        public Brush Preview => _preview ??= new VisualBrush(_page(Index).Visual) { Stretch = Stretch.Uniform };
+    }
     private void ShowPage()
     {
         PageHost.Children.Clear();
-        if (_pages.Count == 0)
+        if (_count == 0)
         {
             PageText.Text = "— / —";
             PageHost.Children.Add(new TextBlock
@@ -188,8 +191,8 @@ public partial class PrintPreviewWindow : Window
             return;
         }
 
-        DocumentPage page = _pages[_index];
-        PageText.Text = $"Sheet {_index + 1} of {_pages.Count}";
+        DocumentPage page = Page(_index);
+        PageText.Text = $"Sheet {_index + 1:N0} of {_count:N0}";
 
         var paper = new Rectangle
         {
@@ -243,12 +246,12 @@ public partial class PrintPreviewWindow : Window
 
     private void ApplyZoom()
     {
-        if (_pages.Count == 0)
+        if (_count == 0)
         {
             return;
         }
 
-        Size size = _pages[_index].Size;
+        Size size = Page(_index).Size;
         if (_fitMode)
         {
             double availableW = Math.Max(50, Scroller.ActualWidth - 90);
@@ -272,7 +275,7 @@ public partial class PrintPreviewWindow : Window
     /// </summary>
     private void OnScrollerWheel(object sender, MouseWheelEventArgs e)
     {
-        if (Keyboard.Modifiers is ModifierKeys.Shift or ModifierKeys.Control || _pages.Count == 0)
+        if (Keyboard.Modifiers is ModifierKeys.Shift or ModifierKeys.Control || _count == 0)
         {
             return;
         }
@@ -314,22 +317,22 @@ public partial class PrintPreviewWindow : Window
 
     private void OnNext(object sender, RoutedEventArgs e) => GoTo(_index + 1);
 
-    private void OnLast(object sender, RoutedEventArgs e) => GoTo(_pages.Count - 1);
+    private void OnLast(object sender, RoutedEventArgs e) => GoTo(_count - 1);
 
     private void GoTo(int index)
     {
-        if (_pages.Count == 0)
+        if (_count == 0)
         {
             return;
         }
 
-        _index = Math.Clamp(index, 0, _pages.Count - 1);
+        _index = Math.Clamp(index, 0, _count - 1);
         ShowPage();
     }
 
     private void OnThumbSelected(object sender, SelectionChangedEventArgs e)
     {
-        if (Thumbs.SelectedIndex >= 0 && Thumbs.SelectedIndex < _pages.Count)
+        if (Thumbs.SelectedIndex >= 0 && Thumbs.SelectedIndex < _count)
         {
             GoTo(Thumbs.SelectedIndex);
         }
@@ -347,19 +350,12 @@ public partial class PrintPreviewWindow : Window
         }
     }
 
+    /// <summary>Opens the app's own print dialog, which spools with progress, and closes the preview if it printed.</summary>
     private void OnPrint(object sender, RoutedEventArgs e)
     {
-        try
+        if (_shell.ShowPrintDialog())
         {
-            if (_printServer.Print(_session.Project, _session.Data, _session.Project.PrintSettings))
-            {
-                Close();
-            }
-        }
-        catch (Exception ex)
-        {
-            MessageBox.Show(this, "Printing failed:\n\n" + ex.Message, "Label Maker",
-                MessageBoxButton.OK, MessageBoxImage.Warning);
+            Close();
         }
     }
 }

@@ -62,7 +62,22 @@
         <TextBlock DockPanel.Dock="Top" Text="SHEETS" Style="{StaticResource PanelSectionHeader}" Margin="14,12,14,6" />
         <ListBox x:Name="Thumbs" BorderThickness="0" Background="Transparent" Margin="8,0,8,8"
                  HorizontalContentAlignment="Stretch" SelectionChanged="OnThumbSelected"
-                 ScrollViewer.HorizontalScrollBarVisibility="Disabled" />
+                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                 ScrollViewer.CanContentScroll="True"
+                 VirtualizingPanel.IsVirtualizing="True"
+                 VirtualizingPanel.VirtualizationMode="Recycling"
+                 VirtualizingPanel.ScrollUnit="Pixel">
+          <ListBox.ItemTemplate>
+            <DataTemplate>
+              <StackPanel Margin="2,4,2,4">
+                <Border Width="132" Height="{Binding ThumbHeight}" Background="{Binding Preview}"
+                        BorderThickness="1" BorderBrush="{DynamicResource Br.BorderStrong}" SnapsToDevicePixels="True" />
+                <TextBlock Text="{Binding Label}" FontSize="11.5" HorizontalAlignment="Center" Margin="0,4,0,0"
+                           Foreground="{DynamicResource Br.TextMuted}" />
+              </StackPanel>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
       </DockPanel>
     </Border>
 

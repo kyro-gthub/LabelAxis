@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Media;
@@ -6,13 +7,24 @@ using LabelMaker.Core.Units;
 
 namespace LabelMaker.App.Rendering;
 
-/// <summary>Real font metrics via WPF <see cref="FormattedText"/> — the accurate path for the designer and print.</summary>
+/// <summary>
+/// Real font metrics via WPF <see cref="FormattedText"/> — the accurate path for the
+/// designer and print. Results are cached: label jobs measure the same words
+/// ("Batch", "—", "Best before") thousands of times, and line height depends only
+/// on the font and size, not on the word.
+/// </summary>
 public sealed class WpfTextMeasurer : ITextMeasurer
 {
     private const double K = UnitConverter.DiuPerInch / UnitConverter.MmPerInch;
 
+    /// <summary>Upper bound on cached word widths; the cache is simply cleared when it fills.</summary>
+    private const int MaxCachedWidths = 50_000;
+
     private static readonly double PixelsPerDip =
         VisualTreeHelper.GetDpi(new System.Windows.Controls.Border()).PixelsPerDip;
+
+    private readonly ConcurrentDictionary<(string Text, string Family, double Size, bool Bold, bool Italic), double> _widths = new();
+    private readonly ConcurrentDictionary<(string Family, double Size), double> _lineHeights = new();
 
     public double MeasureWidthMm(string text, string fontFamily, double fontSizePt, bool bold, bool italic)
     {
@@ -21,26 +33,30 @@ public sealed class WpfTextMeasurer : ITextMeasurer
             return 0;
         }
 
-        FormattedText ft = Build(text, fontFamily, fontSizePt, bold, italic);
-        return ft.WidthIncludingTrailingWhitespace / K;
+        var key = (text, fontFamily, Math.Round(fontSizePt, 3), bold, italic);
+        if (_widths.TryGetValue(key, out double cached))
+        {
+            return cached;
+        }
+
+        if (_widths.Count >= MaxCachedWidths)
+        {
+            _widths.Clear();
+        }
+
+        double width = Build(text, fontFamily, fontSizePt, bold, italic).WidthIncludingTrailingWhitespace / K;
+        _widths[key] = width;
+        return width;
     }
 
-    public double LineHeightMm(string fontFamily, double fontSizePt)
-    {
-        FormattedText ft = Build("Ag", fontFamily, fontSizePt, false, false);
-        return ft.Height / K;
-    }
+    public double LineHeightMm(string fontFamily, double fontSizePt) =>
+        _lineHeights.GetOrAdd((fontFamily, Math.Round(fontSizePt, 3)),
+            key => Build("Ag", key.Family, key.Size, false, false).Height / K);
 
     private static FormattedText Build(string text, string fontFamily, double fontSizePt, bool bold, bool italic)
     {
-        var typeface = new Typeface(
-            new FontFamily(fontFamily),
-            italic ? FontStyles.Italic : FontStyles.Normal,
-            bold ? FontWeights.Bold : FontWeights.Normal,
-            FontStretches.Normal);
-
         double emDiu = Math.Max(0.1, UnitConverter.PointsToMm(fontSizePt) * K);
         return new FormattedText(text, CultureInfo.CurrentCulture, FlowDirection.LeftToRight,
-            typeface, emDiu, Brushes.Black, PixelsPerDip);
+            WpfFontCache.Typeface(fontFamily, bold, italic), emDiu, Brushes.Black, PixelsPerDip);
     }
 }
