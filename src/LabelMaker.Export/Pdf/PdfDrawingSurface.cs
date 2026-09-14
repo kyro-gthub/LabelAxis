@@ -321,7 +321,7 @@ public sealed class PdfDrawingSurface : IDrawingSurface
                         x * MmToPt, strike * MmToPt, (x + advance) * MmToPt, strike * MmToPt);
                 }
 
-                x += advance;
+                x += advance + (span.Text.EndsWith(' ') ? line.WordGapMm : 0);
             }
         }
     }

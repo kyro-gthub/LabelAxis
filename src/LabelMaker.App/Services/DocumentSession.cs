@@ -41,6 +41,62 @@ public sealed class DocumentSession
             ? page.Document
             : Project.MasterLabel;
 
+    /// <summary>The guides shown on the canvas: the project's shared set, or this page's own.</summary>
+    public GuideCollection ActiveGuides => Project.SharedGuides ? Project.MasterLabel.Guides : ActiveLabel.Guides;
+
+    /// <summary>
+    /// Turns shared guides on or off, undoably. Turning them on makes the guides of the page
+    /// on screen the set every page uses; turning them off gives each page a copy, so no
+    /// page loses the guides it was showing.
+    /// </summary>
+    public void SetSharedGuides(bool shared)
+    {
+        if (Project.SharedGuides == shared)
+        {
+            return;
+        }
+
+        var before = Snapshot();
+        GuideCollection current = ActiveGuides.Clone();
+        Project.SharedGuides = shared;
+        if (shared)
+        {
+            Project.MasterLabel.Guides = current;
+        }
+        else
+        {
+            foreach (LabelDocument doc in Project.Pages.Select(p => p.Document))
+            {
+                doc.Guides = current.Clone();
+            }
+        }
+
+        var after = Snapshot();
+        Execute(new DelegateCommand(shared ? "Same guides on every page" : "Separate guides per page", () => Restore(after), () => Restore(before)));
+
+        (bool Shared, List<GuideCollection> Guides) Snapshot() =>
+            (Project.SharedGuides, new[] { Project.MasterLabel }.Concat(Project.Pages.Select(p => p.Document)).Select(d => d.Guides.Clone()).ToList());
+
+        void Restore((bool Shared, List<GuideCollection> Guides) s)
+        {
+            Project.SharedGuides = s.Shared;
+            var docs = new[] { Project.MasterLabel }.Concat(Project.Pages.Select(p => p.Document)).ToList();
+            for (int i = 0; i < docs.Count && i < s.Guides.Count; i++)
+            {
+                docs[i].Guides = s.Guides[i].Clone();
+            }
+        }
+    }
+
+    private sealed class DelegateCommand(string label, Action redo, Action undo) : IUndoableCommand
+    {
+        public string Label { get; } = label;
+
+        public void Do() => redo();
+
+        public void Undo() => undo();
+    }
+
     public CommandStack History { get; }
 
     public ProjectSearchIndex SearchIndex { get; }
@@ -159,6 +215,22 @@ public sealed class DocumentSession
                 : Project.Pages[Math.Clamp(idx, 0, Project.Pages.Count - 1)].Id;
         }));
         return true;
+    }
+
+    /// <summary>Puts the standalone pages in <paramref name="order"/> (sorting, moving a page up or down), undoably.</summary>
+    public void ReorderPages(IReadOnlyList<LabelPage> order, string label)
+    {
+        if (order.Count != Project.Pages.Count || order.SequenceEqual(Project.Pages))
+        {
+            return;
+        }
+
+        Execute(new PageStructureCommand(this, label, () =>
+        {
+            List<LabelPage> pages = order.ToList();
+            Project.Pages.Clear();
+            Project.Pages.AddRange(pages);
+        }));
     }
 
     public void RenameActivePage(string name)

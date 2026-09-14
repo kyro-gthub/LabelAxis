@@ -339,7 +339,7 @@ public sealed class SvgDrawingSurface : IDrawingSurface
                 }
 
                 _body.Append(">").Append(Escape(span.Text)).Append("</text>");
-                x += spanWidth;
+                x += spanWidth + (span.Text.EndsWith(' ') ? line.WordGapMm : 0);
             }
         }
     }

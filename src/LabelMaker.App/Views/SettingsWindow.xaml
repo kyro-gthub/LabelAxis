@@ -15,7 +15,7 @@
             <RadioButton x:Name="ThemeLightBox" GroupName="theme" Content="Light" Margin="0,0,18,0" />
             <RadioButton x:Name="ThemeDarkBox" GroupName="theme" Content="Dark" />
           </StackPanel>
-          <TextBlock Text="Takes effect after restarting Label Maker." TextWrapping="Wrap"
+          <TextBlock Text="Changes as soon as you save." TextWrapping="Wrap"
                      Foreground="{DynamicResource Br.TextMuted}" FontSize="11.5" Margin="0,0,0,4" />
           <Separator Margin="0,6" />
           <CheckBox x:Name="ReduceMotionBox" Content="Reduce hover effects (e.g. the top menu's highlight/underline)" Margin="0,4" />

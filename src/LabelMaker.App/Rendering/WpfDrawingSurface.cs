@@ -295,7 +295,7 @@ public sealed class WpfDrawingSurface : IDrawingSurface
                 {
                     FormattedText ft = BuildFormattedText(span);
                     _dc.DrawText(ft, new Point(x * K, (baseline * K) - ft.Baseline));
-                    x += ft.WidthIncludingTrailingWhitespace / K;
+                    x += (ft.WidthIncludingTrailingWhitespace / K) + (span.Text.EndsWith(' ') ? line.WordGapMm : 0);
                     continue;
                 }
 
@@ -306,6 +306,11 @@ public sealed class WpfDrawingSurface : IDrawingSurface
                     FormattedText ft = BuildFormattedText(span with { Text = characters.GetTextElement() });
                     _dc.DrawText(ft, new Point(x * K, (baseline * K) - ft.Baseline));
                     x += (ft.WidthIncludingTrailingWhitespace / K) + trackingMm;
+                }
+
+                if (span.Text.EndsWith(' '))
+                {
+                    x += line.WordGapMm;
                 }
             }
         }

@@ -124,12 +124,12 @@
               <DockPanel Margin="0,3">
                 <TextBlock Text="Darkness" Style="{StaticResource FieldLabel}" Width="130" />
                 <TextBlock DockPanel.Dock="Right" Width="30" TextAlignment="Right" Text="{Binding Value, ElementName=DarknessSlider, StringFormat=0}" />
-                <Slider x:Name="DarknessSlider" Minimum="0" Maximum="30" IsSnapToTickEnabled="True" TickFrequency="1" ValueChanged="OnSliderChanged" />
+                <Slider x:Name="DarknessSlider" Minimum="0" Maximum="30" SmallChange="1" IsSnapToTickEnabled="True" TickFrequency="1" ValueChanged="OnSliderChanged" />
               </DockPanel>
               <DockPanel Margin="0,3">
                 <TextBlock Text="Speed (in/s)" Style="{StaticResource FieldLabel}" Width="130" />
                 <TextBlock DockPanel.Dock="Right" Width="30" TextAlignment="Right" Text="{Binding Value, ElementName=SpeedSlider, StringFormat=0}" />
-                <Slider x:Name="SpeedSlider" Minimum="1" Maximum="12" IsSnapToTickEnabled="True" TickFrequency="1" ValueChanged="OnSliderChanged" />
+                <Slider x:Name="SpeedSlider" Minimum="1" Maximum="12" SmallChange="1" IsSnapToTickEnabled="True" TickFrequency="1" ValueChanged="OnSliderChanged" />
               </DockPanel>
               <DockPanel Margin="0,3">
                 <TextBlock Text="Greys become" Style="{StaticResource FieldLabel}" Width="130" />
@@ -141,7 +141,7 @@
               <DockPanel x:Name="ThresholdRow" Margin="0,3">
                 <TextBlock Text="Black from" Style="{StaticResource FieldLabel}" Width="130" />
                 <TextBlock DockPanel.Dock="Right" Width="30" TextAlignment="Right" Text="{Binding Value, ElementName=ThresholdSlider, StringFormat=0}" />
-                <Slider x:Name="ThresholdSlider" Minimum="30" Maximum="230" ValueChanged="OnSliderChanged"
+                <Slider x:Name="ThresholdSlider" Minimum="30" Maximum="230" SmallChange="1" LargeChange="10" ValueChanged="OnSliderChanged"
                         ToolTip="Higher prints lighter greys as black" />
               </DockPanel>
             </StackPanel>

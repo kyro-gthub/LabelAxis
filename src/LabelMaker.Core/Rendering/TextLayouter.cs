@@ -52,6 +52,7 @@ public static class TextLayouter
     {
         var lines = new List<TextLine>();
         double totalHeight = 0;
+        double lastExtra = 0;
 
         foreach (Paragraph paragraph in content.Paragraphs)
         {
@@ -71,6 +72,8 @@ public static class TextLayouter
                 {
                     WidthMm = measurer.MeasureWidthMm(p.Text, p.Font, p.SizePt, p.Bold, p.Italic) + LetterSpacingWidth(p),
                     LineHeightMm = measurer.LineHeightMm(p.Font, p.SizePt),
+                    BaselineMm = measurer.BaselineMm(p.Font, p.SizePt),
+                    TrailingSpaceMm = TrailingSpaceWidth(p, measurer),
                 })
                 .ToList();
 
@@ -85,33 +88,50 @@ public static class TextLayouter
                     Alignment = align,
                 });
                 totalHeight += emptyHeight;
+                lastExtra = emptyHeight - (emptyHeight / lineSpacing);
                 continue;
             }
 
             var spans = new List<TextSpan>();
             double width = 0;
             double height = 0;
+            double baseline = 0;
+            double trailing = 0;
 
-            void Flush()
+            void Flush(bool endOfParagraph)
             {
                 if (spans.Count == 0)
                 {
                     return;
                 }
 
+                // Justified lines spread the spare width over the gaps between words; the
+                // paragraph's last line stays left-aligned, as in any word processor.
+                int gaps = spans.Take(spans.Count - 1).Count(s => s.Text.EndsWith(' '));
+                double lineWidth = Math.Max(0, width - trailing);
+                bool justify = align == HorizontalAlignment.Justify && !endOfParagraph && gaps > 0 && lineWidth < maxWidth;
+
+                // Extra line spacing goes below each line; the last line's is taken off the
+                // block height again so bottom and middle alignment sit on the text, not on
+                // empty space after it. Trailing spaces do not count towards the width, or
+                // centred and right-aligned lines stop short of where they should.
                 double h = height * lineSpacing;
                 lines.Add(new TextLine
                 {
-                    Spans = Merge(spans),
-                    WidthMm = width,
+                    Spans = justify ? spans.ToList() : Merge(spans),
+                    WidthMm = justify ? maxWidth : lineWidth,
+                    WordGapMm = justify ? (maxWidth - lineWidth) / gaps : 0,
                     HeightMm = h,
-                    BaselineOffsetMm = height * 0.8,
+                    BaselineOffsetMm = baseline > 0 ? baseline : height * 0.8,
                     Alignment = align,
                 });
                 totalHeight += h;
+                lastExtra = h - height;
                 spans.Clear();
                 width = 0;
                 height = 0;
+                baseline = 0;
+                trailing = 0;
             }
 
             foreach (WordPiece piece in pieces)
@@ -124,30 +144,34 @@ public static class TextLayouter
                         height = piece.LineHeightMm;
                     }
 
-                    Flush();
+                    Flush(endOfParagraph: true);
                     continue;
                 }
 
                 bool wrap = style.WordWrap && width > 0 && width + piece.WidthMm > maxWidth + 0.01;
                 if (wrap)
                 {
-                    Flush();
+                    Flush(endOfParagraph: false);
                 }
 
                 spans.Add(piece.ToSpan());
                 width += piece.WidthMm;
                 height = Math.Max(height, piece.LineHeightMm);
+                baseline = Math.Max(baseline, piece.BaselineMm);
+                // A run of spaces arrives as several one-space pieces; they all trail.
+                trailing = piece.Text.Trim().Length == 0 ? trailing + piece.WidthMm : piece.TrailingSpaceMm;
             }
 
-            Flush();
+            Flush(endOfParagraph: true);
         }
 
-        return new TextBlock { Lines = lines, TotalHeightMm = totalHeight };
+        return new TextBlock { Lines = lines, TotalHeightMm = Math.Max(0, totalHeight - lastExtra) };
     }
 
     private readonly record struct WordPiece(
         string Text, string Font, double SizePt, bool Bold, bool Italic, bool Underline, bool Strike,
-        ColorRgba Fg, ColorRgba? Bg, double LetterSpacingEm, double WidthMm, double LineHeightMm)
+        ColorRgba Fg, ColorRgba? Bg, double LetterSpacingEm, double WidthMm, double LineHeightMm,
+        double BaselineMm = 0, double TrailingSpaceMm = 0)
     {
         public TextSpan ToSpan() => new()
         {
@@ -246,6 +270,21 @@ public static class TextLayouter
         a.Strikethrough == b.Strikethrough && a.Foreground == b.Foreground &&
         Nullable.Equals(a.Background, b.Background) &&
         Math.Abs(a.LetterSpacingEm - b.LetterSpacingEm) < 0.001;
+
+    /// <summary>Width of the spaces a word ends with (the layouter keeps them attached to the word).</summary>
+    private static double TrailingSpaceWidth(WordPiece p, ITextMeasurer measurer)
+    {
+        string trimmed = p.Text.TrimEnd(' ');
+        int spaces = p.Text.Length - trimmed.Length;
+        if (spaces == 0)
+        {
+            return 0;
+        }
+
+        double full = measurer.MeasureWidthMm(p.Text, p.Font, p.SizePt, p.Bold, p.Italic);
+        double word = trimmed.Length == 0 ? 0 : measurer.MeasureWidthMm(trimmed, p.Font, p.SizePt, p.Bold, p.Italic);
+        return Math.Max(0, full - word) + (spaces * p.LetterSpacingEm * UnitConverter.PointsToMm(p.SizePt));
+    }
 
     private static double LetterSpacingWidth(WordPiece p) =>
         p.LetterSpacingEm == 0 ? 0 : p.Text.Length * p.LetterSpacingEm * UnitConverter.PointsToMm(p.SizePt);

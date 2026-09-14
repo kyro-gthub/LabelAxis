@@ -188,13 +188,12 @@ public sealed partial class MainViewModel
         RebuildPages();
         RebuildObjectList();
         RefreshSearch();
-        RebuildTemplateCategories();
         OnDocumentChanged();
         _properties.RefreshAll();
         foreach (string name in new[]
                  {
                      nameof(ActiveTab), nameof(PrinterName), nameof(CalibrationStatus), nameof(RecordsReadyText),
-                     nameof(TemplateSummary), nameof(LockGuides), nameof(RecordText), nameof(DataSourceSummary),
+                     nameof(TemplateSummary), nameof(LockGuides), nameof(SharedGuides), nameof(RecordText), nameof(DataSourceSummary),
                      nameof(HasData), nameof(CanRefreshData), nameof(ActivePageName), nameof(ZoomText), nameof(SelectionInfo),
                  })
         {

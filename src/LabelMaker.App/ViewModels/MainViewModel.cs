@@ -42,10 +42,9 @@ public sealed partial class MainViewModel : ObservableObject
     private string _statusText = "Ready";
     private string _searchText = string.Empty;
     private SearchListItem? _selectedSearchResult;
-    private ObjectListItem? _selectedObjectItem;
     private PageListItem? _selectedPage;
     private bool _suppressPageSelection;
-    private int _selectedLeftTab;
+    private int _selectedLeftTab = 1;
 
     public MainViewModel(AppEnvironment env, IShellServices shell)
     {
@@ -164,22 +163,6 @@ public sealed partial class MainViewModel : ObservableObject
         _properties.RefreshAll();
     }
 
-    private void RebuildPages()
-    {
-        _suppressPageSelection = true;
-        Pages.Clear();
-        Pages.Add(new PageListItem(null, MasterPageName, 0, IsMaster: true));
-        for (int i = 0; i < _session.Project.Pages.Count; i++)
-        {
-            LabelPage p = _session.Project.Pages[i];
-            Pages.Add(new PageListItem(p.Id, p.Name, i + 1, IsMaster: false));
-        }
-
-        _selectedPage = Pages.FirstOrDefault(p => p.PageId == _session.ActivePageId) ?? Pages[0];
-        OnPropertyChanged(nameof(SelectedPage));
-        _suppressPageSelection = false;
-    }
-
     // ---------- bindable state ----------
 
     public string StatusText { get => _statusText; set => SetField(ref _statusText, value); }
@@ -239,7 +222,7 @@ public sealed partial class MainViewModel : ObservableObject
 
     public string ZoomText => _canvas is null ? "100%" : $"{Math.Round(_canvas.Zoom * 100)}%";
 
-    /// <summary>Left panel: 0 = Templates, 1 = Assets, 2 = Data.</summary>
+    /// <summary>Left panel: 1 = Pages and objects, 2 = Data (0 was the template browser, now in the Label manager).</summary>
     public int SelectedLeftTab { get => _selectedLeftTab; set => SetField(ref _selectedLeftTab, value); }
 
     private int _selectedRightTab;
@@ -265,21 +248,6 @@ public sealed partial class MainViewModel : ObservableObject
             return _session.RecordCount > 0
                 ? $"{_session.RecordCount:N0} records queued · {sheet} · printing to {printer}."
                 : $"No variable data loaded. The master label will fill the sheet — {sheet} · printing to {printer}.";
-        }
-    }
-
-    private string _templateSearchText = string.Empty;
-
-    /// <summary>Filters the template list in the left panel.</summary>
-    public string TemplateSearchText
-    {
-        get => _templateSearchText;
-        set
-        {
-            if (SetField(ref _templateSearchText, value))
-            {
-                RebuildTemplateCategories();
-            }
         }
     }
 
@@ -341,43 +309,6 @@ public sealed partial class MainViewModel : ObservableObject
         ? $"{_session.RecordCount:N0} records ready to print"
         : "No variable data";
 
-    public ObservableCollection<TemplateCategoryItem> TemplateCategories { get; } = new();
-
-    private TemplateCategoryItem? _selectedCategory;
-
-    public TemplateCategoryItem? SelectedCategory
-    {
-        get => _selectedCategory;
-        set
-        {
-            if (SetField(ref _selectedCategory, value) && value is not null)
-            {
-                TemplateResults.Clear();
-                foreach (LabelTemplate t in value.Templates.Take(60))
-                {
-                    TemplateResults.Add(new TemplateListItem(t));
-                }
-            }
-        }
-    }
-
-    /// <summary>Templates inside the selected left-panel category.</summary>
-    public ObservableCollection<TemplateListItem> TemplateResults { get; } = new();
-
-    private TemplateListItem? _selectedTemplateResult;
-
-    public TemplateListItem? SelectedTemplateResult
-    {
-        get => _selectedTemplateResult;
-        set
-        {
-            if (SetField(ref _selectedTemplateResult, value) && value is not null)
-            {
-                ApplyTemplate(value.Template);
-            }
-        }
-    }
-
     /// <summary>Switches the project to another label sheet. Also used by the Label manager's "Use this sheet".</summary>
     public void ApplyTemplate(LabelTemplate template)
     {
@@ -404,54 +335,6 @@ public sealed partial class MainViewModel : ObservableObject
         RefreshCanvas();
         OnPropertyChanged(nameof(TemplateSummary));
         OnPropertyChanged(nameof(SheetSummary));
-    }
-
-    private void RebuildTemplateCategories()
-    {
-        TemplateCategories.Clear();
-        IEnumerable<LabelTemplate> source = _env.Templates.All;
-        if (!string.IsNullOrWhiteSpace(_templateSearchText))
-        {
-            string q = _templateSearchText.Trim();
-            source = source.Where(t =>
-                t.Name.Contains(q, StringComparison.OrdinalIgnoreCase) ||
-                t.ProductCode.Contains(q, StringComparison.OrdinalIgnoreCase) ||
-                t.Brand.Contains(q, StringComparison.OrdinalIgnoreCase));
-        }
-
-        var all = source.ToList();
-
-        void Add(string title, string subtitle, string icon, Func<LabelTemplate, bool> match)
-        {
-            var hits = all.Where(match).OrderBy(t => t.ProductCode, StringComparer.OrdinalIgnoreCase).ToList();
-            if (hits.Count > 0)
-            {
-                TemplateCategories.Add(new TemplateCategoryItem(title, subtitle, icon, hits));
-            }
-        }
-
-        Add("Formtec Templates", "A4, A5 and label sheets", "Icon.Sheet",
-            t => t.Brand.Contains("Formtec", StringComparison.OrdinalIgnoreCase));
-        Add("Product Labels", "Retail & commercial", "Icon.Tag",
-            t => t.Grid.LabelWidthMm >= 50 && t.Grid.LabelHeightMm >= 20);
-        Add("Barcode Labels", "Logistics & inventory", "Icon.Barcode",
-            t => t.Grid.LabelWidthMm >= 40 && t.Grid.LabelHeightMm < 30);
-        Add("Small & Serial", "Sequential numbering", "Icon.Sticker",
-            t => t.Grid.LabelWidthMm < 40);
-        Add("Round & Special", "Shaped labels", "Icon.Ellipse",
-            t => t.Grid.LabelShape != LabelShape.Rectangle);
-        Add("All Templates", "Every installed sheet", "Icon.Gallery", _ => true);
-
-        _selectedCategory = TemplateCategories.FirstOrDefault();
-        OnPropertyChanged(nameof(SelectedCategory));
-        if (_selectedCategory is not null)
-        {
-            TemplateResults.Clear();
-            foreach (LabelTemplate t in _selectedCategory.Templates.Take(60))
-            {
-                TemplateResults.Add(new TemplateListItem(t));
-            }
-        }
     }
 
     public string TemplateSummary
@@ -530,10 +413,10 @@ public sealed partial class MainViewModel : ObservableObject
 
     public bool LockGuides
     {
-        get => _session.ActiveLabel.Guides.Locked;
+        get => _session.ActiveGuides.Locked;
         set
         {
-            GuideCollection guides = _session.ActiveLabel.Guides;
+            GuideCollection guides = _session.ActiveGuides;
             _session.Execute(new SetPropertyCommand<bool>(
                 value ? "Lock guides" : "Unlock guides",
                 () => guides.Locked,
@@ -584,18 +467,6 @@ public sealed partial class MainViewModel : ObservableObject
             if (SetField(ref _selectedSearchResult, value) && value is not null)
             {
                 NavigateToSearchResult(value);
-            }
-        }
-    }
-
-    public ObjectListItem? SelectedObjectItem
-    {
-        get => _selectedObjectItem;
-        set
-        {
-            if (SetField(ref _selectedObjectItem, value) && value is not null)
-            {
-                _session.SetSelection(new[] { value.Object });
             }
         }
     }
@@ -825,6 +696,7 @@ public sealed partial class MainViewModel : ObservableObject
         BuildDataCommands();
         BuildTabCommands();
         BuildPublisherCommands();
+        BuildPanelCommands();
         DataTableCommand = new RelayCommand(() => _shell.ShowDataTable());
         SelectAllCommand = new RelayCommand(
             () => _session.SetSelection(_session.ActiveLabel.Objects.Where(o => o.Visible).ToList()),
@@ -1205,7 +1077,7 @@ public sealed partial class MainViewModel : ObservableObject
     private void ToggleObjectLock(ObjectListItem? item)
     {
         var targets = item is not null
-            ? new List<LabelObject> { item.Object }
+            ? item.Members.ToList()
             : _session.Selection.ToList();
 
         if (targets.Count == 0)
@@ -1274,12 +1146,9 @@ public sealed partial class MainViewModel : ObservableObject
 
     private void DuplicateSelection()
     {
-        var clones = _session.Selection.Select(o =>
-        {
-            LabelObject c = o.Clone();
-            c.Bounds = c.Bounds.Offset(2, 2);
-            return c;
-        }).ToList();
+        // Copies step off the originals; a duplicated group becomes a new group of its own
+        // instead of silently joining the original's.
+        var clones = PastePlacement.Place(_session.Selection, _session.ActiveLabel).ToList();
 
         if (clones.Count == 0)
         {
@@ -1343,7 +1212,8 @@ public sealed partial class MainViewModel : ObservableObject
 
     private void PasteLabelObjects(ClipboardContent.Objects clip, Core.Units.PointMm? atMm)
     {
-        IReadOnlyList<LabelObject> pasted = ObjectClipboard.Place(clip.Items, atMm);
+        // The copies keep their layout and groups as one block (see PastePlacement).
+        IReadOnlyList<LabelObject> pasted = PastePlacement.Place(clip.Items, _session.ActiveLabel, atMm);
         if (pasted.Count == 0)
         {
             return;
@@ -1361,14 +1231,6 @@ public sealed partial class MainViewModel : ObservableObject
 
         _imageSource.Invalidate();
 
-        // keep pasted objects inside the label
-        var size = _session.ActiveLabel.SizeMm;
-        foreach (LabelObject o in pasted)
-        {
-            double x = Math.Clamp(o.Bounds.X, 0, Math.Max(0, size.Width - o.Bounds.Width));
-            double y = Math.Clamp(o.Bounds.Y, 0, Math.Max(0, size.Height - o.Bounds.Height));
-            o.Bounds = o.Bounds with { X = x, Y = y };
-        }
 
         _session.Execute(new CompositeCommand("Paste",
             pasted.Select(c => (IUndoableCommand)new AddObjectCommand(_session.ActiveLabel, c)).ToList()));
@@ -1611,7 +1473,6 @@ public sealed partial class MainViewModel : ObservableObject
                 LabelTemplate saved = choice.Template with { IsUserDefined = true };
                 _env.Templates.SaveUserTemplate(saved, _env.Paths.UserTemplatesDirectory);
                 _env.Templates.AddOrReplace(saved, validate: false);
-                RebuildTemplateCategories();
             }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or InvalidOperationException)
             {
@@ -2096,15 +1957,6 @@ public sealed partial class MainViewModel : ObservableObject
         StatusText = $"Jumped to {r.Title}";
     }
 
-    private void RebuildObjectList()
-    {
-        ObjectList.Clear();
-        for (int i = _session.ActiveLabel.Objects.Count - 1; i >= 0; i--)
-        {
-            ObjectList.Add(new ObjectListItem(_session.ActiveLabel.Objects[i]));
-        }
-    }
-
     private void RefreshRecent()
     {
         _env.Settings.PruneMissingRecents();
@@ -2127,6 +1979,8 @@ public sealed partial class MainViewModel : ObservableObject
         OnPropertyChanged(nameof(HasUnsavedChanges));
         OnPropertyChanged(nameof(SheetSummary));
         OnPropertyChanged(nameof(TemplateSummary));
+        OnPropertyChanged(nameof(SharedGuides));
+        OnPropertyChanged(nameof(LockGuides));
         RebuildObjectList();
         RefreshCanvas();
         RaiseAllCanExecute();
@@ -2134,6 +1988,7 @@ public sealed partial class MainViewModel : ObservableObject
 
     private void OnSelectionChanged()
     {
+        SyncObjectListSelection();
         OnPropertyChanged(nameof(SelectionInfo));
         _properties.RefreshAll();
         RefreshCanvas();

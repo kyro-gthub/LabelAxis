@@ -53,6 +53,36 @@ public sealed class InlineTextEditor
 
     public bool IsEditing => _target is not null;
 
+    private Thickness _basePadding;
+    private double _boxHeight;
+
+    private void AlignVertically()
+    {
+        if (_box is null || _target is null || _target.VerticalAlignment == Core.Model.Text.VerticalAlignment.Top)
+        {
+            return;
+        }
+
+        TextPointer start = _box.Document.ContentStart;
+        TextPointer end = _box.Document.ContentEnd;
+        Rect first = start.GetCharacterRect(LogicalDirection.Forward);
+        Rect last = end.GetCharacterRect(LogicalDirection.Backward);
+        if (first.IsEmpty || last.IsEmpty)
+        {
+            return;
+        }
+
+        double content = last.Bottom - first.Top;
+        double inner = _boxHeight - _basePadding.Top - _basePadding.Bottom - (_box.BorderThickness.Top + _box.BorderThickness.Bottom);
+        double spare = Math.Max(0, inner - content);
+        double offset = _target.VerticalAlignment == Core.Model.Text.VerticalAlignment.Middle ? spare / 2 : spare;
+        var padding = new Thickness(_basePadding.Left, _basePadding.Top + offset, _basePadding.Right, _basePadding.Bottom);
+        if (Math.Abs(_box.Padding.Top - padding.Top) > 0.5)
+        {
+            _box.Padding = padding;
+        }
+    }
+
     // ---- lifecycle --------------------------------------------------------
 
     public void Begin(TextObject target)
@@ -104,6 +134,13 @@ public sealed class InlineTextEditor
 
         _box.PreviewKeyDown += OnKeyDown;
         _box.LostKeyboardFocus += OnLostFocus;
+
+        // Middle and bottom aligned text stays where it is drawn on the label while typing,
+        // instead of jumping to the top of the box as the editor opens.
+        _basePadding = pad;
+        _boxHeight = rect.Height;
+        _box.Loaded += (_, _) => _box.Dispatcher.InvokeAsync(AlignVertically, System.Windows.Threading.DispatcherPriority.Loaded);
+        _box.TextChanged += (_, _) => AlignVertically();
 
         _toolbar = BuildToolbar();
         Canvas.SetLeft(_toolbar, rect.X);

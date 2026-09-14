@@ -816,6 +816,124 @@
     </Setter>
   </Style>
 
+  <!-- ============================ Slider ============================ -->
+  <!--
+    Every slider has − and + buttons for exact steps (its SmallChange), so a value can be
+    nudged without dragging. A plain track with an accent fill and a round thumb.
+  -->
+  <Style x:Key="SliderStepButton" TargetType="RepeatButton">
+    <Setter Property="Width" Value="20" />
+    <Setter Property="Height" Value="20" />
+    <Setter Property="Focusable" Value="False" />
+    <Setter Property="Cursor" Value="Hand" />
+    <Setter Property="Interval" Value="90" />
+    <Setter Property="Delay" Value="350" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="RepeatButton">
+          <Border x:Name="bd" CornerRadius="6" Background="Transparent" BorderThickness="1"
+                  BorderBrush="{DynamicResource Br.BorderStrong}">
+            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="bd" Property="Background" Value="{DynamicResource Br.Hover}" />
+              <Setter TargetName="bd" Property="BorderBrush" Value="{DynamicResource Br.Accent}" />
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+              <Setter TargetName="bd" Property="Background" Value="{DynamicResource Br.AccentSoft}" />
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style x:Key="SliderTrackButton" TargetType="RepeatButton">
+    <Setter Property="Focusable" Value="False" />
+    <Setter Property="IsTabStop" Value="False" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="RepeatButton">
+          <Border Background="Transparent" />
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style x:Key="SliderFillButton" TargetType="RepeatButton" BasedOn="{StaticResource SliderTrackButton}">
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="RepeatButton">
+          <Border Background="Transparent">
+            <Border Height="4" CornerRadius="2" Background="{DynamicResource Br.Accent}" VerticalAlignment="Center" />
+          </Border>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style TargetType="Slider">
+    <Setter Property="Focusable" Value="False" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+    <!-- Not IsMoveToPointEnabled: the slider applies it to any click inside it, so the
+         − and + buttons would jump the value to the far end instead of stepping. -->
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="Slider">
+          <Grid Background="Transparent">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="Auto" />
+              <ColumnDefinition Width="*" MinWidth="30" />
+              <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <RepeatButton Grid.Column="0" Style="{StaticResource SliderStepButton}" Command="{x:Static Slider.DecreaseSmall}"
+                          ToolTip="Decrease">
+              <Path Data="M 0,0 L 8,0" Stroke="{DynamicResource Br.Text2}" StrokeThickness="1.5" Margin="0,4" />
+            </RepeatButton>
+            <Grid Grid.Column="1" Margin="7,0" Height="20">
+              <Border Height="4" CornerRadius="2" Background="{DynamicResource Br.BorderStrong}" VerticalAlignment="Center" />
+              <Track x:Name="PART_Track">
+                <Track.DecreaseRepeatButton>
+                  <RepeatButton Style="{StaticResource SliderFillButton}" Command="{x:Static Slider.DecreaseLarge}" />
+                </Track.DecreaseRepeatButton>
+                <Track.IncreaseRepeatButton>
+                  <RepeatButton Style="{StaticResource SliderTrackButton}" Command="{x:Static Slider.IncreaseLarge}" />
+                </Track.IncreaseRepeatButton>
+                <Track.Thumb>
+                  <Thumb Width="14" Height="14" Cursor="Hand">
+                    <Thumb.Template>
+                      <ControlTemplate TargetType="Thumb">
+                        <Ellipse x:Name="knob" Fill="{DynamicResource Br.Bg}" Stroke="{DynamicResource Br.Accent}" StrokeThickness="2" />
+                        <ControlTemplate.Triggers>
+                          <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="knob" Property="Fill" Value="{DynamicResource Br.AccentSoft}" />
+                          </Trigger>
+                          <Trigger Property="IsDragging" Value="True">
+                            <Setter TargetName="knob" Property="Fill" Value="{DynamicResource Br.Accent}" />
+                          </Trigger>
+                        </ControlTemplate.Triggers>
+                      </ControlTemplate>
+                    </Thumb.Template>
+                  </Thumb>
+                </Track.Thumb>
+              </Track>
+            </Grid>
+            <RepeatButton Grid.Column="2" Style="{StaticResource SliderStepButton}" Command="{x:Static Slider.IncreaseSmall}"
+                          ToolTip="Increase">
+              <Path Data="M 0,4 L 8,4 M 4,0 L 4,8" Stroke="{DynamicResource Br.Text2}" StrokeThickness="1.5" />
+            </RepeatButton>
+          </Grid>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter Property="Opacity" Value="0.45" />
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
   <!-- ============================ StatusBar ============================ -->
   <Style TargetType="StatusBar">
     <Setter Property="Background" Value="{DynamicResource Br.Surface2}" />
@@ -949,6 +1067,11 @@
     <Setter Property="Width" Value="44" />
     <Setter Property="Height" Value="46" />
     <Setter Property="Background" Value="Transparent" />
+    <Setter Property="Foreground" Value="{DynamicResource Br.Text2}" />
+    <Setter Property="Focusable" Value="False" />
+    <!-- Name the button promptly: the default one-second wait read as "no tooltip". -->
+    <Setter Property="ToolTipService.InitialShowDelay" Value="350" />
+    <Setter Property="ToolTipService.Placement" Value="Bottom" />
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="Button">
@@ -975,7 +1098,7 @@
           <ControlTemplate.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
               <Setter TargetName="bd" Property="Background" Value="#FFE8404A" />
-              <Setter TargetName="cp" Property="TextElement.Foreground" Value="White" />
+              <Setter Property="Foreground" Value="White" />
             </Trigger>
           </ControlTemplate.Triggers>
         </ControlTemplate>
@@ -1372,6 +1495,40 @@
     <Setter Property="Fill" Value="{DynamicResource Br.Border}" />
     <Setter Property="Margin" Value="0,0,16,0" />
     <Setter Property="VerticalAlignment" Value="Center" />
+  </Style>
+
+  <!-- Compact on/off chip for view options (rulers, guides, grid, snapping). -->
+  <Style x:Key="ChipToggle" TargetType="ToggleButton">
+    <Setter Property="Margin" Value="0,0,4,0" />
+    <Setter Property="Padding" Value="9,4" />
+    <Setter Property="FontSize" Value="12" />
+    <Setter Property="Foreground" Value="{DynamicResource Br.Text2}" />
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="Cursor" Value="Hand" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="ToggleButton">
+          <Border x:Name="bd" CornerRadius="7" BorderThickness="1" BorderBrush="Transparent"
+                  Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}">
+            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="bd" Property="Background" Value="{DynamicResource Br.Hover}" />
+            </Trigger>
+            <Trigger Property="IsChecked" Value="True">
+              <Setter TargetName="bd" Property="Background" Value="{DynamicResource Br.AccentSoft}" />
+              <Setter TargetName="bd" Property="BorderBrush" Value="{DynamicResource Br.Accent}" />
+              <Setter Property="Foreground" Value="{DynamicResource Br.Accent}" />
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter Property="Opacity" Value="0.4" />
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
   </Style>
 
 </ResourceDictionary>
