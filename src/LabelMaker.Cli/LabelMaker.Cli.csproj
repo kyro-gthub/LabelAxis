@@ -4,8 +4,8 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net10.0</TargetFramework>
     <RootNamespace>LabelMaker.Cli</RootNamespace>
-    <AssemblyName>labelmaker</AssemblyName>
-    <Description>Headless Label Maker tools: barcode image export, sequence generation, bulk export, project inspection.</Description>
+    <AssemblyName>labelaxis</AssemblyName>
+    <Description>Headless LabelAxis tools: barcode image export, sequence generation, bulk export, project inspection.</Description>
   </PropertyGroup>
 
   <ItemGroup>

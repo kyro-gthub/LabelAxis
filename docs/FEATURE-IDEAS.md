@@ -1,6 +1,6 @@
 # Feature recommendations
 
-Ideas for where Label Maker goes next, ordered by what they are worth against
+Ideas for where LabelAxis goes next, ordered by what they are worth against
 what they cost. Nothing here is committed work — it is a menu to choose from.
 
 Read alongside [OMISSIONS.md](OMISSIONS.md), which records what was left out of
@@ -23,7 +23,7 @@ The Templates panel today lists **sheet geometry** (Formtec GS-1189, 3100, …).
 There is no way to save *the label you designed* and reuse it next month.
 
 Save the current label as a named design with a thumbnail, in
-`%APPDATA%\LabelMaker\designs\`; browse them in a fourth tab of the left panel;
+`%APPDATA%\LabelAxis\designs\`; browse them in a fourth tab of the left panel;
 double-click to apply to the current sheet. Repeat jobs — the same product label
 every re-stock — go from "rebuild it" to "two clicks".
 
@@ -48,7 +48,7 @@ renderer already resolves `{Field}` tokens per record.
 A label run that jams halfway is the most expensive failure this app has, and
 right now nothing remembers what was printed. Log every run (template, printer,
 record range, sheet start position, copies, timestamp) to
-`%APPDATA%\LabelMaker\printlog.json`, show it in the Print Queue tab, and offer
+`%APPDATA%\LabelAxis\printlog.json`, show it in the Print Queue tab, and offer
 **Reprint** → prefilled Advanced Print Settings.
 
 The pieces are there: "Start at label position" and "Skip positions" already let

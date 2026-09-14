@@ -17,7 +17,7 @@ $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $PSScriptRoot
 Set-Location $root
 
-$stageName = "LabelMaker-$Version-portable"
+$stageName = "LabelAxis-$Version-portable"
 $stage = Join-Path $root "artifacts\$stageName"
 
 Write-Host '== Publish (self-contained win-x64) ==' -ForegroundColor Cyan
@@ -30,11 +30,11 @@ Copy-Item (Join-Path $root 'artifacts\app\*') $stage -Recurse -Force
 
 # The marker that switches the app to keeping its data beside the executable.
 @'
-Delete this file if you would rather Label Maker kept its settings in
-%APPDATA%\LabelMaker (the normal, installed-app location).
+Delete this file if you would rather LabelAxis kept its settings in
+%APPDATA%\LabelAxis (the normal, installed-app location).
 
 While this file is here, settings, user templates, printer calibration and
-recovery snapshots all live in the "Data" folder next to LabelMaker.exe.
+recovery snapshots all live in the "Data" folder next to LabelAxis.exe.
 '@ | Set-Content (Join-Path $stage 'portable.txt') -Encoding UTF8
 
 Copy-Item (Join-Path $root 'docs\PORTABLE-README.txt') (Join-Path $stage 'README.txt') -Force

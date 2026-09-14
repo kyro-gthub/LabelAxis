@@ -15,5 +15,5 @@ if (-not (Test-Path $ISCC)) {
     throw "ISCC.exe not found. Install Inno Setup 6 from https://jrsoftware.org/isinfo.php"
 }
 
-& $ISCC (Join-Path $root 'installer\LabelMaker.iss')
+& $ISCC (Join-Path $root 'installer\LabelAxis.iss')
 Write-Host "Installer written to installer\Output\" -ForegroundColor Green

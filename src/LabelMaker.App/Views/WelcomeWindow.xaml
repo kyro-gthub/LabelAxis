@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Style="{StaticResource AppWindow}"
         Background="{DynamicResource Br.Surface}" TextElement.Foreground="{DynamicResource Br.Text}"
-        Title="Welcome to Label Maker" Height="640" Width="1020" MinHeight="520" MinWidth="860"
+        Title="Welcome to LabelAxis" Height="640" Width="1020" MinHeight="520" MinWidth="860"
         WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
   <Window.Resources>
     <Style x:Key="StartAction" TargetType="Button">
@@ -36,7 +36,7 @@
       <DockPanel>
         <Button DockPanel.Dock="Right" Content="Start with a blank label" Style="{StaticResource GhostButton}" IsCancel="True"
                 Click="OnBlank" />
-        <CheckBox x:Name="ShowAtStartBox" Content="Show this window when Label Maker starts" VerticalAlignment="Center" />
+        <CheckBox x:Name="ShowAtStartBox" Content="Show this window when LabelAxis starts" VerticalAlignment="Center" />
       </DockPanel>
     </Border>
 
@@ -47,7 +47,11 @@
         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,22">
           <Image Source="/Assets/logo.png" Width="44" Height="44" Margin="0,0,12,0" />
           <StackPanel VerticalAlignment="Center">
-            <TextBlock Text="Label Maker" FontFamily="{StaticResource Font.UiExtraBold}" FontSize="20" />
+            <TextBlock FontFamily="{StaticResource Font.UiExtraBold}" FontSize="22">
+              <Run Text="Label" /><Run Text="Axis" Foreground="{DynamicResource Br.Accent}" />
+            </TextBlock>
+            <TextBlock Text="PRECISION LABEL STUDIO" FontSize="9.5" FontFamily="{StaticResource Font.UiSemiBold}"
+                       Foreground="{DynamicResource Br.Text2}" Margin="1,0,0,3" />
             <TextBlock x:Name="VersionText" FontSize="12" Foreground="{DynamicResource Br.TextMuted}" />
           </StackPanel>
         </StackPanel>

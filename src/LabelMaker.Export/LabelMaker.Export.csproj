@@ -4,7 +4,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <RootNamespace>LabelMaker.Export</RootNamespace>
     <AssemblyName>LabelMaker.Export</AssemblyName>
-    <Description>Vector PDF and SVG export surfaces for the Label Maker renderer.</Description>
+    <Description>Vector PDF and SVG export surfaces for the LabelAxis renderer.</Description>
   </PropertyGroup>
 
   <ItemGroup>

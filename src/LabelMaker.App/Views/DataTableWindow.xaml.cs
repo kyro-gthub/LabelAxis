@@ -210,7 +210,7 @@ public partial class DataTableWindow : Window
         }
 
         if (records.Count > 1 && MessageBox.Show(this, $"Delete {records.Count:N0} records? You can undo this with Ctrl+Z.",
-                "Label Maker", MessageBoxButton.OKCancel, MessageBoxImage.Question) != MessageBoxResult.OK)
+                "LabelAxis", MessageBoxButton.OKCancel, MessageBoxImage.Question) != MessageBoxResult.OK)
         {
             return;
         }

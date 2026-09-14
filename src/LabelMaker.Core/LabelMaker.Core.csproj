@@ -4,7 +4,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <RootNamespace>LabelMaker.Core</RootNamespace>
     <AssemblyName>LabelMaker.Core</AssemblyName>
-    <Description>Label Maker engine: units, document model, Formtec templates, barcodes, data, sequences, search, preflight, printing math, serialization. No UI dependency.</Description>
+    <Description>LabelAxis engine: units, document model, Formtec templates, barcodes, data, sequences, search, preflight, printing math, serialization. No UI dependency.</Description>
   </PropertyGroup>
 
   <ItemGroup>

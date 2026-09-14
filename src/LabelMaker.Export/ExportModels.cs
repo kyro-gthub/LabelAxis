@@ -46,5 +46,5 @@ public sealed class ExportRequest
     /// <summary>Fill every sheet slot with the master label when there is no data.</summary>
     public bool FillSheetWhenNoData { get; init; } = true;
 
-    public string Title { get; init; } = "Label Maker export";
+    public string Title { get; init; } = "LabelAxis export";
 }

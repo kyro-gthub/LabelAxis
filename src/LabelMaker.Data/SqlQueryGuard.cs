@@ -27,7 +27,7 @@ public sealed record QueryCheck(bool IsAllowed, string? Problem)
 }
 
 /// <summary>
-/// Label Maker only ever reads data. A typed query must be a single SELECT (or a
+/// LabelAxis only ever reads data. A typed query must be a single SELECT (or a
 /// WITH … SELECT); anything that could change or lock data is refused before it
 /// reaches the server. Comments and quoted text are ignored while checking, so a
 /// product called 'Drop-in hinge' is fine and <c>SELECT 1; DROP TABLE x</c> is not.

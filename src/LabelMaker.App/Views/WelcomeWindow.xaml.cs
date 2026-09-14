@@ -23,7 +23,7 @@ public enum WelcomeAction
 }
 
 /// <summary>
-/// Shown when Label Maker starts: start a label from a sheet or a thermal roll, open a
+/// Shown when LabelAxis starts: start a label from a sheet or a thermal roll, open a
 /// project (recent ones listed), import a Publisher file, or browse the templates.
 /// </summary>
 public partial class WelcomeWindow : Window

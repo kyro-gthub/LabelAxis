@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
         xmlns:ctl="clr-namespace:LabelMaker.App.Controls"
-        Title="Label Maker" Height="860" Width="1480" MinHeight="560" MinWidth="880"
+        Title="LabelAxis" Height="860" Width="1480" MinHeight="560" MinWidth="880"
         Icon="/Assets/icon.ico"
         WindowStartupLocation="CenterScreen"
         WindowStyle="None"
@@ -66,8 +66,8 @@
           <Image Source="/Assets/logo.png" Width="28" Height="28" Margin="0,0,10,0"
                  RenderOptions.BitmapScalingMode="HighQuality" SnapsToDevicePixels="True" />
           <TextBlock VerticalAlignment="Center" FontSize="15.5" Margin="0,0,22,0">
-            <Run Text="Label" FontFamily="{StaticResource Font.UiExtraBold}" Foreground="{DynamicResource Br.Text}" />
-            <Run Text="Maker" FontFamily="{StaticResource Font.UiExtraBold}" Foreground="{DynamicResource Br.Accent}" />
+            <!-- One line: a line break between the runs would put a space in the name. -->
+            <Run Text="Label" FontFamily="{StaticResource Font.UiExtraBold}" Foreground="{DynamicResource Br.Text}" /><Run Text="Axis" FontFamily="{StaticResource Font.UiExtraBold}" Foreground="{DynamicResource Br.Accent}" />
           </TextBlock>
 
           <Menu Background="Transparent" VerticalAlignment="Center">
@@ -95,7 +95,7 @@
               <MenuItem Header="Label si_ze…" Command="{Binding LabelSizeCommand}" />
               <Separator />
               <MenuItem Header="Se_ttings…" Command="{Binding SettingsCommand}" />
-              <MenuItem Header="_About Label Maker" Command="{Binding AboutCommand}" />
+              <MenuItem Header="_About LabelAxis" Command="{Binding AboutCommand}" />
               <Separator />
               <MenuItem Header="E_xit" Command="{Binding ExitCommand}" />
             </MenuItem>

@@ -63,7 +63,7 @@ public sealed partial class MainViewModel
             _session.SelectPage(document.Project.Pages[0].Id);
 
             int shapes = layout.Pages.Sum(p => p.Shapes.Count);
-            StatusText = $"Opened {layout.Pages.Count} page(s) with {shapes} item(s) from {Path.GetFileName(path)}. Save it as a Label Maker project to keep it.";
+            StatusText = $"Opened {layout.Pages.Count} page(s) with {shapes} item(s) from {Path.GetFileName(path)}. Save it as a LabelAxis project to keep it.";
             if (layout.Notes.Count > 0)
             {
                 _shell.ShowTextReport("Publisher import notes",

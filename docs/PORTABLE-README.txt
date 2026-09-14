@@ -1,10 +1,10 @@
-Label Maker 1.0 — portable build
+LabelAxis 1.0 — portable build
 ================================
 
 Nothing to install. Unzip this folder anywhere you like — a hard disk, a network
 share, a USB stick — and run:
 
-    LabelMaker.exe
+    LabelAxis.exe
 
 There is no runtime to download either: .NET is bundled inside the folder, so
 the app runs on a Windows 10 or 11 (64-bit) PC that has never seen .NET.
@@ -12,28 +12,28 @@ the app runs on a Windows 10 or 11 (64-bit) PC that has never seen .NET.
 
 Where your settings go
 ----------------------
-While "portable.txt" sits next to LabelMaker.exe, everything the app remembers
+While "portable.txt" sits next to LabelAxis.exe, everything the app remembers
 is kept in the "Data" folder beside it:
 
-    Data\LabelMaker\settings.json      preferences (theme, units, snapping…)
-    Data\LabelMaker\templates\         label sheets you import yourself
-    Data\LabelMaker\calibration.json   per-printer offsets from the wizard
-    Data\LabelMaker\recovery\          auto-save snapshots
+    Data\LabelAxis\settings.json      preferences (theme, units, snapping…)
+    Data\LabelAxis\templates\         label sheets you import yourself
+    Data\LabelAxis\calibration.json   per-printer offsets from the wizard
+    Data\LabelAxis\recovery\          auto-save snapshots
 
 Copy the whole folder to another PC and your setup travels with it. Nothing is
 written to the registry, and nothing is left behind on the machine.
 
 Delete "portable.txt" if you would rather it behaved like an installed app and
-used %APPDATA%\LabelMaker instead. The About box (File ▸ About) always tells you
+used %APPDATA%\LabelAxis instead. The About box (File ▸ About) always tells you
 which of the two is in use.
 
 
 What is in the box
 ------------------
-LabelMaker.exe      the designer
+LabelAxis.exe      the designer
 templates           37 Formtec sheets plus Avery L7160 are built in; add more
                     with File ▸ Label manager ▸ Import JSON/CSV
-labelmaker.exe      (in the separate cli package) command-line export,
+labelaxis.exe      (in the separate cli package) command-line export,
                     preflight, barcode and template tools
 
 

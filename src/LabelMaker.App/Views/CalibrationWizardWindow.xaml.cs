@@ -69,7 +69,7 @@ public partial class CalibrationWizardWindow : Window
             dc.DrawLine(pen, new Point(t, t - (10 * K)), new Point(t, t + (10 * K)));
             dc.DrawEllipse(null, pen, new Point(t, t), 3 * K, 3 * K);
 
-            var label = new FormattedText("Label Maker calibration — crosshair centre = 20.0 mm from sheet top-left",
+            var label = new FormattedText("LabelAxis calibration — crosshair centre = 20.0 mm from sheet top-left",
                 CultureInfo.InvariantCulture, FlowDirection.LeftToRight,
                 new Typeface("Consolas"), 3.5 * K, Brushes.Black, 1.0);
             dc.DrawText(label, new Point(20 * K, 40 * K));
@@ -83,7 +83,7 @@ public partial class CalibrationWizardWindow : Window
             }
         }
 
-        dlg.PrintVisual(visual, "Label Maker calibration target");
+        dlg.PrintVisual(visual, "LabelAxis calibration target");
         StatusText.Text = "Target printed. Measure the crosshair centre from the sheet's top-left and enter the difference below.";
     }
 

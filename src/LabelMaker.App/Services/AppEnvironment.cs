@@ -11,7 +11,7 @@ public sealed class AppEnvironment
 {
     /// <summary>
     /// Marker file that switches the app to portable mode. Dropping it next to
-    /// LabelMaker.exe keeps settings, user templates, calibration and recovery
+    /// LabelAxis.exe keeps settings, user templates, calibration and recovery
     /// snapshots in a "Data" folder beside the executable instead of %APPDATA%,
     /// so the whole thing can live on a USB stick and leave no trace behind.
     /// </summary>

@@ -40,7 +40,7 @@ public partial class App : Application
             MessageBoxResult result = MessageBox.Show(
                 window,
                 $"An unsaved project was recovered:\n\n\"{info.Title}\"\nlast auto-saved {info.SavedUtc.ToLocalTime():g}\n\nRestore it?",
-                "Label Maker — Recovery",
+                "LabelAxis — Recovery",
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Question);
 
@@ -99,7 +99,7 @@ public partial class App : Application
 
         MessageBox.Show(
             "An unexpected error occurred and was logged. Your work-in-progress auto-save is intact.\n\n" + e.Exception.Message,
-            "Label Maker", MessageBoxButton.OK, MessageBoxImage.Error);
+            "LabelAxis", MessageBoxButton.OK, MessageBoxImage.Error);
         e.Handled = true;
     }
 }

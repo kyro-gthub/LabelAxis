@@ -241,7 +241,7 @@ public partial class PrintHistoryWindow : Window
         }
         catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or InvalidOperationException)
         {
-            MessageBox.Show(this, "The PDF could not be opened:\n\n" + ex.Message, "Label Maker",
+            MessageBox.Show(this, "The PDF could not be opened:\n\n" + ex.Message, "LabelAxis",
                 MessageBoxButton.OK, MessageBoxImage.Warning);
         }
     }
@@ -267,7 +267,7 @@ public partial class PrintHistoryWindow : Window
             return;
         }
 
-        if (MessageBox.Show(this, "Remove every job from the print history? This cannot be undone.", "Label Maker",
+        if (MessageBox.Show(this, "Remove every job from the print history? This cannot be undone.", "LabelAxis",
                 MessageBoxButton.OKCancel, MessageBoxImage.Question) == MessageBoxResult.OK)
         {
             _store.Clear();

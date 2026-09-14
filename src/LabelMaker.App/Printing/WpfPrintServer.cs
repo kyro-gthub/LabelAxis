@@ -270,7 +270,7 @@ public sealed class WpfPrintServer
 
         settings.PrinterName = queue.FullName;
         (DocumentPaginator paginator, PrintJobSummary summary) = BuildJob(project, data, settings, queue.FullName);
-        return new PrintJobRequest(queue, ticket, paginator, $"Label Maker — {project.Metadata.Title}", Math.Max(1, settings.Copies), summary);
+        return new PrintJobRequest(queue, ticket, paginator, $"LabelAxis — {project.Metadata.Title}", Math.Max(1, settings.Copies), summary);
     }
 
     /// <summary>The paginator for whatever the settings print (records, sheet fill or standalone pages), with its summary.</summary>
