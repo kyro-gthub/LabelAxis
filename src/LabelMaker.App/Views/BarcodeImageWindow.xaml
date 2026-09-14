@@ -28,8 +28,14 @@
       <CheckBox x:Name="TransparentBox" Content="Transparent background" />
     </StackPanel>
 
-    <Border Grid.Row="5" Grid.ColumnSpan="2" Margin="0,8" BorderBrush="#CCC" BorderThickness="1" Background="White">
-      <TextBlock x:Name="StatusText" Margin="8" TextWrapping="Wrap" Foreground="#555" />
+    <!-- live preview of the symbol as it will be saved -->
+    <Border Grid.Row="5" Grid.ColumnSpan="2" Margin="0,8" BorderBrush="{DynamicResource Br.Border}" BorderThickness="1"
+            CornerRadius="8" Background="{DynamicResource CanvasBackground}">
+      <DockPanel Margin="10">
+        <TextBlock x:Name="StatusText" DockPanel.Dock="Bottom" Margin="0,8,0,0" TextWrapping="Wrap"
+                   Foreground="{DynamicResource Br.TextMuted}" />
+        <Image x:Name="PreviewImage" Stretch="Uniform" StretchDirection="DownOnly" RenderOptions.BitmapScalingMode="NearestNeighbor" />
+      </DockPanel>
     </Border>
 
     <StackPanel Grid.Row="6" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right">

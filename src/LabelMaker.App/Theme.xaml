@@ -470,12 +470,18 @@
               <DropShadowEffect BlurRadius="18" ShadowDepth="2" Direction="270" Opacity="0.08" Color="#3B2E9C" />
             </Border.Effect>
             <DockPanel>
-              <TextBlock DockPanel.Dock="Top" Margin="14,10,14,2" FontWeight="SemiBold" FontSize="12"
+              <TextBlock x:Name="header" DockPanel.Dock="Top" Margin="14,10,14,2" FontWeight="SemiBold" FontSize="12"
                          Foreground="{DynamicResource Br.TextMuted}"
                          Text="{Binding Header, RelativeSource={RelativeSource TemplatedParent}}" />
               <ContentPresenter Margin="{TemplateBinding Padding}" />
             </DockPanel>
           </Border>
+          <!-- A card without a header must not keep an empty header row above its content. -->
+          <ControlTemplate.Triggers>
+            <Trigger Property="Header" Value="{x:Null}">
+              <Setter TargetName="header" Property="Visibility" Value="Collapsed" />
+            </Trigger>
+          </ControlTemplate.Triggers>
         </ControlTemplate>
       </Setter.Value>
     </Setter>
@@ -759,8 +765,39 @@
     </Setter>
   </Style>
 
-  <Style TargetType="ListView" BasedOn="{StaticResource {x:Type ListBox}}" />
-  <Style TargetType="ListViewItem" BasedOn="{StaticResource {x:Type ListBoxItem}}" />
+  <Style TargetType="ListView" BasedOn="{StaticResource {x:Type ListBox}}">
+    <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto" />
+  </Style>
+
+  <!-- A ListView with a GridView lays its row out in columns; a plain ContentPresenter
+       would show the whole row object as text. -->
+  <Style TargetType="ListViewItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="ListViewItem">
+          <Border x:Name="bd" CornerRadius="6" Padding="{TemplateBinding Padding}" Background="Transparent">
+            <Grid>
+              <GridViewRowPresenter x:Name="columns" Columns="{TemplateBinding GridView.ColumnCollection}"
+                                    Content="{TemplateBinding Content}" VerticalAlignment="Center" />
+              <ContentPresenter x:Name="plain" Visibility="Collapsed" />
+            </Grid>
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="GridView.ColumnCollection" Value="{x:Null}">
+              <Setter TargetName="columns" Property="Visibility" Value="Collapsed" />
+              <Setter TargetName="plain" Property="Visibility" Value="Visible" />
+            </Trigger>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="bd" Property="Background" Value="{DynamicResource Br.Hover}" />
+            </Trigger>
+            <Trigger Property="IsSelected" Value="True">
+              <Setter TargetName="bd" Property="Background" Value="{DynamicResource Br.AccentSoft}" />
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
 
   <Style TargetType="GridViewColumnHeader">
     <Setter Property="Foreground" Value="{DynamicResource Br.TextMuted}" />

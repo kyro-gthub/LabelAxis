@@ -326,7 +326,7 @@ public sealed partial class MainViewModel : ObservableObject
                 return "No template";
             }
 
-            return $"{t.Brand} {t.ProductCode} ({t.Grid.LabelWidthMm:0.#} × {t.Grid.LabelHeightMm:0.#} mm)";
+            return $"{t.Brand} {t.ProductCode} ({t.Grid.LabelWidthMm:0.##} × {t.Grid.LabelHeightMm:0.##} mm)";
         }
     }
 
@@ -465,7 +465,7 @@ public sealed partial class MainViewModel : ObservableObject
             }
 
             return $"{t.Brand} {t.ProductCode} — {t.Name}\n{t.Grid.Columns}×{t.Grid.Rows} · " +
-                   $"label {t.Grid.LabelWidthMm:0.#}×{t.Grid.LabelHeightMm:0.#} mm · {t.EffectivePage.Name}";
+                   $"label {t.Grid.LabelWidthMm:0.##}×{t.Grid.LabelHeightMm:0.##} mm · {t.EffectivePage.Name}";
         }
     }
 
@@ -1804,9 +1804,8 @@ public sealed partial class MainViewModel : ObservableObject
         PreflightReport report = new PreflightChecker(env).Check(_session.Project, _session.Data);
         string body = report.IsClean
             ? "No problems found."
-            : string.Join('\n', report.Issues.OrderBy(i => i.Severity)
-                .Select(i => $"[{(i.Severity == PreflightSeverity.Error ? "ERROR" : "warn")}] {i.Category}: {i.Message}"))
-              + $"\n\n{report.Errors.Count()} error(s), {report.Warnings.Count()} warning(s).";
+            : string.Join("\n\n", report.SummaryLines())
+              + $"\n\n{report.Errors.Count()} error(s), {report.Warnings.Count()} warning(s) in total.";
         _shell.ShowTextReport("Preflight check", body);
     }
 

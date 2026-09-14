@@ -111,4 +111,23 @@ public sealed class PreflightTests
         PreflightReport report = new PreflightChecker().Check(project, data);
         report.Warnings.Should().Contain(i => i.Category == PreflightCategory.EmptyRequiredField);
     }
+
+    [Fact]
+    public void Summary_lists_a_problem_once_with_the_records_it_affects()
+    {
+        ProjectModel project = NewProject();
+        project.MasterLabel.Objects.Add(new BarcodeObject
+        {
+            Bounds = new RectMm(2, 2, 30, 12),
+            Spec = new BarcodeSpec { Symbology = BarcodeSymbology.Ean13, Data = "{Code}" },
+        });
+
+        string[] codes = { "bad", "bad", "bad", "5901234123457", "bad", "5901234123457", "bad", "bad" };
+        DataSet data = DataSet.FromRows(new[] { "Code" }, codes.Select(c => new[] { c }));
+
+        IReadOnlyList<string> lines = new PreflightChecker().Check(project, data).SummaryLines();
+
+        lines.Where(l => l.Contains("digits only", StringComparison.Ordinal)).Should().ContainSingle()
+            .Which.Should().StartWith("Error:").And.EndWith("records 1–3, 5, 7–8.");
+    }
 }

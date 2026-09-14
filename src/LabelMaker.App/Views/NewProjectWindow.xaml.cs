@@ -3,6 +3,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using LabelMaker.Core.Formtec;
+using LabelMaker.Core.Printing;
 using LabelMaker.Core.Units;
 
 namespace LabelMaker.App.Views;
@@ -17,10 +18,10 @@ public partial class NewProjectWindow : Window
         _store = store;
         SearchBox.TextChanged += (_, _) => Refresh();
         Refresh();
-        if (TemplateList.Items.Count > 0)
-        {
-            TemplateList.SelectedIndex = 0;
-        }
+
+        // The first preview is drawn before layout has sized the canvas; draw it again at its real size.
+        PreviewCanvas.SizeChanged += (_, _) => { if (TemplateList.SelectedItem is Row row) { DrawSheetPreview(row.Template); } };
+        Loaded += (_, _) => SearchBox.Focus();
     }
 
     public LabelTemplate? SelectedTemplate { get; private set; }
@@ -28,34 +29,57 @@ public partial class NewProjectWindow : Window
     private void Refresh()
     {
         var query = new TemplateQuery { Text = SearchBox.Text };
-        TemplateList.ItemsSource = _store.Search(query).Select(t => new Row(t)).ToList();
+        List<Row> rows = _store.Search(query).Select(t => new Row(t)).ToList();
+        TemplateList.ItemsSource = rows;
+
+        bool empty = rows.Count == 0;
+        NoMatches.Visibility = empty ? Visibility.Visible : Visibility.Collapsed;
+        NoMatches.Text = empty ? $"No label sheets match “{SearchBox.Text}”." : string.Empty;
+        if (empty)
+        {
+            ShowPreview(null);
+        }
+        else
+        {
+            TemplateList.SelectedIndex = 0;
+        }
     }
 
-    private void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+    private void OnSelectionChanged(object sender, SelectionChangedEventArgs e) =>
+        ShowPreview((TemplateList.SelectedItem as Row)?.Template);
+
+    private void ShowPreview(LabelTemplate? t)
     {
-        if (TemplateList.SelectedItem is not Row row)
+        if (t is null)
         {
+            PreviewTitle.Text = string.Empty;
+            PreviewDetail.Text = string.Empty;
+            PreviewCanvas.Children.Clear();
             return;
         }
 
-        LabelTemplate t = row.Template;
-        PreviewTitle.Text = $"{t.Brand} {t.ProductCode} — {t.Name}";
+        PreviewTitle.Text = Row.Title(t);
+        SheetMeasurements m = SheetMeasurements.From(t);
+        string Mm(double v) => SheetMeasurements.Mm(v);
         PreviewDetail.Text =
-            $"Sheet {t.EffectivePage.Name} ({t.EffectivePage.WidthMm:0.#}×{t.EffectivePage.HeightMm:0.#} mm)\n" +
+            $"Sheet {t.EffectivePage.Name} ({Mm(t.EffectivePage.WidthMm)} × {Mm(t.EffectivePage.HeightMm)} mm)\n" +
             $"{t.Grid.Columns} columns × {t.Grid.Rows} rows = {t.Grid.Count} labels\n" +
-            $"Label {t.Grid.LabelWidthMm:0.##}×{t.Grid.LabelHeightMm:0.##} mm, gaps {t.Grid.HGapMm:0.#}/{t.Grid.VGapMm:0.#} mm\n" +
-            $"Margins L{t.Grid.MarginLeftMm:0.#} T{t.Grid.MarginTopMm:0.#} mm · {t.Grid.LabelShape}";
+            $"Label {Mm(m.LabelWidthMm)} × {Mm(m.LabelHeightMm)} mm · {t.Grid.LabelShape}\n" +
+            $"Margins top {Mm(m.MarginTopMm)}, left {Mm(m.MarginLeftMm)}, right {Mm(m.MarginRightMm)}, bottom {Mm(m.MarginBottomMm)} mm\n" +
+            (m.HGapMm > 0.005 || m.VGapMm > 0.005
+                ? $"Gaps {Mm(m.HGapMm)} across, {Mm(m.VGapMm)} down"
+                : "No gaps between labels");
         DrawSheetPreview(t);
     }
 
     private void DrawSheetPreview(LabelTemplate t)
     {
         PreviewCanvas.Children.Clear();
-        PreviewCanvas.UpdateLayout();
         double cw = PreviewCanvas.ActualWidth <= 0 ? 220 : PreviewCanvas.ActualWidth;
         double ch = PreviewCanvas.ActualHeight <= 0 ? 300 : PreviewCanvas.ActualHeight;
         PageSize page = t.EffectivePage;
-        double scale = Math.Min((cw - 8) / page.WidthMm, (ch - 8) / page.HeightMm);
+        double scale = Math.Max(0.01, Math.Min((cw - 8) / page.WidthMm, (ch - 8) / page.HeightMm));
+        double left = (cw - (page.WidthMm * scale)) / 2;
 
         var sheet = new Rectangle
         {
@@ -65,10 +89,14 @@ public partial class NewProjectWindow : Window
             Fill = Brushes.White,
             StrokeThickness = 1,
         };
-        Canvas.SetLeft(sheet, 4);
+        Canvas.SetLeft(sheet, left);
         Canvas.SetTop(sheet, 4);
         PreviewCanvas.Children.Add(sheet);
 
+        var stroke = new SolidColorBrush(Color.FromRgb(0, 120, 215));
+        var fill = new SolidColorBrush(Color.FromArgb(30, 0, 120, 215));
+        stroke.Freeze();
+        fill.Freeze();
         foreach (LabelSlot slot in TemplateGeometry.AllSlots(t))
         {
             Shape shape = t.Grid.LabelShape == LabelShape.Ellipse
@@ -76,10 +104,10 @@ public partial class NewProjectWindow : Window
                 : new Rectangle { RadiusX = t.Grid.CornerRadiusMm * scale, RadiusY = t.Grid.CornerRadiusMm * scale };
             shape.Width = slot.RectMm.Width * scale;
             shape.Height = slot.RectMm.Height * scale;
-            shape.Stroke = new SolidColorBrush(Color.FromRgb(0, 120, 215));
+            shape.Stroke = stroke;
             shape.StrokeThickness = 0.8;
-            shape.Fill = new SolidColorBrush(Color.FromArgb(30, 0, 120, 215));
-            Canvas.SetLeft(shape, 4 + (slot.RectMm.X * scale));
+            shape.Fill = fill;
+            Canvas.SetLeft(shape, left + (slot.RectMm.X * scale));
             Canvas.SetTop(shape, 4 + (slot.RectMm.Y * scale));
             PreviewCanvas.Children.Add(shape);
         }
@@ -87,6 +115,13 @@ public partial class NewProjectWindow : Window
 
     private void OnCreate(object sender, RoutedEventArgs e)
     {
+        // A double-click on the header or the scrollbar is not a choice of sheet.
+        if (e is System.Windows.Input.MouseButtonEventArgs mouse &&
+            ItemsControl.ContainerFromElement(TemplateList, mouse.OriginalSource as DependencyObject) is null)
+        {
+            return;
+        }
+
         if (TemplateList.SelectedItem is Row row)
         {
             SelectedTemplate = row.Template;
@@ -94,12 +129,45 @@ public partial class NewProjectWindow : Window
         }
     }
 
-    private sealed record Row(LabelTemplate Template)
+    /// <summary>One row of the sheet list; public so WPF bindings can read it.</summary>
+    public sealed class Row(LabelTemplate template)
     {
+        public LabelTemplate Template { get; } = template;
+
         public string ProductCode => Template.ProductCode;
+
         public string Brand => Template.Brand;
-        public string Name => Template.Name;
-        public string GridText => $"{Template.Grid.Columns}×{Template.Grid.Rows}";
-        public string LabelText => $"{Template.Grid.LabelWidthMm:0.#}×{Template.Grid.LabelHeightMm:0.#}";
+
+        /// <summary>The name without the brand and code that the other columns already show.</summary>
+        public string Name => Describe(Template);
+
+        public string GridText => $"{Template.Grid.Columns} × {Template.Grid.Rows}";
+
+        public string LabelText => $"{SheetMeasurements.Mm(Template.Grid.LabelWidthMm)} × {SheetMeasurements.Mm(Template.Grid.LabelHeightMm)}";
+
+        /// <summary>"Formtec GS-1065 — Name", without repeating the code when the name already is it.</summary>
+        public static string Title(LabelTemplate t)
+        {
+            string code = $"{t.Brand} {t.ProductCode}".Trim();
+            string rest = Describe(t);
+            return rest.Length == 0 ? code : $"{code} — {rest}";
+        }
+
+        private static string Describe(LabelTemplate t)
+        {
+            string name = t.Name.Trim();
+            foreach (string prefix in new[] { $"{t.Brand} {t.ProductCode}".Trim(), t.ProductCode })
+            {
+                if (prefix.Length > 0 && name.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                {
+                    name = name[prefix.Length..].TrimStart(' ', '—', '-', '–', ':', '·', ',');
+                    break;
+                }
+            }
+
+            return name;
+        }
+
+        public override string ToString() => Title(Template);
     }
 }

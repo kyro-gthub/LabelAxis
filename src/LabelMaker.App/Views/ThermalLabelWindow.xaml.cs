@@ -26,7 +26,10 @@ public partial class ThermalLabelWindow : Window
     /// <summary>Whether to keep the roll in the user's templates.</summary>
     public bool SaveAsTemplate => SaveTemplateBox.IsChecked == true;
 
-    private sealed record Preset(string Title, string Hint, double Width, double Height, int Across = 1, double Gap = 3, MediaSensing Sensing = MediaSensing.Gap);
+    private sealed record Preset(string Title, string Hint, double Width, double Height, int Across = 1, double Gap = 3, MediaSensing Sensing = MediaSensing.Gap)
+    {
+        public override string ToString() => Title;    // screen readers and type-to-search
+    }
 
     private static readonly Preset[] Presets =
     {
@@ -169,7 +172,7 @@ public partial class ThermalLabelWindow : Window
             y += Math.Max(8, rowPitch * scale);
         }
 
-        Summary.Text = $"Roll {roll.EffectivePage.WidthMm:0.#} mm wide. Each printed row is {roll.Grid.LabelHeightMm:0.#} mm long" +
+        Summary.Text = $"Roll {roll.EffectivePage.WidthMm:0.##} mm wide. Each printed row is {roll.Grid.LabelHeightMm:0.##} mm long" +
                        (gap > 0 ? $" with a {gap:0.#} mm gap." : ".") +
                        " Set the printer's resolution, darkness and connection when you print.";
     }

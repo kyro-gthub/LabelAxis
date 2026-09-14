@@ -148,7 +148,7 @@ public partial class WelcomeWindow : Window
         {
             Template = template;
             Code = string.IsNullOrWhiteSpace(template.ProductCode) ? template.Brand : template.ProductCode;
-            Size = $"{template.Grid.LabelWidthMm:0.#} × {template.Grid.LabelHeightMm:0.#} mm · {template.Grid.Count}-up";
+            Size = $"{template.Grid.LabelWidthMm:0.##} × {template.Grid.LabelHeightMm:0.##} mm · {template.Grid.Count}-up";
             Tooltip = template.Name;
             Preview = DrawSheet(template, 64, 88);
         }
