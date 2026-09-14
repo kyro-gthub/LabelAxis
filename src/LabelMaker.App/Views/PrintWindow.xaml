@@ -17,7 +17,8 @@
         </Border>
         <StackPanel VerticalAlignment="Center">
           <TextBlock Text="Print" FontFamily="{StaticResource Font.UiSemiBold}" FontSize="15" />
-          <TextBlock x:Name="HeaderSubtitle" FontSize="12" Foreground="{DynamicResource Br.TextMuted}" Margin="0,2,0,0" />
+          <TextBlock x:Name="HeaderSubtitle" FontSize="12" Foreground="{DynamicResource Br.TextMuted}" Margin="0,2,0,0"
+                     TextWrapping="Wrap" MaxWidth="680" HorizontalAlignment="Left" />
         </StackPanel>
       </DockPanel>
     </Border>

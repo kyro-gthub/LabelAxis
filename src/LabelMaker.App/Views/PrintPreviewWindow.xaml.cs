@@ -26,6 +26,7 @@ public partial class PrintPreviewWindow : Window
     private readonly IShellServices _shell;
 
     private DocumentPaginator? _paginator;
+    private SheetMeasurements? _measurements;
     private int _count;
     private int _index;
     private double _zoom = 1.0;
@@ -105,16 +106,19 @@ public partial class PrintPreviewWindow : Window
             _pageOrder.Clear();
             _count = _paginator.PageCount;
 
+            // Measured before the page is shown: ShowPage draws the overlay from them.
+            LabelTemplate? t = _session.Project.Template;
+            _measurements = t is null ? null : SheetMeasurements.From(t, _printServer.MapperFor(printer, settings, t.EffectivePage));
+
             _index = Math.Clamp(_index, 0, Math.Max(0, _count - 1));
             BuildThumbnails();
             ShowPage();
 
-            LabelTemplate? t = _session.Project.Template;
-            LeftStatus.Text = t is null
+            LeftStatus.Text = t is null || _measurements is null
                 ? "No sheet template selected."
-                : $"{t.Brand} {t.ProductCode} · {t.Grid.Columns} × {t.Grid.Rows} per sheet · " +
-                  $"{t.Grid.LabelWidthMm:0.#} × {t.Grid.LabelHeightMm:0.#} mm on {t.EffectivePage.Name}";
-
+                : $"{t.Brand} {t.ProductCode} · {_measurements.Describe()} · {t.EffectivePage.Name}" +
+                  (_printServer.IsCalibrated(printer) || Math.Abs(settings.ScalePercent - 100) > 0.01 ? " (as printed, with calibration and scale)" : string.Empty);
+            LeftStatus.ToolTip = LeftStatus.Text;
             RightStatus.Text = $"{printer ?? "No printer"} · {DescribeContent(settings)} · {settings.ScalePercent:0.#}% scale";
         }
         catch (Exception ex)
@@ -124,6 +128,7 @@ public partial class PrintPreviewWindow : Window
             _pageOrder.Clear();
             Thumbs.ItemsSource = null;
             PageHost.Children.Clear();
+            MeasureLayer.Children.Clear();
             LeftStatus.Text = "Preview unavailable";
             RightStatus.Text = ex.Message;
             PageText.Text = "— / —";
@@ -173,14 +178,28 @@ public partial class PrintPreviewWindow : Window
 
         public double ThumbHeight { get; }
 
-        public Brush Preview => _preview ??= new VisualBrush(_page(Index).Visual) { Stretch = Stretch.Uniform };
+        public Brush Preview => _preview ??= SheetBrush(_page(Index));
     }
+
+    /// <summary>
+    /// Paints a whole sheet. The viewbox is the paper, not the visual's content bounds
+    /// (VisualBrush's default), which would stretch a part-filled sheet over the page and
+    /// hide its real margins.
+    /// </summary>
+    internal static VisualBrush SheetBrush(DocumentPage page) => new(page.Visual)
+    {
+        Stretch = Stretch.Fill,
+        ViewboxUnits = BrushMappingMode.Absolute,
+        Viewbox = new Rect(page.Size),
+    };
+
     private void ShowPage()
     {
         PageHost.Children.Clear();
         if (_count == 0)
         {
             PageText.Text = "— / —";
+            MeasureLayer.Children.Clear();
             PageHost.Children.Add(new TextBlock
             {
                 Text = "Nothing to print with the current settings.\nCheck “What to print” in Print settings.",
@@ -198,7 +217,7 @@ public partial class PrintPreviewWindow : Window
         {
             Width = page.Size.Width,
             Height = page.Size.Height,
-            Fill = new VisualBrush(page.Visual) { Stretch = Stretch.Fill },
+            Fill = SheetBrush(page),
         };
         PageHost.Children.Add(paper);
 
@@ -242,6 +261,247 @@ public partial class PrintPreviewWindow : Window
         return canvas;
     }
 
+    // ---- measurements -----------------------------------------------------
+
+    private static readonly Brush MarginInk = Frozen(0xD9, 0x48, 0x0F);
+    private static readonly Brush LabelInk = Frozen(0x1F, 0x6F, 0xEB);
+    private static readonly Brush GapInk = Frozen(0x7A, 0x3E, 0xD6);
+
+    private static Brush Frozen(byte r, byte g, byte b)
+    {
+        var brush = new SolidColorBrush(Color.FromRgb(r, g, b));
+        brush.Freeze();
+        return brush;
+    }
+
+    private static readonly Brush GuideInk = Frozen(0x8A, 0x94, 0xA3);
+
+    // Room around the sheet for the dimension chains, in screen pixels.
+    private static readonly Thickness MeasureGutter = new(150, 66, 72, 36);
+    private static readonly Thickness PlainGutter = new(10);
+
+    // Distances outward from the paper edge: the two dimension-line lanes, then the tags.
+    private const double Lane0 = 12;
+    private const double Lane1 = 26;
+    private const double TagEdge = 34;
+
+    private bool MeasurementsShown => ShowMeasurements.IsChecked == true && _measurements is not null && _count > 0;
+
+    private void OnMeasurementsChanged(object sender, RoutedEventArgs e) => ApplyZoom();
+
+    /// <summary>One dimension: a stretch of the sheet along one axis, in millimetres from the paper edge.</summary>
+    private sealed record Span(double StartMm, double EndMm, string Text, Brush Ink, double Lane);
+
+    /// <summary>
+    /// Dimension chains in the gutter around the sheet, the way a technical drawing is
+    /// dimensioned: across the top the left margin, label width, gap, pitch and right
+    /// margin; down the left the top margin, label height, gap, pitch and bottom margin.
+    /// Dashed guides run to the label edges being measured, the first label is outlined,
+    /// and tags slide apart so none overlap at any zoom. Preview only, never printed.
+    /// </summary>
+    private void DrawMeasurements()
+    {
+        MeasureLayer.Children.Clear();
+        if (!MeasurementsShown)
+        {
+            return;
+        }
+
+        SheetMeasurements m = _measurements!;
+        string Mm(double v) => SheetMeasurements.Mm(v) + " mm";
+        RectMm first = m.First;
+        RectMm last = m.Last;
+
+        // Which labels are being measured.
+        Outline(first, LabelInk, 0.10);
+        if (m.SecondInRow is { } r)
+        {
+            Outline(r, GapInk, 0.05);
+        }
+
+        if (m.SecondInColumn is { } b)
+        {
+            Outline(b, GapInk, 0.05);
+        }
+
+        var across = new List<Span>
+        {
+            new(0, first.X, "left " + Mm(m.MarginLeftMm), MarginInk, Lane0),
+            new(first.X, first.Right, "label " + Mm(m.LabelWidthMm), LabelInk, Lane0),
+        };
+        if (m.SecondInRow is { } right)
+        {
+            across.Add(m.HGapMm > 0.005
+                ? new Span(first.Right, right.X, "gap " + Mm(m.HGapMm), GapInk, Lane0)
+                : new Span(first.Right, first.Right, "no gap", GapInk, Lane0));
+            if (m.HGapMm > 0.005)
+            {
+                across.Add(new Span(first.X, right.X, "pitch " + Mm(m.HPitchMm), GapInk, Lane1));
+            }
+        }
+
+        across.Add(new Span(last.Right, m.PageWidthMm, "right " + Mm(m.MarginRightMm), MarginInk, Lane0));
+
+        var down = new List<Span>
+        {
+            new(0, first.Y, "top " + Mm(m.MarginTopMm), MarginInk, Lane0),
+            new(first.Y, first.Bottom, "label " + Mm(m.LabelHeightMm), LabelInk, Lane0),
+        };
+        if (m.SecondInColumn is { } below)
+        {
+            down.Add(m.VGapMm > 0.005
+                ? new Span(first.Bottom, below.Y, "gap " + Mm(m.VGapMm), GapInk, Lane0)
+                : new Span(first.Bottom, first.Bottom, "no gap", GapInk, Lane0));
+            if (m.VGapMm > 0.005)
+            {
+                down.Add(new Span(first.Y, below.Y, "pitch " + Mm(m.VPitchMm), GapInk, Lane1));
+            }
+        }
+
+        down.Add(new Span(last.Bottom, m.PageHeightMm, "bottom " + Mm(m.MarginBottomMm), MarginInk, Lane0));
+
+        Chain(across, horizontal: true, guideToMm: first.Y, pageExtentMm: m.PageWidthMm);
+        Chain(down, horizontal: false, guideToMm: first.X, pageExtentMm: m.PageHeightMm);
+    }
+
+    /// <summary>Millimetres on the sheet to screen pixels from its top-left corner.</summary>
+    private double Px(double mm) => UnitConverter.MmToDiu(mm) * _zoom;
+
+    private void Outline(RectMm rect, Brush ink, double fillOpacity)
+    {
+        var fill = ink.CloneCurrentValue();
+        fill.Opacity = fillOpacity;
+        var box = new Rectangle
+        {
+            Width = Math.Max(1, Px(rect.Width)),
+            Height = Math.Max(1, Px(rect.Height)),
+            Stroke = ink,
+            StrokeThickness = 1.2,
+            Fill = fill,
+        };
+        Canvas.SetLeft(box, Px(rect.X));
+        Canvas.SetTop(box, Px(rect.Y));
+        MeasureLayer.Children.Add(box);
+    }
+
+    /// <summary>
+    /// One chain of dimensions along the top edge (<paramref name="horizontal"/>) or down the
+    /// left edge. Coordinates are worked in (along, out): along the edge, and outward from it.
+    /// </summary>
+    private void Chain(List<Span> spans, bool horizontal, double guideToMm, double pageExtentMm)
+    {
+        Point At(double along, double outward) => horizontal ? new Point(along, -outward) : new Point(-outward, along);
+
+        // Dashed guides from the lanes to the label edges being measured.
+        foreach (double mm in spans.SelectMany(sp => new[] { sp.StartMm, sp.EndMm }).Distinct())
+        {
+            if (mm > 0.01 && mm < pageExtentMm - 0.01)
+            {
+                double p = Px(mm);
+                MeasureLayer.Children.Add(new Line
+                {
+                    X1 = At(p, Lane1 + 4).X, Y1 = At(p, Lane1 + 4).Y,
+                    X2 = At(p, -Px(guideToMm)).X, Y2 = At(p, -Px(guideToMm)).Y,
+                    Stroke = GuideInk,
+                    StrokeThickness = 0.8,
+                    StrokeDashArray = new DoubleCollection { 3, 3 },
+                });
+            }
+        }
+
+        // Tags in one row above (or one column left of) the lanes, in order along the edge,
+        // each pushed along just far enough to clear the one before it.
+        // Each leader starts where its tag is ordered from — the middle of the line, or near
+        // the far end of an outer-lane line — so leaders run in tag order and never cross.
+        var tags = spans
+            .Select(sp => (Span: sp, Tag: MakeTag(sp.Text, sp.Ink),
+                Mid: sp.Lane > Lane0 ? Math.Max(Px(sp.StartMm), Px(sp.EndMm) - 6) : Px((sp.StartMm + sp.EndMm) / 2)))
+            .OrderBy(t => t.Mid).ThenBy(t => t.Span.Lane)
+            .ToList();
+
+        double previousEnd = double.NegativeInfinity;
+        foreach ((Span span, Border tag, double mid) in tags)
+        {
+            double a = Px(span.StartMm);
+            double b = Px(span.EndMm);
+            DimensionLine(At(a, span.Lane), At(b, span.Lane), span.Ink, horizontal);
+
+            Size size = tag.DesiredSize;
+            double length = horizontal ? size.Width : size.Height;
+            double start = Math.Max(mid - (length / 2), previousEnd + 4);
+            previousEnd = start + length;
+
+            double left = horizontal ? start : -TagEdge - size.Width;
+            double top = horizontal ? -TagEdge - size.Height : start;
+            Canvas.SetLeft(tag, left);
+            Canvas.SetTop(tag, top);
+
+            // Leader from the middle of the dimension line to the tag.
+            Point from = At(mid, span.Lane);
+            Point to = horizontal ? new Point(start + (length / 2), -TagEdge) : new Point(-TagEdge, start + (length / 2));
+            MeasureLayer.Children.Add(new Line { X1 = from.X, Y1 = from.Y, X2 = to.X, Y2 = to.Y, Stroke = span.Ink, StrokeThickness = 0.8, Opacity = 0.7 });
+            MeasureLayer.Children.Add(tag);
+        }
+    }
+
+    /// <summary>A dimension line with end ticks and arrowheads; a zero-length one is a single tick.</summary>
+    private void DimensionLine(Point a, Point b, Brush ink, bool horizontal)
+    {
+        double length = (b - a).Length;
+        var geometry = new StreamGeometry();
+        using (StreamGeometryContext g = geometry.Open())
+        {
+            if (length < 0.5)
+            {
+                // Butted labels: mark the shared edge, square to the chain.
+                Vector tick = horizontal ? new Vector(0, 6) : new Vector(6, 0);
+                g.BeginFigure(a - tick, false, false);
+                g.LineTo(a + tick, true, false);
+            }
+            else
+            {
+                Vector along = (b - a) / length;
+                var across = new Vector(-along.Y, along.X);
+                double head = Math.Min(5, length / 3);
+                g.BeginFigure(a, false, false);
+                g.LineTo(b, true, false);
+                foreach ((Point end, Vector inward) in new[] { (a, along), (b, -along) })
+                {
+                    g.BeginFigure(end - (across * 4), false, false);
+                    g.LineTo(end + (across * 4), true, false);
+                    g.BeginFigure(end + (inward * head) + (across * head * 0.45), true, true);
+                    g.LineTo(end, true, false);
+                    g.LineTo(end + (inward * head) - (across * head * 0.45), true, false);
+                }
+            }
+        }
+
+        geometry.Freeze();
+        MeasureLayer.Children.Add(new Path { Data = geometry, Stroke = ink, Fill = ink, StrokeThickness = 1 });
+    }
+
+    /// <summary>A value tag, measured so the chain can place it.</summary>
+    private Border MakeTag(string text, Brush ink)
+    {
+        var tag = new Border
+        {
+            Background = Brushes.White,
+            BorderBrush = ink,
+            BorderThickness = new Thickness(1),
+            CornerRadius = new CornerRadius(3),
+            Padding = new Thickness(5, 1, 5, 1),
+            Child = new TextBlock
+            {
+                Text = text,
+                FontSize = 11,
+                Foreground = ink,
+                FontFamily = (FontFamily)FindResource("Font.UiSemiBold"),
+            },
+        };
+        tag.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+        return tag;
+    }
+
     // ---- zoom -------------------------------------------------------------
 
     private void ApplyZoom()
@@ -252,16 +512,19 @@ public partial class PrintPreviewWindow : Window
         }
 
         Size size = Page(_index).Size;
+        Thickness gutter = MeasurementsShown ? MeasureGutter : PlainGutter;
+        Sheet.Margin = gutter;
         if (_fitMode)
         {
-            double availableW = Math.Max(50, Scroller.ActualWidth - 90);
-            double availableH = Math.Max(50, Scroller.ActualHeight - 90);
+            double availableW = Math.Max(50, Scroller.ActualWidth - 70 - gutter.Left - gutter.Right);
+            double availableH = Math.Max(50, Scroller.ActualHeight - 70 - gutter.Top - gutter.Bottom);
             _zoom = Math.Min(availableW / size.Width, availableH / size.Height);
             _zoom = Math.Clamp(_zoom, 0.05, 8);
         }
 
         PageHost.LayoutTransform = new ScaleTransform(_zoom, _zoom);
         ZoomText.Text = $"{Math.Round(_zoom * 100)}%";
+        DrawMeasurements();
     }
 
     private void OnZoomIn(object sender, RoutedEventArgs e) => SetZoom(_zoom * 1.2);
@@ -283,17 +546,20 @@ public partial class PrintPreviewWindow : Window
         e.Handled = true;
 
         // Where the pointer sits in un-zoomed content coordinates, before the change.
+        // The sheet starts after the scroller's padding and the gutter around it.
         Point pointer = e.GetPosition(Scroller);
-        double contentX = (Scroller.HorizontalOffset + pointer.X) / _zoom;
-        double contentY = (Scroller.VerticalOffset + pointer.Y) / _zoom;
+        double originX = Scroller.Padding.Left + Sheet.Margin.Left;
+        double originY = Scroller.Padding.Top + Sheet.Margin.Top;
+        double contentX = (Scroller.HorizontalOffset + pointer.X - originX) / _zoom;
+        double contentY = (Scroller.VerticalOffset + pointer.Y - originY) / _zoom;
 
         SetZoom(_zoom * (e.Delta > 0 ? 1.15 : 1 / 1.15));
 
         // Put that same content point back under the pointer. Layout has to run
         // first or the ScrollViewer clamps the offsets against the old extent.
         Scroller.UpdateLayout();
-        Scroller.ScrollToHorizontalOffset((contentX * _zoom) - pointer.X);
-        Scroller.ScrollToVerticalOffset((contentY * _zoom) - pointer.Y);
+        Scroller.ScrollToHorizontalOffset((contentX * _zoom) + originX - pointer.X);
+        Scroller.ScrollToVerticalOffset((contentY * _zoom) + originY - pointer.Y);
     }
 
     private void SetZoom(double value)
