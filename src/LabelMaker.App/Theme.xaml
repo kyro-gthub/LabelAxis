@@ -936,6 +936,46 @@
     </Setter>
   </Style>
 
+  <!-- ============================ ToolTip ============================ -->
+  <!--
+    Tooltips are drawn in the inverse of the theme (dark in light mode, light in dark mode).
+    The default tooltip kept the system's white box while the app-wide TextBlock style made
+    its text the theme's text colour, so in dark mode every tooltip was an empty white box.
+    The text colour is set directly on the tooltip's TextBlock, which the app-wide style cannot override.
+  -->
+  <Style TargetType="ToolTip">
+    <Setter Property="Background" Value="{DynamicResource Br.Text}" />
+    <Setter Property="Foreground" Value="{DynamicResource Br.Bg}" />
+    <Setter Property="FontFamily" Value="{StaticResource Font.Ui}" />
+    <Setter Property="FontSize" Value="12" />
+    <Setter Property="Padding" Value="8,4" />
+    <Setter Property="HasDropShadow" Value="True" />
+    <Setter Property="Placement" Value="Bottom" />
+    <Setter Property="VerticalOffset" Value="4" />
+    <Setter Property="MaxWidth" Value="360" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="ToolTip">
+          <Border Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}" Margin="0,0,6,6">
+            <Border.Effect>
+              <DropShadowEffect BlurRadius="8" ShadowDepth="2" Direction="270" Opacity="0.25" />
+            </Border.Effect>
+            <!-- Text tooltips get their colour as a local value on the TextBlock, the only thing
+                 the app-wide TextBlock style cannot override; other content is shown as it is. -->
+            <ContentPresenter TextElement.Foreground="{TemplateBinding Foreground}">
+              <ContentPresenter.ContentTemplate>
+                <DataTemplate>
+                  <TextBlock Text="{Binding}" TextWrapping="Wrap"
+                             Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=ToolTip}}" />
+                </DataTemplate>
+              </ContentPresenter.ContentTemplate>
+            </ContentPresenter>
+          </Border>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
   <!-- ============================ StatusBar ============================ -->
   <Style TargetType="StatusBar">
     <Setter Property="Background" Value="{DynamicResource Br.Surface2}" />

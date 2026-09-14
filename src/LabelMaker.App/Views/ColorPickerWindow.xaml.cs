@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Effects;
 using System.Windows.Shapes;
 using LabelMaker.App.Controls;
 using LabelMaker.Core.Model;
@@ -13,33 +14,32 @@ using LabelMaker.Core.Model;
 namespace LabelMaker.App.Views;
 
 /// <summary>
-/// Colour chooser in the manner of image editors: a saturation / brightness square with a
-/// hue strip, red / green / blue / opacity and hue / saturation / brightness channels each
-/// with a gradient bar, a typed value and − / + buttons, hex entry, an eyedropper that
-/// reads any pixel on screen, the new colour against the old one, recent colours and the
-/// app palette. Home-grown rather than the WinForms ColorDialog so it follows the app's
+/// Colour chooser: a colour field (saturation across, brightness down), hue and opacity
+/// sliders, a split preview of the new and the original colour, hex entry with an
+/// eyedropper, number fields in RGB or HSB, and the app palette beside the colours used
+/// recently. Home-grown rather than the WinForms ColorDialog so it follows the app's
 /// theme and handles opacity.
 /// </summary>
 public partial class ColorPickerWindow : Window
 {
-    private const double MaxRecent = 12;
+    private const int MaxRecent = 20;
 
     private readonly ColorRgba _old;
     private readonly IList<string>? _recent;
-    private readonly List<ChannelRow> _rows = new();
+    private readonly List<SpinField> _fields = new();
 
-    // The colour is held as HSV so hue survives passing through grey or black.
+    // The colour is held as HSV so the hue survives passing through grey or black.
     private double _h;
     private double _s;
     private double _v;
     private byte _a = 255;
     private bool _updating;
-    private bool _draggingSv;
-    private bool _draggingHue;
+    private bool _draggingField;
 
-    private Rectangle _hueFill = null!;
-    private Ellipse _svMarker = null!;
-    private Border _hueMarker = null!;
+    private Rectangle _hueLayer = null!;
+    private Ellipse _fieldMarker = null!;
+    private PillSlider _hueSlider = null!;
+    private PillSlider _alphaSlider = null!;
 
     public ColorPickerWindow(ColorRgba initial, string title, IList<string>? recent = null)
     {
@@ -48,14 +48,13 @@ public partial class ColorPickerWindow : Window
         _old = initial;
         _recent = recent;
 
-        Brush checker = BuildCheckerBrush();
-        CurrentChecker.Background = checker;
-        OldChecker.Background = checker;
-        OldSwatch.Background = new SolidColorBrush(ToWpf(initial));
+        PreviewChecker.Fill = CheckerBrush(8);
+        OldHalf.Fill = new SolidColorBrush(ToWpf(initial));
 
-        BuildSvArea();
-        BuildHueStrip();
-        BuildChannels();
+        BuildColourField();
+        BuildSliders();
+        ModeRgb.IsChecked = true;
+        BuildFields();
         BuildRecent();
 
         DependencyPropertyDescriptor.FromProperty(ColorPalette.HexProperty, typeof(ColorPalette))
@@ -67,7 +66,6 @@ public partial class ColorPickerWindow : Window
                 }
             });
 
-        Scale100.IsChecked = true;
         SetRgb(initial);
         Result = initial;
         Loaded += (_, _) => Refresh();
@@ -77,7 +75,7 @@ public partial class ColorPickerWindow : Window
 
     private ColorRgba Current => ColorSpace.FromHsv(_h, _s, _v, _a);
 
-    private bool Use255 => Scale255.IsChecked == true;
+    private bool Hsb => ModeHsb.IsChecked == true;
 
     // ---- state ---------------------------------------------------------------
 
@@ -97,7 +95,7 @@ public partial class ColorPickerWindow : Window
 
     private void SetHsv(double h, double s, double v)
     {
-        _h = ((h % 360) + 360) % 360;
+        _h = Math.Clamp(h, 0, 359.999);
         _s = Math.Clamp(s, 0, 1);
         _v = Math.Clamp(v, 0, 1);
         Refresh();
@@ -110,30 +108,29 @@ public partial class ColorPickerWindow : Window
         {
             ColorRgba c = Current;
             Result = c;
-            CurrentSwatch.Background = new SolidColorBrush(ToWpf(c));
-            _hueFill.Fill = new SolidColorBrush(ToWpf(ColorSpace.FromHsv(_h, 1, 1)));
+            NewHalf.Fill = new SolidColorBrush(ToWpf(c));
+            _hueLayer.Fill = new SolidColorBrush(ToWpf(ColorSpace.FromHsv(_h, 1, 1)));
 
             double w = SvArea.ActualWidth, h = SvArea.ActualHeight;
             if (w > 0 && h > 0)
             {
-                Canvas.SetLeft(_svMarker, (_s * w) - 7);
-                Canvas.SetTop(_svMarker, ((1 - _v) * h) - 7);
+                Canvas.SetLeft(_fieldMarker, (_s * w) - 9);
+                Canvas.SetTop(_fieldMarker, ((1 - _v) * h) - 9);
+                _fieldMarker.Fill = new SolidColorBrush(ToWpf(c with { A = 255 }));
             }
 
-            if (HueStrip.ActualHeight > 0)
-            {
-                Canvas.SetTop(_hueMarker, (_h / 360 * HueStrip.ActualHeight) - 3);
-                _hueMarker.Width = HueStrip.ActualWidth;
-            }
+            _hueSlider.Set(_h / 360, ColorSpace.FromHsv(_h, 1, 1));
+            _alphaSlider.Background(new[] { c with { A = 0 }, c with { A = 255 } });
+            _alphaSlider.Set(_a / 255.0, c);
 
-            foreach (ChannelRow row in _rows)
+            foreach (SpinField field in _fields)
             {
-                row.Refresh();
+                field.Refresh();
             }
 
             if (!HexBox.IsKeyboardFocusWithin)
             {
-                HexBox.Text = c.ToHex();
+                HexBox.Text = c.ToHex().TrimStart('#');
             }
 
             Palette.Hex = c.ToHex();
@@ -144,11 +141,11 @@ public partial class ColorPickerWindow : Window
         }
     }
 
-    // ---- saturation / brightness square and hue strip ---------------------------
+    // ---- colour field ------------------------------------------------------------
 
-    private void BuildSvArea()
+    private void BuildColourField()
     {
-        _hueFill = new Rectangle();
+        _hueLayer = new Rectangle();
         var whiteToClear = new Rectangle
         {
             Fill = new LinearGradientBrush(Colors.White, Color.FromArgb(0, 255, 255, 255), new Point(0, 0), new Point(1, 0)),
@@ -157,257 +154,285 @@ public partial class ColorPickerWindow : Window
         {
             Fill = new LinearGradientBrush(Color.FromArgb(0, 0, 0, 0), Colors.Black, new Point(0, 0), new Point(0, 1)),
         };
-        _svMarker = new Ellipse { Width = 14, Height = 14, Stroke = Brushes.White, StrokeThickness = 2, IsHitTestVisible = false };
-        _svMarker.Effect = new System.Windows.Media.Effects.DropShadowEffect { BlurRadius = 3, ShadowDepth = 0, Opacity = 0.9 };
+        _fieldMarker = new Ellipse
+        {
+            Width = 18,
+            Height = 18,
+            Stroke = Brushes.White,
+            StrokeThickness = 3,
+            IsHitTestVisible = false,
+            Effect = new DropShadowEffect { BlurRadius = 6, ShadowDepth = 0, Opacity = 0.6 },
+        };
 
-        foreach (Rectangle layer in new[] { _hueFill, whiteToClear, clearToBlack })
+        Rectangle[] layers = { _hueLayer, whiteToClear, clearToBlack };
+        foreach (Rectangle layer in layers)
         {
             layer.IsHitTestVisible = false;
             SvArea.Children.Add(layer);
         }
 
-        SvArea.Children.Add(_svMarker);
+        SvArea.Children.Add(_fieldMarker);
         SvArea.SizeChanged += (_, _) =>
         {
-            foreach (Rectangle layer in new[] { _hueFill, whiteToClear, clearToBlack })
+            foreach (Rectangle layer in layers)
             {
                 layer.Width = SvArea.ActualWidth;
                 layer.Height = SvArea.ActualHeight;
             }
 
-            Refresh();
-        };
-    }
-
-    private void BuildHueStrip()
-    {
-        var rainbow = new LinearGradientBrush { StartPoint = new Point(0, 0), EndPoint = new Point(0, 1) };
-        for (int i = 0; i <= 6; i++)
-        {
-            rainbow.GradientStops.Add(new GradientStop(ToWpf(ColorSpace.FromHsv(i * 60, 1, 1)), i / 6.0));
-        }
-
-        var fill = new Rectangle { Fill = rainbow, IsHitTestVisible = false };
-        _hueMarker = new Border
-        {
-            Height = 6,
-            BorderBrush = Brushes.White,
-            BorderThickness = new Thickness(1.5),
-            Background = Brushes.Transparent,
-            IsHitTestVisible = false,
-            Effect = new System.Windows.Media.Effects.DropShadowEffect { BlurRadius = 3, ShadowDepth = 0, Opacity = 0.9 },
-        };
-        HueStrip.Children.Add(fill);
-        HueStrip.Children.Add(_hueMarker);
-        HueStrip.SizeChanged += (_, _) =>
-        {
-            fill.Width = HueStrip.ActualWidth;
-            fill.Height = HueStrip.ActualHeight;
+            // Round the field's corners to match its frame.
+            SvArea.Clip = new RectangleGeometry(new Rect(0, 0, SvArea.ActualWidth, SvArea.ActualHeight), 11, 11);
             Refresh();
         };
     }
 
     private void OnSvDown(object sender, MouseButtonEventArgs e)
     {
-        _draggingSv = true;
+        _draggingField = true;
         SvArea.CaptureMouse();
-        PickSv(e.GetPosition(SvArea));
+        PickField(e.GetPosition(SvArea));
     }
 
     private void OnSvMove(object sender, MouseEventArgs e)
     {
-        if (_draggingSv)
+        if (_draggingField)
         {
-            PickSv(e.GetPosition(SvArea));
+            PickField(e.GetPosition(SvArea));
         }
     }
 
-    private void PickSv(Point p) =>
+    private void PickField(Point p) =>
         SetHsv(_h, p.X / Math.Max(1, SvArea.ActualWidth), 1 - (p.Y / Math.Max(1, SvArea.ActualHeight)));
-
-    private void OnHueDown(object sender, MouseButtonEventArgs e)
-    {
-        _draggingHue = true;
-        HueStrip.CaptureMouse();
-        PickHue(e.GetPosition(HueStrip));
-    }
-
-    private void OnHueMove(object sender, MouseEventArgs e)
-    {
-        if (_draggingHue)
-        {
-            PickHue(e.GetPosition(HueStrip));
-        }
-    }
-
-    private void PickHue(Point p) =>
-        SetHsv(Math.Clamp(p.Y / Math.Max(1, HueStrip.ActualHeight), 0, 0.9999) * 360, _s, _v);
 
     private void OnAreaUp(object sender, MouseButtonEventArgs e)
     {
-        _draggingSv = _draggingHue = false;
-        Mouse.Capture(null);
+        _draggingField = false;
+        SvArea.ReleaseMouseCapture();
     }
 
-    // ---- channels ------------------------------------------------------------------
+    // ---- hue and opacity sliders ----------------------------------------------------
 
-    private void BuildChannels()
+    private void BuildSliders()
     {
-        double RgbMax() => Use255 ? 255 : 100;
-        double ToDisplay(byte b) => Use255 ? b : b / 2.55;
-        byte FromDisplay(double d) => (byte)Math.Clamp(Math.Round(Use255 ? d : d * 2.55), 0, 255);
+        _hueSlider = new PillSlider(HueHost, checkered: false, f => SetHsv(f * 359.999, _s, _v));
+        _hueSlider.Background(Enumerable.Range(0, 7).Select(i => ColorSpace.FromHsv(i * 60, 1, 1)).ToArray());
+        _alphaSlider = new PillSlider(AlphaHost, checkered: true, f =>
+        {
+            _a = (byte)Math.Round(Math.Clamp(f, 0, 1) * 255);
+            Refresh();
+        });
+    }
 
+    /// <summary>A rounded gradient track with a round thumb that shows the colour at that point.</summary>
+    private sealed class PillSlider
+    {
+        private readonly Grid _host;
+        private readonly Border _track = new() { CornerRadius = new CornerRadius(8) };
+        private readonly Canvas _layer = new() { ClipToBounds = false };
+        private readonly Ellipse _thumb = new()
+        {
+            Width = 20,
+            Height = 20,
+            Stroke = Brushes.White,
+            StrokeThickness = 3,
+            Effect = new DropShadowEffect { BlurRadius = 5, ShadowDepth = 0, Opacity = 0.55 },
+            IsHitTestVisible = false,
+        };
+
+        private readonly Action<double> _changed;
+        private double _fraction;
+        private bool _dragging;
+
+        public PillSlider(Grid host, bool checkered, Action<double> changed)
+        {
+            _host = host;
+            _changed = changed;
+            var frame = new Border { CornerRadius = new CornerRadius(8), Background = checkered ? CheckerBrush(8) : null, Child = _track };
+            host.Children.Add(frame);
+            host.Children.Add(_layer);
+            _layer.Children.Add(_thumb);
+            host.Background = Brushes.Transparent;
+            host.Cursor = Cursors.Hand;
+            host.MouseLeftButtonDown += (_, e) => { _dragging = true; host.CaptureMouse(); Pick(e.GetPosition(host)); };
+            host.MouseMove += (_, e) => { if (_dragging) { Pick(e.GetPosition(host)); } };
+            host.MouseLeftButtonUp += (_, _) => { _dragging = false; host.ReleaseMouseCapture(); };
+            host.SizeChanged += (_, _) => Place();
+        }
+
+        public void Background(ColorRgba[] stops)
+        {
+            var brush = new LinearGradientBrush { StartPoint = new Point(0, 0.5), EndPoint = new Point(1, 0.5) };
+            for (int i = 0; i < stops.Length; i++)
+            {
+                brush.GradientStops.Add(new GradientStop(ToWpf(stops[i]), i / (double)Math.Max(1, stops.Length - 1)));
+            }
+
+            _track.Background = brush;
+        }
+
+        public void Set(double fraction, ColorRgba colour)
+        {
+            _fraction = Math.Clamp(fraction, 0, 1);
+            _thumb.Fill = new SolidColorBrush(ToWpf(colour with { A = 255 }));
+            Place();
+        }
+
+        private void Place()
+        {
+            // The thumb stays within the track's rounded ends.
+            double usable = Math.Max(0, _host.ActualWidth - 16);
+            Canvas.SetLeft(_thumb, 8 + (_fraction * usable) - 10);
+            Canvas.SetTop(_thumb, (_host.ActualHeight / 2) - 10);
+        }
+
+        private void Pick(Point p) => _changed(Math.Clamp((p.X - 8) / Math.Max(1, _host.ActualWidth - 16), 0, 1));
+    }
+
+    // ---- number fields ------------------------------------------------------------
+
+    private void BuildFields()
+    {
         ColorRgba C() => Current;
 
-        _rows.Add(new ChannelRow(this, "R", "Red", RgbMax, () => ToDisplay(C().R), d => SetRgb(C() with { R = FromDisplay(d) }),
-            () => new[] { C() with { R = 0, A = 255 }, C() with { R = 255, A = 255 } }));
-        _rows.Add(new ChannelRow(this, "G", "Green", RgbMax, () => ToDisplay(C().G), d => SetRgb(C() with { G = FromDisplay(d) }),
-            () => new[] { C() with { G = 0, A = 255 }, C() with { G = 255, A = 255 } }));
-        _rows.Add(new ChannelRow(this, "B", "Blue", RgbMax, () => ToDisplay(C().B), d => SetRgb(C() with { B = FromDisplay(d) }),
-            () => new[] { C() with { B = 0, A = 255 }, C() with { B = 255, A = 255 } }));
-        _rows.Add(new ChannelRow(this, "A", "Opacity", RgbMax, () => ToDisplay(_a), d => { _a = FromDisplay(d); Refresh(); },
-            () => new[] { C() with { A = 0 }, C() with { A = 255 } }, checkered: true) { GapBefore = false });
+        _fields.Add(new SpinField(this, () => Hsb ? "Hue °" : "Red", () => Hsb ? 360 : 255,
+            () => Hsb ? _h : C().R, v => { if (Hsb) { SetHsv(v, _s, _v); } else { SetRgb(C() with { R = (byte)v }); } }));
+        _fields.Add(new SpinField(this, () => Hsb ? "Sat. %" : "Green", () => Hsb ? 100 : 255,
+            () => Hsb ? _s * 100 : C().G, v => { if (Hsb) { SetHsv(_h, v / 100, _v); } else { SetRgb(C() with { G = (byte)v }); } }));
+        _fields.Add(new SpinField(this, () => Hsb ? "Bright. %" : "Blue", () => Hsb ? 100 : 255,
+            () => Hsb ? _v * 100 : C().B, v => { if (Hsb) { SetHsv(_h, _s, v / 100); } else { SetRgb(C() with { B = (byte)v }); } }));
+        _fields.Add(new SpinField(this, () => "Opacity %", () => 100,
+            () => _a / 2.55, v => { _a = (byte)Math.Clamp(Math.Round(v * 2.55), 0, 255); Refresh(); }));
 
-        _rows.Add(new ChannelRow(this, "H", "Hue (degrees)", () => 360, () => _h, d => SetHsv(Math.Clamp(d, 0, 359.99), _s, _v),
-            () => Enumerable.Range(0, 7).Select(i => ColorSpace.FromHsv(i * 60, Math.Max(_s, 0.15), Math.Max(_v, 0.35))).ToArray()) { GapBefore = true });
-        _rows.Add(new ChannelRow(this, "S", "Saturation (%)", () => 100, () => _s * 100, d => SetHsv(_h, d / 100, _v),
-            () => new[] { ColorSpace.FromHsv(_h, 0, _v), ColorSpace.FromHsv(_h, 1, _v) }));
-        _rows.Add(new ChannelRow(this, "V", "Brightness (%)", () => 100, () => _v * 100, d => SetHsv(_h, _s, d / 100),
-            () => new[] { ColorSpace.FromHsv(_h, _s, 0), ColorSpace.FromHsv(_h, _s, 1) }));
-
-        Channels.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(22) });
-        Channels.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-        Channels.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(72) });
-        Channels.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-        for (int i = 0; i < _rows.Count; i++)
+        for (int i = 0; i < _fields.Count; i++)
         {
-            Channels.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-            _rows[i].AddTo(Channels, i);
+            Fields.Children.Add(_fields[i].Build(i == _fields.Count - 1));
         }
     }
 
-    private void OnScaleChanged(object sender, RoutedEventArgs e) => Refresh();
+    private void OnModeChanged(object sender, RoutedEventArgs e) => Refresh();
 
-    /// <summary>One channel: its letter, a gradient bar to drag along, the typed value and − / + buttons.</summary>
-    private sealed class ChannelRow
+    /// <summary>A number with small up / down arrows and its name underneath. Wheel and arrow keys step it; Shift steps by 10.</summary>
+    private sealed class SpinField
     {
         private readonly ColorPickerWindow _owner;
-        private readonly string _letter;
-        private readonly string _name;
+        private readonly Func<string> _caption;
         private readonly Func<double> _max;
         private readonly Func<double> _get;
         private readonly Action<double> _set;
-        private readonly Func<ColorRgba[]> _stops;
-        private readonly bool _checkered;
-
-        private readonly Border _bar = new() { Height = 18, Margin = new Thickness(0, 9, 0, 9), CornerRadius = new CornerRadius(4), Cursor = Cursors.Hand, VerticalAlignment = VerticalAlignment.Center };
-        private readonly Border _gradient = new() { CornerRadius = new CornerRadius(4) };
-        private readonly Canvas _markerLayer = new() { IsHitTestVisible = false };
-        private readonly Path _marker = new()
+        private readonly TextBox _box = new()
         {
-            Data = Geometry.Parse("M 0,0 L 5,-7 L -5,-7 Z M 0,18 L 5,25 L -5,25 Z"),
-            Fill = Brushes.White,
-            Stroke = Brushes.Black,
-            StrokeThickness = 1,
+            HorizontalContentAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center,
+            Margin = new Thickness(6, 0, 0, 0),
         };
 
-        private readonly TextBox _box = new() { Margin = new Thickness(10, 0, 6, 0), Padding = new Thickness(4, 5, 6, 5), VerticalAlignment = VerticalAlignment.Center, HorizontalContentAlignment = HorizontalAlignment.Right };
-        private bool _dragging;
+        private readonly TextBlock _label = new() { FontSize = 11, HorizontalAlignment = HorizontalAlignment.Center, Margin = new Thickness(0, 4, 0, 0) };
 
-        public ChannelRow(ColorPickerWindow owner, string letter, string name, Func<double> max, Func<double> get, Action<double> set,
-            Func<ColorRgba[]> stops, bool checkered = false)
+        public SpinField(ColorPickerWindow owner, Func<string> caption, Func<double> max, Func<double> get, Action<double> set)
         {
             _owner = owner;
-            _letter = letter;
-            _name = name;
+            _caption = caption;
             _max = max;
             _get = get;
             _set = set;
-            _stops = stops;
-            _checkered = checkered;
         }
 
-        public bool GapBefore { get; init; }
-
-        public void AddTo(Grid grid, int row)
+        public UIElement Build(bool last)
         {
-            var label = new TextBlock { Text = _letter, VerticalAlignment = VerticalAlignment.Center, ToolTip = _name };
-            label.SetResourceReference(TextBlock.FontFamilyProperty, "Font.UiSemiBold");
+            _box.SetResourceReference(Control.StyleProperty, "PlainTextBox");
+            _label.SetResourceReference(TextBlock.ForegroundProperty, "Br.TextMuted");
 
-            if (_checkered)
+            var arrows = new StackPanel { VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0, 0, 3, 0) };
+            arrows.Children.Add(Arrow("M 0,4 L 4,0 L 8,4", 1));
+            arrows.Children.Add(Arrow("M 0,0 L 4,4 L 8,0", -1));
+
+            var inner = new DockPanel { Height = 34 };
+            DockPanel.SetDock(arrows, Dock.Right);
+            inner.Children.Add(arrows);
+            inner.Children.Add(_box);
+
+            var frame = new Border
             {
-                _bar.Background = BuildCheckerBrush();
-            }
-
-            var inner = new Grid();
-            inner.Children.Add(_gradient);
-            inner.Children.Add(_markerLayer);
-            _markerLayer.Children.Add(_marker);
-            _bar.Child = inner;
-            _bar.SetResourceReference(Border.BorderBrushProperty, "Br.BorderStrong");
-            _bar.BorderThickness = new Thickness(1);
-            _bar.ToolTip = _name;
-            _bar.MouseLeftButtonDown += (_, e) => { _dragging = true; _bar.CaptureMouse(); Pick(e.GetPosition(_bar)); };
-            _bar.MouseMove += (_, e) => { if (_dragging) { Pick(e.GetPosition(_bar)); } };
-            _bar.MouseLeftButtonUp += (_, _) => { _dragging = false; _bar.ReleaseMouseCapture(); };
-            _bar.SizeChanged += (_, _) => Refresh();
-
-            _box.SetResourceReference(Control.StyleProperty, "NumberBox");
-            _box.SetResourceReference(Control.FontFamilyProperty, "Font.Ui");
-            _box.LostFocus += (_, _) => Commit();
-            _box.KeyDown += (_, e) =>
+                CornerRadius = new CornerRadius(8),
+                BorderThickness = new Thickness(1),
+                Child = inner,
+            };
+            frame.SetResourceReference(Border.BackgroundProperty, "Br.Surface");
+            frame.SetResourceReference(Border.BorderBrushProperty, "Br.Border");
+            _box.GotKeyboardFocus += (_, _) =>
             {
-                if (e.Key == Key.Enter)
+                frame.SetResourceReference(Border.BorderBrushProperty, "Br.Accent");
+                _box.SelectAll();
+            };
+            _box.LostKeyboardFocus += (_, _) =>
+            {
+                frame.SetResourceReference(Border.BorderBrushProperty, "Br.Border");
+                Commit();
+            };
+            _box.PreviewKeyDown += (_, e) =>
+            {
+                double step = Keyboard.Modifiers.HasFlag(ModifierKeys.Shift) ? 10 : 1;
+                switch (e.Key)
                 {
-                    Commit();
-                    e.Handled = true;
-                }
-                else if (e.Key is Key.Up or Key.Down)
-                {
-                    Step(e.Key == Key.Up ? 1 : -1);
-                    e.Handled = true;
+                    case Key.Enter:
+                        Commit();
+                        _box.SelectAll();
+                        e.Handled = true;
+                        break;
+                    case Key.Up:
+                        Step(step);
+                        e.Handled = true;
+                        break;
+                    case Key.Down:
+                        Step(-step);
+                        e.Handled = true;
+                        break;
                 }
             };
-
-            var minus = StepButton("M 0,4 L 8,4", -1);
-            var plus = StepButton("M 0,4 L 8,4 M 4,0 L 4,8", 1);
-            var buttons = new StackPanel { Orientation = Orientation.Horizontal, VerticalAlignment = VerticalAlignment.Center };
-            buttons.Children.Add(minus);
-            buttons.Children.Add(plus);
-
-            var margin = new Thickness(0, GapBefore ? 12 : 0, 0, 0);
-            foreach ((UIElement element, int column) in new (UIElement, int)[] { (label, 0), (_bar, 1), (_box, 2), (buttons, 3) })
+            frame.MouseWheel += (_, e) =>
             {
-                if (element is FrameworkElement fe)
-                {
-                    fe.Margin = new Thickness(fe.Margin.Left, fe.Margin.Top + margin.Top, fe.Margin.Right, fe.Margin.Bottom);
-                }
+                Step((e.Delta > 0 ? 1 : -1) * (Keyboard.Modifiers.HasFlag(ModifierKeys.Shift) ? 10 : 1));
+                e.Handled = true;
+            };
 
-                Grid.SetRow(element, row);
-                Grid.SetColumn(element, column);
-                grid.Children.Add(element);
-            }
+            var column = new StackPanel { Margin = new Thickness(0, 0, last ? 0 : 8, 0) };
+            column.Children.Add(frame);
+            column.Children.Add(_label);
+            return column;
         }
 
-        private RepeatButton StepButton(string glyph, int direction)
+        private RepeatButton Arrow(string glyph, int direction)
         {
+            var path = new Path { Data = Geometry.Parse(glyph), StrokeThickness = 1.4, Margin = new Thickness(0, 2, 0, 2) };
+            path.SetResourceReference(Shape.StrokeProperty, "Br.TextMuted");
             var button = new RepeatButton
             {
-                Width = 26,
-                Height = 26,
-                Margin = new Thickness(direction < 0 ? 0 : 4, 0, 0, 0),
-                ToolTip = direction < 0 ? "Decrease" : "Increase",
-                Content = new Path { Data = Geometry.Parse(glyph), StrokeThickness = 1.6 },
+                Width = 16,
+                Height = 14,
+                Focusable = false,
+                Cursor = Cursors.Hand,
+                Delay = 350,
+                Interval = 70,
+                Template = ArrowTemplate(),
+                Content = path,
             };
-            ((Path)button.Content).SetResourceReference(Shape.StrokeProperty, "Br.Text2");
-            button.SetResourceReference(Control.StyleProperty, "SliderStepButton");
             button.Click += (_, _) => Step(direction);
             return button;
         }
 
-        private void Step(int direction) => _set(Math.Clamp(Math.Round(_get()) + direction, 0, _max()));
+        private static ControlTemplate ArrowTemplate()
+        {
+            var border = new FrameworkElementFactory(typeof(Border));
+            border.SetValue(Border.BackgroundProperty, Brushes.Transparent);
+            border.SetValue(Border.CornerRadiusProperty, new CornerRadius(3));
+            var presenter = new FrameworkElementFactory(typeof(ContentPresenter));
+            presenter.SetValue(FrameworkElement.HorizontalAlignmentProperty, HorizontalAlignment.Center);
+            presenter.SetValue(FrameworkElement.VerticalAlignmentProperty, VerticalAlignment.Center);
+            border.AppendChild(presenter);
+            return new ControlTemplate(typeof(RepeatButton)) { VisualTree = border };
+        }
 
-        private void Pick(Point p) => _set(Math.Clamp(p.X / Math.Max(1, _bar.ActualWidth), 0, 1) * _max());
+        private void Step(double amount) => _set(Math.Clamp(Math.Round(_get()) + amount, 0, _max()));
 
         private void Commit()
         {
@@ -419,7 +444,7 @@ public partial class ColorPickerWindow : Window
             if (double.TryParse(_box.Text, NumberStyles.Float, CultureInfo.CurrentCulture, out double value) ||
                 double.TryParse(_box.Text, NumberStyles.Float, CultureInfo.InvariantCulture, out value))
             {
-                _set(Math.Clamp(value, 0, _max()));
+                _set(Math.Clamp(Math.Round(value), 0, _max()));
             }
             else
             {
@@ -429,28 +454,15 @@ public partial class ColorPickerWindow : Window
 
         public void Refresh()
         {
-            ColorRgba[] stops = _stops();
-            var brush = new LinearGradientBrush { StartPoint = new Point(0, 0.5), EndPoint = new Point(1, 0.5) };
-            for (int i = 0; i < stops.Length; i++)
-            {
-                brush.GradientStops.Add(new GradientStop(ToWpf(stops[i]), stops.Length == 1 ? 0 : i / (double)(stops.Length - 1)));
-            }
-
-            _gradient.Background = brush;
-
-            double value = _get();
-            double width = Math.Max(0, _bar.ActualWidth - 2);
-            Canvas.SetLeft(_marker, Math.Clamp(value / Math.Max(1e-9, _max()), 0, 1) * width);
-            Canvas.SetTop(_marker, 0);
-
+            _label.Text = _caption();
             if (!_box.IsKeyboardFocusWithin)
             {
-                _box.Text = _max() >= 255 || _letter == "H" ? Math.Round(value).ToString(CultureInfo.CurrentCulture) : value.ToString("0.#", CultureInfo.CurrentCulture);
+                _box.Text = Math.Round(_get()).ToString(CultureInfo.CurrentCulture);
             }
         }
     }
 
-    // ---- hex, recent colours, buttons ---------------------------------------------
+    // ---- hex, swatches, buttons ------------------------------------------------------
 
     private void OnHexCommitted(object sender, RoutedEventArgs e)
     {
@@ -460,7 +472,7 @@ public partial class ColorPickerWindow : Window
         }
         else
         {
-            HexBox.Text = Current.ToHex();
+            HexBox.Text = Current.ToHex().TrimStart('#');
         }
     }
 
@@ -474,6 +486,13 @@ public partial class ColorPickerWindow : Window
         }
     }
 
+    private void OnSwatchTab(object sender, RoutedEventArgs e)
+    {
+        bool recent = TabRecent.IsChecked == true;
+        Palette.Visibility = recent ? Visibility.Collapsed : Visibility.Visible;
+        RecentPanel.Visibility = recent ? Visibility.Visible : Visibility.Collapsed;
+    }
+
     private void BuildRecent()
     {
         RecentRow.Items.Clear();
@@ -484,23 +503,16 @@ public partial class ColorPickerWindow : Window
                 continue;
             }
 
-            var inner = new Border { CornerRadius = new CornerRadius(4), Background = new SolidColorBrush(ToWpf(c)) };
-            var cell = new Border
-            {
-                Width = 26,
-                Height = 26,
-                Margin = new Thickness(0, 0, 5, 5),
-                CornerRadius = new CornerRadius(5),
-                BorderThickness = new Thickness(1),
-                Background = BuildCheckerBrush(),
-                Child = inner,
-                Cursor = Cursors.Hand,
-                ToolTip = c.ToHex(),
-            };
-            cell.SetResourceReference(Border.BorderBrushProperty, "Br.BorderStrong");
-            cell.MouseLeftButtonUp += (_, _) => SetRgb(c);
-            RecentRow.Items.Add(cell);
+            var dot = new Grid { Width = 26, Height = 26, Margin = new Thickness(0, 0, 8, 8), Cursor = Cursors.Hand, ToolTip = c.ToHex() };
+            dot.Children.Add(new Ellipse { Fill = CheckerBrush(6) });
+            var fill = new Ellipse { Fill = new SolidColorBrush(ToWpf(c)), StrokeThickness = 1 };
+            fill.SetResourceReference(Shape.StrokeProperty, "Br.BorderStrong");
+            dot.Children.Add(fill);
+            dot.MouseLeftButtonUp += (_, _) => SetRgb(c);
+            RecentRow.Items.Add(dot);
         }
+
+        RecentEmpty.Visibility = RecentRow.Items.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
     }
 
     private void Remember(ColorRgba c)
@@ -530,11 +542,11 @@ public partial class ColorPickerWindow : Window
     {
         Remember(Current);
         BuildRecent();
+        TabRecent.IsChecked = true;
+        OnSwatchTab(sender, e);
     }
 
     private void OnOldClicked(object sender, MouseButtonEventArgs e) => SetRgb(_old);
-
-    private void OnReset(object sender, RoutedEventArgs e) => SetRgb(_old);
 
     private void OnTransparent(object sender, RoutedEventArgs e)
     {
@@ -556,17 +568,17 @@ public partial class ColorPickerWindow : Window
 
     private static Color ToWpf(ColorRgba c) => Color.FromArgb(c.A, c.R, c.G, c.B);
 
-    private static Brush BuildCheckerBrush()
+    private static Brush CheckerBrush(double cell)
     {
         var group = new DrawingGroup();
-        group.Children.Add(new GeometryDrawing(Brushes.White, null, new RectangleGeometry(new Rect(0, 0, 12, 12))));
+        group.Children.Add(new GeometryDrawing(Brushes.White, null, new RectangleGeometry(new Rect(0, 0, cell * 2, cell * 2))));
         var dark = new SolidColorBrush(Color.FromRgb(0xCC, 0xD2, 0xDC));
-        group.Children.Add(new GeometryDrawing(dark, null, new RectangleGeometry(new Rect(0, 0, 6, 6))));
-        group.Children.Add(new GeometryDrawing(dark, null, new RectangleGeometry(new Rect(6, 6, 6, 6))));
+        group.Children.Add(new GeometryDrawing(dark, null, new RectangleGeometry(new Rect(0, 0, cell, cell))));
+        group.Children.Add(new GeometryDrawing(dark, null, new RectangleGeometry(new Rect(cell, cell, cell, cell))));
         var brush = new DrawingBrush(group)
         {
             TileMode = TileMode.Tile,
-            Viewport = new Rect(0, 0, 12, 12),
+            Viewport = new Rect(0, 0, cell * 2, cell * 2),
             ViewportUnits = BrushMappingMode.Absolute,
             Stretch = Stretch.None,
         };
