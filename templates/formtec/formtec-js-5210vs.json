@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-js-5210vs",
+  "brand": "Formtec",
+  "productCode": "JS-5210VS",
+  "name": "Formtec JS-5210VS — 148 × 20 mm, 12-up",
+  "categories": ["CD/DVD & media"],
+  "page": { "size": "A4", "widthMm": 210, "heightMm": 297 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 1,
+    "rows": 12,
+    "labelWidthMm": 148,
+    "labelHeightMm": 20,
+    "marginTopMm": 25,
+    "marginLeftMm": 31,
+    "hGapMm": 0,
+    "vGapMm": 0,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "A4-Japan ビデオ側面インクジェット用ラベル(100 シ-ト/光?紙)",
+  "source": "Microsoft Word label database (Formtec, PGLBL010.XML)"
+}

@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-lsm-2615",
+  "brand": "Formtec",
+  "productCode": "LSM-2615",
+  "name": "Formtec LSM-2615 — 70 × 52 mm, 10-up",
+  "categories": ["CD/DVD & media"],
+  "page": { "size": "A4", "widthMm": 210, "heightMm": 297 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 2,
+    "rows": 5,
+    "labelWidthMm": 70,
+    "labelHeightMm": 52,
+    "marginTopMm": 19.22,
+    "marginLeftMm": 23.3,
+    "hGapMm": 23,
+    "vGapMm": 0,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "A4 Diskette(3.5\") Laser/Inkjet(100 Sheet/10 Label)",
+  "source": "Microsoft Word label database (Formtec, PGLBL010.XML)"
+}

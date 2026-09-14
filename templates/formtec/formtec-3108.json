@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-3108",
+  "brand": "Formtec",
+  "productCode": "3108",
+  "name": "Formtec 3108 — 99.05 × 38.07 mm, 14-up",
+  "categories": ["Address"],
+  "page": { "size": "A4", "widthMm": 210, "heightMm": 297 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 2,
+    "rows": 7,
+    "labelWidthMm": 99.05,
+    "labelHeightMm": 38.07,
+    "marginTopMm": 13.8,
+    "marginLeftMm": 4.7,
+    "hGapMm": 2.5,
+    "vGapMm": 0,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "A4-Korea 주소용 라벨 / 레이저, 잉크젯용 / 레이저 전용(광택, 반투명 필름)(14칸)",
+  "source": "Microsoft Word label database (Formtec, PGLBL010.XML)"
+}

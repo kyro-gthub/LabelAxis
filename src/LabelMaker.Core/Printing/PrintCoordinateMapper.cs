@@ -30,13 +30,14 @@ public sealed record SheetMedia
 }
 
 /// <summary>
-/// Maps a point in <b>page space</b> (mm, origin = physical page top-left, which
-/// is how Formtec templates are defined) to <b>canvas space</b> that the drawing
-/// surface uses when it has already been translated to the printer's imageable
-/// origin. Applies, in order: subtract the imageable origin, add the per-printer
-/// calibration offset, apply the fine scale correction about the page centre, and
-/// apply the user scale-% (default 100, i.e. no change — never "fit to page",
-/// spec §16).
+/// Maps a point in <b>page space</b> (mm, origin = physical page top-left, which is how
+/// label templates are defined) to the coordinates drawn on the printed page. WPF print
+/// pages (XPS) are positioned from the physical corner of the paper too, and the driver
+/// clips whatever falls in its unprintable border, so no printer-margin offset is applied
+/// here: subtracting it moved every label up and left by the printer's border (about
+/// 4 mm on most office printers). Applies, in order: the fine scale correction and the
+/// user scale-% about the page centre (default 100, never "fit to page"), then the
+/// per-printer calibration offset.
 /// </summary>
 public sealed class PrintCoordinateMapper
 {
@@ -53,7 +54,7 @@ public sealed class PrintCoordinateMapper
 
     public double UserScale => _userScale;
 
-    /// <summary>Map a page-space point (mm) to imageable-origin-relative canvas mm.</summary>
+    /// <summary>Map a page-space point (mm) to printed-page mm.</summary>
     public PointMm PageToCanvas(PointMm pagePoint)
     {
         double cx = _media.PageWidthMm / 2.0;
@@ -66,14 +67,7 @@ public sealed class PrintCoordinateMapper
         double y = cy + ((pagePoint.Y - cy) * sy);
 
         // Calibration translation (wizard result).
-        x += _calibration.OffsetXMm;
-        y += _calibration.OffsetYMm;
-
-        // Move into the surface's imageable-origin coordinate space.
-        x -= _media.ImageableOriginXMm;
-        y -= _media.ImageableOriginYMm;
-
-        return new PointMm(x, y);
+        return new PointMm(x + _calibration.OffsetXMm, y + _calibration.OffsetYMm);
     }
 
     public RectMm PageToCanvas(RectMm pageRect)
@@ -84,16 +78,16 @@ public sealed class PrintCoordinateMapper
         return new RectMm(tl.X, tl.Y, pageRect.Width * sx, pageRect.Height * sy);
     }
 
-    /// <summary>True when a page-space rectangle lands entirely within the imageable area.</summary>
+    /// <summary>True when a page-space rectangle, as printed, lands entirely within the printer's imageable area.</summary>
     public bool FitsImageableArea(RectMm pageRect)
     {
-        RectMm canvas = PageToCanvas(pageRect);
-        return canvas.Left >= -0.01 &&
-               canvas.Top >= -0.01 &&
-               canvas.Right <= _media.ImageableWidthMm + 0.01 &&
-               canvas.Bottom <= _media.ImageableHeightMm + 0.01;
+        RectMm printed = PageToCanvas(pageRect);
+        return printed.Left >= _media.ImageableOriginXMm - 0.01 &&
+               printed.Top >= _media.ImageableOriginYMm - 0.01 &&
+               printed.Right <= _media.ImageableOriginXMm + _media.ImageableWidthMm + 0.01 &&
+               printed.Bottom <= _media.ImageableOriginYMm + _media.ImageableHeightMm + 0.01;
     }
 
-    /// <summary>Convenience: canvas-space mm to device pixels at the target DPI.</summary>
+    /// <summary>Convenience: mm to device pixels at the target DPI.</summary>
     public static double MmToDevice(double mm, double dpi) => UnitConverter.MmToDevicePixels(mm, dpi);
 }

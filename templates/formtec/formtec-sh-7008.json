@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-sh-7008",
+  "brand": "Formtec",
+  "productCode": "SH-7008",
+  "name": "Formtec SH-7008 — 85.725 × 59.258 mm, 8-up",
+  "categories": ["General"],
+  "page": { "size": "Letter", "widthMm": 215.9, "heightMm": 279.4 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 2,
+    "rows": 4,
+    "labelWidthMm": 85.725,
+    "labelHeightMm": 59.258,
+    "marginTopMm": 14.808,
+    "marginLeftMm": 17.475,
+    "hGapMm": 9.525,
+    "vGapMm": 4.242,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "Letter Name Badge Laser/Inkjet(100 Sheet/8 Label)",
+  "source": "Microsoft Word label database (Formtec, PGLBL010.XML)"
+}

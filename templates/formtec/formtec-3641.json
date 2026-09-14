@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-3641",
+  "brand": "Formtec",
+  "productCode": "3641",
+  "name": "Formtec 3641 — 20 × 20 mm, 108-up",
+  "categories": ["General"],
+  "page": { "size": "A4", "widthMm": 210, "heightMm": 297 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 9,
+    "rows": 12,
+    "labelWidthMm": 20,
+    "labelHeightMm": 20,
+    "marginTopMm": 14,
+    "marginLeftMm": 5,
+    "hGapMm": 2.5,
+    "vGapMm": 2.5,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "A4-Korea 분류표기용 라벨 / 레이저, 잉크젯용(108칸)",
+  "source": "Microsoft Word label database (Formtec, PGLBL010.XML)"
+}

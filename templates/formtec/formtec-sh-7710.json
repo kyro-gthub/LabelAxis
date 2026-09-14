@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-sh-7710",
+  "brand": "Formtec",
+  "productCode": "SH-7710",
+  "name": "Formtec SH-7710 — 77.8 × 46.558 mm, 10-up",
+  "categories": ["CD/DVD & media"],
+  "page": { "size": "Letter", "widthMm": 215.9, "heightMm": 279.4 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 2,
+    "rows": 5,
+    "labelWidthMm": 77.8,
+    "labelHeightMm": 46.558,
+    "marginTopMm": 23.292,
+    "marginLeftMm": 27.153,
+    "hGapMm": 6.02,
+    "vGapMm": 0,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "Letter Video Tape[Face] Laser/Inkjet(100 Sheet/10 Label)",
+  "source": "Microsoft Word label database (Formtec, PGLBL010.XML)"
+}

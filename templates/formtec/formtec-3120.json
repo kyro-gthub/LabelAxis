@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-3120",
+  "brand": "Formtec",
+  "productCode": "3120",
+  "name": "Formtec 3120 — 200 × 139.75 mm, 2-up",
+  "categories": ["General"],
+  "page": { "size": "A4", "widthMm": 210, "heightMm": 297 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 1,
+    "rows": 2,
+    "labelWidthMm": 200,
+    "labelHeightMm": 139.75,
+    "marginTopMm": 7,
+    "marginLeftMm": 5,
+    "hGapMm": 0,
+    "vGapMm": 0,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "A4-Korea 물류관리용 라벨 / 레이저, 잉크젯용/레이저용(광택)(2칸)",
+  "source": "Microsoft Word label database (Formtec, PGLBL010.XML)"
+}

@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-js-1012a",
+  "brand": "Formtec",
+  "productCode": "JS-1012A",
+  "name": "Formtec JS-1012A — 86.4 × 42.3 mm, 12-up",
+  "categories": ["Address"],
+  "page": { "size": "A4", "widthMm": 210, "heightMm": 297 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 2,
+    "rows": 6,
+    "labelWidthMm": 86.4,
+    "labelHeightMm": 42.3,
+    "marginTopMm": 21.2,
+    "marginLeftMm": 18.6,
+    "hGapMm": 0,
+    "vGapMm": 0,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "A4-Japan アドレス-ラベルLaser/Inkjet兼用ラベル(100 シ-ト/12 面)",
+  "source": "Microsoft Word label database (Formtec, PGLBL010.XML)"
+}

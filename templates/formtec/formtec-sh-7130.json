@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-sh-7130",
+  "brand": "Formtec",
+  "productCode": "SH-7130",
+  "name": "Formtec SH-7130 — 87.122 × 16.942 mm, 30-up",
+  "categories": ["General"],
+  "page": { "size": "Letter", "widthMm": 215.9, "heightMm": 279.4 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 2,
+    "rows": 15,
+    "labelWidthMm": 87.122,
+    "labelHeightMm": 16.942,
+    "marginTopMm": 12.7,
+    "marginLeftMm": 13.487,
+    "hGapMm": 14.478,
+    "vGapMm": 0,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "Letter File Folder Laser/Inkjet(100 Sheet/30 Label)",
+  "source": "Microsoft Word label database (Formtec, PGLBL010.XML)"
+}

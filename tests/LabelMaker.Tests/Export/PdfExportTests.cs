@@ -75,7 +75,7 @@ public sealed class PdfExportTests
     [Fact]
     public void Variable_data_produces_one_sheet_page_per_24_records()
     {
-        ProjectModel project = MakeProject("formtec-3103"); // 24-up
+        ProjectModel project = MakeProject("formtec-gs-1024"); // 24-up
         var rows = Enumerable.Range(1, 30).Select(i => new[] { $"Item {i}", $"ABC{i:000000}" }).ToList();
         DataSet data = DataSet.FromRows(new[] { "Product", "Barcode" }, rows);
 
@@ -89,7 +89,7 @@ public sealed class PdfExportTests
     [Fact]
     public void Export_reports_each_sheet_and_stops_when_cancelled()
     {
-        ProjectModel project = MakeProject("formtec-3103"); // 24-up
+        ProjectModel project = MakeProject("formtec-gs-1024"); // 24-up
         var rows = Enumerable.Range(1, 24 * 5).Select(i => new[] { $"Item {i}", $"ABC{i:000000}" }).ToList();
         DataSet data = DataSet.FromRows(new[] { "Product", "Barcode" }, rows);
         var request = new ExportRequest { Project = project, Data = data, Scope = ExportScope.Sheet };
@@ -107,7 +107,7 @@ public sealed class PdfExportTests
     [Fact]
     public void Sheet_range_writes_only_those_sheets()
     {
-        ProjectModel project = MakeProject("formtec-3103"); // 24-up
+        ProjectModel project = MakeProject("formtec-gs-1024"); // 24-up
         var rows = Enumerable.Range(1, 24 * 6).Select(i => new[] { $"Item {i}", $"ABC{i:000000}" }).ToList();
         DataSet data = DataSet.FromRows(new[] { "Product", "Barcode" }, rows);
         var request = new ExportRequest { Project = project, Data = data, Scope = ExportScope.Sheet, FirstSheet = 3, LastSheet = 4 };
@@ -127,14 +127,14 @@ public sealed class PdfExportTests
     [Fact]
     public void Svg_label_export_declares_physical_size_in_millimetres()
     {
-        ProjectModel project = MakeProject("formtec-3200");
+        ProjectModel project = MakeProject("formtec-gs-1065");
         var ctx = new ResolveContext { Record = new Dictionary<string, string> { ["Product"] = "Widget", ["Barcode"] = "ABC001" } };
 
         string svg = new SvgExporter().ExportLabel(project.MasterLabel, ctx);
 
         svg.Should().StartWith("<svg");
-        svg.Should().Contain("width=\"38.1mm\"");
-        svg.Should().Contain("height=\"21.2mm\"");
+        svg.Should().Contain("width=\"38mm\"");
+        svg.Should().Contain("height=\"21.15mm\"");
         svg.Should().Contain("Widget");
     }
 

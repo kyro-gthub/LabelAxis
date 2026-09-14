@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-nl-2308",
+  "brand": "Formtec",
+  "productCode": "NL-2308",
+  "name": "Formtec NL-2308 — 90 × 60 mm, 8-up",
+  "categories": ["General"],
+  "page": { "size": "A4", "widthMm": 210, "heightMm": 297 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 2,
+    "rows": 4,
+    "labelWidthMm": 90,
+    "labelHeightMm": 60,
+    "marginTopMm": 13.5,
+    "marginLeftMm": 7.5,
+    "hGapMm": 15,
+    "vGapMm": 10,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "A4-Korea 이름표 라벨 / 레이저, 잉크젯용(8칸)",
+  "source": "Microsoft Word label database (Formtec, PGLBL010.XML)"
+}

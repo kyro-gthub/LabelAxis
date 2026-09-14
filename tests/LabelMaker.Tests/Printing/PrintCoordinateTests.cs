@@ -19,14 +19,16 @@ public sealed class PrintCoordinateTests
     };
 
     [Fact]
-    public void Without_calibration_only_the_hardware_origin_is_removed()
+    public void Without_calibration_labels_print_where_the_template_puts_them_whatever_the_printer_border()
     {
+        // Print pages are positioned from the paper's corner; subtracting the printer's
+        // border here used to move every label 4.2 mm up and left.
         var mapper = new PrintCoordinateMapper(A4WithBorder);
 
         PointMm mapped = mapper.PageToCanvas(new PointMm(20, 30));
 
-        mapped.X.Should().BeApproximately(20 - 4.2, 1e-9);
-        mapped.Y.Should().BeApproximately(30 - 4.2, 1e-9);
+        mapped.X.Should().BeApproximately(20, 1e-9);
+        mapped.Y.Should().BeApproximately(30, 1e-9);
     }
 
     [Fact]
@@ -37,8 +39,8 @@ public sealed class PrintCoordinateTests
 
         PointMm mapped = mapper.PageToCanvas(new PointMm(20, 30));
 
-        mapped.X.Should().BeApproximately(20 + 0.8 - 4.2, 1e-9);
-        mapped.Y.Should().BeApproximately(30 - 1.2 - 4.2, 1e-9);
+        mapped.X.Should().BeApproximately(20 + 0.8, 1e-9);
+        mapped.Y.Should().BeApproximately(30 - 1.2, 1e-9);
     }
 
     [Fact]

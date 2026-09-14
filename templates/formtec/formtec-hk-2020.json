@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-hk-2020",
+  "brand": "Formtec",
+  "productCode": "HK 2020",
+  "name": "Formtec HK 2020 — 41 × 68 mm, 20-up",
+  "categories": ["General"],
+  "page": { "size": "A4", "widthMm": 210, "heightMm": 297 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 5,
+    "rows": 4,
+    "labelWidthMm": 41,
+    "labelHeightMm": 68,
+    "marginTopMm": 12.5,
+    "marginLeftMm": 5,
+    "hGapMm": 0,
+    "vGapMm": 0,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "A4 Multi Purpose Label(20 Label)",
+  "source": "Microsoft Word label database (Formtec, PGLBL010.XML)"
+}

@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-js-1030",
+  "brand": "Formtec",
+  "productCode": "JS-1030",
+  "name": "Formtec JS-1030 — 53.3 × 25.4 mm, 30-up",
+  "categories": ["Address"],
+  "page": { "size": "A4", "widthMm": 210, "heightMm": 297 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 3,
+    "rows": 10,
+    "labelWidthMm": 53.3,
+    "labelHeightMm": 25.4,
+    "marginTopMm": 21.5,
+    "marginLeftMm": 19,
+    "hGapMm": 3.8,
+    "vGapMm": 0,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "A4-Japan アドレス-ラベルLaser/Inkjet兼用ラベル(100 シ-ト/30 面)",
+  "source": "Microsoft Word label database (Formtec, PGLBL010.XML)"
+}

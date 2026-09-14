@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-3102",
+  "brand": "Formtec",
+  "productCode": "3102",
+  "name": "Formtec 3102 — 47 × 26.86 mm, 40-up",
+  "categories": ["General"],
+  "page": { "size": "A4", "widthMm": 210, "heightMm": 297 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 4,
+    "rows": 10,
+    "labelWidthMm": 47,
+    "labelHeightMm": 26.86,
+    "marginTopMm": 14.2,
+    "marginLeftMm": 7.25,
+    "hGapMm": 2.5,
+    "vGapMm": 0,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "A4-Korea 바코드용 라벨 / 레이저, 잉크젯용/레이저용(광택)(40칸)",
+  "source": "Microsoft Word label database (Formtec, PGLBL010.XML)"
+}

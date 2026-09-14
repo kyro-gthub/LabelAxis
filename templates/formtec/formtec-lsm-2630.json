@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-lsm-2630",
+  "brand": "Formtec",
+  "productCode": "LSM-2630",
+  "name": "Formtec LSM-2630 — 89 × 42 mm, 12-up",
+  "categories": ["CD/DVD & media"],
+  "page": { "size": "A4", "widthMm": 210, "heightMm": 297 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 2,
+    "rows": 6,
+    "labelWidthMm": 89,
+    "labelHeightMm": 42,
+    "marginTopMm": 23.22,
+    "marginLeftMm": 14.73,
+    "hGapMm": 2.54,
+    "vGapMm": 0,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "A4 Audio Tape Laser/Inkjet(100 Sheet/12 Label)",
+  "source": "Microsoft Word label database (Formtec, PGLBL010.XML)"
+}

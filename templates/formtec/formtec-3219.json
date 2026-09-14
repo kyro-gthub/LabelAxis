@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-3219",
+  "brand": "Formtec",
+  "productCode": "3219",
+  "name": "Formtec 3219 — 100 × 24.5 mm, 22-up",
+  "categories": ["Address"],
+  "page": { "size": "A4", "widthMm": 210, "heightMm": 297 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 2,
+    "rows": 11,
+    "labelWidthMm": 100,
+    "labelHeightMm": 24.5,
+    "marginTopMm": 13,
+    "marginLeftMm": 4,
+    "hGapMm": 2,
+    "vGapMm": 0,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "A4-Korea 주소용 라벨 (16칸)",
+  "source": "Microsoft Word label database (Formtec, PGLBL010.XML)"
+}

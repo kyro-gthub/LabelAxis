@@ -15,7 +15,7 @@ public sealed class PreflightTests
 {
     private static ProjectModel NewProject()
     {
-        LabelTemplate t = TemplateStore.CreateWithBuiltIns().Get("formtec-3200")!; // 38.1 x 21.2
+        LabelTemplate t = TemplateStore.CreateWithBuiltIns().Get("formtec-gs-1065")!; // 38.1 x 21.2
         return ProjectModel.CreateNew(t, "Preflight");
     }
 

@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-3620",
+  "brand": "Formtec",
+  "productCode": "3620",
+  "name": "Formtec 3620 — 119.3 × 42.75 mm, 6-up",
+  "categories": ["Address"],
+  "page": { "size": "A4", "widthMm": 210, "heightMm": 297 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 1,
+    "rows": 6,
+    "labelWidthMm": 119.3,
+    "labelHeightMm": 42.75,
+    "marginTopMm": 19,
+    "marginLeftMm": 45.35,
+    "hGapMm": 0,
+    "vGapMm": 0,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "A4-Korea 주소용 라벨 / 레이저, 잉크젯용(6칸)",
+  "source": "Microsoft Word label database (Formtec, PGLBL010.XML)"
+}

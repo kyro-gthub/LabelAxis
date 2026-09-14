@@ -9,7 +9,7 @@ namespace LabelMaker.Tests.Bulk;
 
 public sealed class BulkRenderPlanTests
 {
-    private static LabelTemplate Grid3x8 => TemplateStore.CreateWithBuiltIns().Get("formtec-3103")!;
+    private static LabelTemplate Grid3x8 => TemplateStore.CreateWithBuiltIns().Get("formtec-gs-1024")!;
 
     private static DataSet MakeData(int rows)
     {

@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-3628",
+  "brand": "Formtec",
+  "productCode": "3628",
+  "name": "Formtec 3628 — 12 × 130 mm, 30-up",
+  "categories": ["General"],
+  "page": { "size": "A4", "widthMm": 210, "heightMm": 297 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 15,
+    "rows": 2,
+    "labelWidthMm": 12,
+    "labelHeightMm": 130,
+    "marginTopMm": 15,
+    "marginLeftMm": 15,
+    "hGapMm": 0,
+    "vGapMm": 7,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "A4-Korea 파일인덱스용 라벨 / 레이저, 잉크젯용(30칸)",
+  "source": "Microsoft Word label database (Formtec, PGLBL010.XML)"
+}

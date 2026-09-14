@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-gs-1060",
+  "brand": "Formtec",
+  "productCode": "GS-1060",
+  "name": "Formtec GS-1060 — 50 × 18 mm, 60-up",
+  "categories": ["General", "Formtec GS"],
+  "page": { "size": "A4", "widthMm": 210, "heightMm": 297 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 4,
+    "rows": 15,
+    "labelWidthMm": 50,
+    "labelHeightMm": 18,
+    "marginTopMm": 13.5,
+    "marginLeftMm": 5,
+    "hGapMm": 0,
+    "vGapMm": 0,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "A4 Multi Purpose Label(100 Sheet/60 Label)",
+  "source": "Microsoft Word label database (Formtec, PGLBL010.XML)"
+}

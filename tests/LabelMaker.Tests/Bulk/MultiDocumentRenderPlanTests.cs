@@ -8,7 +8,7 @@ namespace LabelMaker.Tests.Bulk;
 
 public sealed class MultiDocumentRenderPlanTests
 {
-    private static LabelTemplate Grid3x8 => TemplateStore.CreateWithBuiltIns().Get("formtec-3103")!; // 24-up
+    private static LabelTemplate Grid3x8 => TemplateStore.CreateWithBuiltIns().Get("formtec-gs-1024")!; // 24-up
 
     private static List<LabelDocument> MakePages(int count) =>
         Enumerable.Range(1, count).Select(i => new LabelDocument { Name = $"Page {i}" }).ToList();

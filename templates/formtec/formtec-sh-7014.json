@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-sh-7014",
+  "brand": "Formtec",
+  "productCode": "SH-7014",
+  "name": "Formtec SH-7014 — 101.6 × 33.858 mm, 14-up",
+  "categories": ["Address"],
+  "page": { "size": "Letter", "widthMm": 215.9, "heightMm": 279.4 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 2,
+    "rows": 7,
+    "labelWidthMm": 101.6,
+    "labelHeightMm": 33.858,
+    "marginTopMm": 21.158,
+    "marginLeftMm": 3.962,
+    "hGapMm": 4.775,
+    "vGapMm": 0,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "Letter Address Laser/Inkjet(100 Sheet/14 Label)",
+  "source": "Microsoft Word label database (Formtec, PGLBL010.XML)"
+}

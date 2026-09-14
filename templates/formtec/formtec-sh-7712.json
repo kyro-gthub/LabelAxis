@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-sh-7712",
+  "brand": "Formtec",
+  "productCode": "SH-7712",
+  "name": "Formtec SH-7712 — 88.9 × 42.342 mm, 12-up",
+  "categories": ["CD/DVD & media"],
+  "page": { "size": "Letter", "widthMm": 215.9, "heightMm": 279.4 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 2,
+    "rows": 6,
+    "labelWidthMm": 88.9,
+    "labelHeightMm": 42.342,
+    "marginTopMm": 12.7,
+    "marginLeftMm": 12.7,
+    "hGapMm": 12.7,
+    "vGapMm": 0,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "Letter Audio Tape Laser/Inkjet(100 Sheet/12 Label)",
+  "source": "Microsoft Word label database (Formtec, PGLBL010.XML)"
+}

@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-3181",
+  "brand": "Formtec",
+  "productCode": "3181",
+  "name": "Formtec 3181 — 53 × 10 mm, 81-up",
+  "categories": ["General"],
+  "page": { "size": "A4", "widthMm": 210, "heightMm": 297 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 3,
+    "rows": 27,
+    "labelWidthMm": 53,
+    "labelHeightMm": 10,
+    "marginTopMm": 12,
+    "marginLeftMm": 15.5,
+    "hGapMm": 10,
+    "vGapMm": 0,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "A4-Korea 분류표기용 라벨 / 레이저, 잉크젯용(81칸)",
+  "source": "Microsoft Word label database (Formtec, PGLBL010.XML)"
+}

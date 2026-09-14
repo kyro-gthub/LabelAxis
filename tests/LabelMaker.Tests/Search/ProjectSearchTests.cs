@@ -15,7 +15,7 @@ public sealed class ProjectSearchTests
 {
     private static (ProjectModel Project, DataSet Data) BuildProject(int recordCount)
     {
-        LabelTemplate template = TemplateStore.CreateWithBuiltIns().Get("formtec-3200")!;
+        LabelTemplate template = TemplateStore.CreateWithBuiltIns().Get("formtec-gs-1065")!;
         ProjectModel project = ProjectModel.CreateNew(template, "Search project");
 
         project.MasterLabel.Objects.Add(new BarcodeObject
@@ -87,7 +87,7 @@ public sealed class ProjectSearchTests
         var index = new ProjectSearchIndex();
         index.Rebuild(project, data);
 
-        index.Search("3200").Should().Contain(r => r.Kind == SearchResultKind.Template);
+        index.Search("1065").Should().Contain(r => r.Kind == SearchResultKind.Template);
         index.Search("asset tag").Should().Contain(r => r.Kind == SearchResultKind.Sequence);
     }
 }

@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-js-2006s",
+  "brand": "Formtec",
+  "productCode": "JS-2006S",
+  "name": "Formtec JS-2006S — 85 × 85 mm, 6-up",
+  "categories": ["General"],
+  "page": { "size": "A4", "widthMm": 210, "heightMm": 297 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 2,
+    "rows": 3,
+    "labelWidthMm": 85,
+    "labelHeightMm": 85,
+    "marginTopMm": 10.5,
+    "marginLeftMm": 14,
+    "hGapMm": 12,
+    "vGapMm": 10.5,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "A4-Japan ネ-ムㆍバッジLaser/Inkjet兼用ラベル(100 シ-ト/6 面)",
+  "source": "Microsoft Word label database (Formtec, PGLBL010.XML)"
+}

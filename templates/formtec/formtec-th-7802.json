@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-th-7802",
+  "brand": "Formtec",
+  "productCode": "TH-7802",
+  "name": "Formtec TH-7802 — 117.475 × 117.475 mm, 2-up",
+  "categories": ["CD/DVD & media"],
+  "page": { "size": "Letter", "widthMm": 215.9, "heightMm": 279.4 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 1,
+    "rows": 2,
+    "labelWidthMm": 117.475,
+    "labelHeightMm": 117.475,
+    "marginTopMm": 16.993,
+    "marginLeftMm": 48.997,
+    "hGapMm": 0,
+    "vGapMm": 9.5,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Ellipse"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "Letter CD/DVD Inkjet(100 Sheet/4 ⅝ \"/Glossy)",
+  "source": "Microsoft Word label database (Formtec, PGLBL010.XML)"
+}

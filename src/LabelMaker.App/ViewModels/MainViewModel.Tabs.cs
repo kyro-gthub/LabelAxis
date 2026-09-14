@@ -104,47 +104,55 @@ public sealed partial class MainViewModel
     }
 
     /// <summary>
-    /// Projects keep their own copy of the sheet layout. Early Formtec GS layouts were
-    /// estimates (with a 2.5 mm gap between columns that the real sheets do not have);
-    /// when a project still carries one, swap in the corrected layout, provided the
-    /// label size itself is unchanged so the design still fits.
+    /// Projects keep their own copy of the sheet layout. Early Formtec layouts were
+    /// estimates; the built-in ones now come from Word's label database. When a project
+    /// still carries an older Formtec layout, swap in the Word-verified one. A label that
+    /// changes size by under a millimetre (38.1 → 38 mm, say) is resized with it; bigger
+    /// changes are left for the user to apply in Label manager.
     /// </summary>
     private void UpgradeGuessedTemplate(DocumentSession session)
     {
+        const string WordSource = "Microsoft Word label database";
         ProjectModel project = session.Project;
-        if (project.Template is not { Source: { } source } old ||
-            !(source.Contains("approximate geometry", StringComparison.OrdinalIgnoreCase) ||
-              source.Contains("inferred from the project catalogue", StringComparison.OrdinalIgnoreCase)))
+        if (project.Template is not { Brand: "Formtec" } old || old.Source?.StartsWith(WordSource, StringComparison.Ordinal) == true)
         {
             return;
         }
 
-        if (_env.Templates.Get(old.Id) is not { } fresh)
+        if (_env.Templates.Get(old.Id) is not { Source: { } source } fresh || !source.StartsWith(WordSource, StringComparison.Ordinal))
         {
-            StatusText = $"This project uses an estimated {old.ProductCode} layout that is not in the Formtec list. Check the sheet in Label manager before printing.";
+            StatusText = $"This project's Formtec {old.ProductCode} layout is not in Word's Formtec label list, so it may be an estimate. Check it in Label manager before printing.";
             return;
         }
 
-        if (fresh.Grid == old.Grid)
-        {
-            return;
-        }
-
-        bool sameLabel = Math.Abs(fresh.Grid.LabelWidthMm - old.Grid.LabelWidthMm) < 0.01 &&
-                         Math.Abs(fresh.Grid.LabelHeightMm - old.Grid.LabelHeightMm) < 0.01;
-        if (sameLabel)
+        if (fresh.Grid == old.Grid && fresh.Page == old.Page)
         {
             project.Template = fresh;
+            return;
+        }
+
+        double dw = Math.Abs(fresh.Grid.LabelWidthMm - old.Grid.LabelWidthMm);
+        double dh = Math.Abs(fresh.Grid.LabelHeightMm - old.Grid.LabelHeightMm);
+        if (dw < 1.0 && dh < 1.0)
+        {
+            project.Template = fresh;
+            var size = new Core.Units.SizeMm(fresh.Grid.LabelWidthMm, fresh.Grid.LabelHeightMm);
+            project.MasterLabel.SizeMm = size;
+            foreach (Core.Model.LabelPage page in project.Pages)
+            {
+                page.Document.SizeMm = size;
+            }
+
             session.Document.HasUnsavedChanges = true;
-            StatusText = $"Corrected the {fresh.ProductCode} sheet layout: labels now sit edge to edge with no gaps. Save to keep it.";
+            StatusText = $"Corrected the Formtec {fresh.ProductCode} sheet to Word's measurements " +
+                         $"({fresh.Grid.LabelWidthMm:0.##} × {fresh.Grid.LabelHeightMm:0.##} mm, first label {fresh.Grid.MarginLeftMm:0.##} mm in, {fresh.Grid.MarginTopMm:0.##} mm down). Save to keep it.";
         }
         else
         {
-            StatusText = $"{fresh.ProductCode} labels are {fresh.Grid.LabelWidthMm:0.##} × {fresh.Grid.LabelHeightMm:0.##} mm (this project has " +
-                         $"{old.Grid.LabelWidthMm:0.##} × {old.Grid.LabelHeightMm:0.##}). Choose the sheet again in Label manager to update it.";
+            StatusText = $"Formtec {fresh.ProductCode} labels are {fresh.Grid.LabelWidthMm:0.##} × {fresh.Grid.LabelHeightMm:0.##} mm in Word's label list " +
+                         $"(this project has {old.Grid.LabelWidthMm:0.##} × {old.Grid.LabelHeightMm:0.##}). Choose the sheet again in Label manager to update it.";
         }
     }
-
     /// <summary>The tab showing the project saved at <paramref name="path"/>, if it is open.</summary>
     private DocumentTab? TabForPath(string path) =>
         Tabs.FirstOrDefault(t => t.Session.Document.FilePath is { } p &&

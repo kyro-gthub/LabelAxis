@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-lsm-2118",
+  "brand": "Formtec",
+  "productCode": "LSM-2118",
+  "name": "Formtec LSM-2118 — 99.1 × 139 mm, 4-up",
+  "categories": ["General"],
+  "page": { "size": "A4", "widthMm": 210, "heightMm": 297 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 2,
+    "rows": 2,
+    "labelWidthMm": 99.1,
+    "labelHeightMm": 139,
+    "marginTopMm": 10.22,
+    "marginLeftMm": 4.63,
+    "hGapMm": 2.54,
+    "vGapMm": 0,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "A4 Shipping Laser/Inkjet(100 Sheet/4 Label)",
+  "source": "Microsoft Word label database (Formtec, PGLBL010.XML)"
+}

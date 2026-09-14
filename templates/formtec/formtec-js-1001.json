@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-js-1001",
+  "brand": "Formtec",
+  "productCode": "JS-1001",
+  "name": "Formtec JS-1001 — 210 × 297 mm, 1-up",
+  "categories": ["Address"],
+  "page": { "size": "A4", "widthMm": 210, "heightMm": 297 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 1,
+    "rows": 1,
+    "labelWidthMm": 210,
+    "labelHeightMm": 297,
+    "marginTopMm": 0,
+    "marginLeftMm": 0,
+    "hGapMm": 0,
+    "vGapMm": 0,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "A4-Japan アドレス-ラベルLaser/Inkjet兼用ラベル(100 シ-ト/1 面)",
+  "source": "Microsoft Word label database (Formtec, PGLBL010.XML)"
+}

@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-3916f",
+  "brand": "Formtec",
+  "productCode": "3916F",
+  "name": "Formtec 3916F — 28 × 21 mm, 15-up",
+  "categories": ["CD/DVD & media"],
+  "page": { "size": "A6", "widthMm": 105, "heightMm": 148 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 3,
+    "rows": 5,
+    "labelWidthMm": 28,
+    "labelHeightMm": 21,
+    "marginTopMm": 15,
+    "marginLeftMm": 10.5,
+    "hGapMm": 0,
+    "vGapMm": 3,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "A6-Korea 6mm 비디오 전면 라벨 / 잉크젯용(A6, 광택)(15칸)",
+  "source": "Microsoft Word label database (Formtec, PGLBL010.XML)"
+}

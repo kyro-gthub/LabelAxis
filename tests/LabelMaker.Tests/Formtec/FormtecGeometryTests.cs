@@ -24,25 +24,26 @@ public sealed class FormtecGeometryTests
     }
 
     [Fact]
-    public void Formtec_3100_first_and_last_label_rectangles_are_correct()
+    public void Formtec_gs_1065_matches_words_label_definition()
     {
-        LabelTemplate t = Store.Get("formtec-3100")!;
+        // Word's Mailings > Labels definition: 38 x 21.15 mm, 5 x 13, first label 10 mm in and 11 mm down, no gaps.
+        LabelTemplate t = Store.Get("formtec-gs-1065")!;
 
         RectMm first = TemplateGeometry.SlotRect(t, 0);
-        first.X.Should().BeApproximately(4.65, 1e-6);
-        first.Y.Should().BeApproximately(15.15, 1e-6);
-        first.Width.Should().BeApproximately(99.1, 1e-6);
-        first.Height.Should().BeApproximately(38.1, 1e-6);
+        first.X.Should().BeApproximately(10, 1e-6);
+        first.Y.Should().BeApproximately(11, 1e-6);
+        first.Width.Should().BeApproximately(38, 1e-6);
+        first.Height.Should().BeApproximately(21.15, 1e-6);
 
-        RectMm last = TemplateGeometry.SlotRect(t, t.Grid.Count - 1); // row 6, col 1
-        last.X.Should().BeApproximately(4.65 + 99.1 + 2.5, 1e-6);
-        last.Y.Should().BeApproximately(15.15 + (6 * 38.1), 1e-6);
+        RectMm last = TemplateGeometry.SlotRect(t, t.Grid.Count - 1); // row 13, column 5
+        last.X.Should().BeApproximately(10 + (4 * 38), 1e-6);
+        last.Y.Should().BeApproximately(11 + (12 * 21.15), 1e-6);
+        last.Right.Should().BeApproximately(200, 1e-6, "labels butt together, leaving 10 mm each side");
     }
-
     [Fact]
     public void Row_major_index_maps_left_to_right_then_top_to_bottom()
     {
-        LabelTemplate t = Store.Get("formtec-3103")!; // 3 cols x 8 rows
+        LabelTemplate t = Store.Get("formtec-gs-1024")!; // 3 cols x 8 rows
 
         TemplateGeometry.IndexToRowColumn(t, 0).Should().Be((0, 0));
         TemplateGeometry.IndexToRowColumn(t, 2).Should().Be((0, 2));
@@ -53,7 +54,7 @@ public sealed class FormtecGeometryTests
     [Fact]
     public void Column_major_fill_order_changes_index_mapping()
     {
-        LabelTemplate row = Store.Get("formtec-3103")!;
+        LabelTemplate row = Store.Get("formtec-gs-1024")!;
         LabelTemplate col = row with { Id = "test-colmajor", FillOrder = SheetFillOrder.ColumnMajor };
 
         TemplateGeometry.IndexToRowColumn(col, 1).Should().Be((1, 0));
@@ -79,7 +80,7 @@ public sealed class FormtecGeometryTests
     [Fact]
     public void Printable_slots_can_start_partway_through_a_sheet()
     {
-        LabelTemplate t = Store.Get("formtec-3103")!; // 24 labels
+        LabelTemplate t = Store.Get("formtec-gs-1024")!; // 24 labels
 
         var slots = TemplateGeometry.PrintableSlots(t, startPosition: 7);
         slots.Should().HaveCount(18);
@@ -89,7 +90,7 @@ public sealed class FormtecGeometryTests
     [Fact]
     public void Printable_slots_honour_skipped_positions()
     {
-        LabelTemplate t = Store.Get("formtec-3200")!; // 65 labels
+        LabelTemplate t = Store.Get("formtec-gs-1065")!; // 65 labels
 
         var skip = new HashSet<int> { 1, 2, 3 };
         var slots = TemplateGeometry.PrintableSlots(t, startPosition: 1, skipPositions: skip);
@@ -106,8 +107,8 @@ public sealed class FormtecGeometryTests
         var imported = roundTrip.ImportCsv(csv, markUserDefined: false);
 
         imported.Should().HaveCount(Store.All.Count);
-        LabelTemplate original = Store.Get("formtec-3606")!;
-        LabelTemplate back = roundTrip.Get("formtec-3606")!;
+        LabelTemplate original = Store.Get("formtec-3642")!;
+        LabelTemplate back = roundTrip.Get("formtec-3642")!;
         back.Grid.LabelWidthMm.Should().BeApproximately(original.Grid.LabelWidthMm, 1e-6);
         back.Grid.Rows.Should().Be(original.Grid.Rows);
         back.Grid.LabelShape.Should().Be(original.Grid.LabelShape);

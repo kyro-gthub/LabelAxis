@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-hk-2035",
+  "brand": "Formtec",
+  "productCode": "HK 2035",
+  "name": "Formtec HK 2035 — 29.7 × 59.4 mm, 35-up",
+  "categories": ["General"],
+  "page": { "size": "A4", "widthMm": 210, "heightMm": 297 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 7,
+    "rows": 5,
+    "labelWidthMm": 29.7,
+    "labelHeightMm": 59.4,
+    "marginTopMm": 0,
+    "marginLeftMm": 0,
+    "hGapMm": 0,
+    "vGapMm": 0,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "A4 Multi Purpose Label(35 Label)",
+  "source": "Microsoft Word label database (Formtec, PGLBL010.XML)"
+}

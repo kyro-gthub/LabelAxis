@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-3642s",
+  "brand": "Formtec",
+  "productCode": "3642S",
+  "name": "Formtec 3642S — 114 × 5.5 mm, 48-up",
+  "categories": ["CD/DVD & media"],
+  "page": { "size": "A4", "widthMm": 210, "heightMm": 297 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 1,
+    "rows": 48,
+    "labelWidthMm": 114,
+    "labelHeightMm": 5.5,
+    "marginTopMm": 16.5,
+    "marginLeftMm": 48,
+    "hGapMm": 0,
+    "vGapMm": 0,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "A4-Korea CD 케이스 측면 라벨 / 레이저, 잉크젯용(48칸)",
+  "source": "Microsoft Word label database (Formtec, PGLBL010.XML)"
+}

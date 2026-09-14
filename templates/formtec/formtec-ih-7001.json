@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-ih-7001",
+  "brand": "Formtec",
+  "productCode": "IH-7001",
+  "name": "Formtec IH-7001 — 215.9 × 279.4 mm, 1-up",
+  "categories": ["General"],
+  "page": { "size": "Letter", "widthMm": 215.9, "heightMm": 279.4 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 1,
+    "rows": 1,
+    "labelWidthMm": 215.9,
+    "labelHeightMm": 279.4,
+    "marginTopMm": 0,
+    "marginLeftMm": 0,
+    "hGapMm": 0,
+    "vGapMm": 0,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "Letter Shipping Inkjet(100 Sheet/1 Label)",
+  "source": "Microsoft Word label database (Formtec, PGLBL010.XML)"
+}
