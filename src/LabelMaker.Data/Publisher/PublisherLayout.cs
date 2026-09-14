@@ -77,7 +77,7 @@ public sealed record PubLayout(string Title, double PageWidthPt, double PageHeig
 }
 
 /// <summary>
-/// Turns a <see cref="PubLayout"/> into a Label Maker project: one page per Publisher page,
+/// Turns a <see cref="PubLayout"/> into a LabelAxis project: one page per Publisher page,
 /// on a sheet the size of the Publisher page, every shape where it was.
 /// </summary>
 public static class PublisherLayoutConverter

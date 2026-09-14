@@ -39,13 +39,13 @@ catch (Exception ex)
 
 static int PrintVersion()
 {
-    Console.WriteLine("Label Maker CLI 1.0.0");
+    Console.WriteLine("LabelAxis CLI 1.0.0");
     return 0;
 }
 
 static int Unknown(string command)
 {
-    Console.Error.WriteLine($"error: unknown command '{command}'. Run 'labelmaker help'.");
+    Console.Error.WriteLine($"error: unknown command '{command}'. Run 'labelaxis help'.");
     return 2;
 }
 
@@ -55,10 +55,10 @@ internal static class Help
     {
         Console.WriteLine(
             """
-            Label Maker CLI — headless barcode, sequence, export and inspection tools.
+            LabelAxis CLI — headless barcode, sequence, export and inspection tools.
 
             USAGE
-              labelmaker <command> [options]
+              labelaxis <command> [options]
 
             COMMANDS
               barcode        Render one barcode to SVG or PDF.
@@ -71,13 +71,13 @@ internal static class Help
               version        Print the version.
 
             EXAMPLES
-              labelmaker barcode --symbology code128 --value ABC001459 --out code.svg
-              labelmaker sequence --prefix ABC --start 1 --end 10000 --padding 6
-              labelmaker bulk-barcode --symbology code128 --prefix ABC --start 1 --end 500 \
+              labelaxis barcode --symbology code128 --value ABC001459 --out code.svg
+              labelaxis sequence --prefix ABC --start 1 --end 10000 --padding 6
+              labelaxis bulk-barcode --symbology code128 --prefix ABC --start 1 --end 500 \
                          --padding 6 --format svg --out ./out
-              labelmaker export --project labels.labelproj --data rows.csv --out sheet.pdf
-              labelmaker templates list
-              labelmaker templates show formtec-3100
+              labelaxis export --project labels.labelproj --data rows.csv --out sheet.pdf
+              labelaxis templates list
+              labelaxis templates show formtec-3100
 
             NOTES
               PNG/JPEG output is only available from the desktop app (needs the Windows

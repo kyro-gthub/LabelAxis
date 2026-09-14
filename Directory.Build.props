@@ -9,12 +9,12 @@
     <AnalysisLevel>latest-recommended</AnalysisLevel>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
 
-    <Product>Label Maker</Product>
-    <Company>Label Maker Project</Company>
+    <Product>LabelAxis</Product>
+    <Company>LabelAxis</Company>
     <Version>1.0.0</Version>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <FileVersion>1.0.0.0</FileVersion>
-    <Copyright>Copyright © Label Maker Project</Copyright>
+    <Copyright>Copyright © LabelAxis</Copyright>
     <NeutralLanguage>en-US</NeutralLanguage>
   </PropertyGroup>
 </Project>

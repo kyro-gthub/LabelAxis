@@ -15,11 +15,11 @@ public interface IShellServices
     /// <summary>Single-line text prompt. Returns null on cancel.</summary>
     string? Prompt(string title, string label, string initialValue = "");
 
-    void Info(string message, string title = "Label Maker");
+    void Info(string message, string title = "LabelAxis");
 
-    void Warn(string message, string title = "Label Maker");
+    void Warn(string message, string title = "LabelAxis");
 
-    bool Confirm(string message, string title = "Label Maker");
+    bool Confirm(string message, string title = "LabelAxis");
 
     /// <summary>Yes = save, No = discard, Cancel = null.</summary>
     bool? ConfirmSaveChanges(string projectTitle);

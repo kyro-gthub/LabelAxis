@@ -7,7 +7,10 @@ namespace LabelMaker.Core.Settings;
 /// </summary>
 public sealed class AppPaths
 {
-    public const string AppFolderName = "LabelMaker";
+    public const string AppFolderName = "LabelAxis";
+
+    /// <summary>The folder name used before the app was renamed to LabelAxis.</summary>
+    public const string LegacyFolderName = "LabelMaker";
 
     public AppPaths(string? roamingRoot = null, string? localRoot = null)
     {
@@ -15,6 +18,12 @@ public sealed class AppPaths
                          ?? Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
         string local = localRoot
                        ?? Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+
+        CarryOverLegacyFolder(roaming);
+        if (!string.Equals(local, roaming, StringComparison.OrdinalIgnoreCase))
+        {
+            CarryOverLegacyFolder(local);
+        }
 
         RoamingDirectory = Path.Combine(roaming, AppFolderName);
         LocalDirectory = Path.Combine(local, AppFolderName);
@@ -45,6 +54,39 @@ public sealed class AppPaths
     public string RecoveryDirectory { get; }
     public string LogDirectory { get; }
     public string CacheDirectory { get; }
+
+    /// <summary>
+    /// Settings, templates, calibration and recovery snapshots saved under the old
+    /// "LabelMaker" folder are copied to the "LabelAxis" folder the first time the renamed
+    /// app starts, so nothing is lost. The old folder is left in place.
+    /// </summary>
+    private static void CarryOverLegacyFolder(string root)
+    {
+        try
+        {
+            string legacy = Path.Combine(root, LegacyFolderName);
+            string current = Path.Combine(root, AppFolderName);
+            if (Directory.Exists(current) || !Directory.Exists(legacy))
+            {
+                return;
+            }
+
+            foreach (string dir in Directory.EnumerateDirectories(legacy, "*", SearchOption.AllDirectories))
+            {
+                Directory.CreateDirectory(Path.Combine(current, Path.GetRelativePath(legacy, dir)));
+            }
+
+            Directory.CreateDirectory(current);
+            foreach (string file in Directory.EnumerateFiles(legacy, "*", SearchOption.AllDirectories))
+            {
+                File.Copy(file, Path.Combine(current, Path.GetRelativePath(legacy, file)), overwrite: false);
+            }
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            // Best effort: the app still starts with fresh settings.
+        }
+    }
 
     public void EnsureCreated()
     {

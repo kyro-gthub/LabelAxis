@@ -1,4 +1,4 @@
-# Label Maker
+# LabelAxis
 
 A **Windows-first desktop application for designing and printing labels** — built
 around Formtec label sheets, reliable barcodes (Code 128 first), bulk /
@@ -98,18 +98,18 @@ Full build / packaging instructions: [`docs/BUILD.md`](docs/BUILD.md).
 
 ### Command-line tool
 
-The `labelmaker` CLI exposes the engine headlessly (vector SVG/PDF only — PNG is
+The `labelaxis` CLI exposes the engine headlessly (vector SVG/PDF only — PNG is
 desktop-app only):
 
 ```bash
-labelmaker barcode --symbology code128 --value ABC001459 --out code.svg
-labelmaker sequence --prefix PRD- --suffix -IRQ --start 1 --end 10000 --padding 6
-labelmaker bulk-barcode --symbology code128 --prefix ABC --start 1 --end 10000 \
+labelaxis barcode --symbology code128 --value ABC001459 --out code.svg
+labelaxis sequence --prefix PRD- --suffix -IRQ --start 1 --end 10000 --padding 6
+labelaxis bulk-barcode --symbology code128 --prefix ABC --start 1 --end 10000 \
            --padding 6 --format svg --out ./out
-labelmaker export --project labels.labelproj --data rows.csv --out sheet.pdf
-labelmaker templates list
-labelmaker preflight --project labels.labelproj --data rows.csv
-labelmaker inspect --project labels.labelproj
+labelaxis export --project labels.labelproj --data rows.csv --out sheet.pdf
+labelaxis templates list
+labelaxis preflight --project labels.labelproj --data rows.csv
+labelaxis inspect --project labels.labelproj
 ```
 
 ---
@@ -117,7 +117,7 @@ labelmaker inspect --project labels.labelproj
 ## Repository layout
 
 ```
-Label Maker/
+LabelAxis/
 ├─ LabelMaker.slnx                 solution (also builds with `dotnet build`)
 ├─ Directory.Build.props           common TFM / nullable / analyzers / version
 ├─ Directory.Packages.props        central, pinned package versions
@@ -129,7 +129,7 @@ Label Maker/
 │   │                              printing math, rendering, serialization, editing)
 │   ├─ LabelMaker.Export/          PdfSharp + SVG drawing surfaces and exporters
 │   ├─ LabelMaker.App/             WPF desktop application (Windows)
-│   └─ LabelMaker.Cli/             headless tools (`labelmaker`)
+│   └─ LabelMaker.Cli/             headless tools (`labelaxis`)
 ├─ tests/LabelMaker.Tests/         xUnit — engine + export, headless
 ├─ installer/LabelMaker.iss        Inno Setup script (per-user, .labelproj assoc)
 └─ build/                          build / test / publish PowerShell scripts

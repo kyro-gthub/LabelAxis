@@ -1,4 +1,4 @@
-# Label Maker — Architecture & Design
+# LabelAxis — Architecture & Design
 
 > A stable, Windows-first desktop label design and printing application focused on
 > Formtec templates, barcodes (Code 128 first), bulk / variable-data printing,
@@ -195,7 +195,7 @@ hard-coded in logic (spec §3, §33). Full schema in
 * Validation: grid must fit inside the page; label + gaps + margins reconciled;
   warns if any label crosses the printable margin.
 * `TemplateStore` — loads built-ins (embedded + `templates/formtec/`), merges the
-  user folder (`%APPDATA%\LabelMaker\templates`), supports search by product
+  user folder (`%APPDATA%\LabelAxis\templates`), supports search by product
   code, by dimensions (± tolerance), by category, plus duplicate / edit /
   import / export (JSON and CSV). Adding a template is dropping a `.json` file.
 
@@ -314,7 +314,7 @@ LabelSheetPaginator : DocumentPaginator
 * **Printer Calibration Wizard** prints a crosshair + ruler target, the user
   measures the offset, and we store
   `{printerName → PrinterCalibration}` in
-  `%APPDATA%\LabelMaker\calibration.json` (spec §16: X `+0.8mm`, Y `-1.2mm` per
+  `%APPDATA%\LabelAxis\calibration.json` (spec §16: X `+0.8mm`, Y `-1.2mm` per
   printer).
 * **Actual-size preview**: the preview control renders the paginator output at
   `zoom = screenDpi/96` so 100% on screen equals physical size; a "hold a ruler
@@ -356,7 +356,7 @@ project.labelproj  (ZIP)
   run code (spec §28).
 * **Auto-save & recovery** (spec §32): every N seconds (default 120) the
   in-memory model is written to
-  `%LOCALAPPDATA%\LabelMaker\recovery\<projectId>\autosave.labelproj` — a
+  `%LOCALAPPDATA%\LabelAxis\recovery\<projectId>\autosave.labelproj` — a
   *separate* file, the user's saved file is never touched. A sentinel records
   "clean shutdown". On launch, an un-cleared sentinel → "An unsaved project was
   recovered. Restore it?". On clean exit the recovery folder is purged.
@@ -402,7 +402,7 @@ overlay (selection handles, guides, snap lines) so "what you see" is exactly
 ## 10. Proposed folder structure
 
 ```
-Label Maker/
+LabelAxis/
 ├─ LabelMaker.sln
 ├─ Directory.Build.props            common TFM, nullable, analyzers, version
 ├─ Directory.Packages.props         central package versions (locked)

@@ -12,7 +12,7 @@ namespace LabelMaker.App.Services;
 /// <summary>What the Windows clipboard currently offers, in the order paste prefers it.</summary>
 public abstract record ClipboardContent
 {
-    /// <summary>Objects copied from Label Maker (this window, another tab, or another running copy).</summary>
+    /// <summary>Objects copied from LabelAxis (this window, another tab, or another running copy).</summary>
     public sealed record Objects(IReadOnlyList<LabelObject> Items, IReadOnlyDictionary<string, (string Extension, byte[] Bytes)> Assets) : ClipboardContent;
 
     /// <summary>A bitmap from another app (a screenshot, an image copied in a browser…), as PNG bytes.</summary>
@@ -26,10 +26,10 @@ public abstract record ClipboardContent
 }
 
 /// <summary>
-/// Copy / Cut / Paste through the real Windows clipboard. Label Maker objects go on
+/// Copy / Cut / Paste through the real Windows clipboard. LabelAxis objects go on
 /// as a private format (with the pixels of any images, so they paste into another
 /// project intact) plus their plain text, so copying a label's text into Notepad or
-/// Excel works too. Paste accepts Label Maker objects, bitmaps, image files and text
+/// Excel works too. Paste accepts LabelAxis objects, bitmaps, image files and text
 /// from any application.
 /// </summary>
 public static class ObjectClipboard
@@ -86,7 +86,7 @@ public static class ObjectClipboard
         Retry(() => Clipboard.SetDataObject(data, copy: true));
     }
 
-    /// <summary>Reads the clipboard, preferring Label Maker objects, then images, files, then text.</summary>
+    /// <summary>Reads the clipboard, preferring LabelAxis objects, then images, files, then text.</summary>
     public static ClipboardContent? Read()
     {
         try

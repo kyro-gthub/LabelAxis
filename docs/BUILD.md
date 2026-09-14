@@ -42,7 +42,7 @@ directly. Older tooling can open the individual `.csproj` files.
 build\build.ps1     # clean + restore + Release build + test
 build\test.ps1      # test only, with coverage (coverlet) into ./coverage
 build\publish.ps1   # self-contained win-x64 publish of the app + CLI into ./artifacts
-build\installer.ps1 # publish, then compile installer\LabelMaker.iss with ISCC
+build\installer.ps1 # publish, then compile installer\LabelAxis.iss with ISCC
 ```
 
 ## Publishing the application
@@ -70,10 +70,10 @@ files out anyway.
 3. Run:
 
    ```powershell
-   ISCC installer\LabelMaker.iss
+   ISCC installer\LabelAxis.iss
    ```
 
-   Output: `installer\Output\LabelMaker-Setup-1.0.0.exe`.
+   Output: `installer\Output\LabelAxis-Setup-1.0.0.exe`.
 
 The installer is **per-user** (`PrivilegesRequired=lowest`), adds a Start Menu
 shortcut, registers the `.labelproj` file association with the app icon, and

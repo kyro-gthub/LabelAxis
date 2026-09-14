@@ -334,7 +334,7 @@ public partial class ThermalPrintWindow : Window
         IThermalSink sink;
         try
         {
-            sink = ThermalSinks.Open(settings, file, $"Label Maker — {_session.Project.Metadata.Title}");
+            sink = ThermalSinks.Open(settings, file, $"LabelAxis — {_session.Project.Metadata.Title}");
         }
         catch (Exception ex) when (ex is InvalidOperationException or IOException or UnauthorizedAccessException)
         {

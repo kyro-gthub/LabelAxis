@@ -13,7 +13,7 @@ namespace LabelMaker.App.Services;
 /// Publisher lays them out. Only works where Publisher is installed; the file is opened
 /// read-only in a hidden Publisher window and closed without saving.
 /// <para>
-/// Shapes Label Maker has no equivalent for (WordArt, freeforms, charts, callouts, OLE
+/// Shapes LabelAxis has no equivalent for (WordArt, freeforms, charts, callouts, OLE
 /// objects) are brought in as a picture of themselves, so the page still looks the same.
 /// </para>
 /// </summary>
@@ -30,7 +30,7 @@ public static class PublisherAutomation
     private const int TypeTextFrame = 17;
     private const int TypeTable = 19;
 
-    // MsoAutoShapeType values Label Maker draws natively.
+    // MsoAutoShapeType values LabelAxis draws natively.
     private const int ShapeRectangle = 1;
     private const int ShapeRoundedRectangle = 5;
     private const int ShapeOval = 9;
@@ -76,7 +76,7 @@ public static class PublisherAutomation
 
         dynamic? app = null;
         dynamic? doc = null;
-        string pictures = Path.Combine(Path.GetTempPath(), "LabelMaker-pub-" + Guid.NewGuid().ToString("N"));
+        string pictures = Path.Combine(Path.GetTempPath(), "LabelAxis-pub-" + Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(pictures);
         var notes = new List<string>();
 

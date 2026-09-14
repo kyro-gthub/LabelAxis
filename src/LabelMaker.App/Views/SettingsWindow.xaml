@@ -49,7 +49,7 @@
       <GroupBox>
         <StackPanel>
           <CheckBox x:Name="ReopenLastProjectBox" Content="Reopen the last project automatically" Margin="0,4" />
-          <CheckBox x:Name="ShowWelcomeBox" Content="Show the welcome window when Label Maker starts" Margin="0,4" />
+          <CheckBox x:Name="ShowWelcomeBox" Content="Show the welcome window when LabelAxis starts" Margin="0,4" />
         </StackPanel>
       </GroupBox>
 
@@ -77,7 +77,7 @@
       <TextBlock Text="About" FontWeight="SemiBold" FontSize="13" Margin="0,14,0,8" Foreground="{DynamicResource Br.TextMuted}" />
       <GroupBox>
         <StackPanel>
-          <TextBlock Text="Label Maker 1.0" FontFamily="{StaticResource Font.UiSemiBold}" FontSize="13" Margin="0,2" />
+          <TextBlock Text="LabelAxis 1.0" FontFamily="{StaticResource Font.UiSemiBold}" FontSize="13" Margin="0,2" />
           <TextBlock Text="Windows-first label design &amp; printing. Formtec templates · barcodes · variable data · accurate printing."
                      TextWrapping="Wrap" Foreground="{DynamicResource Br.TextMuted}" FontSize="11.5" Margin="0,2" />
         </StackPanel>

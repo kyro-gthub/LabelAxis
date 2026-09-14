@@ -169,7 +169,7 @@ public sealed partial class MainViewModel : ObservableObject
 
     public string Title => (_session.Document.HasUnsavedChanges ? "• " : string.Empty) +
         (_session.Document.FilePath is { } p ? Path.GetFileName(p) : _session.Project.Metadata.Title) +
-        " — Label Maker";
+        " — LabelAxis";
 
     public string SelectionInfo
     {
@@ -815,11 +815,11 @@ public sealed partial class MainViewModel : ObservableObject
         LastRecordCommand = new RelayCommand(() => _session.RecordIndex = _session.RecordCount - 1);
 
         AboutCommand = new RelayCommand(() => _shell.Info(
-            "Label Maker 1.0\n\nWindows-first label design & printing.\n" +
+            "LabelAxis 1.0\n\nWindows-first label design & printing.\n" +
             "Label sheet templates · barcodes · variable data · accurate printing.\n\n" +
             (_env.IsPortable ? "Portable build — settings and templates live in " : "Settings and templates live in ") +
             _env.Paths.RoamingDirectory,
-            "About Label Maker"));
+            "About LabelAxis"));
         SettingsCommand = new RelayCommand(() => _shell.ShowSettings());
         ReplaceImageCommand = new RelayCommand(ReplaceSelectedImage, () => Properties.IsImage);
         ToggleObjectLockCommand = new RelayCommand(p => ToggleObjectLock(p as ObjectListItem));
@@ -1493,7 +1493,7 @@ public sealed partial class MainViewModel : ObservableObject
 
     private void OpenProject()
     {
-        string? path = _shell.PickOpenFile("Label Maker project|*.labelproj|All files|*.*", "Open project");
+        string? path = _shell.PickOpenFile("LabelAxis project|*.labelproj|All files|*.*", "Open project");
         if (path is not null)
         {
             OpenProjectPath(path);
@@ -1544,7 +1544,7 @@ public sealed partial class MainViewModel : ObservableObject
         string? path = _session.Document.FilePath;
         if (forceDialog || path is null)
         {
-            path = _shell.PickSaveFile("Label Maker project|*.labelproj", SafeName(_session.Project.Metadata.Title), "Save project");
+            path = _shell.PickSaveFile("LabelAxis project|*.labelproj", SafeName(_session.Project.Metadata.Title), "Save project");
             if (path is null)
             {
                 return false;

@@ -352,7 +352,7 @@ public partial class PrintWindow : Window
         int.TryParse(s.Trim(), NumberStyles.Integer, CultureInfo.InvariantCulture, out int v) && v > 0 ? v : null;
 
     private void Fail(Exception ex) =>
-        MessageBox.Show(this, "Printing failed:\n\n" + ex.Message, "Label Maker",
+        MessageBox.Show(this, "Printing failed:\n\n" + ex.Message, "LabelAxis",
             MessageBoxButton.OK, MessageBoxImage.Warning);
 
     private static int ParseInt(string s, int fallback) =>

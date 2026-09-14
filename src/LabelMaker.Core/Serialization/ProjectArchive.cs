@@ -102,7 +102,7 @@ public static class ProjectArchive
         if (manifest.SchemaVersion > ProjectModel.CurrentSchemaVersion)
         {
             throw new NotSupportedException(
-                $"This project was created by a newer version of Label Maker (schema {manifest.SchemaVersion}). " +
+                $"This project was created by a newer version of LabelAxis (schema {manifest.SchemaVersion}). " +
                 "Update the application to open it.");
         }
 

@@ -176,7 +176,7 @@ public sealed partial class MainViewModel
 
     private bool ConfirmReplacingEditedRecords() =>
         !_activeTab.RecordsEditedSinceLoad ||
-        _shell.Confirm("You have edited these records in Label Maker. Reading the source again replaces them with its current rows, and those edits are lost.\n\nContinue?");
+        _shell.Confirm("You have edited these records in LabelAxis. Reading the source again replaces them with its current rows, and those edits are lost.\n\nContinue?");
 
     /// <summary>After a project opens with saved records, say where they came from and whether they may be out of date.</summary>
     private void DescribeRestoredData(DataConnectionModel? connection)

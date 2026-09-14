@@ -36,7 +36,7 @@ public sealed class PdfExporter
 
         using var document = new PdfDocument();
         document.Info.Title = request.Title;
-        document.Info.Creator = "Label Maker 1.0";
+        document.Info.Creator = "LabelAxis 1.0";
 
         (byte[] Bytes, int Width, int Height)? Resolver(string id)
         {

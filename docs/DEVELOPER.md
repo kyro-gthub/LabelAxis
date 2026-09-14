@@ -7,7 +7,7 @@
 | `LabelMaker.Core` | `net10.0` | Everything non-visual. No `System.Windows`, no `System.Drawing`. |
 | `LabelMaker.Export` | `net10.0` | `IDrawingSurface` implementations for PdfSharp (`XGraphics`) and SVG; PDF/SVG exporters. |
 | `LabelMaker.App` | `net10.0-windows` | WPF UI, the WPF `IDrawingSurface`, PNG/JPEG raster export, `System.Printing` server. |
-| `LabelMaker.Cli` | `net10.0` | `labelmaker` headless tool. |
+| `LabelMaker.Cli` | `net10.0` | `labelaxis` headless tool. |
 | `LabelMaker.Tests` | `net10.0` | xUnit over Core + Export. |
 
 **Rule:** logic goes in `Core`. If you're about to reference a UI type in `Core`,
@@ -80,7 +80,7 @@ instantiate an arbitrary type or run code.
 
 Saving is atomic: write `*.tmp`, `Flush(true)`, then `File.Replace` (with a
 `.bak`), falling back to delete+move across volumes. `AutoSaveService` writes
-recovery snapshots to `%LOCALAPPDATA%\LabelMaker\recovery\` — a **separate**
+recovery snapshots to `%LOCALAPPDATA%\LabelAxis\recovery\` — a **separate**
 location from the user's file.
 
 Schema changes: bump `ProjectModel.CurrentSchemaVersion` and add an ordered JSON

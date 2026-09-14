@@ -74,13 +74,13 @@ public sealed class DialogService : IShellServices
         return win.ShowDialog() == true ? win.Value : null;
     }
 
-    public void Info(string message, string title = "Label Maker") =>
+    public void Info(string message, string title = "LabelAxis") =>
         MessageBox.Show(Front, message, title, MessageBoxButton.OK, MessageBoxImage.Information);
 
-    public void Warn(string message, string title = "Label Maker") =>
+    public void Warn(string message, string title = "LabelAxis") =>
         MessageBox.Show(Front, message, title, MessageBoxButton.OK, MessageBoxImage.Warning);
 
-    public bool Confirm(string message, string title = "Label Maker") =>
+    public bool Confirm(string message, string title = "LabelAxis") =>
         MessageBox.Show(Front, message, title, MessageBoxButton.OKCancel, MessageBoxImage.Question) == MessageBoxResult.OK;
 
     public void ShowPublisherImport(LabelMaker.Data.Publisher.PublisherContent content, string path)
@@ -108,7 +108,7 @@ public sealed class DialogService : IShellServices
         MessageBoxResult result = MessageBox.Show(
             _owner,
             $"Save changes to \"{projectTitle}\" before continuing?",
-            "Label Maker",
+            "LabelAxis",
             MessageBoxButton.YesNoCancel,
             MessageBoxImage.Question);
 

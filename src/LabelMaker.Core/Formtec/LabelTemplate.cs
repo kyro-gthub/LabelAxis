@@ -203,7 +203,7 @@ public sealed record LabelTemplate
             },
             Media = LabelMedia.Roll,
             Roll = new RollMedia { GapMm = rollGapMm, Sensing = sensing },
-            Source = "Thermal roll defined in Label Maker",
+            Source = "Thermal roll defined in LabelAxis",
         };
     }
 

@@ -4,12 +4,12 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net10.0-windows</TargetFramework>
     <RootNamespace>LabelMaker.App</RootNamespace>
-    <AssemblyName>LabelMaker</AssemblyName>
+    <AssemblyName>LabelAxis</AssemblyName>
     <UseWPF>true</UseWPF>
     <UseWindowsForms>false</UseWindowsForms>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>..\..\installer\assets\icon.ico</ApplicationIcon>
-    <Description>Label Maker desktop application (WPF, Windows).</Description>
+    <Description>LabelAxis desktop application (WPF, Windows).</Description>
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
   </PropertyGroup>
 

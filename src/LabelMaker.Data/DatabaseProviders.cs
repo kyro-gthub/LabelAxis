@@ -10,7 +10,7 @@ using Npgsql;
 
 namespace LabelMaker.Data;
 
-/// <summary>What Label Maker needs from one kind of database: how to connect, quote, limit and list tables.</summary>
+/// <summary>What LabelAxis needs from one kind of database: how to connect, quote, limit and list tables.</summary>
 public interface IDatabaseProvider
 {
     DataSourceKind Kind { get; }
@@ -139,7 +139,7 @@ internal sealed class SqliteProvider : IDatabaseProvider
             throw new DataSourceException($"The database file was not found:\n{c.SourcePath}");
         }
 
-        // Read-only at the file level: nothing Label Maker runs can change the database.
+        // Read-only at the file level: nothing LabelAxis runs can change the database.
         var builder = new SqliteConnectionStringBuilder
         {
             DataSource = c.SourcePath,
@@ -186,7 +186,7 @@ internal sealed class SqlServerProvider : IDatabaseProvider
             InitialCatalog = c.Database ?? string.Empty,
             IntegratedSecurity = c.IntegratedSecurity,
             ConnectTimeout = 15,
-            ApplicationName = "Label Maker",
+            ApplicationName = "LabelAxis",
             ApplicationIntent = ApplicationIntent.ReadOnly,
             Pooling = false,
         };
@@ -277,7 +277,7 @@ internal sealed class PostgreSqlProvider : IDatabaseProvider
             Username = c.UserName,
             Password = password,
             Timeout = 15,
-            ApplicationName = "Label Maker",
+            ApplicationName = "LabelAxis",
             Pooling = false,
         };
         DatabaseProviders.ApplyOptions(builder, c.ConnectionOptions);

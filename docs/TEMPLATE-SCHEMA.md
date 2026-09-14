@@ -5,7 +5,7 @@ Templates are **data**. The application ships them as JSON files under
 `*.json` from the user template folder:
 
 ```
-%APPDATA%\LabelMaker\templates\
+%APPDATA%\LabelAxis\templates\
 ```
 
 Adding a new Formtec (or Avery, or any brand) sheet is **dropping a `.json`
@@ -114,7 +114,7 @@ file never blocks the rest.
 
 ## CSV batch format
 
-`TemplateStore.ExportCsv()` / `ImportCsv()` and `labelmaker templates export-csv`
+`TemplateStore.ExportCsv()` / `ImportCsv()` and `labelaxis templates export-csv`
 use one row per template with this header:
 
 ```
@@ -131,7 +131,7 @@ JSON fields above.
 ## Adding your own
 
 1. Copy an existing file in `templates/formtec/` (for a shipped default) or drop a
-   new file in `%APPDATA%\LabelMaker\templates\` (for a personal one).
+   new file in `%APPDATA%\LabelAxis\templates\` (for a personal one).
 2. Give it a unique `id`.
 3. Fill in the grid from the manufacturer's datasheet.
 4. Restart the app (or reopen the Template Manager) — it appears in **New
