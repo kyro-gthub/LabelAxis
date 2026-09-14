@@ -17,7 +17,7 @@ internal static class TemplatesCommand
                 foreach (LabelTemplate t in store.Search(new TemplateQuery { Text = o.Get("filter") }))
                 {
                     Console.WriteLine($"{t.Id,-24} {t.Brand,-10} {t.Grid.Columns}x{t.Grid.Rows,-5} " +
-                                      $"{t.Grid.LabelWidthMm:0.#}x{t.Grid.LabelHeightMm:0.#}".PadRight(41) + t.Name);
+                                      $"{t.Grid.LabelWidthMm:0.##}x{t.Grid.LabelHeightMm:0.##}".PadRight(41) + t.Name);
                 }
 
                 return 0;

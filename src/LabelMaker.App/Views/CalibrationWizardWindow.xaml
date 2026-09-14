@@ -3,35 +3,45 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Style="{StaticResource AppWindow}"
         Background="{DynamicResource Br.Surface}" TextElement.Foreground="{DynamicResource Br.Text}"
-        Title="Printer Calibration Wizard" Height="420" Width="520" WindowStartupLocation="CenterOwner">
-  <StackPanel Margin="16">
-    <TextBlock TextWrapping="Wrap" Margin="0,0,0,8">
-      This prints a crosshair target 20&#160;mm from the top-left of the sheet. Measure the actual
-      distance to the printed crosshair with a ruler, then enter the difference. Positive X moves
-      artwork right; positive Y moves it down. Calibration is stored per printer.
-    </TextBlock>
-
-    <DockPanel Margin="0,6">
-      <TextBlock Text="Printer:" Width="90" VerticalAlignment="Center" />
-      <ComboBox x:Name="PrinterBox" />
-    </DockPanel>
-
-    <Button Content="Print calibration target" Padding="12,5" HorizontalAlignment="Left" Margin="0,8" Click="OnPrintTarget" />
-
-    <GroupBox Header="Measured offset (mm)" Margin="0,8">
-      <StackPanel>
-        <DockPanel Margin="0,4"><TextBlock Text="X offset:" Width="90" VerticalAlignment="Center" /><TextBox x:Name="OffsetXBox" Text="0.0" Width="80" HorizontalContentAlignment="Right" /></DockPanel>
-        <DockPanel Margin="0,4"><TextBlock Text="Y offset:" Width="90" VerticalAlignment="Center" /><TextBox x:Name="OffsetYBox" Text="0.0" Width="80" HorizontalContentAlignment="Right" /></DockPanel>
-        <DockPanel Margin="0,4"><TextBlock Text="Scale X:" Width="90" VerticalAlignment="Center" /><TextBox x:Name="ScaleXBox" Text="1.000" Width="80" HorizontalContentAlignment="Right" /></DockPanel>
-        <DockPanel Margin="0,4"><TextBlock Text="Scale Y:" Width="90" VerticalAlignment="Center" /><TextBox x:Name="ScaleYBox" Text="1.000" Width="80" HorizontalContentAlignment="Right" /></DockPanel>
+        Title="Printer Calibration Wizard" SizeToContent="Height" MaxHeight="760" MinHeight="300" Width="520"
+        WindowStartupLocation="CenterOwner">
+  <DockPanel>
+    <!-- buttons stay visible however small the window is -->
+    <Border DockPanel.Dock="Bottom" Background="{DynamicResource Br.Bg}"
+            BorderBrush="{DynamicResource Br.Border}" BorderThickness="0,1,0,0" Padding="16,10">
+      <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+        <Button Content="Save calibration" Padding="16,5" Click="OnSave" />
+        <Button Content="Close" Padding="16,5" Margin="8,0,0,0" IsCancel="True" />
       </StackPanel>
-    </GroupBox>
+    </Border>
 
-    <TextBlock x:Name="StatusText" Foreground="#555" TextWrapping="Wrap" Margin="0,6" />
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+      <StackPanel Margin="16">
+        <TextBlock TextWrapping="Wrap" Margin="0,0,0,8">
+          This prints a crosshair target 20&#160;mm from the top-left of the sheet, on the current
+          project's paper at 100%. Measure the actual distance to the printed crosshair with a ruler,
+          then enter the difference. Positive X moves artwork right; positive Y moves it down.
+          Calibration is stored per printer.
+        </TextBlock>
 
-    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
-      <Button Content="Save calibration" Padding="16,5" Click="OnSave" />
-      <Button Content="Close" Padding="16,5" Margin="8,0,0,0" IsCancel="True" />
-    </StackPanel>
-  </StackPanel>
+        <DockPanel Margin="0,6">
+          <TextBlock Text="Printer:" Width="90" VerticalAlignment="Center" />
+          <ComboBox x:Name="PrinterBox" />
+        </DockPanel>
+
+        <Button Content="Print calibration target" Padding="12,5" HorizontalAlignment="Left" Margin="0,8" Click="OnPrintTarget" />
+
+        <GroupBox Header="Measured offset (mm)" Margin="0,8">
+          <StackPanel>
+            <DockPanel Margin="0,4"><TextBlock Text="X offset:" Width="90" VerticalAlignment="Center" /><TextBox x:Name="OffsetXBox" Text="0.0" Width="80" HorizontalContentAlignment="Right" /></DockPanel>
+            <DockPanel Margin="0,4"><TextBlock Text="Y offset:" Width="90" VerticalAlignment="Center" /><TextBox x:Name="OffsetYBox" Text="0.0" Width="80" HorizontalContentAlignment="Right" /></DockPanel>
+            <DockPanel Margin="0,4"><TextBlock Text="Scale X:" Width="90" VerticalAlignment="Center" /><TextBox x:Name="ScaleXBox" Text="1.000" Width="80" HorizontalContentAlignment="Right" /></DockPanel>
+            <DockPanel Margin="0,4"><TextBlock Text="Scale Y:" Width="90" VerticalAlignment="Center" /><TextBox x:Name="ScaleYBox" Text="1.000" Width="80" HorizontalContentAlignment="Right" /></DockPanel>
+          </StackPanel>
+        </GroupBox>
+
+        <TextBlock x:Name="StatusText" Foreground="{DynamicResource Br.TextMuted}" TextWrapping="Wrap" Margin="0,6" />
+      </StackPanel>
+    </ScrollViewer>
+  </DockPanel>
 </Window>

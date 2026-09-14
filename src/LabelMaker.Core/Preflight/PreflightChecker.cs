@@ -48,6 +48,48 @@ public sealed class PreflightReport
 
     public bool HasErrors => Errors.Any();
     public bool IsClean => Issues.Count == 0;
+
+    /// <summary>
+    /// One readable line per distinct problem, errors first. The same problem on many records
+    /// is listed once with its records ("records 1–40, 52"), not once per record.
+    /// </summary>
+    public IReadOnlyList<string> SummaryLines() => Issues
+        .GroupBy(i => (i.Severity, i.Category, i.ObjectId, i.PageId, i.Message))
+        .OrderBy(g => g.Key.Severity)
+        .Select(g =>
+        {
+            string severity = g.Key.Severity == PreflightSeverity.Error ? "Error" : "Warning";
+            var records = g.Where(i => i.RecordIndex is not null).Select(i => i.RecordIndex!.Value + 1).Distinct().Order().ToList();
+            string where = records.Count switch
+            {
+                0 => string.Empty,
+                1 => $" — record {records[0]}",
+                _ => $" — records {Ranges(records)}",
+            };
+            return where.Length == 0 ? $"{severity}: {g.Key.Message}" : $"{severity}: {g.Key.Message.TrimEnd('.')}{where}.";
+        })
+        .ToList();
+
+    /// <summary>"1–40, 52, 60–61" from sorted record numbers.</summary>
+    private static string Ranges(List<int> sorted)
+    {
+        var parts = new List<string>();
+        int start = sorted[0];
+        int previous = start;
+        foreach (int n in sorted.Skip(1).Append(int.MinValue))
+        {
+            if (n == previous + 1)
+            {
+                previous = n;
+                continue;
+            }
+
+            parts.Add(start == previous ? $"{start}" : $"{start}–{previous}");
+            start = previous = n;
+        }
+
+        return string.Join(", ", parts);
+    }
 }
 
 /// <summary>Host-supplied capabilities the checker needs but the core cannot know.</summary>
@@ -250,7 +292,7 @@ public sealed class PreflightChecker
                     {
                         issues.Add(new PreflightIssue(
                             PreflightSeverity.Error, PreflightCategory.InvalidBarcode,
-                            $"Barcode '{Describe(obj)}'{RecordSuffix(recordIndex)}: {bi.Message}")
+                            $"Barcode '{Describe(obj)}': {bi.Message}")
                         { ObjectId = obj.Id, RecordIndex = recordIndex });
                     }
 
@@ -264,7 +306,7 @@ public sealed class PreflightChecker
                         {
                             issues.Add(new PreflightIssue(
                                 PreflightSeverity.Error, PreflightCategory.BarcodeOutsidePrintableArea,
-                                $"Barcode '{Describe(obj)}'{RecordSuffix(recordIndex)} does not fit inside the label.")
+                                $"Barcode '{Describe(obj)}' does not fit inside the label.")
                             { ObjectId = obj.Id, RecordIndex = recordIndex });
                         }
                     }
@@ -281,7 +323,7 @@ public sealed class PreflightChecker
                         {
                             issues.Add(new PreflightIssue(
                                 PreflightSeverity.Warning, PreflightCategory.EmptyRequiredField,
-                                $"Field '{{{field}}}' is empty{RecordSuffix(recordIndex)} for '{Describe(obj)}'.")
+                                $"Field '{{{field}}}' is empty for '{Describe(obj)}'.")
                             { ObjectId = obj.Id, RecordIndex = recordIndex });
                         }
                     }
@@ -294,8 +336,6 @@ public sealed class PreflightChecker
 
     private static bool IsPlainRequiredField(TextObject text) => text.IsPureField;
 
-    private static string RecordSuffix(int? recordIndex) =>
-        recordIndex is { } i ? $" (record {i + 1})" : string.Empty;
 
     private static string Describe(LabelObject obj) =>
         !string.IsNullOrWhiteSpace(obj.Name)

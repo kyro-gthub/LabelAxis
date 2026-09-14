@@ -47,7 +47,7 @@ public partial class TemplateManagerWindow : Window
                 t.Name.Contains(q, StringComparison.OrdinalIgnoreCase) ||
                 t.ProductCode.Contains(q, StringComparison.OrdinalIgnoreCase) ||
                 t.Brand.Contains(q, StringComparison.OrdinalIgnoreCase) ||
-                $"{t.Grid.LabelWidthMm:0.#}x{t.Grid.LabelHeightMm:0.#}".Contains(q, StringComparison.OrdinalIgnoreCase));
+                $"{t.Grid.LabelWidthMm:0.##}x{t.Grid.LabelHeightMm:0.##}".Contains(q, StringComparison.OrdinalIgnoreCase));
         }
 
         var all = source.ToList();
@@ -111,9 +111,9 @@ public partial class TemplateManagerWindow : Window
         PreviewDetail.Text =
             $"{t.Name}\n" +
             $"{t.Grid.Columns} × {t.Grid.Rows} = {t.Grid.Count} labels per {t.EffectivePage.Name} sheet\n" +
-            $"label {t.Grid.LabelWidthMm:0.#} × {t.Grid.LabelHeightMm:0.#} mm · " +
-            $"margins {t.Grid.MarginLeftMm:0.#} / {t.Grid.MarginTopMm:0.#} mm · " +
-            $"gaps {t.Grid.HGapMm:0.#} / {t.Grid.VGapMm:0.#} mm" +
+            $"label {t.Grid.LabelWidthMm:0.##} × {t.Grid.LabelHeightMm:0.##} mm · " +
+            $"margins {t.Grid.MarginLeftMm:0.##} / {t.Grid.MarginTopMm:0.##} mm · " +
+            $"gaps {t.Grid.HGapMm:0.##} / {t.Grid.VGapMm:0.##} mm" +
             (t.IsUserDefined ? "\nUser template" : string.Empty);
 
         DrawPreview(t);
@@ -276,6 +276,8 @@ public partial class TemplateManagerWindow : Window
     private sealed record Category(string Title, string Subtitle, string IconKey, IReadOnlyList<LabelTemplate> Templates)
     {
         public int Count => Templates.Count;
+
+        public override string ToString() => Title;    // screen readers and type-to-search
     }
 
     /// <summary>One sheet, read as brand / code / size rather than as raw JSON.</summary>
@@ -287,6 +289,8 @@ public partial class TemplateManagerWindow : Window
             $"{Template.Grid.Columns} × {Template.Grid.Rows} per {Template.EffectivePage.Name}" +
             (Template.IsUserDefined ? " · user template" : string.Empty);
 
-        public string SizeText => $"{Template.Grid.LabelWidthMm:0.#} × {Template.Grid.LabelHeightMm:0.#} mm";
+        public string SizeText => $"{Template.Grid.LabelWidthMm:0.##} × {Template.Grid.LabelHeightMm:0.##} mm";
+
+        public override string ToString() => Title;
     }
 }

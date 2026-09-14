@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
 using LabelMaker.App.Services;
@@ -10,12 +11,14 @@ public partial class SequenceManagerWindow : Window
 {
     private readonly DocumentSession _session;
     private readonly ObservableCollection<SequenceDefinition> _items;
+    private readonly string _openedWith;
 
     public SequenceManagerWindow(DocumentSession session)
     {
         InitializeComponent();
         _session = session;
         _items = new ObservableCollection<SequenceDefinition>(session.Project.Sequences);
+        _openedWith = Fingerprint(_items);
         Grid.ItemsSource = _items;
     }
 
@@ -34,6 +37,17 @@ public partial class SequenceManagerWindow : Window
         }
     }
 
+    // The edit is committed after this event returns, so refresh the preview once it has been.
+    private void OnRowEditEnding(object? sender, DataGridRowEditEndingEventArgs e) =>
+        Dispatcher.BeginInvoke(() => OnSelectionChanged(this, null!), System.Windows.Threading.DispatcherPriority.Background);
+
+    protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
+    {
+        // Keep a value still being typed when the window is closed.
+        Grid.CommitEdit(DataGridEditingUnit.Row, exitEditingMode: true);
+        base.OnClosing(e);
+    }
+
     private void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (Grid.SelectedItem is SequenceDefinition def)
@@ -47,10 +61,20 @@ public partial class SequenceManagerWindow : Window
 
     protected override void OnClosed(EventArgs e)
     {
-        _session.Project.Sequences.Clear();
-        _session.Project.Sequences.AddRange(_items);
-        _session.RebuildSearchIndex();
-        _session.MarkDirty();
+        // Only a real change makes the project unsaved; looking at the list must not.
+        // The grid edits the definitions in place, so compare their contents, not references.
+        string after = Fingerprint(_items);
+        if (after != _openedWith)
+        {
+            _session.Project.Sequences.Clear();
+            _session.Project.Sequences.AddRange(_items);
+            _session.RebuildSearchIndex();
+            _session.MarkDirty();
+        }
+
         base.OnClosed(e);
     }
+
+    private static string Fingerprint(IEnumerable<SequenceDefinition> items) =>
+        JsonSerializer.Serialize(items.ToList());
 }

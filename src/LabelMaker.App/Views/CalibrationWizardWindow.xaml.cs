@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using LabelMaker.App.Services;
+using LabelMaker.Core.Formtec;
 using LabelMaker.Core.Model;
 using LabelMaker.Core.Printing;
 using LabelMaker.Core.Units;
@@ -15,11 +16,13 @@ public partial class CalibrationWizardWindow : Window
     private const double K = UnitConverter.DiuPerInch / UnitConverter.MmPerInch;
 
     private readonly AppEnvironment _env;
+    private readonly ProjectModel _project;
 
     public CalibrationWizardWindow(AppEnvironment env, ProjectModel project)
     {
         InitializeComponent();
         _env = env;
+        _project = project;
 
         var printServer = new Printing.WpfPrintServer(new Rendering.SheetVisualRenderer(new Rendering.WpfTextMeasurer(),
             new Rendering.WpfImageSource(new Core.Serialization.AssetStore())), env.Calibration);
@@ -53,7 +56,9 @@ public partial class CalibrationWizardWindow : Window
             return;
         }
 
-        dlg.PrintTicket.PageScalingFactor = 100;
+        // The target must print on the same paper, at 100%, as the label sheets it calibrates.
+        PageSize page = _project.Template?.EffectivePage ?? PageSize.A4;
+        dlg.PrintTicket = Printing.WpfPrintServer.TicketFor(dlg.PrintQueue, dlg.PrintTicket, page.WidthMm, page.HeightMm, landscape: false);
 
         var visual = new DrawingVisual();
         using (DrawingContext dc = visual.RenderOpen())

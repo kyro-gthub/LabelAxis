@@ -16,7 +16,7 @@ internal static class InspectCommand
         Console.WriteLine($"Id          : {p.Metadata.Id}");
         Console.WriteLine($"Schema      : {p.SchemaVersion}");
         Console.WriteLine($"Modified    : {p.Metadata.ModifiedUtc:u}");
-        Console.WriteLine($"Template    : {(p.Template is { } t ? $"{t.Brand} {t.ProductCode} — {t.Name} ({t.Grid.Columns}x{t.Grid.Rows}, {t.Grid.LabelWidthMm:0.#}x{t.Grid.LabelHeightMm:0.#} mm)" : "(none)")}");
+        Console.WriteLine($"Template    : {(p.Template is { } t ? $"{t.Brand} {t.ProductCode} — {t.Name} ({t.Grid.Columns}x{t.Grid.Rows}, {t.Grid.LabelWidthMm:0.##}x{t.Grid.LabelHeightMm:0.##} mm)" : "(none)")}");
         Console.WriteLine($"Master label: {p.MasterLabel.SizeMm.Width:0.#} x {p.MasterLabel.SizeMm.Height:0.#} mm, {p.MasterLabel.Objects.Count} object(s)");
 
         foreach (LabelObject obj in p.MasterLabel.Objects)

@@ -41,7 +41,10 @@ public partial class DataConnectionWindow : Window
     /// <summary>The connection and password chosen, when the window closed with "Use these records".</summary>
     public DataConnectionChoice? Result { get; private set; }
 
-    private sealed record KindItem(DataSourceKind Kind, string Title, string Hint);
+    private sealed record KindItem(DataSourceKind Kind, string Title, string Hint)
+    {
+        public override string ToString() => Title;    // screen readers and type-to-search
+    }
 
     private static readonly KindItem[] Kinds =
     {

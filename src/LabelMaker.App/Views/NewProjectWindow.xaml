@@ -29,17 +29,22 @@
             <GridViewColumn Header="Product" Width="90" DisplayMemberBinding="{Binding ProductCode}" />
             <GridViewColumn Header="Brand" Width="70" DisplayMemberBinding="{Binding Brand}" />
             <GridViewColumn Header="Grid" Width="60" DisplayMemberBinding="{Binding GridText}" />
-            <GridViewColumn Header="Label mm" Width="90" DisplayMemberBinding="{Binding LabelText}" />
+            <GridViewColumn Header="Label mm" Width="100" DisplayMemberBinding="{Binding LabelText}" />
             <GridViewColumn Header="Name" Width="230" DisplayMemberBinding="{Binding Name}" />
           </GridView>
         </ListView.View>
       </ListView>
+      <TextBlock x:Name="NoMatches" Grid.Column="0" Visibility="Collapsed" TextWrapping="Wrap" TextAlignment="Center"
+                 HorizontalAlignment="Center" VerticalAlignment="Center" Margin="20"
+                 Foreground="{DynamicResource Br.TextMuted}" />
 
-      <Border Grid.Column="2" BorderBrush="#CCC" BorderThickness="1" Background="#FAFAFA">
-        <DockPanel Margin="8">
-          <TextBlock x:Name="PreviewTitle" DockPanel.Dock="Top" FontWeight="Bold" TextWrapping="Wrap" />
-          <TextBlock x:Name="PreviewDetail" DockPanel.Dock="Top" TextWrapping="Wrap" Margin="0,6,0,0" Foreground="#555" />
-          <Border Margin="0,10,0,0" Background="White" BorderBrush="#DDD" BorderThickness="1">
+      <Border Grid.Column="2" BorderBrush="{DynamicResource Br.Border}" BorderThickness="1" CornerRadius="8"
+              Background="{DynamicResource Br.Bg}">
+        <DockPanel Margin="10">
+          <TextBlock x:Name="PreviewTitle" DockPanel.Dock="Top" FontFamily="{StaticResource Font.UiSemiBold}" TextWrapping="Wrap" />
+          <TextBlock x:Name="PreviewDetail" DockPanel.Dock="Top" TextWrapping="Wrap" Margin="0,6,0,0"
+                     Foreground="{DynamicResource Br.TextMuted}" />
+          <Border Margin="0,10,0,0" Background="{DynamicResource CanvasBackground}" BorderBrush="{DynamicResource Br.Border}" BorderThickness="1">
             <Canvas x:Name="PreviewCanvas" ClipToBounds="True" />
           </Border>
         </DockPanel>

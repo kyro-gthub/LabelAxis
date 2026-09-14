@@ -192,8 +192,8 @@ public partial class ThermalPrintWindow : Window
 
         LabelTemplate roll = _plan.Roll;
         HeaderSubtitle.Text = template is { IsRoll: true }
-            ? $"{roll.Name} · {roll.Grid.Columns} across · roll {roll.EffectivePage.WidthMm:0.#} mm wide"
-            : $"Designed on a sheet: prints one {roll.Grid.LabelWidthMm:0.#} × {roll.Grid.LabelHeightMm:0.#} mm label at a time";
+            ? $"{roll.Name} · {roll.Grid.Columns} across · roll {roll.EffectivePage.WidthMm:0.##} mm wide"
+            : $"Designed on a sheet: prints one {roll.Grid.LabelWidthMm:0.##} × {roll.Grid.LabelHeightMm:0.##} mm label at a time";
 
         ContentText.Text = Print.Content switch
         {

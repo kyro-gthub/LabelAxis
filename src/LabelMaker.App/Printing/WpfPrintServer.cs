@@ -75,6 +75,41 @@ public sealed class WpfPrintServer
         return media;
     }
 
+    /// <summary>
+    /// A ticket for <paramref name="queue"/> asking for paper of the sheet's size, at 100% and
+    /// in the given orientation, validated by the driver. Without the paper size the driver
+    /// uses its default paper (often Letter), and an A4 sheet can come out shifted, scaled
+    /// or cropped.
+    /// </summary>
+    public static PrintTicket TicketFor(PrintQueue queue, PrintTicket? baseTicket, double pageWidthMm, double pageHeightMm, bool landscape)
+    {
+        PrintTicket ticket = (baseTicket ?? queue.DefaultPrintTicket).Clone();
+        double shortMm = Math.Min(pageWidthMm, pageHeightMm);
+        double longMm = Math.Max(pageWidthMm, pageHeightMm);
+        PageMediaSizeName name =
+            Near(shortMm, 210) && Near(longMm, 297) ? PageMediaSizeName.ISOA4 :
+            Near(shortMm, 148) && Near(longMm, 210) ? PageMediaSizeName.ISOA5 :
+            Near(shortMm, 105) && Near(longMm, 148) ? PageMediaSizeName.ISOA6 :
+            Near(shortMm, 215.9) && Near(longMm, 279.4) ? PageMediaSizeName.NorthAmericaLetter :
+            PageMediaSizeName.Unknown;
+        ticket.PageMediaSize = name == PageMediaSizeName.Unknown
+            ? new PageMediaSize(UnitConverter.MmToDiu(shortMm), UnitConverter.MmToDiu(longMm))
+            : new PageMediaSize(name, UnitConverter.MmToDiu(shortMm), UnitConverter.MmToDiu(longMm));
+        ticket.PageScalingFactor = 100;           // never "fit to page" (spec §16)
+        ticket.PageOrientation = landscape || pageWidthMm > pageHeightMm + 0.01 ? PrintOrientation.Landscape : PrintOrientation.Portrait;
+
+        try
+        {
+            return queue.MergeAndValidatePrintTicket(queue.DefaultPrintTicket, ticket).ValidatedPrintTicket;
+        }
+        catch (Exception)
+        {
+            return ticket;               // some drivers refuse validation; the request still stands
+        }
+
+        static bool Near(double a, double b) => Math.Abs(a - b) < 1.0;
+    }
+
     private static SheetMedia QueryMedia(string? printerName, double pageWidthMm, double pageHeightMm)
     {
         try
@@ -84,7 +119,8 @@ public sealed class WpfPrintServer
                 ? LocalPrintServer.GetDefaultPrintQueue()
                 : server.GetPrintQueue(printerName);
 
-            PrintCapabilities caps = queue.GetPrintCapabilities();
+            // Ask about this sheet's paper, not the driver's default paper.
+            PrintCapabilities caps = queue.GetPrintCapabilities(TicketFor(queue, null, pageWidthMm, pageHeightMm, landscape: false));
             PageImageableArea? area = caps.PageImageableArea;
             if (area is not null)
             {
@@ -223,10 +259,10 @@ public sealed class WpfPrintServer
     public PrintJobRequest PrepareDirect(ProjectModel project, DataSet? data, PrintSettings settings, PrintQueue queue) =>
         Prepare(project, data, settings, queue, queue.DefaultPrintTicket);
 
-    private PrintJobRequest Prepare(ProjectModel project, DataSet? data, PrintSettings settings, PrintQueue queue, PrintTicket ticket)
+    private PrintJobRequest Prepare(ProjectModel project, DataSet? data, PrintSettings settings, PrintQueue queue, PrintTicket baseTicket)
     {
-        ticket.PageScalingFactor = 100;           // never "fit to page" (spec §16)
-        ticket.PageOrientation = settings.Landscape ? PrintOrientation.Landscape : PrintOrientation.Portrait;
+        PageSize page = project.Template?.EffectivePage ?? PageSize.A4;
+        PrintTicket ticket = TicketFor(queue, baseTicket, page.WidthMm, page.HeightMm, settings.Landscape);
         if (settings.Copies > 1)
         {
             ticket.CopyCount = settings.Copies;

@@ -8,11 +8,12 @@
     <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
       <Button Content="Add" Padding="14,4" Click="OnAdd" />
       <Button Content="Remove" Padding="14,4" Margin="8,0,0,0" Click="OnRemove" />
-      <Button Content="Close" Padding="14,4" Margin="8,0,0,0" IsDefault="True" IsCancel="True" />
+      <Button Content="Close" Padding="14,4" Margin="8,0,0,0" IsCancel="True" />
     </StackPanel>
-    <TextBlock DockPanel.Dock="Bottom" x:Name="PreviewText" Foreground="#555" Margin="0,8,0,0" TextWrapping="Wrap" />
+    <TextBlock DockPanel.Dock="Bottom" x:Name="PreviewText" Foreground="{DynamicResource Br.TextMuted}" Margin="0,8,0,0" TextWrapping="Wrap"
+               Text="Select a sequence to see the values it produces." />
     <DataGrid x:Name="Grid" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column"
-              SelectionChanged="OnSelectionChanged">
+              SelectionChanged="OnSelectionChanged" RowEditEnding="OnRowEditEnding">
       <DataGrid.Columns>
         <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="120" />
         <DataGridTextColumn Header="Prefix" Binding="{Binding Prefix}" Width="80" />
