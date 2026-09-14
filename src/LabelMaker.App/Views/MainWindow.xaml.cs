@@ -24,7 +24,8 @@ public partial class MainWindow : Window
     {
         _env = env;
         InitializeComponent();
-        MaximiseFix.Attach(this);
+        MaximiseFix.Attach(this, Root);
+        StateChanged += (_, _) => UpdateMaximiseButton();
         AllowDrop = true;
 
         var shell = new DialogService(this, env);
@@ -149,6 +150,18 @@ public partial class MainWindow : Window
 
     private void OnClose(object sender, RoutedEventArgs e) => Close();
 
+    /// <summary>The middle caption button says what it will do: maximise, or restore down.</summary>
+    private void UpdateMaximiseButton()
+    {
+        bool maximised = WindowState == WindowState.Maximized;
+        string name = maximised ? "Restore down" : "Maximise";
+        MaxButton.ToolTip = name;
+        System.Windows.Automation.AutomationProperties.SetName(MaxButton, name);
+        MaxGlyph.Data = System.Windows.Media.Geometry.Parse(maximised
+            ? "M 2,0 L 10,0 L 10,8 M 0,2 L 8,2 L 8,10 L 0,10 Z"
+            : "M 0,0 L 9,0 L 9,9 L 0,9 Z");
+    }
+
     /// <summary>Middle-click closes a document tab, as in browsers.</summary>
     private void OnTabMouseUp(object sender, MouseButtonEventArgs e)
     {
@@ -206,6 +219,57 @@ public partial class MainWindow : Window
         {
             item.IsSelected = true;
             item.Focus();
+        }
+    }
+
+    private void OnPageDoubleClick(object sender, MouseButtonEventArgs e)
+    {
+        if (sender is ListBoxItem { IsSelected: true } && _vm.RenamePageCommand.CanExecute(null))
+        {
+            _vm.RenamePageCommand.Execute(null);
+            e.Handled = true;
+        }
+    }
+
+    /// <summary>F2 renames the page; Ctrl+Up / Ctrl+Down move it. Plain arrows step through the pages.</summary>
+    private void OnPageListKeyDown(object sender, KeyEventArgs e)
+    {
+        bool ctrl = Keyboard.Modifiers == ModifierKeys.Control;
+        System.Windows.Input.ICommand? command = e.Key switch
+        {
+            Key.F2 when Keyboard.Modifiers == ModifierKeys.None => _vm.RenamePageCommand,
+            Key.Up when ctrl => _vm.MovePageUpCommand,
+            Key.Down when ctrl => _vm.MovePageDownCommand,
+            _ => null,
+        };
+
+        if (command is not null)
+        {
+            if (command.CanExecute(null))
+            {
+                command.Execute(null);
+            }
+
+            e.Handled = true;
+            FocusSelectedPage();
+        }
+    }
+
+    /// <summary>Keeps keyboard focus on the selected page row after the list changes under it.</summary>
+    private void FocusSelectedPage() => Dispatcher.BeginInvoke(DispatcherPriority.Input, () =>
+    {
+        if (PageList.SelectedItem is { } item && PageList.ItemContainerGenerator.ContainerFromItem(item) is ListBoxItem row)
+        {
+            row.Focus();
+        }
+    });
+
+    private void OnObjectListSelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        // Only the user's own clicks and keys; the rows the canvas highlights change this list too.
+        if (sender is ListBox { IsKeyboardFocusWithin: true } list)
+        {
+            _vm.SelectObjectsFromList(list.SelectedItems.OfType<ObjectListItem>());
         }
     }
 

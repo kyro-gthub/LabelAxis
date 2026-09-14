@@ -159,11 +159,36 @@ public sealed class LabelRendererTests
         TextBlock single = TextLayouter.Layout(content, new TextObject { FontSizePt = 10, LineSpacing = 1.0 }, new RectMm(0, 0, 80, 80), measurer);
         TextBlock doubled = TextLayouter.Layout(content, new TextObject { FontSizePt = 10, LineSpacing = 2.0 }, new RectMm(0, 0, 80, 80), measurer);
 
-        doubled.TotalHeightMm.Should().BeApproximately(single.TotalHeightMm * 2, 0.01);
+        // Double spacing adds a line's height between each pair of lines, not after the last one.
+        doubled.Lines[0].HeightMm.Should().BeApproximately(single.Lines[0].HeightMm * 2, 0.01);
+        doubled.TotalHeightMm.Should().BeApproximately(single.TotalHeightMm + (2 * single.Lines[0].HeightMm), 0.01);
 
         content.Paragraphs[1].LineSpacing = 3.0; // a real per-paragraph override still wins
         TextBlock overridden = TextLayouter.Layout(content, new TextObject { FontSizePt = 10, LineSpacing = 1.0 }, new RectMm(0, 0, 80, 80), measurer);
         overridden.Lines[1].HeightMm.Should().BeApproximately(single.Lines[1].HeightMm * 3, 0.01);
+    }
+
+    [Fact]
+    public void Trailing_spaces_do_not_push_centred_or_right_aligned_text_off_its_edge()
+    {
+        var measurer = new RecordingSurface().TextMeasurer;
+        TextBlock plain = TextLayouter.Layout(RichTextContent.FromPlainText("abc"), new TextObject(), new RectMm(0, 0, 80, 20), measurer);
+        TextBlock spaced = TextLayouter.Layout(RichTextContent.FromPlainText("abc   "), new TextObject(), new RectMm(0, 0, 80, 20), measurer);
+
+        spaced.Lines[0].WidthMm.Should().BeApproximately(plain.Lines[0].WidthMm, 0.001);
+    }
+
+    [Fact]
+    public void Justified_lines_fill_the_box_except_the_last_line_of_a_paragraph()
+    {
+        var measurer = new RecordingSurface().TextMeasurer;
+        var style = new TextObject { HorizontalAlignment = HorizontalAlignment.Justify };
+        TextBlock block = TextLayouter.Layout(RichTextContent.FromPlainText("aa bb cc dd ee ff gg hh"), style, new RectMm(0, 0, 20, 40), measurer);
+
+        block.Lines.Count.Should().BeGreaterThan(1);
+        block.Lines[0].WidthMm.Should().BeApproximately(20, 0.001);
+        block.Lines[0].WordGapMm.Should().BeGreaterThanOrEqualTo(0);
+        block.Lines[^1].WordGapMm.Should().Be(0);
     }
 
     [Fact]

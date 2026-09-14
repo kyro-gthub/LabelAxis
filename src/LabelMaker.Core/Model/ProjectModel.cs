@@ -80,6 +80,12 @@ public sealed class ProjectModel
     /// <summary>Sparse per-record overrides keyed by 0-based record index.</summary>
     public Dictionary<int, List<ObjectOverride>> RecordOverrides { get; set; } = new();
 
+    /// <summary>
+    /// When true every page shows and snaps to the same guides (kept on the master label);
+    /// otherwise each page has its own.
+    /// </summary>
+    public bool SharedGuides { get; set; }
+
     /// <summary>Id of the active data connection for the record navigator (null = none).</summary>
     public string? ActiveDataConnectionId { get; set; }
 
@@ -116,5 +122,6 @@ public sealed class ProjectModel
             kv => kv.Key,
             kv => kv.Value.Select(o => o.Clone()).ToList()),
         ActiveDataConnectionId = ActiveDataConnectionId,
+        SharedGuides = SharedGuides,
     };
 }

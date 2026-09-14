@@ -131,30 +131,6 @@ public static class ObjectClipboard
         return null;
     }
 
-    /// <summary>Fresh copies offset from the originals, or with the group's top-left at <paramref name="atMm"/>.</summary>
-    public static IReadOnlyList<LabelObject> Place(IReadOnlyList<LabelObject> items, Core.Units.PointMm? atMm, double offsetMm = 3.0)
-    {
-        if (items.Count == 0)
-        {
-            return Array.Empty<LabelObject>();
-        }
-
-        double minX = items.Min(o => o.Bounds.X);
-        double minY = items.Min(o => o.Bounds.Y);
-        var result = new List<LabelObject>(items.Count);
-        foreach (LabelObject item in items)
-        {
-            LabelObject copy = item.Clone(); // new ids
-            copy.Bounds = atMm is { } at
-                ? copy.Bounds.Offset(at.X - minX, at.Y - minY)
-                : copy.Bounds.Offset(offsetMm, offsetMm);
-            copy.GroupId = null;
-            result.Add(copy);
-        }
-
-        return result;
-    }
-
     private static void Retry(Action action)
     {
         // The clipboard is a shared resource; another process briefly holding it

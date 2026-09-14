@@ -32,6 +32,10 @@ public sealed class TextLine
     public double WidthMm { get; init; }
     public double HeightMm { get; init; }
     public double BaselineOffsetMm { get; init; }
+
+    /// <summary>Extra space after each word-ending space, for justified lines; 0 otherwise.</summary>
+    public double WordGapMm { get; init; }
+
     public HorizontalAlignment Alignment { get; init; }
 }
 
@@ -56,6 +60,9 @@ public interface ITextMeasurer
 
     /// <summary>Line height in millimetres for the given face/size.</summary>
     double LineHeightMm(string fontFamily, double fontSizePt);
+
+    /// <summary>Distance from the top of a line to its baseline. Measurers without real metrics use a typical 80%.</summary>
+    double BaselineMm(string fontFamily, double fontSizePt) => LineHeightMm(fontFamily, fontSizePt) * 0.8;
 }
 
 public enum LabelOutlineStyle

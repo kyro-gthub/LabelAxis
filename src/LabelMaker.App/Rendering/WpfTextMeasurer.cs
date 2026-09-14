@@ -53,6 +53,13 @@ public sealed class WpfTextMeasurer : ITextMeasurer
         _lineHeights.GetOrAdd((fontFamily, Math.Round(fontSizePt, 3)),
             key => Build("Ag", key.Family, key.Size, false, false).Height / K);
 
+    /// <summary>The font's own ascent; a fixed fraction of the line put the baseline too high or low for many fonts.</summary>
+    public double BaselineMm(string fontFamily, double fontSizePt) =>
+        _baselines.GetOrAdd((fontFamily, Math.Round(fontSizePt, 3)),
+            key => Build("Ag", key.Family, key.Size, false, false).Baseline / K);
+
+    private readonly ConcurrentDictionary<(string Family, double Size), double> _baselines = new();
+
     private static FormattedText Build(string text, string fontFamily, double fontSizePt, bool bold, bool italic)
     {
         double emDiu = Math.Max(0.1, UnitConverter.PointsToMm(fontSizePt) * K);

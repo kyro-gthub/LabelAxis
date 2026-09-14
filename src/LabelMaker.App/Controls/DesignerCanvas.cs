@@ -172,12 +172,12 @@ public sealed class DesignerCanvas : FrameworkElement
 
     public void ClearGuides()
     {
-        if (_session is null || _session.ActiveLabel.Guides.IsEmpty)
+        if (_session is null || _session.ActiveGuides.IsEmpty)
         {
             return;
         }
 
-        var guides = _session.ActiveLabel.Guides;
+        var guides = _session.ActiveGuides;
         _session.Execute(new GuideEditCommand(guides, "Clear guides", guides.Clear));
         InvalidateVisual();
     }
@@ -200,12 +200,12 @@ public sealed class DesignerCanvas : FrameworkElement
     /// <summary>Remove a single guide line (used by the canvas context menu's "Remove guide").</summary>
     public void RemoveGuideAt(bool vertical, int index)
     {
-        if (_session is null || _session.ActiveLabel.Guides.Locked)
+        if (_session is null || _session.ActiveGuides.Locked)
         {
             return;
         }
 
-        var guides = _session.ActiveLabel.Guides;
+        var guides = _session.ActiveGuides;
         List<double> list = vertical ? guides.VerticalMm : guides.HorizontalMm;
         if (index < 0 || index >= list.Count)
         {
@@ -219,12 +219,12 @@ public sealed class DesignerCanvas : FrameworkElement
     /// <summary>Add a guide at the last right-click position (used by the canvas context menu).</summary>
     public void InsertGuideAtContext(bool vertical)
     {
-        if (_session is null || ContextMm is not { } at || _session.ActiveLabel.Guides.Locked)
+        if (_session is null || ContextMm is not { } at || _session.ActiveGuides.Locked)
         {
             return;
         }
 
-        var guides = _session.ActiveLabel.Guides;
+        var guides = _session.ActiveGuides;
         double max = vertical ? LabelWidthMm : LabelHeightMm;
         double value = Math.Round(Math.Clamp(vertical ? at.X : at.Y, 0, max), 2);
         _session.Execute(new GuideEditCommand(guides, "Add guide", () =>
@@ -755,7 +755,7 @@ public sealed class DesignerCanvas : FrameworkElement
         double top = RulerPad;
         double left = RulerPad;
 
-        foreach (double xMm in label.Guides.VerticalMm)
+        foreach (double xMm in _session!.ActiveGuides.VerticalMm)
         {
             double x = MmToScreen(xMm, 0).X;
             if (x >= left)
@@ -764,7 +764,7 @@ public sealed class DesignerCanvas : FrameworkElement
             }
         }
 
-        foreach (double yMm in label.Guides.HorizontalMm)
+        foreach (double yMm in _session.ActiveGuides.HorizontalMm)
         {
             double y = MmToScreen(0, yMm).Y;
             if (y >= top)
@@ -968,7 +968,7 @@ public sealed class DesignerCanvas : FrameworkElement
         }
 
         // Ruler drag -> new guide (only the ruler strips themselves; never competes with objects)
-        if (RulerPad > 0 && !(_session.ActiveLabel.Guides.Locked))
+        if (RulerPad > 0 && !(_session.ActiveGuides.Locked))
         {
             if (screen.Y < RulerSize && screen.X > RulerSize)
             {
@@ -1033,7 +1033,7 @@ public sealed class DesignerCanvas : FrameworkElement
         // object becomes impossible to re-select at its snapped edge.
         LabelObject? hit = HitObject(mm);
 
-        if (hit is null && Settings?.ShowGuides != false && !_session.ActiveLabel.Guides.Locked &&
+        if (hit is null && Settings?.ShowGuides != false && !_session.ActiveGuides.Locked &&
             TryHitGuide(screen, out GuideDrag existing))
         {
             _guideDrag = existing;
@@ -1185,7 +1185,15 @@ public sealed class DesignerCanvas : FrameworkElement
 
         if (_resizing && _groupResizeStart is { } groupStart)
         {
-            ResizeGroup(groupStart, ResizeRect(groupStart, _activeHandle, dx, dy, proportional: shift, fromCentre: ctrl));
+            RectMm to = ResizeRect(groupStart, _activeHandle, dx, dy, proportional: shift, fromCentre: ctrl);
+            var groupLines = new List<SnapLine>(2);
+            if (!shift && !ctrl)
+            {
+                to = SnapResizedRect(to, groupLines);
+            }
+
+            ResizeGroup(groupStart, to);
+            _activeSnapLines = groupLines;
             InvalidateVisual();
             return;
         }
@@ -1370,7 +1378,7 @@ public sealed class DesignerCanvas : FrameworkElement
 
         if (_guideDrag is { } g && _session is not null)
         {
-            var guides = _session.ActiveLabel.Guides;
+            var guides = _session.ActiveGuides;
             bool droppedOnRuler = screen.X < RulerSize || screen.Y < RulerSize;
 
             _session.Execute(new GuideEditCommand(guides, "Edit guide", () =>
@@ -1603,7 +1611,11 @@ public sealed class DesignerCanvas : FrameworkElement
     /// <summary>Snap tolerance in document mm, with a small floor so it stays usable at very high zoom.</summary>
     private double SnapToleranceMm() => Math.Max((Settings?.SnapPixels ?? 10.0) / Scale, 0.12);
 
-    private (IReadOnlyList<double> V, IReadOnlyList<double> H) SnapTargets(LabelObject? exclude)
+    private bool SnapsToGuides => Settings is null || (Settings.SnapToGuides && Settings.ShowGuides);
+
+    private double GridStepMm => Settings is { SnapToGrid: true, GridSizeMm: > 0 } s ? s.GridSizeMm : 0;
+
+    private (IReadOnlyList<double> V, IReadOnlyList<double> H) SnapTargets()
     {
         var v = new List<double>();
         var h = new List<double>();
@@ -1617,22 +1629,23 @@ public sealed class DesignerCanvas : FrameworkElement
         h.Add(label.SizeMm.Height / 2);
         h.Add(label.SizeMm.Height);
 
-        if (Settings?.SnapToGuides != false)
+        // Hidden guides do not pull objects around.
+        if (SnapsToGuides)
         {
-            v.AddRange(label.Guides.VerticalMm);
-            h.AddRange(label.Guides.HorizontalMm);
+            v.AddRange(_session.ActiveGuides.VerticalMm);
+            h.AddRange(_session.ActiveGuides.HorizontalMm);
         }
 
         if (Settings?.SnapToObjects != false)
         {
             foreach (LabelObject o in label.Objects)
             {
-                if (ReferenceEquals(o, exclude) || _session.Selection.Contains(o) || !o.Visible)
+                if (_session.Selection.Contains(o) || !o.Visible)
                 {
                     continue;
                 }
 
-                RectMm b = o.Bounds;
+                RectMm b = ObjectGeometry.Bounds(o);
                 v.Add(b.X);
                 v.Add(b.Center.X);
                 v.Add(b.Right);
@@ -1645,43 +1658,85 @@ public sealed class DesignerCanvas : FrameworkElement
         return (v, h);
     }
 
+    /// <summary>
+    /// Moves the selection onto guides, label edges and other objects; an axis that finds
+    /// nothing nearby snaps to the grid instead. Each axis is decided on its own, so a
+    /// box that lines up with a guide horizontally still steps along the grid vertically,
+    /// and several objects or a group snap together as one block.
+    /// </summary>
     private IReadOnlyList<SnapLine> ApplyMoveSnap()
     {
-        if (_session!.Selection.Count == 0)
+        List<LabelObject> moving = _session!.Selection.Where(o => !o.Locked).ToList();
+        if (moving.Count == 0)
         {
             return Array.Empty<SnapLine>();
         }
 
-        double tolMm = SnapToleranceMm();
-        (IReadOnlyList<double> v, IReadOnlyList<double> hh) = SnapTargets(_session.Selection[0]);
-
-        // Union bounds of the selection, so the group snaps as one.
-        RectMm union = _session.Selection[0].Bounds;
-        foreach (LabelObject o in _session.Selection.Skip(1))
+        RectMm block = ObjectGeometry.Bounds(moving[0]);
+        foreach (LabelObject o in moving.Skip(1))
         {
-            union = union.Union(o.Bounds);
+            block = block.Union(ObjectGeometry.Bounds(o));
         }
 
-        SnapResult r = SnapCalculator.SnapMove(union, v, hh, tolMm);
-        if (r.Snapped)
+        (IReadOnlyList<double> v, IReadOnlyList<double> hh) = SnapTargets();
+        SnapResult r = SnapCalculator.SnapMove(block, v, hh, SnapToleranceMm());
+        double dx = r.Dx, dy = r.Dy;
+
+        double grid = GridStepMm;
+        if (grid > 0)
         {
-            foreach (LabelObject o in _session.Selection.Where(x => !x.Locked))
+            if (!r.Lines.Any(l => l.Vertical))
             {
-                o.Bounds = o.Bounds.Offset(r.Dx, r.Dy);
+                dx = (Math.Round(block.X / grid) * grid) - block.X;
+            }
+
+            if (!r.Lines.Any(l => !l.Vertical))
+            {
+                dy = (Math.Round(block.Y / grid) * grid) - block.Y;
             }
         }
-        else if (Settings is { SnapToGrid: true, GridSizeMm: > 0 } s && _session.Selection.Count == 1)
+
+        if (Math.Abs(dx) > 1e-9 || Math.Abs(dy) > 1e-9)
         {
-            LabelObject only = _session.Selection[0];
-            double g = s.GridSizeMm;
-            only.Bounds = only.Bounds with
+            foreach (LabelObject o in moving)
             {
-                X = Math.Round(only.Bounds.X / g) * g,
-                Y = Math.Round(only.Bounds.Y / g) * g,
-            };
+                o.Bounds = o.Bounds.Offset(dx, dy);
+            }
         }
 
         return r.Lines;
+    }
+
+    /// <summary>Snaps the edges a resize handle moves: to guides and objects first, otherwise to the grid.</summary>
+    private RectMm SnapResizedRect(RectMm b, List<SnapLine> lines)
+    {
+        (IReadOnlyList<double> v, IReadOnlyList<double> hh) = SnapTargets();
+        double tolMm = SnapToleranceMm();
+        double grid = GridStepMm;
+
+        bool left = _activeHandle is Handle.Left or Handle.TopLeft or Handle.BottomLeft;
+        bool right = _activeHandle is Handle.Right or Handle.TopRight or Handle.BottomRight;
+        bool top = _activeHandle is Handle.Top or Handle.TopLeft or Handle.TopRight;
+        bool bottom = _activeHandle is Handle.Bottom or Handle.BottomLeft or Handle.BottomRight;
+
+        double Edge(double value, bool vertical, IReadOnlyList<double> targets)
+        {
+            double snapped = SnapCalculator.SnapValue(value, targets, tolMm, out bool hit);
+            if (hit)
+            {
+                lines.Add(new SnapLine(vertical, snapped));
+                return snapped;
+            }
+
+            return grid > 0 ? Math.Round(value / grid) * grid : value;
+        }
+
+        double l = left ? Edge(b.Left, true, v) : b.Left;
+        double rr = right ? Edge(b.Right, true, v) : b.Right;
+        double t = top ? Edge(b.Top, false, hh) : b.Top;
+        double bb = bottom ? Edge(b.Bottom, false, hh) : b.Bottom;
+
+        return rr - l >= 0.5 && bb - t >= 0.5 ? RectMm.FromLtrb(l, t, rr, bb) : b;
     }
 
     private IReadOnlyList<SnapLine> ApplyResizeSnap()
@@ -1692,89 +1747,10 @@ public sealed class DesignerCanvas : FrameworkElement
         }
 
         LabelObject obj = _session.Selection[0];
-        double tolMm = SnapToleranceMm();
-        (IReadOnlyList<double> v, IReadOnlyList<double> hh) = SnapTargets(obj);
-        RectMm b = obj.Bounds;
         var lines = new List<SnapLine>(2);
-
-        bool left = _activeHandle is Handle.Left or Handle.TopLeft or Handle.BottomLeft;
-        bool right = _activeHandle is Handle.Right or Handle.TopRight or Handle.BottomRight;
-        bool top = _activeHandle is Handle.Top or Handle.TopLeft or Handle.TopRight;
-        bool bottom = _activeHandle is Handle.Bottom or Handle.BottomLeft or Handle.BottomRight;
-
-        double l = b.Left, t = b.Top, rr = b.Right, bb = b.Bottom;
-
-        if (left)
-        {
-            l = SnapCalculator.SnapValue(l, v, tolMm, out bool s);
-            if (s)
-            {
-                lines.Add(new SnapLine(true, l));
-            }
-        }
-
-        if (right)
-        {
-            rr = SnapCalculator.SnapValue(rr, v, tolMm, out bool s);
-            if (s)
-            {
-                lines.Add(new SnapLine(true, rr));
-            }
-        }
-
-        if (top)
-        {
-            t = SnapCalculator.SnapValue(t, hh, tolMm, out bool s);
-            if (s)
-            {
-                lines.Add(new SnapLine(false, t));
-            }
-        }
-
-        if (bottom)
-        {
-            bb = SnapCalculator.SnapValue(bb, hh, tolMm, out bool s);
-            if (s)
-            {
-                lines.Add(new SnapLine(false, bb));
-            }
-        }
-
-        // Grid snapping applies to the edge being dragged too, not just to moves:
-        // only the edges that actually moved are rounded, and only when no guide or
-        // object edge already claimed them.
-        if (Settings is { SnapToGrid: true, GridSizeMm: > 0 } grid && lines.Count == 0)
-        {
-            double g = grid.GridSizeMm;
-            if (left)
-            {
-                l = Math.Round(l / g) * g;
-            }
-
-            if (right)
-            {
-                rr = Math.Round(rr / g) * g;
-            }
-
-            if (top)
-            {
-                t = Math.Round(t / g) * g;
-            }
-
-            if (bottom)
-            {
-                bb = Math.Round(bb / g) * g;
-            }
-        }
-
-        if (rr - l >= 1 && bb - t >= 1)
-        {
-            obj.Bounds = RectMm.FromLtrb(l, t, rr, bb);
-        }
-
+        obj.Bounds = SnapResizedRect(obj.Bounds, lines);
         return lines;
     }
-
     // ---- hit testing ----------------------------------------------
 
     private bool TryHitGuide(Point screen, out GuideDrag drag)
@@ -1785,7 +1761,7 @@ public sealed class DesignerCanvas : FrameworkElement
             return false;
         }
 
-        var guides = _session.ActiveLabel.Guides;
+        var guides = _session.ActiveGuides;
         for (int i = 0; i < guides.VerticalMm.Count; i++)
         {
             if (Math.Abs(MmToScreen(guides.VerticalMm[i], 0).X - screen.X) <= GuideHitPx && screen.Y > RulerPad)
@@ -1860,7 +1836,7 @@ public sealed class DesignerCanvas : FrameworkElement
             return;
         }
 
-        if (Settings?.ShowGuides != false && !_session.ActiveLabel.Guides.Locked && TryHitGuide(screen, out GuideDrag g))
+        if (Settings?.ShowGuides != false && !_session.ActiveGuides.Locked && TryHitGuide(screen, out GuideDrag g))
         {
             Cursor = g.Vertical ? Cursors.SizeWE : Cursors.SizeNS;
             return;

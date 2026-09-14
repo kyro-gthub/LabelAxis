@@ -112,9 +112,23 @@ public static class ThemeManager
             res[key] = brush;
         }
 
+        // The toolbar and list icons are drawings built once from these two resources; they
+        // hold on to the objects rather than the resource keys, so recolour them in place.
+        Color accent = C(dark ? "#FF5C9BFF" : "#FF2C6FE8");
+        if (Application.Current.TryFindResource("IconPen") is Pen { IsFrozen: false } pen)
+        {
+            pen.Brush = new SolidColorBrush(accent);
+        }
+
+        if (Application.Current.TryFindResource("IconFill") is SolidColorBrush { IsFrozen: false } fill)
+        {
+            fill.Color = accent;
+        }
+
         foreach (Window window in Application.Current.Windows)
         {
             ApplyTitleBar(window);
+            window.InvalidateVisual();
         }
     }
 

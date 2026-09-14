@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Globalization;
 using System.Windows;
 using LabelMaker.App.ViewModels;
@@ -52,52 +51,13 @@ public partial class SettingsWindow : Window
         _env.SaveSettings();
         _vm.NotifyAutoSaveSettingsChanged();
 
-        DialogResult = true;
-
+        // The palette is swapped in place (see ThemeManager), so the new theme shows at once.
         if (nowDark != wasDark)
         {
-            OfferRestart();
-        }
-    }
-
-    private void OfferRestart()
-    {
-        MessageBoxResult result = MessageBox.Show(
-            Owner,
-            "The new theme is fully applied after restarting Label Maker. Restart now?",
-            "Label Maker",
-            MessageBoxButton.YesNo,
-            MessageBoxImage.Question);
-
-        if (result != MessageBoxResult.Yes)
-        {
-            return;
+            _vm.StatusText = nowDark ? "Dark theme on" : "Light theme on";
         }
 
-        string? exePath = Process.GetCurrentProcess().MainModule?.FileName;
-        if (exePath is null)
-        {
-            return;
-        }
-
-        Window? main = Application.Current.MainWindow;
-        if (main is null)
-        {
-            return;
-        }
-
-        main.Closed += (_, _) =>
-        {
-            try
-            {
-                Process.Start(exePath);
-            }
-            catch
-            {
-                // best-effort relaunch
-            }
-        };
-        main.Close();
+        DialogResult = true;
     }
 
     private static double ParseDouble(string text, double fallback) =>

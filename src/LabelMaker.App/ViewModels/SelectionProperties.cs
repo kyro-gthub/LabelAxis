@@ -368,7 +368,7 @@ public sealed class SelectionProperties : ObservableObject
         {
             if (Obj is TextObject t)
             {
-                Set(nameof(LineSpacing), () => t.LineSpacing, v => t.LineSpacing = v, Math.Round(Math.Clamp(value, 0.5, 4), 2));
+                Set(nameof(LineSpacing), () => t.LineSpacing, v => t.LineSpacing = v, Math.Round(Math.Clamp(value, 0.3, 10), 2));
             }
         }
     }
@@ -381,7 +381,7 @@ public sealed class SelectionProperties : ObservableObject
         {
             if (Obj is TextObject t)
             {
-                Set(nameof(LetterSpacingEm), () => t.LetterSpacingEm, v => t.LetterSpacingEm = v, Math.Round(Math.Clamp(value, -0.3, 2), 3));
+                Set(nameof(LetterSpacingEm), () => t.LetterSpacingEm, v => t.LetterSpacingEm = v, Math.Round(Math.Clamp(value, -0.5, 5), 3));
             }
         }
     }
@@ -861,12 +861,8 @@ public sealed class SelectionProperties : ObservableObject
     /// A compact palette for one-click fill/stroke colours. ColorRgba is #RRGGBB(AA),
     /// alpha last — "#00000000" is the transparent entry, not a black one.
     /// </summary>
-    public static IReadOnlyList<string> Swatches { get; } = new[]
-    {
-        "#00000000", "#FFFFFF", "#000000", "#5B667C", "#B0B8C6",
-        "#2C6FE8", "#12B5C9", "#22B268", "#F5A524", "#E0555F",
-        "#7C4DFF", "#E91E8C", "#8D6E63", "#FFE082", "#C8E6C9",
-    };
+    /// <summary>The palette offered for every colour, shared with the colour picker.</summary>
+    public static IReadOnlyList<string> Swatches { get; } = Controls.ColorPalette.Colors.Select(c => c.Hex).ToList();
 
     public ShapeKind ShapeKindValue
     {

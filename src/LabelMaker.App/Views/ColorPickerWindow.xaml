@@ -41,19 +41,19 @@
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Row="0" Grid.Column="0" Text="R" Style="{StaticResource FieldLabel}" />
-        <Slider x:Name="RSlider" Grid.Row="0" Grid.Column="1" Minimum="0" Maximum="255" ValueChanged="OnChannel" />
+        <Slider x:Name="RSlider" Grid.Row="0" Grid.Column="1" Minimum="0" Maximum="255" SmallChange="1" LargeChange="16" ValueChanged="OnChannel" />
         <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding Value, ElementName=RSlider, StringFormat=0}" TextAlignment="Right" />
 
         <TextBlock Grid.Row="1" Grid.Column="0" Text="G" Style="{StaticResource FieldLabel}" />
-        <Slider x:Name="GSlider" Grid.Row="1" Grid.Column="1" Minimum="0" Maximum="255" ValueChanged="OnChannel" />
+        <Slider x:Name="GSlider" Grid.Row="1" Grid.Column="1" Minimum="0" Maximum="255" SmallChange="1" LargeChange="16" ValueChanged="OnChannel" />
         <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding Value, ElementName=GSlider, StringFormat=0}" TextAlignment="Right" />
 
         <TextBlock Grid.Row="2" Grid.Column="0" Text="B" Style="{StaticResource FieldLabel}" />
-        <Slider x:Name="BSlider" Grid.Row="2" Grid.Column="1" Minimum="0" Maximum="255" ValueChanged="OnChannel" />
+        <Slider x:Name="BSlider" Grid.Row="2" Grid.Column="1" Minimum="0" Maximum="255" SmallChange="1" LargeChange="16" ValueChanged="OnChannel" />
         <TextBlock Grid.Row="2" Grid.Column="2" Text="{Binding Value, ElementName=BSlider, StringFormat=0}" TextAlignment="Right" />
 
         <TextBlock Grid.Row="3" Grid.Column="0" Text="A" Style="{StaticResource FieldLabel}" />
-        <Slider x:Name="ASlider" Grid.Row="3" Grid.Column="1" Minimum="0" Maximum="255" ValueChanged="OnChannel" />
+        <Slider x:Name="ASlider" Grid.Row="3" Grid.Column="1" Minimum="0" Maximum="255" SmallChange="1" LargeChange="16" ValueChanged="OnChannel" />
         <TextBlock Grid.Row="3" Grid.Column="2" Text="{Binding Value, ElementName=ASlider, StringFormat=0}" TextAlignment="Right" />
       </Grid>
 
