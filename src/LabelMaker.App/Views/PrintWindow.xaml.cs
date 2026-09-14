@@ -43,8 +43,8 @@ public partial class PrintWindow : Window
         LabelTemplate? t = session.Project.Template;
         HeaderSubtitle.Text = t is null
             ? "No sheet template selected"
-            : $"{t.Brand} {t.ProductCode} · {t.Grid.Columns} × {t.Grid.Rows} per {t.EffectivePage.Name} · " +
-              $"{t.Grid.LabelWidthMm:0.#} × {t.Grid.LabelHeightMm:0.#} mm";
+            : $"{t.Brand} {t.ProductCode} on {t.EffectivePage.Name} · {SheetMeasurements.From(t).Describe()}";
+        HeaderSubtitle.ToolTip = HeaderSubtitle.Text;
 
         LoadPrinters();
 
@@ -209,7 +209,7 @@ public partial class PrintWindow : Window
         {
             Width = page.Size.Width * scale,
             Height = page.Size.Height * scale,
-            Fill = new VisualBrush(page.Visual) { Stretch = Stretch.Fill },
+            Fill = PrintPreviewWindow.SheetBrush(page),
             HorizontalAlignment = HorizontalAlignment.Center,
             VerticalAlignment = VerticalAlignment.Center,
             SnapsToDevicePixels = true,

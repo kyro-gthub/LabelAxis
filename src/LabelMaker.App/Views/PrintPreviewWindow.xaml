@@ -41,7 +41,9 @@
           <CheckBox x:Name="ShowOutlines" Content="Label outlines" Margin="0,0,14,0" Click="OnOptionChanged"
                     ToolTip="Draw a hairline around each label (preview and print)" />
           <CheckBox x:Name="ShowMargins" Content="Printer margins" IsChecked="True" Click="OnOptionChanged"
-                    ToolTip="Show the area your printer cannot reach" />
+                    ToolTip="Show the area your printer cannot reach" Margin="0,0,14,0" />
+          <CheckBox x:Name="ShowMeasurements" Content="Measurements" IsChecked="True" Click="OnMeasurementsChanged"
+                    ToolTip="Show the sheet's margins, label size and the spacing between labels, in millimetres (preview only, never printed)" />
         </StackPanel>
       </DockPanel>
     </Border>
@@ -85,13 +87,17 @@
     <Border x:Name="ViewHost" Background="{DynamicResource CanvasBackground}" ClipToBounds="True">
       <ScrollViewer x:Name="Scroller" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
                     Padding="24" PreviewMouseWheel="OnScrollerWheel">
-        <Border x:Name="PageShadow" HorizontalAlignment="Center" VerticalAlignment="Center"
-                Background="White" SnapsToDevicePixels="True" Margin="10">
-          <Border.Effect>
-            <DropShadowEffect BlurRadius="22" ShadowDepth="4" Direction="270" Opacity="0.28" Color="#22303F" />
-          </Border.Effect>
-          <Grid x:Name="PageHost" />
-        </Border>
+        <!-- the sheet, with a gutter around it for the measurement dimension lines -->
+        <Grid x:Name="Sheet" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10">
+          <Border x:Name="PageShadow" Background="White" SnapsToDevicePixels="True">
+            <Border.Effect>
+              <DropShadowEffect BlurRadius="22" ShadowDepth="4" Direction="270" Opacity="0.28" Color="#22303F" />
+            </Border.Effect>
+            <Grid x:Name="PageHost" />
+          </Border>
+          <!-- drawn in screen pixels from the sheet's top-left corner; preview only, never printed -->
+          <Canvas x:Name="MeasureLayer" IsHitTestVisible="False" HorizontalAlignment="Left" VerticalAlignment="Top" />
+        </Grid>
       </ScrollViewer>
     </Border>
   </DockPanel>

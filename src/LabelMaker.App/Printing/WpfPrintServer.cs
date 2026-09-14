@@ -107,6 +107,22 @@ public sealed class WpfPrintServer
         return SheetMedia.FullBleed(pageWidthMm, pageHeightMm);
     }
 
+    /// <summary>
+    /// The mapping a print job uses for <paramref name="printerName"/> (its calibration and the
+    /// scale setting), so on-screen measurements match where labels actually print.
+    /// </summary>
+    public PrintCoordinateMapper MapperFor(string? printerName, PrintSettings settings, PageSize page)
+    {
+        SheetMedia media = GetMedia(printerName, page.WidthMm, page.HeightMm);
+        PrinterCalibration calibration = printerName is null
+            ? PrinterCalibration.Identity(string.Empty)
+            : _calibration.Get(printerName);
+        return new PrintCoordinateMapper(media, calibration, settings.ScalePercent);
+    }
+
+    /// <summary>True when the printer has a saved calibration that moves or scales the print.</summary>
+    public bool IsCalibrated(string? printerName) => printerName is not null && !_calibration.Get(printerName).IsIdentity;
+
     public LabelSheetPaginator BuildPaginator(
         ProjectModel project, DataSet? data, PrintSettings settings, string? printerName)
     {
