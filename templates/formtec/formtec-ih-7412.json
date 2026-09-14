@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-ih-7412",
+  "brand": "Formtec",
+  "productCode": "IH-7412",
+  "name": "Formtec IH-7412 — 62.103 × 62.103 mm, 12-up",
+  "categories": ["General"],
+  "page": { "size": "Letter", "widthMm": 215.9, "heightMm": 279.4 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 3,
+    "rows": 4,
+    "labelWidthMm": 62.103,
+    "labelHeightMm": 62.103,
+    "marginTopMm": 13.411,
+    "marginLeftMm": 7.036,
+    "hGapMm": 7.747,
+    "vGapMm": 1.397,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "Letter Name Badge Inkjet(100 Sheet/12 Label)",
+  "source": "Microsoft Word label database (Formtec, PGLBL010.XML)"
+}

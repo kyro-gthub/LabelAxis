@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-sh-7006",
+  "brand": "Formtec",
+  "productCode": "SH-7006",
+  "name": "Formtec SH-7006 — 101.6 × 84.658 mm, 6-up",
+  "categories": ["General"],
+  "page": { "size": "Letter", "widthMm": 215.9, "heightMm": 279.4 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 2,
+    "rows": 3,
+    "labelWidthMm": 101.6,
+    "labelHeightMm": 84.658,
+    "marginTopMm": 12.7,
+    "marginLeftMm": 3.962,
+    "hGapMm": 4.775,
+    "vGapMm": 0,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "Letter Shipping Laser/Inkjet(100 Sheet/6 Label)",
+  "source": "Microsoft Word label database (Formtec, PGLBL010.XML)"
+}

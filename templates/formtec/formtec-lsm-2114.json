@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-lsm-2114",
+  "brand": "Formtec",
+  "productCode": "LSM-2114",
+  "name": "Formtec LSM-2114 — 99.06 × 67.73 mm, 8-up",
+  "categories": ["General"],
+  "page": { "size": "A4", "widthMm": 210, "heightMm": 297 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 2,
+    "rows": 4,
+    "labelWidthMm": 99.06,
+    "labelHeightMm": 67.73,
+    "marginTopMm": 13.76,
+    "marginLeftMm": 4.67,
+    "hGapMm": 2.54,
+    "vGapMm": 0,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "A4 Shipping Laser/Inkjet(100 Sheet/8 Label)",
+  "source": "Microsoft Word label database (Formtec, PGLBL010.XML)"
+}

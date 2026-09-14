@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-js-2100",
+  "brand": "Formtec",
+  "productCode": "JS-2100",
+  "name": "Formtec JS-2100 — 28 × 8 mm, 100-up",
+  "categories": ["General"],
+  "page": { "size": "A4", "widthMm": 210, "heightMm": 297 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 5,
+    "rows": 20,
+    "labelWidthMm": 28,
+    "labelHeightMm": 8,
+    "marginTopMm": 24,
+    "marginLeftMm": 27,
+    "hGapMm": 4,
+    "vGapMm": 4,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "A4-Japan ネ-ムㆍバッジLaser/Inkjet兼用ラベル(100 シ-ト/100 面)",
+  "source": "Microsoft Word label database (Formtec, PGLBL010.XML)"
+}

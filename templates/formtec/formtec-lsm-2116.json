@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-lsm-2116",
+  "brand": "Formtec",
+  "productCode": "LSM-2116",
+  "name": "Formtec LSM-2116 — 99.06 × 93.13 mm, 6-up",
+  "categories": ["General"],
+  "page": { "size": "A4", "widthMm": 210, "heightMm": 297 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 2,
+    "rows": 3,
+    "labelWidthMm": 99.06,
+    "labelHeightMm": 93.13,
+    "marginTopMm": 9.53,
+    "marginLeftMm": 4.67,
+    "hGapMm": 2.54,
+    "vGapMm": 0,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "A4 Shipping Laser/Inkjet(100 Sheet/6 Label)",
+  "source": "Microsoft Word label database (Formtec, PGLBL010.XML)"
+}

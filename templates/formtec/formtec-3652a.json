@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-3652a",
+  "brand": "Formtec",
+  "productCode": "3652A",
+  "name": "Formtec 3652A — 77 × 77 mm, 6-up",
+  "categories": ["CD/DVD & media"],
+  "page": { "size": "A4", "widthMm": 210, "heightMm": 297 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 2,
+    "rows": 3,
+    "labelWidthMm": 77,
+    "labelHeightMm": 77,
+    "marginTopMm": 19,
+    "marginLeftMm": 21,
+    "hGapMm": 14,
+    "vGapMm": 14,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Ellipse"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "A4-Korea 미니 CD 라벨 / 잉크젯용(광택)(6칸)",
+  "source": "Microsoft Word label database (Formtec, PGLBL010.XML)"
+}

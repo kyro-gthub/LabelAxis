@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-3915s",
+  "brand": "Formtec",
+  "productCode": "3915S",
+  "name": "Formtec 3915S — 59 × 3.5 mm, 13-up",
+  "categories": ["CD/DVD & media"],
+  "page": { "size": "A6", "widthMm": 105, "heightMm": 148 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 1,
+    "rows": 13,
+    "labelWidthMm": 59,
+    "labelHeightMm": 3.5,
+    "marginTopMm": 20,
+    "marginLeftMm": 23,
+    "hGapMm": 0,
+    "vGapMm": 5,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "A6-Korea MD 측면 라벨 / 잉크젯용(A6, 광택)(13칸)",
+  "source": "Microsoft Word label database (Formtec, PGLBL010.XML)"
+}

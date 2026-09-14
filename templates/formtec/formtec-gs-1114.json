@@ -5,7 +5,7 @@
   "productCode": "GS-1114",
   "name": "Formtec GS-1114 — 105 × 42.4 mm, 14-up",
   "categories": ["General", "Formtec GS"],
-  "page": { "size": "A4", "widthMm": 210.0, "heightMm": 297.0 },
+  "page": { "size": "A4", "widthMm": 210, "heightMm": 297 },
   "orientation": "Portrait",
   "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
   "grid": {
@@ -13,14 +13,14 @@
     "rows": 7,
     "labelWidthMm": 105,
     "labelHeightMm": 42.4,
-    "marginTopMm": 0.1,
+    "marginTopMm": 0,
     "marginLeftMm": 0,
-    "hGapMm": 0.0,
-    "vGapMm": 0.0,
+    "hGapMm": 0,
+    "vGapMm": 0,
     "cornerRadiusMm": 0.0,
     "labelShape": "Rectangle"
   },
   "fillOrder": "RowMajor",
-  "notes": "Formtec GS-1114 A4 sheet: 14 labels (2 x 7), each 105 x 42.4 mm, butted together with no gaps and centred on the page.",
-  "source": "Formtec GS dimensions list (label size); layout counted from the product code; no gaps, centred on A4 (GS-1065 confirmed by a test print)"
+  "notes": "A4 Multi Purpose Label(100 Sheet/14 Label)",
+  "source": "Microsoft Word label database (Formtec, PGLBL010.XML)"
 }

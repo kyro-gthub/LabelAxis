@@ -15,7 +15,7 @@ public sealed class ProjectRoundTripTests
 {
     private static ProjectDocument BuildSampleDocument()
     {
-        LabelTemplate template = TemplateStore.CreateWithBuiltIns().Get("formtec-3200")!;
+        LabelTemplate template = TemplateStore.CreateWithBuiltIns().Get("formtec-gs-1065")!;
         ProjectModel project = ProjectModel.CreateNew(template, "Round trip");
 
         project.MasterLabel.Objects.Add(new TextObject
@@ -71,7 +71,7 @@ public sealed class ProjectRoundTripTests
             ProjectDocument loaded = ProjectFile.Load(path);
 
             loaded.Project.Metadata.Title.Should().Be("Round trip");
-            loaded.Project.Template!.Id.Should().Be("formtec-3200");
+            loaded.Project.Template!.Id.Should().Be("formtec-gs-1065");
             loaded.Project.MasterLabel.Objects.Should().HaveCount(4);
 
             var text = loaded.Project.MasterLabel.Objects.OfType<TextObject>().Single();

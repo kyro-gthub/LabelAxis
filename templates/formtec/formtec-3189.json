@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-3189",
+  "brand": "Formtec",
+  "productCode": "3189",
+  "name": "Formtec 3189 — 25.4 × 10 mm, 189-up",
+  "categories": ["General"],
+  "page": { "size": "A4", "widthMm": 210, "heightMm": 297 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 7,
+    "rows": 27,
+    "labelWidthMm": 25.4,
+    "labelHeightMm": 10,
+    "marginTopMm": 12,
+    "marginLeftMm": 8.2,
+    "hGapMm": 2.5,
+    "vGapMm": 0,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "A4-Korea 분류표기용 라벨 / 레이저, 잉크젯용/잉크젯용(Matt)(189칸)",
+  "source": "Microsoft Word label database (Formtec, PGLBL010.XML)"
+}

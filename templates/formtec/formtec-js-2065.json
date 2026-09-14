@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-js-2065",
+  "brand": "Formtec",
+  "productCode": "JS-2065",
+  "name": "Formtec JS-2065 — 38.1 × 21.2 mm, 65-up",
+  "categories": ["General"],
+  "page": { "size": "A4", "widthMm": 210, "heightMm": 297 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 5,
+    "rows": 13,
+    "labelWidthMm": 38.1,
+    "labelHeightMm": 21.2,
+    "marginTopMm": 10.92,
+    "marginLeftMm": 4.75,
+    "hGapMm": 2.5,
+    "vGapMm": 0,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "A4-Japan ネ-ムㆍバッジLaser/Inkjet兼用ラベル(100 シ-ト/65 面)",
+  "source": "Microsoft Word label database (Formtec, PGLBL010.XML)"
+}

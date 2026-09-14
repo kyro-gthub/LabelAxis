@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-3615",
+  "brand": "Formtec",
+  "productCode": "3615",
+  "name": "Formtec 3615 — 69.8 × 51.9 mm, 10-up",
+  "categories": ["CD/DVD & media"],
+  "page": { "size": "A4", "widthMm": 210, "heightMm": 297 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 2,
+    "rows": 5,
+    "labelWidthMm": 69.8,
+    "labelHeightMm": 51.9,
+    "marginTopMm": 18.5,
+    "marginLeftMm": 31.2,
+    "hGapMm": 8,
+    "vGapMm": 0,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "A4-Korea 디스켓 라벨 / 레이저, 잉크젯용(10칸)",
+  "source": "Microsoft Word label database (Formtec, PGLBL010.XML)"
+}

@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-ijm-2642",
+  "brand": "Formtec",
+  "productCode": "IJM-2642",
+  "name": "Formtec IJM-2642 — 114.3 × 114.3 mm, 2-up",
+  "categories": ["CD/DVD & media"],
+  "page": { "size": "A4", "widthMm": 210, "heightMm": 297 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 1,
+    "rows": 2,
+    "labelWidthMm": 114.3,
+    "labelHeightMm": 114.3,
+    "marginTopMm": 17.06,
+    "marginLeftMm": 47.85,
+    "hGapMm": 0,
+    "vGapMm": 34.7,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Ellipse"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "A4 CD/DVD Inkjet(100 Sheet/φ114 mm)",
+  "source": "Microsoft Word label database (Formtec, PGLBL010.XML)"
+}

@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-js-2012s",
+  "brand": "Formtec",
+  "productCode": "JS-2012S",
+  "name": "Formtec JS-2012S — 60 × 60 mm, 12-up",
+  "categories": ["General"],
+  "page": { "size": "A4", "widthMm": 210, "heightMm": 297 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 3,
+    "rows": 4,
+    "labelWidthMm": 60,
+    "labelHeightMm": 60,
+    "marginTopMm": 18,
+    "marginLeftMm": 8,
+    "hGapMm": 7,
+    "vGapMm": 7,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "A4-Japan ネ-ムㆍバッジLaser/Inkjet兼用ラベル(100 シ-ト/12 面)",
+  "source": "Microsoft Word label database (Formtec, PGLBL010.XML)"
+}

@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-3114",
+  "brand": "Formtec",
+  "productCode": "3114",
+  "name": "Formtec 3114 — 99.1 × 67.55 mm, 8-up",
+  "categories": ["General"],
+  "page": { "size": "A4", "widthMm": 210, "heightMm": 297 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 2,
+    "rows": 4,
+    "labelWidthMm": 99.1,
+    "labelHeightMm": 67.55,
+    "marginTopMm": 13,
+    "marginLeftMm": 4.65,
+    "hGapMm": 2.5,
+    "vGapMm": 0,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "A4-Korea 물류관리용 라벨 / 레이저, 잉크젯용(8칸)",
+  "source": "Microsoft Word label database (Formtec, PGLBL010.XML)"
+}

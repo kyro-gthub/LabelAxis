@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-sh-7715",
+  "brand": "Formtec",
+  "productCode": "SH-7715",
+  "name": "Formtec SH-7715 — 147.65 × 16.942 mm, 15-up",
+  "categories": ["CD/DVD & media"],
+  "page": { "size": "Letter", "widthMm": 215.9, "heightMm": 279.4 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 1,
+    "rows": 15,
+    "labelWidthMm": 147.65,
+    "labelHeightMm": 16.942,
+    "marginTopMm": 12.7,
+    "marginLeftMm": 34.138,
+    "hGapMm": 0,
+    "vGapMm": 0,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "Letter Video Tape[Spine] Laser/Inkjet(100 Sheet/15 Label)",
+  "source": "Microsoft Word label database (Formtec, PGLBL010.XML)"
+}

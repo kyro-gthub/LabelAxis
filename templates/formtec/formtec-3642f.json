@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-3642f",
+  "brand": "Formtec",
+  "productCode": "3642F",
+  "name": "Formtec 3642F — 124 × 30 mm, 8-up",
+  "categories": ["CD/DVD & media"],
+  "page": { "size": "A4", "widthMm": 210, "heightMm": 297 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 1,
+    "rows": 8,
+    "labelWidthMm": 124,
+    "labelHeightMm": 30,
+    "marginTopMm": 28.5,
+    "marginLeftMm": 43,
+    "hGapMm": 0,
+    "vGapMm": 0,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "A4-Korea CD 케이스 전면 라벨 / 레이저, 잉크젯용(8칸)",
+  "source": "Microsoft Word label database (Formtec, PGLBL010.XML)"
+}

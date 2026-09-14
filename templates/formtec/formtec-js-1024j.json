@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-js-1024j",
+  "brand": "Formtec",
+  "productCode": "JS-1024J",
+  "name": "Formtec JS-1024J — 70 × 33.9 mm, 24-up",
+  "categories": ["Address"],
+  "page": { "size": "A4", "widthMm": 210, "heightMm": 297 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 3,
+    "rows": 8,
+    "labelWidthMm": 70,
+    "labelHeightMm": 33.9,
+    "marginTopMm": 12.7,
+    "marginLeftMm": 0,
+    "hGapMm": 0,
+    "vGapMm": 0,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "A4-Japan アドレス-ラベルLaser/Inkjet兼用ラベル(100 シ-ト/24 面)",
+  "source": "Microsoft Word label database (Formtec, PGLBL010.XML)"
+}

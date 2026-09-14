@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-3642",
+  "brand": "Formtec",
+  "productCode": "3642",
+  "name": "Formtec 3642 — 117.8 × 117.8 mm, 2-up",
+  "categories": ["CD/DVD & media"],
+  "page": { "size": "A4", "widthMm": 210, "heightMm": 297 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 1,
+    "rows": 2,
+    "labelWidthMm": 117.8,
+    "labelHeightMm": 117.8,
+    "marginTopMm": 15,
+    "marginLeftMm": 46,
+    "hGapMm": 0,
+    "vGapMm": 29.5,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Ellipse"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "A4-Korea CD/DVD 라벨 / 잉크젯용(Matt, 광택)(φ118 mm)",
+  "source": "Microsoft Word label database (Formtec, PGLBL010.XML)"
+}

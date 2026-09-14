@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-js-1018j",
+  "brand": "Formtec",
+  "productCode": "JS-1018J",
+  "name": "Formtec JS-1018J — 70 × 42.3 mm, 18-up",
+  "categories": ["Address"],
+  "page": { "size": "A4", "widthMm": 210, "heightMm": 297 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 3,
+    "rows": 6,
+    "labelWidthMm": 70,
+    "labelHeightMm": 42.3,
+    "marginTopMm": 21.2,
+    "marginLeftMm": 0,
+    "hGapMm": 0,
+    "vGapMm": 0,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "A4-Japan アドレス-ラベルLaser/Inkjet兼用ラベル(100 シ-ト/18 面)",
+  "source": "Microsoft Word label database (Formtec, PGLBL010.XML)"
+}

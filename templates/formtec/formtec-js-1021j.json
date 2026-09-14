@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-js-1021j",
+  "brand": "Formtec",
+  "productCode": "JS-1021J",
+  "name": "Formtec JS-1021J — 70 × 38.1 mm, 21-up",
+  "categories": ["Address"],
+  "page": { "size": "A4", "widthMm": 210, "heightMm": 297 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 3,
+    "rows": 7,
+    "labelWidthMm": 70,
+    "labelHeightMm": 38.1,
+    "marginTopMm": 14.8,
+    "marginLeftMm": 0,
+    "hGapMm": 0,
+    "vGapMm": 0,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "A4-Japan アドレス-ラベルLaser/Inkjet兼用ラベル(100 シ-ト/21 面)",
+  "source": "Microsoft Word label database (Formtec, PGLBL010.XML)"
+}

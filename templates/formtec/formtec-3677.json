@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-3677",
+  "brand": "Formtec",
+  "productCode": "3677",
+  "name": "Formtec 3677 — 30 × 21 mm, 78-up",
+  "categories": ["General"],
+  "page": { "size": "A4", "widthMm": 210, "heightMm": 297 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 6,
+    "rows": 13,
+    "labelWidthMm": 30,
+    "labelHeightMm": 21,
+    "marginTopMm": 10,
+    "marginLeftMm": 8.75,
+    "hGapMm": 2.5,
+    "vGapMm": 0,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "A4-Korea 분류표기용 라벨 / 레이저, 잉크젯용(78칸)",
+  "source": "Microsoft Word label database (Formtec, PGLBL010.XML)"
+}

@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-lsm-2105",
+  "brand": "Formtec",
+  "productCode": "LSM-2105",
+  "name": "Formtec LSM-2105 — 63.5 × 38.1 mm, 21-up",
+  "categories": ["Address"],
+  "page": { "size": "A4", "widthMm": 210, "heightMm": 297 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 3,
+    "rows": 7,
+    "labelWidthMm": 63.5,
+    "labelHeightMm": 38.1,
+    "marginTopMm": 15.875,
+    "marginLeftMm": 7.2,
+    "hGapMm": 2.55,
+    "vGapMm": 0,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "A4 Address Laser/Inkjet(100 Sheet/21 Label)",
+  "source": "Microsoft Word label database (Formtec, PGLBL010.XML)"
+}

@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-js-2024s",
+  "brand": "Formtec",
+  "productCode": "JS-2024S",
+  "name": "Formtec JS-2024S — 40 × 40 mm, 24-up",
+  "categories": ["General"],
+  "page": { "size": "A4", "widthMm": 210, "heightMm": 297 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 4,
+    "rows": 6,
+    "labelWidthMm": 40,
+    "labelHeightMm": 40,
+    "marginTopMm": 13.5,
+    "marginLeftMm": 16,
+    "hGapMm": 6,
+    "vGapMm": 6,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "A4-Japan ネ-ムㆍバッジLaser/Inkjet兼用ラベル(100 シ-ト/24 面)",
+  "source": "Microsoft Word label database (Formtec, PGLBL010.XML)"
+}

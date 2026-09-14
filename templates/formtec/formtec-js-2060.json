@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-js-2060",
+  "brand": "Formtec",
+  "productCode": "JS-2060",
+  "name": "Formtec JS-2060 — 36 × 12 mm, 60-up",
+  "categories": ["General"],
+  "page": { "size": "A4", "widthMm": 210, "heightMm": 297 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 4,
+    "rows": 15,
+    "labelWidthMm": 36,
+    "labelHeightMm": 12,
+    "marginTopMm": 24,
+    "marginLeftMm": 27,
+    "hGapMm": 4,
+    "vGapMm": 4,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "A4-Japan ネ-ムㆍバッジLaser/Inkjet兼用ラベル(100 シ-ト/60 面)",
+  "source": "Microsoft Word label database (Formtec, PGLBL010.XML)"
+}

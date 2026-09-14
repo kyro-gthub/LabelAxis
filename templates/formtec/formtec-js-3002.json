@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-js-3002",
+  "brand": "Formtec",
+  "productCode": "JS-3002",
+  "name": "Formtec JS-3002 — 118 × 118 mm, 2-up",
+  "categories": ["CD/DVD & media"],
+  "page": { "size": "A4", "widthMm": 210, "heightMm": 297 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 1,
+    "rows": 2,
+    "labelWidthMm": 118,
+    "labelHeightMm": 118,
+    "marginTopMm": 15,
+    "marginLeftMm": 46,
+    "hGapMm": 0,
+    "vGapMm": 29.5,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Ellipse"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "A4-Japan CD/DVD Laser/Inkjet兼用ラベル(100 シ-ト)",
+  "source": "Microsoft Word label database (Formtec, PGLBL010.XML)"
+}

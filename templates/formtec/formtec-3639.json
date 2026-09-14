@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-3639",
+  "brand": "Formtec",
+  "productCode": "3639",
+  "name": "Formtec 3639 — 37.96 × 37.96 mm, 20-up",
+  "categories": ["General"],
+  "page": { "size": "A4", "widthMm": 210, "heightMm": 297 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 4,
+    "rows": 5,
+    "labelWidthMm": 37.96,
+    "labelHeightMm": 37.96,
+    "marginTopMm": 28,
+    "marginLeftMm": 22.33,
+    "hGapMm": 4.5,
+    "vGapMm": 12.7,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "A4-Korea 분류표기용 라벨 / 레이저, 잉크젯용(20칸)",
+  "source": "Microsoft Word label database (Formtec, PGLBL010.XML)"
+}

@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-lsm-2112",
+  "brand": "Formtec",
+  "productCode": "LSM-2112",
+  "name": "Formtec LSM-2112 — 63.5 × 71.96 mm, 12-up",
+  "categories": ["General"],
+  "page": { "size": "A4", "widthMm": 210, "heightMm": 297 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 3,
+    "rows": 4,
+    "labelWidthMm": 63.5,
+    "labelHeightMm": 71.96,
+    "marginTopMm": 5.29,
+    "marginLeftMm": 7.21,
+    "hGapMm": 2.54,
+    "vGapMm": 0,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "A4 Shipping Laser/Inkjet(100 Sheet/12 Label)",
+  "source": "Microsoft Word label database (Formtec, PGLBL010.XML)"
+}

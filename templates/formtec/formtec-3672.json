@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-3672",
+  "brand": "Formtec",
+  "productCode": "3672",
+  "name": "Formtec 3672 — 76 × 56 mm, 8-up",
+  "categories": ["CD/DVD & media"],
+  "page": { "size": "A4", "widthMm": 210, "heightMm": 297 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 2,
+    "rows": 4,
+    "labelWidthMm": 76,
+    "labelHeightMm": 56,
+    "marginTopMm": 28.5,
+    "marginLeftMm": 20,
+    "hGapMm": 18,
+    "vGapMm": 4,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "A4-Korea 명함 CD 라벨 / 잉크젯용(광택)(8칸)",
+  "source": "Microsoft Word label database (Formtec, PGLBL010.XML)"
+}
