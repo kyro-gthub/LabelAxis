@@ -432,6 +432,54 @@ public sealed class DesignerCanvas : FrameworkElement
         ZoomChanged?.Invoke(this, EventArgs.Empty);
     }
 
+    // ---- scrolling --------------------------------------------------------
+
+    /// <summary>One scroll bar's range, position and page size, in screen pixels.</summary>
+    public readonly record struct ScrollInfo(double Minimum, double Maximum, double Value, double Viewport);
+
+    /// <summary>Raised when the scroll ranges or positions change (zoom, pan, resize, another page).</summary>
+    public event EventHandler? ScrollChanged;
+
+    private ScrollInfo _lastHorizontal;
+    private ScrollInfo _lastVertical;
+
+    public ScrollInfo HorizontalScroll => Axis(ActualWidth - RulerPad, LabelWidthMm * Scale, _pan.X);
+
+    public ScrollInfo VerticalScroll => Axis(ActualHeight - RulerPad, LabelHeightMm * Scale, _pan.Y);
+
+    /// <summary>
+    /// The label can be scrolled until half a window of empty space shows past either edge,
+    /// whether it is smaller or larger than the view. A position reached by dragging the
+    /// canvas further than that widens the range instead of snapping back.
+    /// </summary>
+    private static ScrollInfo Axis(double view, double content, double pan)
+    {
+        view = Math.Max(1, view);
+        double half = Math.Max(0, (content - view) / 2) + (view / 2);
+        half = Math.Max(half, Math.Abs(pan));
+        return new ScrollInfo(-half, half, -pan, view);
+    }
+
+    /// <summary>Moves the view to a scroll bar position.</summary>
+    public void ScrollTo(bool horizontal, double value)
+    {
+        _pan = horizontal ? new Vector(-value, _pan.Y) : new Vector(_pan.X, -value);
+        _viewInitialised = true;
+        ViewChanged?.Invoke(this, EventArgs.Empty);
+        InvalidateVisual();
+    }
+
+    private void RaiseScrollChanged()
+    {
+        ScrollInfo h = HorizontalScroll, v = VerticalScroll;
+        if (h != _lastHorizontal || v != _lastVertical)
+        {
+            _lastHorizontal = h;
+            _lastVertical = v;
+            ScrollChanged?.Invoke(this, EventArgs.Empty);
+        }
+    }
+
     // ---- rendering ------------------------------------------------------
 
     private static bool IsDark => Services.ThemeManager.Current == Services.AppTheme.Dark;
@@ -503,6 +551,9 @@ public sealed class DesignerCanvas : FrameworkElement
         {
             DrawRulers(dc, label);
         }
+
+        // Every change of zoom or position ends up here, so the scroll bars follow from one place.
+        Dispatcher.BeginInvoke(RaiseScrollChanged, System.Windows.Threading.DispatcherPriority.Render);
     }
 
     private void DrawGrid(DrawingContext dc, LabelDocument label, double stepMm)
@@ -939,7 +990,20 @@ public sealed class DesignerCanvas : FrameworkElement
 
     protected override void OnMouseWheel(MouseWheelEventArgs e)
     {
-        ZoomAt(e.Delta > 0 ? 1.15 : 1 / 1.15, e.GetPosition(this));
+        // Shift scrolls sideways, Ctrl scrolls up and down; the plain wheel zooms to the pointer.
+        if (Keyboard.Modifiers == ModifierKeys.Shift)
+        {
+            ScrollTo(horizontal: true, HorizontalScroll.Value - e.Delta);
+        }
+        else if (Keyboard.Modifiers == ModifierKeys.Control)
+        {
+            ScrollTo(horizontal: false, VerticalScroll.Value - e.Delta);
+        }
+        else
+        {
+            ZoomAt(e.Delta > 0 ? 1.15 : 1 / 1.15, e.GetPosition(this));
+        }
+
         e.Handled = true;
     }
 

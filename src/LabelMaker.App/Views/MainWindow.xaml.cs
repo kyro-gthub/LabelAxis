@@ -43,7 +43,7 @@ public partial class MainWindow : Window
         var stack = new Grid();
         stack.Children.Add(_canvas);
         stack.Children.Add(overlay);
-        CanvasHost.Child = stack;
+        CanvasHost.Child = WithScrollBars(stack);
         _textEditor = new InlineTextEditor(_canvas, overlay, () => _vm.Session);
         _vm.AttachCanvas(_canvas);
 
@@ -89,6 +89,60 @@ public partial class MainWindow : Window
                 _autoSaveTimer.Start();
             }
         };
+    }
+
+    /// <summary>
+    /// Scroll bars along the right and bottom of the canvas, to move around a zoomed-in
+    /// label. They follow the canvas's own pan and zoom, and dragging them pans it.
+    /// </summary>
+    private UIElement WithScrollBars(UIElement content)
+    {
+        var grid = new Grid();
+        grid.ColumnDefinitions.Add(new ColumnDefinition());
+        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+        grid.RowDefinitions.Add(new RowDefinition());
+        grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+
+        var vertical = new System.Windows.Controls.Primitives.ScrollBar
+        {
+            Orientation = Orientation.Vertical, Width = 14, SmallChange = 24, ToolTip = "Scroll up and down (Ctrl + mouse wheel)",
+        };
+        var horizontal = new System.Windows.Controls.Primitives.ScrollBar
+        {
+            Orientation = Orientation.Horizontal, Height = 14, Width = double.NaN, SmallChange = 24, ToolTip = "Scroll left and right (Shift + mouse wheel)",
+        };
+        vertical.SetResourceReference(Control.BackgroundProperty, "Br.Surface2");
+        horizontal.SetResourceReference(Control.BackgroundProperty, "Br.Surface2");
+
+        Grid.SetColumn(vertical, 1);
+        Grid.SetRow(horizontal, 1);
+        var corner = new Border();
+        corner.SetResourceReference(Border.BackgroundProperty, "Br.Surface2");
+        Grid.SetColumn(corner, 1);
+        Grid.SetRow(corner, 1);
+
+        grid.Children.Add(content);
+        grid.Children.Add(vertical);
+        grid.Children.Add(horizontal);
+        grid.Children.Add(corner);
+
+        static void Apply(System.Windows.Controls.Primitives.ScrollBar bar, DesignerCanvas.ScrollInfo info)
+        {
+            bar.Minimum = info.Minimum;
+            bar.Maximum = info.Maximum;
+            bar.ViewportSize = info.Viewport;
+            bar.LargeChange = Math.Max(24, info.Viewport * 0.8);
+            bar.Value = info.Value;
+        }
+
+        _canvas.ScrollChanged += (_, _) =>
+        {
+            Apply(horizontal, _canvas.HorizontalScroll);
+            Apply(vertical, _canvas.VerticalScroll);
+        };
+        horizontal.Scroll += (_, e) => _canvas.ScrollTo(horizontal: true, e.NewValue);
+        vertical.Scroll += (_, e) => _canvas.ScrollTo(horizontal: false, e.NewValue);
+        return grid;
     }
 
     private ContextMenu BuildCanvasContextMenu()

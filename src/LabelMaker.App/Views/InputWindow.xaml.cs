@@ -10,6 +10,7 @@ public sealed class InputWindow : Window
 
     public InputWindow(string title, string label, string initialValue)
     {
+        Style = (Style)Application.Current.FindResource("AppWindow");
         Title = title;
         Width = 380;
         SizeToContent = SizeToContent.Height;

@@ -1,69 +1,105 @@
 <Window x:Class="LabelMaker.App.Views.ColorPickerWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ctl="clr-namespace:LabelMaker.App.Controls"
         Style="{StaticResource AppWindow}"
         Background="{DynamicResource Br.Surface}" TextElement.Foreground="{DynamicResource Br.Text}"
-        Title="Colour" Height="508" Width="372" WindowStartupLocation="CenterOwner"
+        Title="Colour" SizeToContent="WidthAndHeight" WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize">
   <DockPanel Margin="16">
-    <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,14,0,0">
-      <Button Content="Transparent" Style="{StaticResource GhostButton}" Margin="0,0,8,0" Click="OnTransparent" />
-      <Button Content="Cancel" Style="{StaticResource GhostButton}" IsCancel="True" Margin="0,0,8,0" />
-      <Button Content="Use colour" Style="{StaticResource PrimaryButton}" IsDefault="True" Click="OnOk" />
-    </StackPanel>
+    <DockPanel DockPanel.Dock="Bottom" Margin="0,16,0,0">
+      <Button DockPanel.Dock="Left" Content="No colour" Style="{StaticResource GhostButton}" Click="OnTransparent"
+              ToolTip="Fully transparent: nothing is drawn" />
+      <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+        <Button Content="Reset" Style="{StaticResource GhostButton}" Margin="0,0,8,0" Click="OnReset"
+                ToolTip="Back to the colour this dialog opened with" />
+        <Button Content="Cancel" Style="{StaticResource GhostButton}" IsCancel="True" Margin="0,0,8,0" />
+        <Button Content="OK" MinWidth="90" Style="{StaticResource PrimaryButton}" IsDefault="True" Click="OnOk" />
+      </StackPanel>
+    </DockPanel>
 
-    <StackPanel>
-      <!-- live preview over a checkerboard so alpha is visible -->
-      <Border Height="62" CornerRadius="10" BorderThickness="1" Margin="0,0,0,14"
-              BorderBrush="{DynamicResource Br.BorderStrong}" ClipToBounds="True">
-        <Grid>
-          <Rectangle x:Name="Checker" />
-          <Rectangle x:Name="Preview" />
+    <StackPanel Orientation="Horizontal">
+      <!-- picking area: saturation / brightness square and hue strip -->
+      <StackPanel Width="276">
+        <Grid Height="240">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="10" />
+            <ColumnDefinition Width="26" />
+          </Grid.ColumnDefinitions>
+          <Border Grid.Column="0" BorderBrush="{DynamicResource Br.BorderStrong}" BorderThickness="1" CornerRadius="4" ClipToBounds="True">
+            <Canvas x:Name="SvArea" Background="Transparent" Cursor="Cross" ClipToBounds="True"
+                    MouseLeftButtonDown="OnSvDown" MouseMove="OnSvMove" MouseLeftButtonUp="OnAreaUp" />
+          </Border>
+          <Border Grid.Column="2" BorderBrush="{DynamicResource Br.BorderStrong}" BorderThickness="1" CornerRadius="4" ClipToBounds="True">
+            <Canvas x:Name="HueStrip" Background="Transparent" Cursor="Hand" ClipToBounds="True"
+                    MouseLeftButtonDown="OnHueDown" MouseMove="OnHueMove" MouseLeftButtonUp="OnAreaUp" />
+          </Border>
         </Grid>
-      </Border>
+        <TextBlock Text="Saturation across, brightness up and down; hue on the right" FontSize="11"
+                   Foreground="{DynamicResource Br.TextMuted}" Margin="0,6,0,10" TextWrapping="Wrap" />
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="56" />
+            <ColumnDefinition Width="*" />
+          </Grid.ColumnDefinitions>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="28" />
+            <RowDefinition Height="28" />
+          </Grid.RowDefinitions>
+          <TextBlock Grid.Row="0" Text="Current" Style="{StaticResource FieldLabel}" />
+          <TextBlock Grid.Row="1" Text="Old" Style="{StaticResource FieldLabel}" />
+          <Border Grid.Row="0" Grid.Column="1" x:Name="CurrentChecker" BorderBrush="{DynamicResource Br.BorderStrong}" BorderThickness="1,1,1,0" CornerRadius="5,5,0,0">
+            <Border x:Name="CurrentSwatch" CornerRadius="5,5,0,0" />
+          </Border>
+          <Border Grid.Row="1" Grid.Column="1" x:Name="OldChecker" BorderBrush="{DynamicResource Br.BorderStrong}" BorderThickness="1,0,1,1" CornerRadius="0,0,5,5"
+                  Cursor="Hand" ToolTip="Click to go back to this colour" MouseLeftButtonUp="OnOldClicked">
+            <Border x:Name="OldSwatch" CornerRadius="0,0,5,5" />
+          </Border>
+        </Grid>
+      </StackPanel>
 
-      <TextBlock Text="PALETTE" Style="{StaticResource PanelSectionHeader}" />
-      <ItemsControl x:Name="Palette" Margin="0,0,0,14">
-        <ItemsControl.ItemsPanel>
-          <ItemsPanelTemplate><WrapPanel /></ItemsPanelTemplate>
-        </ItemsControl.ItemsPanel>
-      </ItemsControl>
+      <!-- values -->
+      <StackPanel Width="352" Margin="20,0,0,0">
+        <DockPanel Margin="0,0,0,10">
+          <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+            <RadioButton x:Name="Scale100" Content="0..100" GroupName="scale" Style="{StaticResource ChipToggle}" Click="OnScaleChanged"
+                         ToolTip="Show red, green, blue and opacity as percentages" />
+            <RadioButton x:Name="Scale255" Content="0..255" GroupName="scale" Style="{StaticResource ChipToggle}" Click="OnScaleChanged"
+                         ToolTip="Show red, green, blue and opacity as 0 to 255" Margin="0" />
+          </StackPanel>
+          <TextBlock Text="CHANNELS" Style="{StaticResource PanelSectionHeader}" VerticalAlignment="Center" Margin="0" />
+        </DockPanel>
 
-      <TextBlock Text="CHANNELS" Style="{StaticResource PanelSectionHeader}" />
-      <Grid Margin="0,0,0,10">
-        <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="26" />
-          <ColumnDefinition Width="*" />
-          <ColumnDefinition Width="46" />
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-          <RowDefinition /><RowDefinition /><RowDefinition /><RowDefinition />
-        </Grid.RowDefinitions>
+        <Grid x:Name="Channels" />
 
-        <TextBlock Grid.Row="0" Grid.Column="0" Text="R" Style="{StaticResource FieldLabel}" />
-        <Slider x:Name="RSlider" Grid.Row="0" Grid.Column="1" Minimum="0" Maximum="255" SmallChange="1" LargeChange="16" ValueChanged="OnChannel" />
-        <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding Value, ElementName=RSlider, StringFormat=0}" TextAlignment="Right" />
+        <DockPanel Margin="0,12,0,0">
+          <TextBlock Text="Hex" Style="{StaticResource FieldLabel}" Width="30" />
+          <Button DockPanel.Dock="Right" Style="{StaticResource GhostButton}" Padding="9,6" Margin="8,0,0,0" Click="OnPickFromScreen"
+                  ToolTip="Eyedropper: click anywhere on the screen to take that colour">
+            <Path Data="M 11,1 L 14,4 L 12,6 L 13,7 L 12,8 L 11,7 L 5,13 L 2,14 L 3,11 L 9,5 L 8,4 L 9,3 L 10,4 Z" Width="15" Height="15"
+                  Stretch="Uniform" Stroke="{DynamicResource Br.Text2}" StrokeThickness="1.2" StrokeLineJoin="Round" />
+          </Button>
+          <TextBox x:Name="HexBox" FontFamily="{StaticResource Font.Mono}" LostFocus="OnHexCommitted" KeyDown="OnHexKeyDown"
+                   ToolTip="#RRGGBB, or #RRGGBBAA with opacity" />
+        </DockPanel>
 
-        <TextBlock Grid.Row="1" Grid.Column="0" Text="G" Style="{StaticResource FieldLabel}" />
-        <Slider x:Name="GSlider" Grid.Row="1" Grid.Column="1" Minimum="0" Maximum="255" SmallChange="1" LargeChange="16" ValueChanged="OnChannel" />
-        <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding Value, ElementName=GSlider, StringFormat=0}" TextAlignment="Right" />
+        <DockPanel Margin="0,14,0,0">
+          <TextBlock DockPanel.Dock="Top" Text="RECENT" Style="{StaticResource PanelSectionHeader}" />
+          <Button DockPanel.Dock="Left" Width="26" Height="26" Padding="0" Style="{StaticResource GhostButton}" Margin="0,0,6,0"
+                  VerticalAlignment="Top" Click="OnAddRecent" ToolTip="Keep this colour in the recent row">
+            <Path Data="M 0,5 L 10,5 M 5,0 L 5,10" Stroke="{DynamicResource Br.Text2}" StrokeThickness="1.6" />
+          </Button>
+          <ItemsControl x:Name="RecentRow">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate><WrapPanel /></ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+          </ItemsControl>
+        </DockPanel>
 
-        <TextBlock Grid.Row="2" Grid.Column="0" Text="B" Style="{StaticResource FieldLabel}" />
-        <Slider x:Name="BSlider" Grid.Row="2" Grid.Column="1" Minimum="0" Maximum="255" SmallChange="1" LargeChange="16" ValueChanged="OnChannel" />
-        <TextBlock Grid.Row="2" Grid.Column="2" Text="{Binding Value, ElementName=BSlider, StringFormat=0}" TextAlignment="Right" />
-
-        <TextBlock Grid.Row="3" Grid.Column="0" Text="A" Style="{StaticResource FieldLabel}" />
-        <Slider x:Name="ASlider" Grid.Row="3" Grid.Column="1" Minimum="0" Maximum="255" SmallChange="1" LargeChange="16" ValueChanged="OnChannel" />
-        <TextBlock Grid.Row="3" Grid.Column="2" Text="{Binding Value, ElementName=ASlider, StringFormat=0}" TextAlignment="Right" />
-      </Grid>
-
-      <DockPanel>
-        <TextBlock Text="Hex" Style="{StaticResource FieldLabel}" Width="34" />
-        <Button DockPanel.Dock="Right" Content="Pick from screen" Style="{StaticResource GhostButton}"
-                Margin="8,0,0,0" Click="OnPickFromScreen"
-                ToolTip="Click anywhere on the screen to take that pixel's colour" />
-        <TextBox x:Name="HexBox" FontFamily="{StaticResource Font.Mono}" LostFocus="OnHexCommitted" />
-      </DockPanel>
+        <TextBlock Text="PALETTE" Style="{StaticResource PanelSectionHeader}" Margin="0,12,0,6" />
+        <ctl:ColorPalette x:Name="Palette" />
+      </StackPanel>
     </StackPanel>
   </DockPanel>
 </Window>

@@ -3,19 +3,32 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Style="{StaticResource AppWindow}"
         Background="{DynamicResource Br.Surface}" TextElement.Foreground="{DynamicResource Br.Text}"
-        Title="Crop image" Height="660" Width="820" MinHeight="480" MinWidth="620"
+        Title="Crop image" Height="680" Width="860" MinHeight="480" MinWidth="680"
         WindowStartupLocation="CenterOwner">
   <DockPanel Margin="14">
 
     <Border DockPanel.Dock="Top" Style="{StaticResource InsetPanel}" Padding="12,9" Margin="0,0,0,12">
-      <DockPanel>
-        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
-          <TextBlock Text="Ratio" Style="{StaticResource FieldLabel}" VerticalAlignment="Center" Margin="0,0,8,0" />
-          <ComboBox x:Name="RatioBox" Width="120" SelectionChanged="OnRatioChanged" />
+      <StackPanel>
+        <DockPanel>
+          <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+            <TextBlock Text="Shape" Style="{StaticResource FieldLabel}" VerticalAlignment="Center" Margin="0,0,8,0" />
+            <ComboBox x:Name="RatioBox" Width="120" SelectionChanged="OnRatioChanged" />
+          </StackPanel>
+          <TextBlock x:Name="Hint" TextWrapping="Wrap" FontSize="12" VerticalAlignment="Center"
+                     Text="Drag a corner or side to resize, drag inside to move, drag on the dimmed area to draw a new crop." />
+        </DockPanel>
+        <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+          <TextBlock Text="X" Style="{StaticResource FieldLabel}" />
+          <TextBox x:Name="XBox" Style="{StaticResource NumberBox}" Width="70" Margin="0,0,14,0" ToolTip="Left edge, in image pixels" />
+          <TextBlock Text="Y" Style="{StaticResource FieldLabel}" />
+          <TextBox x:Name="YBox" Style="{StaticResource NumberBox}" Width="70" Margin="0,0,14,0" ToolTip="Top edge, in image pixels" />
+          <TextBlock Text="Width" Style="{StaticResource FieldLabel}" />
+          <TextBox x:Name="WBox" Style="{StaticResource NumberBox}" Width="70" Margin="0,0,14,0" ToolTip="Crop width, in image pixels" />
+          <TextBlock Text="Height" Style="{StaticResource FieldLabel}" />
+          <TextBox x:Name="HBox" Style="{StaticResource NumberBox}" Width="70" ToolTip="Crop height, in image pixels (follows the width when a shape is chosen)" />
+          <TextBlock Text="px" Style="{StaticResource FieldLabel}" Margin="8,0,0,0" />
         </StackPanel>
-        <TextBlock x:Name="Hint" TextWrapping="Wrap" FontSize="12"
-                   Text="Drag on the image to set the crop. Drag inside the selection to move it." />
-      </DockPanel>
+      </StackPanel>
     </Border>
 
     <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
@@ -30,7 +43,7 @@
             BorderThickness="1" ClipToBounds="True">
       <Grid x:Name="Stage" Background="Transparent"
             MouseLeftButtonDown="OnStageDown" MouseMove="OnStageMove" MouseLeftButtonUp="OnStageUp">
-        <Image x:Name="Preview" Stretch="Uniform" Margin="18" SnapsToDevicePixels="True" />
+        <Image x:Name="Preview" Stretch="Uniform" Margin="24" SnapsToDevicePixels="True" />
         <Canvas x:Name="Overlay" IsHitTestVisible="False" />
       </Grid>
     </Border>
