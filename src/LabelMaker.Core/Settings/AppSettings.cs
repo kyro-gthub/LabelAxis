@@ -61,6 +61,9 @@ public sealed class AppSettings
 
     public List<RecentProject> RecentProjects { get; set; } = new();
 
+    /// <summary>Colours chosen most recently in the colour dialog, newest first, as hex.</summary>
+    public List<string> RecentColors { get; set; } = new();
+
     public int MaxRecentProjects { get; set; } = 12;
 
     public void AddRecent(string path, string title)

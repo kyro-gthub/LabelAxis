@@ -351,7 +351,13 @@ public sealed class DialogService : IShellServices
 
     public LabelMaker.Core.Model.ColorRgba? PickColor(LabelMaker.Core.Model.ColorRgba initial, string title)
     {
-        var win = new ColorPickerWindow(initial, title) { Owner = _owner };
-        return win.ShowDialog() == true ? win.Result : null;
+        var win = new ColorPickerWindow(initial, title, _env.Settings.RecentColors) { Owner = _owner };
+        if (win.ShowDialog() != true)
+        {
+            return null;
+        }
+
+        _env.SaveSettings();
+        return win.Result;
     }
 }

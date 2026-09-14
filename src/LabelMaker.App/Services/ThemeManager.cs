@@ -25,6 +25,34 @@ public static class ThemeManager
 {
     public static AppTheme Current { get; private set; } = AppTheme.Light;
 
+    /// <summary>
+    /// Set on every window by the AppWindow style. The dark frame has to be asked for when
+    /// the window handle is created, before the window is first drawn: Windows 10 keeps
+    /// painting the caption light when it is set later, which left white title bars with
+    /// white (invisible) minimise / maximise / close buttons until the window was clicked.
+    /// </summary>
+    public static readonly DependencyProperty FollowThemeProperty = DependencyProperty.RegisterAttached(
+        "FollowTheme", typeof(bool), typeof(ThemeManager), new PropertyMetadata(false, (d, e) =>
+        {
+            if (d is Window window && e.NewValue is true)
+            {
+                window.SourceInitialized -= OnSourceInitialized;
+                window.SourceInitialized += OnSourceInitialized;
+            }
+        }));
+
+    public static bool GetFollowTheme(DependencyObject d) => (bool)d.GetValue(FollowThemeProperty);
+
+    public static void SetFollowTheme(DependencyObject d, bool value) => d.SetValue(FollowThemeProperty, value);
+
+    private static void OnSourceInitialized(object? sender, EventArgs e)
+    {
+        if (sender is Window window)
+        {
+            ApplyTitleBar(window);
+        }
+    }
+
     private sealed record Swatch(string Key, string Light, string Dark);
 
     private static readonly Swatch[] Swatches =
@@ -157,7 +185,21 @@ public static class ThemeManager
         // are already on screen keep their old caption until they are asked to redraw
         // the non-client area, which leaves half-light/half-dark title bars.
         _ = SetWindowPos(hwnd, IntPtr.Zero, 0, 0, 0, 0, SwpNoMove | SwpNoSize | SwpNoZOrder | SwpFrameChanged);
+
+        // Windows 10 still keeps the old caption on a window that is already visible until its
+        // activation changes; flipping the non-client activation state repaints it now.
+        if (window.IsVisible)
+        {
+            bool active = window.IsActive;
+            _ = SendMessage(hwnd, WmNcActivate, (IntPtr)(active ? 0 : 1), IntPtr.Zero);
+            _ = SendMessage(hwnd, WmNcActivate, (IntPtr)(active ? 1 : 0), IntPtr.Zero);
+        }
     }
+
+    private const int WmNcActivate = 0x0086;
+
+    [DllImport("user32.dll")]
+    private static extern IntPtr SendMessage(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam);
 
     private const uint SwpNoSize = 0x0001;
     private const uint SwpNoMove = 0x0002;
