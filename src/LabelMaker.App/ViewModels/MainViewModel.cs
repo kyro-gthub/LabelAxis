@@ -1267,14 +1267,25 @@ public sealed partial class MainViewModel : ObservableObject
     /// </summary>
     private void RenameActivePage()
     {
+        // The page list shows a text box on the page's own row instead of a pop-up.
+        SelectedLeftTab = 1;
+        PageRenameRequested?.Invoke(this, EventArgs.Empty);
+    }
+
+    /// <summary>Asks the view to start renaming the selected page in the page list.</summary>
+    public event EventHandler? PageRenameRequested;
+
+    /// <summary>Applies the name typed on the page's row; blank or unchanged names are ignored.</summary>
+    public void CommitPageRename(string? name)
+    {
         string current = ActivePageName;
-        string? name = _shell.Prompt("Rename page", "Page name:", current);
         if (string.IsNullOrWhiteSpace(name) || name.Trim() == current)
         {
             return;
         }
 
         _session.RenameActivePage(name.Trim());
+        StatusText = $"Page renamed to \"{name.Trim()}\"";
         OnPropertyChanged(nameof(ActivePageName));
         OnPropertyChanged(nameof(DocumentTabTitle));
     }

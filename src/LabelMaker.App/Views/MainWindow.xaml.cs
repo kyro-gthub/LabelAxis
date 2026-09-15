@@ -31,6 +31,7 @@ public partial class MainWindow : Window
         var shell = new DialogService(this, env);
         _vm = new MainViewModel(env, shell);
         shell.Bind(_vm);
+        _vm.PageRenameRequested += (_, _) => BeginPageRename();
         DataContext = _vm;
 
         _canvas = new DesignerCanvas(_vm.SheetRenderer);
@@ -278,7 +279,7 @@ public partial class MainWindow : Window
 
     private void OnPageDoubleClick(object sender, MouseButtonEventArgs e)
     {
-        if (sender is ListBoxItem { IsSelected: true } && _vm.RenamePageCommand.CanExecute(null))
+        if (sender is ListBoxItem { IsSelected: true } && !IsInsideControl(e.OriginalSource as DependencyObject) && _vm.RenamePageCommand.CanExecute(null))
         {
             _vm.RenamePageCommand.Execute(null);
             e.Handled = true;
@@ -288,6 +289,11 @@ public partial class MainWindow : Window
     /// <summary>F2 renames the page; Ctrl+Up / Ctrl+Down move it. Plain arrows step through the pages.</summary>
     private void OnPageListKeyDown(object sender, KeyEventArgs e)
     {
+        if (IsInsideControl(e.OriginalSource as DependencyObject))
+        {
+            return; // typing in the rename box
+        }
+
         bool ctrl = Keyboard.Modifiers == ModifierKeys.Control;
         System.Windows.Input.ICommand? command = e.Key switch
         {
@@ -305,8 +311,120 @@ public partial class MainWindow : Window
             }
 
             e.Handled = true;
-            FocusSelectedPage();
+            if (e.Key != Key.F2)
+            {
+                FocusSelectedPage();
+            }
         }
+    }
+
+    // ---- page rename in place ----
+
+    private TextBox? _pageRenameBox;
+
+    /// <summary>Shows a text box on the selected page's row, like renaming a file in Explorer.</summary>
+    private void BeginPageRename() => Dispatcher.BeginInvoke(DispatcherPriority.Loaded, () =>
+    {
+        EndPageRename(commit: true);
+        PageList.UpdateLayout();
+        if (PageList.SelectedItem is not PageListItem page)
+        {
+            return;
+        }
+
+        PageList.ScrollIntoView(page);
+        PageList.UpdateLayout();
+        if (PageList.ItemContainerGenerator.ContainerFromItem(page) is not ListBoxItem row ||
+            FindNamed<TextBox>(row, "PageRenameBox") is not { } box ||
+            FindNamed<TextBlock>(row, "PageCaption") is not { } caption)
+        {
+            return;
+        }
+
+        box.Text = page.Name;
+        caption.Visibility = Visibility.Hidden;
+        box.Visibility = Visibility.Visible;
+        _pageRenameBox = box;
+        box.Focus();
+        box.SelectAll();
+    });
+
+    private void EndPageRename(bool commit)
+    {
+        if (_pageRenameBox is not { } box)
+        {
+            return;
+        }
+
+        _pageRenameBox = null; // first, so losing focus below does not end the rename twice
+        string text = box.Text;
+        box.Visibility = Visibility.Collapsed;
+        if (box.Parent is Panel panel)
+        {
+            foreach (TextBlock caption in panel.Children.OfType<TextBlock>())
+            {
+                caption.Visibility = Visibility.Visible;
+            }
+        }
+
+        if (commit)
+        {
+            _vm.CommitPageRename(text);
+        }
+
+        FocusSelectedPage();
+    }
+
+    private void OnPageRenameKeyDown(object sender, KeyEventArgs e)
+    {
+        if (e.Key is Key.Enter or Key.Escape)
+        {
+            EndPageRename(commit: e.Key == Key.Enter);
+            e.Handled = true;
+        }
+    }
+
+    private void OnPageRenameLostFocus(object sender, KeyboardFocusChangedEventArgs e)
+    {
+        if (!ReferenceEquals(sender, _pageRenameBox) || sender is not TextBox box)
+        {
+            return;
+        }
+
+        // Focus coming back to the row itself (a closing context menu, the second click of
+        // the double-click) is not the user leaving the box.
+        if (e.NewFocus is ListBoxItem row && box.IsDescendantOf(row))
+        {
+            Dispatcher.BeginInvoke(DispatcherPriority.Input, () =>
+            {
+                if (ReferenceEquals(_pageRenameBox, box))
+                {
+                    box.Focus();
+                }
+            });
+            return;
+        }
+
+        EndPageRename(commit: true);
+    }
+
+    private static T? FindNamed<T>(DependencyObject parent, string name) where T : FrameworkElement
+    {
+        for (int i = 0; i < System.Windows.Media.VisualTreeHelper.GetChildrenCount(parent); i++)
+        {
+            DependencyObject child = System.Windows.Media.VisualTreeHelper.GetChild(parent, i);
+            if (child is T { Name: var n } match && n == name)
+            {
+                return match;
+            }
+
+            if (FindNamed<T>(child, name) is { } found)
+            {
+                return found;
+            }
+        }
+
+        return null;
     }
 
     /// <summary>Keeps keyboard focus on the selected page row after the list changes under it.</summary>
@@ -631,6 +749,19 @@ public partial class MainWindow : Window
     {
         if (sender is TextBox { DataContext: ObjectListItem { IsEditing: true } row } box)
         {
+            if (e.NewFocus is ListBoxItem item && box.IsDescendantOf(item))
+            {
+                // A closing context menu or the double-click handing focus back to the row.
+                Dispatcher.BeginInvoke(DispatcherPriority.Input, () =>
+                {
+                    if (row.IsEditing)
+                    {
+                        box.Focus();
+                    }
+                });
+                return;
+            }
+
             _vm.RenameObject(row, box.Text);
         }
     }

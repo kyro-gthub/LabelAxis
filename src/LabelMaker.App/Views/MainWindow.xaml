@@ -476,8 +476,17 @@
               </StackPanel>
             </Grid>
             <Border DockPanel.Dock="Top" Style="{StaticResource InsetPanel}" Height="170" Margin="0,0,0,14">
-              <ListBox x:Name="PageList" ItemsSource="{Binding Pages}" SelectedItem="{Binding SelectedPage}" DisplayMemberPath="Display"
+              <ListBox x:Name="PageList" ItemsSource="{Binding Pages}" SelectedItem="{Binding SelectedPage}"
                        BorderThickness="0" Background="Transparent" PreviewKeyDown="OnPageListKeyDown">
+                <ListBox.ItemTemplate>
+                  <DataTemplate>
+                    <Grid>
+                      <TextBlock x:Name="PageCaption" Text="{Binding Display}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                      <TextBox x:Name="PageRenameBox" Visibility="Collapsed" Margin="-4,-2,0,-2"
+                               KeyDown="OnPageRenameKeyDown" LostKeyboardFocus="OnPageRenameLostFocus" />
+                    </Grid>
+                  </DataTemplate>
+                </ListBox.ItemTemplate>
                 <ListBox.ItemContainerStyle>
                   <Style TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
                     <!-- Right-click selects first, so the menu always acts on the row under the cursor. -->
@@ -491,7 +500,7 @@
                     <MenuItem Header="_Add page" Command="{Binding AddPageCommand}" />
                     <MenuItem Header="_Duplicate page" Command="{Binding DuplicatePageCommand}" />
                     <Separator />
-                    <MenuItem Header="_Rename…" InputGestureText="Double-click, F2" Command="{Binding RenamePageCommand}" />
+                    <MenuItem Header="_Rename" InputGestureText="Double-click, F2" Command="{Binding RenamePageCommand}" />
                     <MenuItem Header="Label _size…" Command="{Binding LabelSizeCommand}" />
                     <Separator />
                     <MenuItem Header="Move page _up" InputGestureText="Ctrl+↑" Command="{Binding MovePageUpCommand}" />
