@@ -55,8 +55,7 @@ public static class SheetLayoutEngine
         PrintSettings settings)
     {
         ArgumentNullException.ThrowIfNull(project);
-        return CreatePlan(project, data, settings, project.Template
-            ?? throw new InvalidOperationException("The project has no Formtec template selected."));
+        return CreatePlan(project, data, settings, PrintLayoutResolver.Resolve(project, settings));
     }
 
     /// <summary>The same plan laid out on another <paramref name="template"/> (a thermal roll, say).</summary>

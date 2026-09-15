@@ -45,17 +45,23 @@ public sealed class ObjectListItem : ObservableObject
 
     public bool Locked => Members.Count > 0 && Members.All(m => m.Locked);
 
+    /// <summary>The row's text: the name the user gave the object, or its kind and content when it has none.</summary>
     public string Display
     {
         get
         {
+            string hideMark = Members.Count > 0 && Members.All(m => !m.Visible) ? " (hidden)" : string.Empty;
             if (IsGroup)
             {
-                return $"Group — {Members.Count} objects" + (Members.All(m => !m.Visible) ? " (hidden)" : string.Empty);
+                return $"Group — {Members.Count} objects{hideMark}";
             }
 
             LabelObject o = Object!;
-            string name = string.IsNullOrWhiteSpace(o.Name) ? o.Kind.ToString() : o.Name;
+            if (!string.IsNullOrWhiteSpace(o.Name))
+            {
+                return o.Name + hideMark;
+            }
+
             string detail = o switch
             {
                 TextObject t => Trim(t.Content.PlainText),
@@ -64,15 +70,26 @@ public sealed class ObjectListItem : ObservableObject
                 ShapeObject s => s.Shape.ToString(),
                 _ => string.Empty,
             };
-            string hideMark = o.Visible ? string.Empty : " (hidden)";
-            return $"{name} — {detail}{hideMark}";
+            return (detail.Length == 0 ? o.Kind.ToString() : $"{o.Kind} — {detail}") + hideMark;
         }
     }
+
+    /// <summary>Only single objects have names; a group heading cannot be renamed.</summary>
+    public bool CanRename => !IsGroup;
+
+    private bool _isEditing;
+
+    /// <summary>True while the row shows a text box for renaming.</summary>
+    public bool IsEditing { get => _isEditing; set => SetField(ref _isEditing, value); }
+
+    /// <summary>The text the rename box starts with.</summary>
+    public string EditName => Object?.Name is { Length: > 0 } name ? name : Display;
 
     /// <summary>Re-reads the object's name, lock and visibility after an edit.</summary>
     public void Refresh()
     {
         OnPropertyChanged(nameof(Display));
+        OnPropertyChanged(nameof(EditName));
         OnPropertyChanged(nameof(Locked));
     }
 

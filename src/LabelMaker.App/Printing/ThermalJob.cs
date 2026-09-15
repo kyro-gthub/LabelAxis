@@ -83,9 +83,7 @@ public sealed class ThermalJobPlan
 
         if (settings.Content == PrintContent.Pages)
         {
-            IReadOnlyList<LabelDocument> documents = settings.SelectedRecords.Count > 0
-                ? settings.SelectedRecords.Where(i => i >= 0 && i < project.Pages.Count).Select(i => project.Pages[i].Document).ToList()
-                : project.Pages.Select(p => p.Document).ToList();
+            IReadOnlyList<LabelDocument> documents = PrintablePages.For(project, settings);
             var all = MultiDocumentSheetLayout.PlanSheets(new MultiDocumentRenderPlan
             {
                 Template = roll,

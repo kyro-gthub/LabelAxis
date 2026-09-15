@@ -162,11 +162,10 @@ public sealed class WpfPrintServer
     public LabelSheetPaginator BuildPaginator(
         ProjectModel project, DataSet? data, PrintSettings settings, string? printerName)
     {
-        LabelTemplate template = project.Template
-            ?? throw new InvalidOperationException("No template selected.");
+        LabelTemplate template = PrintLayoutResolver.Resolve(project, settings);
         PageSize page = template.EffectivePage;
 
-        BulkRenderPlan plan = SheetLayoutEngine.CreatePlan(project, data, settings);
+        BulkRenderPlan plan = SheetLayoutEngine.CreatePlan(project, data, settings, template);
         var all = SheetLayoutEngine.PlanSheets(plan).ToList();
         (IReadOnlyList<PlannedSheet> sheets, int firstSheet) = settings.ApplySheetRange<PlannedSheet>(all);
 
@@ -192,20 +191,14 @@ public sealed class WpfPrintServer
     /// </summary>
     public MultiPageSheetPaginator BuildPagesPaginator(ProjectModel project, PrintSettings settings, string? printerName)
     {
-        LabelTemplate template = project.Template
-            ?? throw new InvalidOperationException("No template selected.");
+        LabelTemplate template = PrintLayoutResolver.Resolve(project, settings);
         PageSize page = template.EffectivePage;
 
-        IReadOnlyList<Core.Model.LabelDocument> documents = settings.SelectedRecords.Count > 0
-            ? settings.SelectedRecords
-                .Where(i => i >= 0 && i < project.Pages.Count)
-                .Select(i => project.Pages[i].Document)
-                .ToList()
-            : project.Pages.Select(p => p.Document).ToList();
+        IReadOnlyList<Core.Model.LabelDocument> documents = PrintablePages.For(project, settings);
 
         if (documents.Count == 0)
         {
-            throw new InvalidOperationException("The project has no standalone pages to print. Add pages first (Page > Add page).");
+            throw new InvalidOperationException("There are no pages to print. Put something on the master label or add pages in the Pages panel.");
         }
 
         var plan = new MultiDocumentRenderPlan
@@ -261,7 +254,7 @@ public sealed class WpfPrintServer
 
     private PrintJobRequest Prepare(ProjectModel project, DataSet? data, PrintSettings settings, PrintQueue queue, PrintTicket baseTicket)
     {
-        PageSize page = project.Template?.EffectivePage ?? PageSize.A4;
+        PageSize page = project.Template is null ? PageSize.A4 : PrintLayoutResolver.Resolve(project, settings).EffectivePage;
         PrintTicket ticket = TicketFor(queue, baseTicket, page.WidthMm, page.HeightMm, settings.Landscape);
         if (settings.Copies > 1)
         {

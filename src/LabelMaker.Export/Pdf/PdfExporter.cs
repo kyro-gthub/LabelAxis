@@ -31,7 +31,7 @@ public sealed class PdfExporter
         ArgumentNullException.ThrowIfNull(request);
         WindowsFontResolver.Register();
 
-        LabelTemplate template = request.Project.Template
+        LabelTemplate template = request.Template ?? request.Project.Template
             ?? throw new InvalidOperationException("The project has no template selected.");
 
         using var document = new PdfDocument();
