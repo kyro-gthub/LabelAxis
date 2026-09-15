@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Style="{StaticResource AppWindow}"
         Background="{DynamicResource Br.Surface}" TextElement.Foreground="{DynamicResource Br.Text}"
-        Title="Print" Height="620" Width="780" MinHeight="520" MinWidth="700"
+        Title="Print" Height="760" Width="820" MinHeight="560" MinWidth="720"
         WindowStartupLocation="CenterOwner">
   <DockPanel>
 
@@ -101,17 +101,77 @@
               <TextBlock x:Name="SheetRangeHint" VerticalAlignment="Center" Margin="10,0,0,0" FontSize="11.5"
                          Foreground="{DynamicResource Br.TextMuted}" TextTrimming="CharacterEllipsis" />
             </DockPanel>
-            <CheckBox x:Name="LandscapeBox" Content="Landscape orientation" Margin="0,8,0,0" Click="OnFieldChanged" />
           </StackPanel>
         </Border>
 
-        <TextBlock Text="WHAT WILL PRINT" Style="{StaticResource PanelSectionHeader}" />
+        <TextBlock Text="PAPER &amp; MARGINS" Style="{StaticResource PanelSectionHeader}" />
         <Border Style="{StaticResource InsetPanel}" Padding="14,12" Margin="0,0,0,16">
           <StackPanel>
-            <TextBlock x:Name="ContentText" TextWrapping="Wrap" FontSize="12.5" />
+            <DockPanel Margin="0,3">
+              <TextBlock Text="Paper size" Style="{StaticResource FieldLabel}" Width="120" />
+              <ComboBox x:Name="PaperBox" Width="280" HorizontalAlignment="Left" SelectionChanged="OnPaperChanged" />
+            </DockPanel>
+            <DockPanel x:Name="CustomPaperRow" Margin="120,6,0,3" Visibility="Collapsed">
+              <TextBox x:Name="PaperWidthBox" Style="{StaticResource NumberBox}" Width="64" TextChanged="OnFieldChanged" ToolTip="Paper width in millimetres" />
+              <TextBlock Text="×" VerticalAlignment="Center" Margin="8,0" Foreground="{DynamicResource Br.TextMuted}" />
+              <TextBox x:Name="PaperHeightBox" Style="{StaticResource NumberBox}" Width="64" TextChanged="OnFieldChanged" ToolTip="Paper height in millimetres" />
+              <TextBlock Text="mm" VerticalAlignment="Center" Margin="8,0,0,0" Foreground="{DynamicResource Br.TextMuted}" />
+            </DockPanel>
+            <CheckBox x:Name="LandscapeBox" Content="Landscape orientation" Margin="0,8,0,4" Click="OnFieldChanged" />
+
+            <RadioButton x:Name="TemplateMarginsBox" GroupName="margins" Margin="0,8,0,3" Click="OnFieldChanged"
+                         Content="Put labels where the sheet template says" />
+            <RadioButton x:Name="CustomMarginsBox" GroupName="margins" Margin="0,3" Click="OnFieldChanged"
+                         Content="Use my own margins and gaps (fits as many as possible on the paper)" />
+            <Grid x:Name="MarginsGrid" Margin="22,8,0,0">
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+              </Grid.ColumnDefinitions>
+              <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+              </Grid.RowDefinitions>
+              <TextBlock Text="Top" Style="{StaticResource FieldLabel}" Width="80" />
+              <TextBox x:Name="MarginTopBox" Grid.Column="1" Style="{StaticResource NumberBox}" Width="64" Margin="0,2,18,2" TextChanged="OnFieldChanged" ToolTip="Paper's top edge to the first row, mm" />
+              <TextBlock Grid.Column="2" Text="Bottom" Style="{StaticResource FieldLabel}" Width="80" />
+              <TextBox x:Name="MarginBottomBox" Grid.Column="3" Style="{StaticResource NumberBox}" Width="64" Margin="0,2" TextChanged="OnFieldChanged" ToolTip="Space kept clear at the bottom, mm" />
+              <TextBlock Grid.Row="1" Text="Left" Style="{StaticResource FieldLabel}" Width="80" />
+              <TextBox x:Name="MarginLeftBox" Grid.Row="1" Grid.Column="1" Style="{StaticResource NumberBox}" Width="64" Margin="0,2,18,2" TextChanged="OnFieldChanged" ToolTip="Paper's left edge to the first column, mm" />
+              <TextBlock Grid.Row="1" Grid.Column="2" Text="Right" Style="{StaticResource FieldLabel}" Width="80" />
+              <TextBox x:Name="MarginRightBox" Grid.Row="1" Grid.Column="3" Style="{StaticResource NumberBox}" Width="64" Margin="0,2" TextChanged="OnFieldChanged" ToolTip="Space kept clear on the right, mm" />
+              <TextBlock Grid.Row="2" Text="Gap across" Style="{StaticResource FieldLabel}" Width="80" />
+              <TextBox x:Name="HGapBox" Grid.Row="2" Grid.Column="1" Style="{StaticResource NumberBox}" Width="64" Margin="0,2,18,2" TextChanged="OnFieldChanged" ToolTip="Space between labels side by side, mm" />
+              <TextBlock Grid.Row="2" Grid.Column="2" Text="Gap down" Style="{StaticResource FieldLabel}" Width="80" />
+              <TextBox x:Name="VGapBox" Grid.Row="2" Grid.Column="3" Style="{StaticResource NumberBox}" Width="64" Margin="0,2" TextChanged="OnFieldChanged" ToolTip="Space between rows, mm" />
+            </Grid>
+            <CheckBox x:Name="CenterBox" Content="Centre the labels on the paper" Margin="22,8,0,0" Click="OnFieldChanged" />
+            <TextBlock x:Name="LayoutText" TextWrapping="Wrap" FontSize="12" Margin="0,10,0,0"
+                       Foreground="{DynamicResource Br.Text2}" />
+          </StackPanel>
+        </Border>
+
+        <TextBlock Text="WHAT TO PRINT" Style="{StaticResource PanelSectionHeader}" />
+        <Border Style="{StaticResource InsetPanel}" Padding="14,12" Margin="0,0,0,16">
+          <StackPanel>
+            <RadioButton x:Name="ContentFillBox" GroupName="content" Margin="0,3" Click="OnFieldChanged"
+                         Content="Fill the sheet with the master label" />
+            <RadioButton x:Name="ContentRecordsBox" GroupName="content" Margin="0,3" Click="OnFieldChanged"
+                         Content="One label per data record" />
+            <RadioButton x:Name="ContentPagesBox" GroupName="content" Margin="0,3" Click="OnFieldChanged"
+                         Content="Pages: several pages on one sheet, one after another" />
+            <DockPanel x:Name="CopiesPerPageRow" Margin="22,6,0,4">
+              <TextBlock Text="Copies of each page" Style="{StaticResource FieldLabel}" Width="130" />
+              <TextBox x:Name="CopiesPerPageBox" Style="{StaticResource NumberBox}" Width="64" HorizontalAlignment="Left" TextChanged="OnFieldChanged"
+                       ToolTip="Print every page this many times in a row, e.g. 4 fills four spots with page 1, then four with page 2" />
+            </DockPanel>
+            <TextBlock x:Name="ContentText" TextWrapping="Wrap" FontSize="12.5" Margin="0,8,0,0" />
             <TextBlock x:Name="PositionText" TextWrapping="Wrap" FontSize="12"
                        Foreground="{DynamicResource Br.Text2}" Margin="0,6,0,0" />
-            <Button Content="Change what to print…" Style="{StaticResource GhostButton}"
+            <Button Content="Start position and page range…" Style="{StaticResource GhostButton}"
                     HorizontalAlignment="Left" Margin="0,10,0,0" Click="OnAdvanced" />
           </StackPanel>
         </Border>

@@ -218,6 +218,46 @@ public sealed class GuideEditCommand : IUndoableCommand
     }
 }
 
+/// <summary>
+/// Puts a document's objects in a new back-to-front order in one step (dragging rows in the
+/// object list, bringing several objects forward), undoably.
+/// </summary>
+public sealed class ArrangeObjectsCommand : IUndoableCommand
+{
+    private readonly LabelDocument _document;
+    private readonly List<LabelObject> _before;
+    private readonly List<LabelObject> _after;
+
+    public ArrangeObjectsCommand(LabelDocument document, IReadOnlyList<LabelObject> newOrder, string label = "Reorder")
+    {
+        ArgumentNullException.ThrowIfNull(document);
+        ArgumentNullException.ThrowIfNull(newOrder);
+        if (newOrder.Count != document.Objects.Count || newOrder.Except(document.Objects).Any())
+        {
+            throw new ArgumentException("The new order must contain exactly the document's objects.", nameof(newOrder));
+        }
+
+        _document = document;
+        _before = document.Objects.ToList();
+        _after = newOrder.ToList();
+        Label = label;
+    }
+
+    public string Label { get; }
+
+    public bool ChangesAnything => !_before.SequenceEqual(_after);
+
+    public void Do() => Set(_after);
+
+    public void Undo() => Set(_before);
+
+    private void Set(List<LabelObject> order)
+    {
+        _document.Objects.Clear();
+        _document.Objects.AddRange(order);
+    }
+}
+
 public sealed class ReorderObjectCommand : IUndoableCommand
 {
     private readonly LabelDocument _document;

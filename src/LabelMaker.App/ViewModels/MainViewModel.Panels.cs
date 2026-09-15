@@ -1,4 +1,5 @@
 using LabelMaker.App.Mvvm;
+using LabelMaker.Core.Editing;
 using LabelMaker.Core.Model;
 
 namespace LabelMaker.App.ViewModels;
@@ -237,6 +238,69 @@ public sealed partial class MainViewModel
         if (!picked.SequenceEqual(_session.Selection))
         {
             _session.SetSelection(picked);
+        }
+    }
+
+    /// <summary>Gives the object on <paramref name="row"/> a new name, undoably. An empty name goes back to the automatic one.</summary>
+    public void RenameObject(ObjectListItem row, string? name)
+    {
+        row.IsEditing = false;
+        if (row.Object is not { } obj || name is null)
+        {
+            return;
+        }
+
+        string trimmed = name.Trim();
+        if (trimmed == obj.Name || (trimmed == row.Display && string.IsNullOrEmpty(obj.Name)))
+        {
+            return;
+        }
+
+        _session.Execute(new SetPropertyCommand<string>("Rename object", () => obj.Name, v => obj.Name = v, trimmed));
+        _properties.RefreshAll();
+        StatusText = trimmed.Length == 0 ? "Name cleared" : $"Renamed to \"{trimmed}\"";
+    }
+
+    /// <summary>
+    /// Drag and drop in the object list: <paramref name="dragged"/> rows go in front of
+    /// <paramref name="target"/> (or behind it when <paramref name="below"/>), changing the
+    /// stacking order on the page. Rows are listed front to back, so higher in the list is
+    /// further forward. A group moves as a whole; members can be reordered inside their group.
+    /// </summary>
+    public void MoveObjectsInList(IReadOnlyList<ObjectListItem> dragged, ObjectListItem target, bool below)
+    {
+        List<LabelObject> moving = dragged.SelectMany(r => r.Members).Distinct().ToList();
+        if (moving.Count == 0 || (target.Object is { } targetObject && moving.Contains(targetObject)))
+        {
+            return;
+        }
+
+        List<LabelObject> frontToBack = ObjectList.Where(r => !r.IsGroup).Select(r => r.Object!).ToList();
+        IReadOnlyList<LabelObject> anchorBlock = target.Members;
+
+        // Dropping among a group's members from outside the group places the objects next to
+        // the whole group, so a group is never split by objects that are not in it.
+        if (target.IsGroupMember && target.GroupId is { } groupId && !moving.All(o => o.GroupId == groupId))
+        {
+            anchorBlock = frontToBack.Where(o => o.GroupId == groupId).ToList();
+            List<LabelObject> members = anchorBlock.ToList();
+            below = members.IndexOf(target.Object!) >= members.Count / 2.0;
+        }
+
+        if (anchorBlock.All(moving.Contains))
+        {
+            return;
+        }
+
+        int insertAt = below
+            ? frontToBack.IndexOf(anchorBlock[^1]) + 1
+            : frontToBack.IndexOf(anchorBlock[0]);
+        var command = new ArrangeObjectsCommand(_session.ActiveLabel, ObjectStacking.MoveTo(frontToBack, moving, insertAt), "Reorder objects");
+        if (command.ChangesAnything)
+        {
+            _session.Execute(command);
+            _session.SetSelection(moving);
+            StatusText = moving.Count == 1 ? "Moved in the stacking order" : $"Moved {moving.Count} objects in the stacking order";
         }
     }
 

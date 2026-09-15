@@ -125,23 +125,25 @@ public partial class PrintSettingsWindow : Window
             var probe = new PrintSettings();
             ApplyTo(probe);
 
-            LabelTemplate? template = _session.Project.Template;
-            if (template is null)
+            if (_session.Project.Template is null)
             {
                 SummaryText.Text = "No Formtec template selected.";
                 return;
             }
 
+            probe.Layout = _session.Project.PrintSettings.Layout;
+            probe.Landscape = _session.Project.PrintSettings.Landscape;
+            probe.CopiesPerPage = _session.Project.PrintSettings.CopiesPerPage;
+            LabelTemplate template = LabelMaker.Core.Printing.PrintLayoutResolver.Resolve(_session.Project, probe);
+
             switch (probe.Content)
             {
                 case PrintContent.Pages:
                 {
-                    var docs = probe.SelectedRecords.Count > 0
-                        ? probe.SelectedRecords.Where(i => i >= 0 && i < _session.Project.Pages.Count).Select(i => _session.Project.Pages[i].Document).ToList()
-                        : _session.Project.Pages.Select(p => p.Document).ToList();
+                    var docs = LabelMaker.Core.Printing.PrintablePages.For(_session.Project, probe);
                     if (docs.Count == 0)
                     {
-                        SummaryText.Text = "This project has no standalone pages yet (Page > Add page).";
+                        SummaryText.Text = "There are no pages to print yet. Put something on the master label or add pages.";
                         return;
                     }
 
@@ -157,7 +159,7 @@ public partial class PrintSettingsWindow : Window
 
                 default:
                 {
-                    var plan = LabelMaker.Core.Printing.SheetLayoutEngine.CreatePlan(_session.Project, _session.Data, probe);
+                    var plan = LabelMaker.Core.Printing.SheetLayoutEngine.CreatePlan(_session.Project, _session.Data, probe, template);
                     SummaryText.Text = $"{plan.TotalLabels} label(s) across {plan.TotalSheets} sheet(s) of {template.Brand} {template.ProductCode} ({template.Grid.Columns}×{template.Grid.Rows}), {probe.ScalePercent:0.#}% scale.";
                     break;
                 }

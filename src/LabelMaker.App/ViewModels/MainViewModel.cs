@@ -590,8 +590,8 @@ public sealed partial class MainViewModel : ObservableObject
         AddPageCommand = new RelayCommand(() => _session.AddPage());
         DuplicatePageCommand = new RelayCommand(() => _session.DuplicateActivePage());
         RemovePageCommand = new RelayCommand(
-            () => { if (!_env.Settings.ConfirmDestructiveActions || _shell.Confirm($"Remove page \"{ActivePageName}\"?")) _session.RemoveActivePage(); },
-            () => !_session.IsEditingMaster);
+            RemoveActivePage,
+            () => !_session.IsEditingMaster || _session.Project.Pages.Count > 0);
         RenamePageCommand = new RelayCommand(RenameActivePage);
         AddVerticalGuideCommand = new RelayCommand(() => _canvas?.InsertGuideAtContext(vertical: true));
         AddHorizontalGuideCommand = new RelayCommand(() => _canvas?.InsertGuideAtContext(vertical: false));
@@ -1239,6 +1239,28 @@ public sealed partial class MainViewModel : ObservableObject
     }
 
     /// <summary>
+    /// Removes the selected page. Removing the master label (the first row) makes the next
+    /// page the master label; the last page left cannot be removed.
+    /// </summary>
+    private void RemoveActivePage()
+    {
+        if (_session.IsEditingMaster && _session.Project.Pages.Count == 0)
+        {
+            StatusText = "A project needs at least one page, so the last page cannot be removed.";
+            return;
+        }
+
+        string question = _session.IsEditingMaster
+            ? $"Remove page \"{ActivePageName}\"? \"{_session.Project.Pages[0].Name}\" becomes the first page (the master label)."
+            : $"Remove page \"{ActivePageName}\"?";
+        if (!_env.Settings.ConfirmDestructiveActions || _shell.Confirm(question))
+        {
+            _session.RemoveActivePage();
+            StatusText = "Page removed. Undo (Ctrl+Z) brings it back.";
+        }
+    }
+
+    /// <summary>
     /// Renames whichever page is selected — including the master label, which used to
     /// refuse and so looked like "renaming pages doesn't work" on a project that has
     /// no standalone pages yet.
@@ -1280,26 +1302,13 @@ public sealed partial class MainViewModel : ObservableObject
 
     private void Reorder(int delta)
     {
-        var objects = _session.ActiveLabel.Objects;
-        var commands = new List<IUndoableCommand>();
-        foreach (LabelObject obj in _session.Selection.OrderBy(o => objects.IndexOf(o)))
+        // One command for the whole selection: one command per object, each remembering its
+        // index from before the others moved, jumbled the order when several were selected.
+        var command = new ArrangeObjectsCommand(_session.ActiveLabel,
+            ObjectStacking.Step(_session.ActiveLabel.Objects, _session.Selection.ToList(), delta));
+        if (command.ChangesAnything)
         {
-            int current = objects.IndexOf(obj);
-            int target = delta switch
-            {
-                int.MaxValue => objects.Count - 1,
-                int.MinValue => 0,
-                _ => Math.Clamp(current + delta, 0, objects.Count - 1),
-            };
-            if (target != current)
-            {
-                commands.Add(new ReorderObjectCommand(_session.ActiveLabel, obj, target));
-            }
-        }
-
-        if (commands.Count > 0)
-        {
-            _session.Execute(new CompositeCommand("Reorder", commands));
+            _session.Execute(command);
             RebuildObjectList();
         }
     }
@@ -1833,6 +1842,7 @@ public sealed partial class MainViewModel : ObservableObject
             {
                 Project = _session.Project,
                 Data = plan.Data,
+                Template = plan.Template,
                 Scope = ExportScope.Sheet,
                 Title = _session.Project.Metadata.Title,
                 StartPosition = plan.StartPosition,

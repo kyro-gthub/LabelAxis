@@ -54,6 +54,12 @@ public sealed class PrintSettings
 
     public bool PrintCropMarks { get; set; }
 
+    /// <summary>Paper size, margins and gaps used instead of the sheet template's, when chosen.</summary>
+    public PrintLayout Layout { get; set; } = new();
+
+    /// <summary>How many times each standalone page is printed, one after another, when printing pages.</summary>
+    public int CopiesPerPage { get; set; } = 1;
+
     /// <summary>Settings for thermal label printers (language, resolution, darkness, where to send).</summary>
     public ThermalPrintSettings Thermal { get; set; } = new();
 
@@ -111,6 +117,8 @@ public sealed class PrintSettings
         PrintCropMarks = other.PrintCropMarks;
         FirstSheet = other.FirstSheet;
         LastSheet = other.LastSheet;
+        Layout = (other.Layout ?? new PrintLayout()).Clone();
+        CopiesPerPage = other.CopiesPerPage;
         Thermal = (other.Thermal ?? new ThermalPrintSettings()).Clone();
     }
 
@@ -132,6 +140,8 @@ public sealed class PrintSettings
         PrintCropMarks = PrintCropMarks,
         FirstSheet = FirstSheet,
         LastSheet = LastSheet,
+        Layout = (Layout ?? new PrintLayout()).Clone(),
+        CopiesPerPage = CopiesPerPage,
         Thermal = (Thermal ?? new ThermalPrintSettings()).Clone(),
     };
 }

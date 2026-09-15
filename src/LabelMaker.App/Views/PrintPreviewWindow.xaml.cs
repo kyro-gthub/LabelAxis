@@ -107,7 +107,7 @@ public partial class PrintPreviewWindow : Window
             _count = _paginator.PageCount;
 
             // Measured before the page is shown: ShowPage draws the overlay from them.
-            LabelTemplate? t = _session.Project.Template;
+            LabelTemplate? t = _session.Project.Template is null ? null : PrintLayoutResolver.Resolve(_session.Project, settings);
             _measurements = t is null ? null : SheetMeasurements.From(t, _printServer.MapperFor(printer, settings, t.EffectivePage));
 
             _index = Math.Clamp(_index, 0, Math.Max(0, _count - 1));
@@ -242,7 +242,7 @@ public partial class PrintPreviewWindow : Window
         var canvas = new Canvas { Width = pageSize.Width, Height = pageSize.Height, IsHitTestVisible = false };
 
         PrintSettings settings = _session.Project.PrintSettings;
-        PageSize page = _session.Project.Template?.EffectivePage ?? PageSize.A4;
+        PageSize page = _session.Project.Template is null ? PageSize.A4 : PrintLayoutResolver.Resolve(_session.Project, settings).EffectivePage;
         SheetMedia media = _printServer.GetMedia(
             settings.PrinterName ?? _printServer.DefaultPrinter(), page.WidthMm, page.HeightMm);
 

@@ -50,7 +50,7 @@
             <RadioButton x:Name="ContentVariableData" GroupName="content" Margin="0,4"
                          Content="Variable data — one label per data record" />
             <RadioButton x:Name="ContentPages" GroupName="content" Margin="0,4"
-                         Content="Standalone pages — several pages on one sheet" />
+                         Content="Pages — several pages on one sheet (master label first when it has content)" />
           </StackPanel>
         </Border>
 

@@ -509,15 +509,35 @@
             <TextBlock DockPanel.Dock="Top" Text="OBJECTS ON PAGE" Style="{StaticResource PanelSectionHeader}" />
             <TextBlock DockPanel.Dock="Bottom" FontSize="11" Margin="2,6,0,0" TextWrapping="Wrap"
                        Foreground="{DynamicResource Br.TextMuted}"
-                       Text="Shift+click selects a range, Ctrl+click adds or removes one." />
+                       Text="Drag rows to change which object is in front. Double-click or F2 renames. Shift+click selects a range, Ctrl+click adds one." />
             <Border Style="{StaticResource InsetPanel}">
               <ListBox x:Name="ObjectListBox" ItemsSource="{Binding ObjectList}" SelectionMode="Extended"
-                       BorderThickness="0" Background="Transparent" SelectionChanged="OnObjectListSelectionChanged">
+                       BorderThickness="0" Background="Transparent" SelectionChanged="OnObjectListSelectionChanged"
+                       AllowDrop="True" PreviewMouseLeftButtonDown="OnObjectListMouseDown" PreviewMouseLeftButtonUp="OnObjectListMouseUp" PreviewMouseMove="OnObjectListMouseMove"
+                       DragOver="OnObjectListDragOver" DragLeave="OnObjectListDragLeave" Drop="OnObjectListDrop"
+                       PreviewKeyDown="OnObjectListKeyDown">
                 <ListBox.ItemContainerStyle>
                   <Style TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
                     <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=OneWay}" />
+                    <EventSetter Event="MouseDoubleClick" Handler="OnObjectRowDoubleClick" />
+                    <EventSetter Event="PreviewMouseRightButtonDown" Handler="OnObjectRowRightClick" />
                   </Style>
                 </ListBox.ItemContainerStyle>
+                <ListBox.ContextMenu>
+                  <ContextMenu>
+                    <MenuItem Header="_Rename" InputGestureText="F2" Click="OnRenameObjectMenu" />
+                    <Separator />
+                    <MenuItem Header="Bring to _front" Command="{Binding BringToFrontCommand}" />
+                    <MenuItem Header="Bring _forward" InputGestureText="Ctrl+↑" Command="{Binding BringForwardCommand}" />
+                    <MenuItem Header="Send _backward" InputGestureText="Ctrl+↓" Command="{Binding SendBackwardCommand}" />
+                    <MenuItem Header="Send to bac_k" Command="{Binding SendToBackCommand}" />
+                    <Separator />
+                    <MenuItem Header="_Group" Command="{Binding GroupCommand}" />
+                    <MenuItem Header="_Ungroup" Command="{Binding UngroupCommand}" />
+                    <Separator />
+                    <MenuItem Header="_Delete" InputGestureText="Del" Command="{Binding DeleteCommand}" />
+                  </ContextMenu>
+                </ListBox.ContextMenu>
                 <ListBox.ItemTemplate>
                   <DataTemplate>
                     <DockPanel x:Name="Row">
@@ -529,7 +549,12 @@
                       </Button>
                       <Image x:Name="GroupIcon" DockPanel.Dock="Left" Source="{StaticResource Icon.Group}" Width="14" Height="14"
                              Margin="0,0,6,0" Visibility="Collapsed" />
-                      <TextBlock x:Name="Caption" Text="{Binding Display}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                      <Grid>
+                        <TextBlock x:Name="Caption" Text="{Binding Display}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
+                                   ToolTip="{Binding Display}" />
+                        <TextBox x:Name="RenameBox" Text="{Binding EditName, Mode=OneWay}" Visibility="Collapsed" Margin="-4,-2,0,-2"
+                                 KeyDown="OnRenameBoxKeyDown" LostKeyboardFocus="OnRenameBoxLostFocus" IsVisibleChanged="OnRenameBoxShown" />
+                      </Grid>
                     </DockPanel>
                     <DataTemplate.Triggers>
                       <DataTrigger Binding="{Binding IsGroup}" Value="True">
@@ -538,6 +563,10 @@
                       </DataTrigger>
                       <DataTrigger Binding="{Binding IsGroupMember}" Value="True">
                         <Setter TargetName="Row" Property="Margin" Value="20,0,0,0" />
+                      </DataTrigger>
+                      <DataTrigger Binding="{Binding IsEditing}" Value="True">
+                        <Setter TargetName="RenameBox" Property="Visibility" Value="Visible" />
+                        <Setter TargetName="Caption" Property="Visibility" Value="Hidden" />
                       </DataTrigger>
                     </DataTemplate.Triggers>
                   </DataTemplate>

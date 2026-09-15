@@ -22,6 +22,9 @@ public sealed class ExportRequest
 
     public DataSet? Data { get; init; }
 
+    /// <summary>Sheet layout to use instead of the project's template (the print dialog's paper and margins).</summary>
+    public LabelMaker.Core.Formtec.LabelTemplate? Template { get; init; }
+
     public ExportScope Scope { get; init; } = ExportScope.Sheet;
 
     /// <summary>Raster DPI for PNG/JPEG (PDF stays vector). 300 / 600 / custom.</summary>

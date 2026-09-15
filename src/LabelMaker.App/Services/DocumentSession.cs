@@ -199,11 +199,40 @@ public sealed class DocumentSession
         return copy;
     }
 
+    /// <summary>
+    /// Removes the page on screen. The master label (the first row of the page list) can be
+    /// removed too while other pages exist: the next page takes its place as the master
+    /// label. The last remaining page cannot be removed.
+    /// </summary>
     public bool RemoveActivePage()
     {
-        if (ActivePageId is not { } id || Project.Pages.FirstOrDefault(p => p.Id == id) is not { } page)
+        if (ActivePageId is null)
         {
-            return false; // the master label cannot be removed
+            if (Project.Pages.Count == 0)
+            {
+                return false;
+            }
+
+            Execute(new PageStructureCommand(this, "Remove page", () =>
+            {
+                LabelPage next = Project.Pages[0];
+                GuideCollection guides = Project.MasterLabel.Guides;
+                Project.Pages.RemoveAt(0);
+                next.Document.Name = next.Name;
+                Project.MasterLabel = next.Document;
+                if (Project.SharedGuides)
+                {
+                    Project.MasterLabel.Guides = guides; // shared guides live on the master label
+                }
+
+                ActivePageId = null;
+            }));
+            return true;
+        }
+
+        if (Project.Pages.FirstOrDefault(p => p.Id == ActivePageId) is not { } page)
+        {
+            return false;
         }
 
         Execute(new PageStructureCommand(this, "Remove page", () =>
@@ -278,16 +307,20 @@ public sealed class DocumentSession
         public void Undo() => _before.Restore(_session);
 
         private sealed record Snapshot(
-            List<LabelPage> Pages, List<string> PageNames, string MasterName, string? ActivePageId)
+            List<LabelPage> Pages, List<string> PageNames, LabelDocument Master, GuideCollection MasterGuides, string MasterName, string? ActivePageId)
         {
             public static Snapshot Capture(DocumentSession s) => new(
                 s.Project.Pages.ToList(),
                 s.Project.Pages.Select(p => p.Name).ToList(),
+                s.Project.MasterLabel,
+                s.Project.MasterLabel.Guides,
                 s.Project.MasterLabel.Name,
                 s.ActivePageId);
 
             public void Restore(DocumentSession s)
             {
+                s.Project.MasterLabel = Master;
+                Master.Guides = MasterGuides;
                 s.Project.Pages.Clear();
                 s.Project.Pages.AddRange(Pages);
                 for (int i = 0; i < Pages.Count; i++)
