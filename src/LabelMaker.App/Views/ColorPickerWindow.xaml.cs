@@ -389,7 +389,8 @@ public partial class ColorPickerWindow : Window
                         break;
                 }
             };
-            frame.MouseWheel += (_, e) =>
+            // Preview: the text box's scroll viewer marks the wheel handled before it bubbles up.
+            frame.PreviewMouseWheel += (_, e) =>
             {
                 Step((e.Delta > 0 ? 1 : -1) * (Keyboard.Modifiers.HasFlag(ModifierKeys.Shift) ? 10 : 1));
                 e.Handled = true;
@@ -432,7 +433,19 @@ public partial class ColorPickerWindow : Window
             return new ControlTemplate(typeof(RepeatButton)) { VisualTree = border };
         }
 
-        private void Step(double amount) => _set(Math.Clamp(Math.Round(_get()) + amount, 0, _max()));
+        /// <summary>
+        /// Arrows, wheel and arrow keys. The box is refreshed even while it has focus: it used to
+        /// keep showing the old number, and leaving the box then typed that number back in.
+        /// </summary>
+        private void Step(double amount)
+        {
+            _set(Math.Clamp(Math.Round(_get()) + amount, 0, _max()));
+            _box.Text = Math.Round(_get()).ToString(CultureInfo.CurrentCulture);
+            if (_box.IsKeyboardFocusWithin)
+            {
+                _box.SelectAll();
+            }
+        }
 
         private void Commit()
         {

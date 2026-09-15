@@ -32,4 +32,32 @@ public sealed class ColorSpaceTests
             ColorSpace.FromHsv(h, s, v, c.A).Should().Be(c);
         }
     }
+
+    [Theory]
+    [InlineData("#000000")]
+    [InlineData("#FFFFFF")]
+    [InlineData("#FF00FF")]
+    [InlineData("#1F6FEB")]
+    [InlineData("#808080")]
+    public void Stepping_green_one_at_a_time_reaches_every_value(string start)
+    {
+        // What the colour dialog does: keep the colour as HSV (keeping the hue through greys)
+        // and step one channel of the RGB it shows.
+        ColorRgba current = ColorRgba.Parse(start);
+        (double h, double s, double v) = ColorSpace.ToHsv(current);
+        for (int step = 0; step < 510; step++)
+        {
+            int wanted = step < 255 ? Math.Min(255, current.G + 1) : Math.Max(0, current.G - 1);
+            ColorRgba next = current with { G = (byte)wanted };
+            (double nh, double ns, double nv) = ColorSpace.ToHsv(next);
+            if (ns > 1e-6 && nv > 1e-6)
+            {
+                h = nh;
+            }
+
+            (s, v) = (ns, nv);
+            current = ColorSpace.FromHsv(h, s, v, next.A);
+            current.G.Should().Be((byte)wanted);
+        }
+    }
 }
