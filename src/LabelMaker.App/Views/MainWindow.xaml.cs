@@ -57,9 +57,11 @@ public partial class MainWindow : Window
             }
         };
         Loaded += (_, _) => _canvas.Focus();
+        PreviewMouseLeftButtonDown += OnWindowPreviewMouseDown;
         _canvas.MouseEnter += (_, _) =>
         {
-            if (!_canvas.IsKeyboardFocusWithin)
+            // Passing over the canvas must not pull focus out of a rename box and cancel it.
+            if (!_canvas.IsKeyboardFocusWithin && !IsRenaming)
             {
                 _canvas.Focus();
             }
@@ -325,7 +327,7 @@ public partial class MainWindow : Window
     /// <summary>Shows a text box on the selected page's row, like renaming a file in Explorer.</summary>
     private void BeginPageRename() => Dispatcher.BeginInvoke(DispatcherPriority.Loaded, () =>
     {
-        EndPageRename(commit: true);
+        EndPageRename(commit: false);
         PageList.UpdateLayout();
         if (PageList.SelectedItem is not PageListItem page)
         {
@@ -349,7 +351,7 @@ public partial class MainWindow : Window
         box.SelectAll();
     });
 
-    private void EndPageRename(bool commit)
+    private void EndPageRename(bool commit, bool refocus = false)
     {
         if (_pageRenameBox is not { } box)
         {
@@ -372,14 +374,18 @@ public partial class MainWindow : Window
             _vm.CommitPageRename(text);
         }
 
-        FocusSelectedPage();
+        // After Enter or Esc keep typing in the page list; after a click, focus goes where the user clicked.
+        if (refocus)
+        {
+            FocusSelectedPage();
+        }
     }
 
     private void OnPageRenameKeyDown(object sender, KeyEventArgs e)
     {
         if (e.Key is Key.Enter or Key.Escape)
         {
-            EndPageRename(commit: e.Key == Key.Enter);
+            EndPageRename(commit: e.Key == Key.Enter, refocus: true);
             e.Handled = true;
         }
     }
@@ -405,8 +411,61 @@ public partial class MainWindow : Window
             return;
         }
 
-        EndPageRename(commit: true);
+        // Only Enter keeps a new name; leaving the box any other way cancels.
+        EndPageRename(commit: false);
     }
+
+    /// <summary>A left click anywhere outside the rename box cancels renaming a page or an object.</summary>
+    private void OnWindowPreviewMouseDown(object sender, MouseButtonEventArgs e)
+    {
+        var source = e.OriginalSource as DependencyObject;
+        if (_pageRenameBox is { } pageBox && !IsWithin(source, pageBox))
+        {
+            EndPageRename(commit: false);
+        }
+
+        foreach (ObjectListItem row in _vm.ObjectList.Where(r => r.IsEditing).ToList())
+        {
+            if (!(FindAncestor<TextBox>(source) is { DataContext: var context } && ReferenceEquals(context, row)))
+            {
+                row.IsEditing = false;
+            }
+        }
+    }
+
+    private static bool IsWithin(DependencyObject? d, DependencyObject ancestor)
+    {
+        for (; d is not null; d = ParentOf(d))
+        {
+            if (ReferenceEquals(d, ancestor))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static T? FindAncestor<T>(DependencyObject? d) where T : DependencyObject
+    {
+        for (; d is not null; d = ParentOf(d))
+        {
+            if (d is T match)
+            {
+                return match;
+            }
+        }
+
+        return null;
+    }
+
+    private static DependencyObject? ParentOf(DependencyObject d) =>
+        d is System.Windows.Media.Visual or System.Windows.Media.Media3D.Visual3D
+            ? System.Windows.Media.VisualTreeHelper.GetParent(d)
+            : LogicalTreeHelper.GetParent(d);
+
+    /// <summary>True while a page or object name is being typed in its list.</summary>
+    private bool IsRenaming => _pageRenameBox is not null || _vm.ObjectList.Any(r => r.IsEditing);
 
     private static T? FindNamed<T>(DependencyObject parent, string name) where T : FrameworkElement
     {
@@ -762,7 +821,7 @@ public partial class MainWindow : Window
                 return;
             }
 
-            _vm.RenameObject(row, box.Text);
+            row.IsEditing = false; // only Enter keeps a new name
         }
     }
 
