@@ -242,6 +242,7 @@ public static class PublisherLayoutConverter
             HorizontalAlignment = s.Paragraphs.FirstOrDefault()?.Alignment ?? HAlign.Left,
             VerticalAlignment = s.VerticalAlignment,
             WordWrap = true,
+            AutoFit = TextAutoFit.None, // keep Publisher's box sizes exactly
             PaddingMm = new Thickness(s.InsetsPt.L * PtToMm, s.InsetsPt.T * PtToMm, s.InsetsPt.R * PtToMm, s.InsetsPt.B * PtToMm),
         };
 

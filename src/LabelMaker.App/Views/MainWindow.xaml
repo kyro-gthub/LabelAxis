@@ -955,8 +955,8 @@
                   <CheckBox Content="Wrap long lines" IsChecked="{Binding WordWrap}" Margin="0,8,0,3" />
                   <DockPanel Margin="0,3">
                     <TextBlock Text="When it overflows" Style="{StaticResource FieldLabel}" Width="86" TextWrapping="Wrap" />
-                    <ComboBox ItemsSource="{Binding AutoFitModes}" SelectedItem="{Binding AutoFit}"
-                              ToolTip="None clips; ShrinkToFit reduces the size; ResizeBox grows the box" />
+                    <ComboBox ItemsSource="{Binding AutoFitModes}" DisplayMemberPath="Value" SelectedValuePath="Key" SelectedValue="{Binding AutoFit}"
+                              ToolTip="Grow the box: the box gets taller so all the text stays inside. Shrink the text: the font gets smaller to fit. Let it spill out: the box keeps its size." />
                   </DockPanel>
                   <DockPanel Margin="0,3" Visibility="{Binding IsShrinkToFit, Converter={StaticResource BoolToVis}}">
                     <TextBlock Text="Smallest (pt)" Style="{StaticResource FieldLabel}" Width="86" />

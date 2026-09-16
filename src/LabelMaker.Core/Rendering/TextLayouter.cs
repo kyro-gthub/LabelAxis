@@ -34,7 +34,7 @@ public static class TextLayouter
         {
             int guard = 0;
             while (guard++ < 60 && scale > minScale &&
-                   (block.TotalHeightMm > maxHeight + 0.05 || Overflows(block, maxWidth)))
+                   (block.InkHeightMm > maxHeight + 0.05 || Overflows(block, maxWidth)))
             {
                 scale = Math.Max(minScale, scale - 0.04);
                 block = Build(content, style, maxWidth, measurer, scale);
@@ -53,6 +53,8 @@ public static class TextLayouter
         var lines = new List<TextLine>();
         double totalHeight = 0;
         double lastExtra = 0;
+        double? capTop = null;
+        double lastBaseline = 0;
 
         foreach (Paragraph paragraph in content.Paragraphs)
         {
@@ -73,6 +75,7 @@ public static class TextLayouter
                     WidthMm = measurer.MeasureWidthMm(p.Text, p.Font, p.SizePt, p.Bold, p.Italic) + LetterSpacingWidth(p),
                     LineHeightMm = measurer.LineHeightMm(p.Font, p.SizePt),
                     BaselineMm = measurer.BaselineMm(p.Font, p.SizePt),
+                    CapHeightMm = measurer.CapHeightMm(p.Font, p.SizePt),
                     TrailingSpaceMm = TrailingSpaceWidth(p, measurer),
                 })
                 .ToList();
@@ -96,6 +99,7 @@ public static class TextLayouter
             double width = 0;
             double height = 0;
             double baseline = 0;
+            double cap = 0;
             double trailing = 0;
 
             void Flush(bool endOfParagraph)
@@ -116,13 +120,17 @@ public static class TextLayouter
                 // empty space after it. Trailing spaces do not count towards the width, or
                 // centred and right-aligned lines stop short of where they should.
                 double h = height * lineSpacing;
+                double lineBaseline = baseline > 0 ? baseline : height * 0.8;
+                capTop ??= totalHeight + lineBaseline - cap;
+                lastBaseline = totalHeight + lineBaseline;
                 lines.Add(new TextLine
                 {
                     Spans = justify ? spans.ToList() : Merge(spans),
                     WidthMm = justify ? maxWidth : lineWidth,
                     WordGapMm = justify ? (maxWidth - lineWidth) / gaps : 0,
                     HeightMm = h,
-                    BaselineOffsetMm = baseline > 0 ? baseline : height * 0.8,
+                    BaselineOffsetMm = lineBaseline,
+                    CapHeightMm = cap,
                     Alignment = align,
                 });
                 totalHeight += h;
@@ -131,6 +139,7 @@ public static class TextLayouter
                 width = 0;
                 height = 0;
                 baseline = 0;
+                cap = 0;
                 trailing = 0;
             }
 
@@ -158,6 +167,7 @@ public static class TextLayouter
                 width += piece.WidthMm;
                 height = Math.Max(height, piece.LineHeightMm);
                 baseline = Math.Max(baseline, piece.BaselineMm);
+                cap = Math.Max(cap, piece.CapHeightMm);
                 // A run of spaces arrives as several one-space pieces; they all trail.
                 trailing = piece.Text.Trim().Length == 0 ? trailing + piece.WidthMm : piece.TrailingSpaceMm;
             }
@@ -165,13 +175,20 @@ public static class TextLayouter
             Flush(endOfParagraph: true);
         }
 
-        return new TextBlock { Lines = lines, TotalHeightMm = Math.Max(0, totalHeight - lastExtra) };
+        double total = Math.Max(0, totalHeight - lastExtra);
+        return new TextBlock
+        {
+            Lines = lines,
+            TotalHeightMm = total,
+            CapTopMm = Math.Clamp(capTop ?? 0, 0, total),
+            LastBaselineMm = lines.Count > 0 ? Math.Min(lastBaseline, total) : 0,
+        };
     }
 
     private readonly record struct WordPiece(
         string Text, string Font, double SizePt, bool Bold, bool Italic, bool Underline, bool Strike,
         ColorRgba Fg, ColorRgba? Bg, double LetterSpacingEm, double WidthMm, double LineHeightMm,
-        double BaselineMm = 0, double TrailingSpaceMm = 0)
+        double BaselineMm = 0, double TrailingSpaceMm = 0, double CapHeightMm = 0)
     {
         public TextSpan ToSpan() => new()
         {

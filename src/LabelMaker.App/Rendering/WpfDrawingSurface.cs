@@ -264,12 +264,7 @@ public sealed class WpfDrawingSurface : IDrawingSurface
 
     public void DrawTextBlock(TextBlock block, RectMm rectMm, VAlign verticalAlignment)
     {
-        double y = rectMm.Y + verticalAlignment switch
-        {
-            VAlign.Middle => Math.Max(0, (rectMm.Height - block.TotalHeightMm) / 2.0),
-            VAlign.Bottom => Math.Max(0, rectMm.Height - block.TotalHeightMm),
-            _ => 0,
-        };
+        double y = rectMm.Y + block.TopOffsetMm(verticalAlignment, rectMm.Height);
 
         foreach (TextLine line in block.Lines)
         {

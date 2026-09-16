@@ -23,7 +23,42 @@ public sealed record TextSpan
 public sealed class TextBlock
 {
     public required IReadOnlyList<TextLine> Lines { get; init; }
+
+    /// <summary>From the top of the first line to the bottom of the last line's descenders.</summary>
     public double TotalHeightMm { get; init; }
+
+    /// <summary>From the top of the first line down to the top of its capital letters (the font's empty space above them).</summary>
+    public double CapTopMm { get; init; }
+
+    /// <summary>From the top of the first line down to the last line's baseline.</summary>
+    public double LastBaselineMm { get; init; }
+
+    /// <summary>Height of the visible text: from the capitals' tops to the bottom of the descenders.</summary>
+    public double InkHeightMm => Math.Max(0, TotalHeightMm - CapTopMm);
+
+    /// <summary>
+    /// Where the first line's top goes, measured down from the top of a box
+    /// <paramref name="boxHeightMm"/> tall, so the letters themselves sit where asked: Top puts
+    /// the capitals against the top edge, Bottom the descenders against the bottom edge, and
+    /// Middle centres the capitals' tops and the last baseline. The font's empty space above the
+    /// capitals used to count as text, so top-aligned text started well below the box's edge
+    /// and centred text sat low. Text taller than the box starts at the top.
+    /// </summary>
+    public double TopOffsetMm(VerticalAlignment alignment, double boxHeightMm)
+    {
+        double top = -CapTopMm;
+        if (InkHeightMm > boxHeightMm + 0.01)
+        {
+            return top;
+        }
+
+        return alignment switch
+        {
+            VerticalAlignment.Bottom => boxHeightMm - TotalHeightMm,
+            VerticalAlignment.Middle => Math.Max(top, Math.Min(((boxHeightMm - (LastBaselineMm - CapTopMm)) / 2) - CapTopMm, boxHeightMm - TotalHeightMm)),
+            _ => top,
+        };
+    }
 }
 
 public sealed class TextLine
@@ -32,6 +67,9 @@ public sealed class TextLine
     public double WidthMm { get; init; }
     public double HeightMm { get; init; }
     public double BaselineOffsetMm { get; init; }
+
+    /// <summary>Height of the tallest capital letters on the line, above the baseline.</summary>
+    public double CapHeightMm { get; init; }
 
     /// <summary>Extra space after each word-ending space, for justified lines; 0 otherwise.</summary>
     public double WordGapMm { get; init; }
@@ -63,6 +101,9 @@ public interface ITextMeasurer
 
     /// <summary>Distance from the top of a line to its baseline. Measurers without real metrics use a typical 80%.</summary>
     double BaselineMm(string fontFamily, double fontSizePt) => LineHeightMm(fontFamily, fontSizePt) * 0.8;
+
+    /// <summary>Height of capital letters above the baseline. Measurers without real metrics use 70% of the font size.</summary>
+    double CapHeightMm(string fontFamily, double fontSizePt) => UnitConverter.PointsToMm(fontSizePt) * 0.7;
 }
 
 public enum LabelOutlineStyle

@@ -30,7 +30,8 @@ public sealed class TextObject : LabelObject
     public TextDirection Direction { get; set; } = TextDirection.LeftToRight;
 
     public bool WordWrap { get; set; } = true;
-    public TextAutoFit AutoFit { get; set; } = TextAutoFit.None;
+    /// <summary>New boxes grow to fit their text; files saved before this keep what they say.</summary>
+    public TextAutoFit AutoFit { get; set; } = TextAutoFit.ResizeBox;
 
     /// <summary>Padding inside the box, millimetres, in T/R/B/L order.</summary>
     public Thickness PaddingMm { get; set; } = new(0.5, 0.5, 0.5, 0.5);

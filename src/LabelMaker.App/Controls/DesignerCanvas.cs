@@ -1281,6 +1281,11 @@ public sealed class DesignerCanvas : FrameworkElement
             ? (shift || ctrl || !uprightSingle ? Array.Empty<SnapLine>() : ApplyResizeSnap())
             : ApplyMoveSnap();
 
+        if (_resizing)
+        {
+            KeepTextInsideBoxes();
+        }
+
         InvalidateVisual();
     }
 
@@ -1801,6 +1806,31 @@ public sealed class DesignerCanvas : FrameworkElement
         double bb = bottom ? Edge(b.Bottom, false, hh) : b.Bottom;
 
         return rr - l >= 0.5 && bb - t >= 0.5 ? RectMm.FromLtrb(l, t, rr, bb) : b;
+    }
+
+    private static readonly WpfTextMeasurer FitMeasurer = new();
+
+    /// <summary>
+    /// A grow-to-fit text box cannot be dragged shorter than its text: the edge being dragged
+    /// stops where the text ends (the top edge when a top handle is dragged).
+    /// </summary>
+    private void KeepTextInsideBoxes()
+    {
+        bool fromTop = _activeHandle is Handle.TopLeft or Handle.Top or Handle.TopRight;
+        foreach (TextObject text in _session!.Selection.OfType<TextObject>())
+        {
+            if (text.Locked || text.AutoFit != LabelMaker.Core.Model.Text.TextAutoFit.ResizeBox)
+            {
+                continue;
+            }
+
+            double needed = TextBoxFit.RequiredHeightMm(text, FitMeasurer);
+            RectMm b = text.Bounds;
+            if (b.Height < needed)
+            {
+                text.Bounds = fromTop ? b with { Y = b.Bottom - needed, Height = needed } : b with { Height = needed };
+            }
+        }
     }
 
     private IReadOnlyList<SnapLine> ApplyResizeSnap()

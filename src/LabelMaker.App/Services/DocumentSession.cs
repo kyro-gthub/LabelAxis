@@ -15,6 +15,7 @@ namespace LabelMaker.App.Services;
 public sealed class DocumentSession
 {
     private readonly WpfImageSource _imageSource;
+    private static readonly WpfTextMeasurer TextMeasurer = new();
     private int _recordIndex;
 
     public DocumentSession(ProjectDocument document, WpfImageSource imageSource)
@@ -350,7 +351,8 @@ public sealed class DocumentSession
 
     public void Execute(IUndoableCommand command)
     {
-        History.Execute(command);
+        // Text boxes set to grow with their text are made tall enough in the same undo step.
+        History.Push(TextBoxFit.ExecuteWithFit(command, ActiveLabel, TextMeasurer));
         MarkDirty();
     }
 

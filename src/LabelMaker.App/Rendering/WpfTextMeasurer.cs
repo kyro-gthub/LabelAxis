@@ -60,6 +60,21 @@ public sealed class WpfTextMeasurer : ITextMeasurer
 
     private readonly ConcurrentDictionary<(string Family, double Size), double> _baselines = new();
 
+    /// <summary>Height of the tallest letters above the baseline, so aligned text sits on its letters rather than on the space above them.
+    /// Measured on "Hdkl" so tall lowercase letters, which rise a little above the capitals in
+    /// most fonts, stay inside the box too.</summary>
+    public double CapHeightMm(string fontFamily, double fontSizePt) =>
+        _capHeights.GetOrAdd((fontFamily, Math.Round(fontSizePt, 3)), key =>
+        {
+            FormattedText ft = Build("Hdkl", key.Family, key.Size, false, false);
+            double inkTop = ft.Height + ft.OverhangAfter - ft.Extent; // OverhangAfter: last line bottom to ink bottom
+            double above = (ft.Baseline - inkTop) / K;
+            double em = UnitConverter.PointsToMm(key.Size);
+            return above > em * 0.3 && above < em * 1.2 ? above : em * 0.72;
+        });
+
+    private readonly ConcurrentDictionary<(string Family, double Size), double> _capHeights = new();
+
     private static FormattedText Build(string text, string fontFamily, double fontSizePt, bool bold, bool italic)
     {
         double emDiu = Math.Max(0.1, UnitConverter.PointsToMm(fontSizePt) * K);
