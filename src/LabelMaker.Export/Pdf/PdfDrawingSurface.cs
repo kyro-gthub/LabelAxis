@@ -260,12 +260,7 @@ public sealed class PdfDrawingSurface : IDrawingSurface
 
     public void DrawTextBlock(TextBlock block, RectMm rect, VerticalAlignment verticalAlignment)
     {
-        double y = rect.Y + verticalAlignment switch
-        {
-            VerticalAlignment.Middle => Math.Max(0, (rect.Height - block.TotalHeightMm) / 2.0),
-            VerticalAlignment.Bottom => Math.Max(0, rect.Height - block.TotalHeightMm),
-            _ => 0,
-        };
+        double y = rect.Y + block.TopOffsetMm(verticalAlignment, rect.Height);
 
         foreach (TextLine line in block.Lines)
         {

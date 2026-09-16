@@ -269,7 +269,12 @@ public sealed class SelectionProperties : ObservableObject
 
     public static IReadOnlyList<VerticalAlignment> VerticalAlignments { get; } = Enum.GetValues<VerticalAlignment>();
 
-    public static IReadOnlyList<TextAutoFit> AutoFitModes { get; } = Enum.GetValues<TextAutoFit>();
+    public static IReadOnlyList<KeyValuePair<TextAutoFit, string>> AutoFitModes { get; } = new[]
+    {
+        new KeyValuePair<TextAutoFit, string>(TextAutoFit.ResizeBox, "Grow the box"),
+        new KeyValuePair<TextAutoFit, string>(TextAutoFit.ShrinkToFit, "Shrink the text"),
+        new KeyValuePair<TextAutoFit, string>(TextAutoFit.None, "Let it spill out"),
+    };
 
     public static IReadOnlyList<TextDirection> TextDirections { get; } = Enum.GetValues<TextDirection>();
 

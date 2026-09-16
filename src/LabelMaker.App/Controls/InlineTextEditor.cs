@@ -56,31 +56,37 @@ public sealed class InlineTextEditor
     private Thickness _basePadding;
     private double _boxHeight;
 
+    private double _boxTop;
+    private static readonly LabelMaker.App.Rendering.WpfTextMeasurer Measurer = new();
+
+    /// <summary>
+    /// Places the typed text where the label draws it. The label aligns on the letters (capital
+    /// tops, descenders), not on the font's empty space above them, so the editor is lifted by
+    /// that space and its top padding takes up the rest of the offset.
+    /// </summary>
     private void AlignVertically()
     {
-        if (_box is null || _target is null || _target.VerticalAlignment == Core.Model.Text.VerticalAlignment.Top)
+        if (_box is null || _target is null)
         {
             return;
         }
 
-        TextPointer start = _box.Document.ContentStart;
-        TextPointer end = _box.Document.ContentEnd;
-        Rect first = start.GetCharacterRect(LogicalDirection.Forward);
-        Rect last = end.GetCharacterRect(LogicalDirection.Backward);
-        if (first.IsEmpty || last.IsEmpty)
-        {
-            return;
-        }
+        string plain = new TextRange(_box.Document.ContentStart, _box.Document.ContentEnd).Text.TrimEnd('\r', '\n');
+        double innerMm = Math.Max(0.5, _target.Bounds.Height - _target.PaddingMm.Vertical);
+        var contentMm = new RectMm(0, 0, Math.Max(0.5, _target.Bounds.Width - _target.PaddingMm.Horizontal), innerMm);
+        Core.Rendering.TextBlock block = Core.Rendering.TextLayouter.Layout(
+            CoreRichText.FromPlainText(plain.Length == 0 ? " " : plain), _target, contentMm, Measurer);
 
-        double content = last.Bottom - first.Top;
-        double inner = _boxHeight - _basePadding.Top - _basePadding.Bottom - (_box.BorderThickness.Top + _box.BorderThickness.Bottom);
-        double spare = Math.Max(0, inner - content);
-        double offset = _target.VerticalAlignment == Core.Model.Text.VerticalAlignment.Middle ? spare / 2 : spare;
-        var padding = new Thickness(_basePadding.Left, _basePadding.Top + offset, _basePadding.Right, _basePadding.Bottom);
+        double lift = block.CapTopMm * _scale;
+        double offset = block.TopOffsetMm(_target.VerticalAlignment, innerMm) * _scale;
+        var padding = new Thickness(_basePadding.Left, Math.Max(0, _basePadding.Top + offset + lift), _basePadding.Right, _basePadding.Bottom);
         if (Math.Abs(_box.Padding.Top - padding.Top) > 0.5)
         {
             _box.Padding = padding;
         }
+
+        Canvas.SetTop(_box, _boxTop - lift);
+        _box.MinHeight = Math.Max(16, _boxHeight + lift);
     }
 
     // ---- lifecycle --------------------------------------------------------
@@ -139,6 +145,7 @@ public sealed class InlineTextEditor
         // instead of jumping to the top of the box as the editor opens.
         _basePadding = pad;
         _boxHeight = rect.Height;
+        _boxTop = rect.Y;
         _box.Loaded += (_, _) => _box.Dispatcher.InvokeAsync(AlignVertically, System.Windows.Threading.DispatcherPriority.Loaded);
         _box.TextChanged += (_, _) => AlignVertically();
 
