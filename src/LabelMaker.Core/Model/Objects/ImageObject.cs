@@ -26,6 +26,16 @@ public enum ImageClipShape
     RoundedRectangle = 2,
 }
 
+/// <summary>How an image's outline border is drawn.</summary>
+public enum ImageBorderLines
+{
+    /// <summary>One line, the full thickness.</summary>
+    Single = 0,
+
+    /// <summary>Two thin lines with a gap between them; together they make up the thickness.</summary>
+    Double = 1,
+}
+
 /// <summary>Non-destructive per-image adjustments applied at render time.</summary>
 public sealed class ImageAdjustments
 {
@@ -73,6 +83,18 @@ public sealed class ImageObject : LabelObject
     /// <summary>Corner radius in millimetres for <see cref="ImageClipShape.RoundedRectangle"/>.</summary>
     public double ClipCornerRadiusMm { get; set; } = 3.0;
 
+    /// <summary>Outline border thickness in millimetres, drawn just inside the box; 0 = no border.</summary>
+    public double BorderWidthMm { get; set; }
+
+    public ColorRgba BorderColor { get; set; } = ColorRgba.Black;
+
+    public DashStyle BorderDash { get; set; } = DashStyle.Solid;
+
+    public ImageBorderLines BorderLines { get; set; } = ImageBorderLines.Single;
+
+    [System.Text.Json.Serialization.JsonIgnore]
+    public bool HasBorder => BorderWidthMm > 0.001 && !BorderColor.IsTransparent;
+
     /// <summary>Draw at reduced alpha as a watermark behind other objects.</summary>
     public bool IsWatermark { get; set; }
 
@@ -104,6 +126,10 @@ public sealed class ImageObject : LabelObject
             Adjustments = Adjustments.Clone(),
             ClipShape = ClipShape,
             ClipCornerRadiusMm = ClipCornerRadiusMm,
+            BorderWidthMm = BorderWidthMm,
+            BorderColor = BorderColor,
+            BorderDash = BorderDash,
+            BorderLines = BorderLines,
             IsWatermark = IsWatermark,
             SourcePixelWidth = SourcePixelWidth,
             SourcePixelHeight = SourcePixelHeight,

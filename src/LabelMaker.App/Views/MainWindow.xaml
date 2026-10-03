@@ -1217,6 +1217,38 @@
                     <CheckBox Content="Flip horizontal" IsChecked="{Binding FlipHorizontal}" Margin="0,0,16,0" />
                     <CheckBox Content="Flip vertical" IsChecked="{Binding FlipVertical}" />
                   </StackPanel>
+
+                  <!-- outline border -->
+                  <CheckBox Content="Outline border" IsChecked="{Binding ImageHasBorder}" Margin="0,12,0,3"
+                            ToolTip="A line around the image, drawn just inside its box; it follows the crop shape" />
+                  <StackPanel Visibility="{Binding ImageHasBorder, Converter={StaticResource BoolToVis}}">
+                    <DockPanel Margin="0,3">
+                      <TextBlock Text="Thickness" Style="{StaticResource FieldLabel}" Width="86" />
+                      <TextBox DockPanel.Dock="Right" Width="58" Style="{StaticResource NumberBox}"
+                               Text="{Binding ImageBorderWidth, StringFormat=0.##, UpdateSourceTrigger=LostFocus}" />
+                      <Slider Minimum="0.1" Maximum="5" SmallChange="0.05" LargeChange="0.25" Value="{Binding ImageBorderWidth, Delay=250}" Margin="0,0,8,0" />
+                    </DockPanel>
+                    <DockPanel Margin="0,3">
+                      <TextBlock Text="Colour" Style="{StaticResource FieldLabel}" Width="86" />
+                      <Button DockPanel.Dock="Right" Content="…" MinWidth="30" Padding="6,4" Margin="6,0,0,0"
+                              Style="{StaticResource GhostButton}" ToolTip="Colour picker, sliders and eyedropper"
+                              Command="{Binding DataContext.PickColorCommand, RelativeSource={RelativeSource AncestorType=ScrollViewer}}"
+                              CommandParameter="imageborder" />
+                      <Border Width="26" Background="{Binding ImageBorderBrush}" CornerRadius="6" Margin="0,0,6,0"
+                              BorderBrush="{DynamicResource Br.BorderStrong}" BorderThickness="1" />
+                      <TextBox Text="{Binding ImageBorderHex, UpdateSourceTrigger=LostFocus}" FontFamily="{StaticResource Font.Mono}" />
+                    </DockPanel>
+                    <ctl:ColorPalette Margin="86,4,0,6" Hex="{Binding ImageBorderHex, Mode=TwoWay}" />
+                    <DockPanel Margin="0,3">
+                      <TextBlock Text="Line style" Style="{StaticResource FieldLabel}" Width="86" />
+                      <ComboBox ItemsSource="{Binding DashStyles}" SelectedItem="{Binding ImageBorderDash}" />
+                    </DockPanel>
+                    <DockPanel Margin="0,3">
+                      <TextBlock Text="Lines" Style="{StaticResource FieldLabel}" Width="86" />
+                      <ComboBox ItemsSource="{Binding ImageBorderLineChoices}" SelectedItem="{Binding ImageBorderLines}"
+                                ToolTip="Double draws two thin lines with a gap, together as thick as the thickness above" />
+                    </DockPanel>
+                  </StackPanel>
                 </StackPanel>
                 <TextBlock Text="Select an image to adjust fit, opacity and colour."
                            Visibility="{Binding IsImage, Converter={StaticResource InverseBool}}"
