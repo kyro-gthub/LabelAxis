@@ -243,8 +243,9 @@
                 <MenuItem Header="_Burst (12 points)" Command="{Binding AddShapeCommand}" CommandParameter="burst" />
                 <Separator />
                 <MenuItem Header="Dashed _box" Command="{Binding AddShapeCommand}" CommandParameter="dashedbox" />
-                <MenuItem Header="_Custom polygon…" ToolTip="Adds a polygon; set the point count and star ratio in Shape Settings"
-                          Command="{Binding AddShapeCommand}" CommandParameter="pentagon" />
+                <MenuItem Header="_Custom shape (draw with dots)…"
+                          ToolTip="Click dots on the label; they are joined into a shape. Click the first dot or press Enter to finish."
+                          Command="{Binding DrawCustomShapeCommand}" />
               </ContextMenu>
             </Button.ContextMenu>
           </Button>
@@ -1354,6 +1355,18 @@
                                Text="{Binding StarInnerRatio, StringFormat=0.00, UpdateSourceTrigger=LostFocus}" />
                       <Slider Minimum="0" Maximum="0.95" SmallChange="0.05" LargeChange="0.1" Value="{Binding StarInnerRatio}" Margin="0,0,8,0"
                               ToolTip="0 keeps a regular polygon; higher values pull the inner points in" />
+                    </DockPanel>
+                  </StackPanel>
+
+                  <StackPanel Visibility="{Binding IsCustomShape, Converter={StaticResource BoolToVis}}">
+                    <CheckBox Content="Closed shape (join the last dot to the first)" IsChecked="{Binding ClosedPath}" Margin="0,6,0,3"
+                              ToolTip="Off draws an open line through the dots instead of a filled shape" />
+                    <DockPanel Margin="0,6,0,3">
+                      <TextBlock DockPanel.Dock="Right" VerticalAlignment="Center" FontSize="11.5" Foreground="{DynamicResource Br.TextMuted}"
+                                 Text="{Binding CustomDotCount, StringFormat={}{0} dots}" />
+                      <Button Content="Edit dots…" Style="{StaticResource GhostButton}" HorizontalAlignment="Left"
+                              Command="{Binding DataContext.EditShapeDotsCommand, RelativeSource={RelativeSource AncestorType=ScrollViewer}}"
+                              ToolTip="Drag the dots on the canvas; double-click a line to add one. Double-clicking the shape does the same." />
                     </DockPanel>
                   </StackPanel>
                 </StackPanel>

@@ -416,6 +416,10 @@ public sealed class LabelRenderer
             case ShapeKind.Polygon:
                 DrawPolygon(surface, local, shape);
                 break;
+
+            case ShapeKind.Custom:
+                DrawCustom(surface, local, shape);
+                break;
         }
     }
 
@@ -430,6 +434,36 @@ public sealed class LabelRenderer
         var p1 = new PointMm(end.X - head, end.Y - (head * 0.6));
         var p2 = new PointMm(end.X - head, end.Y + (head * 0.6));
         surface.FillPolygon(new[] { end, p1, p2 }, shape.Stroke, shape.Stroke, 0);
+    }
+
+    /// <summary>A shape drawn dot by dot: filled when closed, an open line through the dots otherwise.</summary>
+    private static void DrawCustom(IDrawingSurface surface, RectMm local, ShapeObject shape)
+    {
+        List<PointMm> points = CustomShape.PointsIn(shape, local);
+        if (points.Count < 2)
+        {
+            return;
+        }
+
+        if (shape.ClosedPath && points.Count >= 3)
+        {
+            if (shape.GradientTo is { } to)
+            {
+                surface.FillPolygonGradient(points, shape.Fill, to, shape.GradientAngleDegrees, shape.Stroke, shape.StrokeWidthMm);
+            }
+            else
+            {
+                surface.FillPolygon(points, shape.Fill, shape.Stroke, shape.StrokeWidthMm);
+            }
+
+            return;
+        }
+
+        double sw = Math.Max(0.05, shape.StrokeWidthMm);
+        for (int i = 1; i < points.Count; i++)
+        {
+            surface.StrokeLine(points[i - 1], points[i], shape.Stroke, sw, shape.DashStyle);
+        }
     }
 
     private static void DrawPolygon(IDrawingSurface surface, RectMm local, ShapeObject shape)

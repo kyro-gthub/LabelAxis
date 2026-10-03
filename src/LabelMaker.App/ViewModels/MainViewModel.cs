@@ -554,6 +554,8 @@ public sealed partial class MainViewModel : ObservableObject
     public RelayCommand ClearCropCommand { get; private set; } = null!;
     public RelayCommand PickColorCommand { get; private set; } = null!;
     public RelayCommand ApplyTextStyleCommand { get; private set; } = null!;
+    public RelayCommand DrawCustomShapeCommand { get; private set; } = null!;
+    public RelayCommand EditShapeDotsCommand { get; private set; } = null!;
     public RelayCommand ApplySwatchCommand { get; private set; } = null!;
     public RelayCommand AlignRightCommand { get; private set; } = null!;
     public RelayCommand AlignBottomCommand { get; private set; } = null!;
@@ -729,6 +731,10 @@ public sealed partial class MainViewModel : ObservableObject
             () => _session.Selection.Count == 1 && _session.Selection[0] is ImageObject);
 
         // Parameter is "fill" or "stroke": which of the shape's two colours to edit.
+        DrawCustomShapeCommand = new RelayCommand(() => _canvas?.BeginCustomShape());
+        EditShapeDotsCommand = new RelayCommand(
+            () => { if (_session.Selection is [ShapeObject { Shape: ShapeKind.Custom } s]) { _canvas?.BeginPointEdit(s); } },
+            () => _session.Selection is [ShapeObject { Shape: ShapeKind.Custom, Locked: false }]);
         ApplyTextStyleCommand = new RelayCommand(ApplyTextStyleToOtherPages,
             () => _session.Selection.OfType<TextObject>().Any());
         PickColorCommand = new RelayCommand(p =>
@@ -946,6 +952,13 @@ public sealed partial class MainViewModel : ObservableObject
                 commands.Add(new SetPropertyCommand<ImageAdjustments>(
                     "Flip image", () => image.Adjustments, v => image.Adjustments = v, after, (image.Id, "flip")));
                 _ = before;
+            }
+
+            if (obj is ShapeObject { Shape: ShapeKind.Custom } custom)
+            {
+                List<PointMm> mirrored = CustomShape.Mirrored(custom.CustomPoints, horizontal);
+                commands.Add(new SetPropertyCommand<List<PointMm>>(
+                    "Flip shape", () => custom.CustomPoints, v => custom.CustomPoints = v, mirrored, (custom.Id, "flip")));
             }
 
             if (targets.Count > 1)
