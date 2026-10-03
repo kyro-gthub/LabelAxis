@@ -114,6 +114,8 @@
               <MenuItem Header="_Find…" InputGestureText="Ctrl+F" Command="{Binding FindCommand}" />
               <MenuItem Header="Find and _replace…" InputGestureText="Ctrl+H" Command="{Binding FindReplaceCommand}" />
               <MenuItem Header="Apply text _formatting to other pages…" Command="{Binding ApplyTextStyleCommand}" />
+              <MenuItem Header="Apply _positions to other pages…" Command="{Binding ApplyLayoutCommand}"
+                        ToolTip="Put objects on other pages where they are on this page" />
               <Separator />
               <MenuItem Header="_Group" InputGestureText="Ctrl+G" Command="{Binding GroupCommand}" />
               <MenuItem Header="U_ngroup" InputGestureText="Ctrl+Shift+G" Command="{Binding UngroupCommand}" />
@@ -818,6 +820,9 @@
                              Foreground="{DynamicResource Br.TextMuted}" Margin="0,4,0,0" />
                 </StackPanel>
               </Border>
+              <Button Content="Apply positions to other pages…" Style="{StaticResource GhostButton}" HorizontalAlignment="Left"
+                      Margin="0,10,0,0" Command="{Binding ApplyLayoutCommand}"
+                      ToolTip="Put the text, barcodes, images and so on of other pages where they are on this page" />
             </StackPanel>
           </ScrollViewer>
 

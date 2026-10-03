@@ -326,6 +326,16 @@ public sealed class DialogService : IShellServices
         return win.ShowDialog() == true;
     }
 
+    public bool ShowApplyLayout()
+    {
+        if (_vm is null)
+        {
+            return false;
+        }
+
+        return new ApplyLayoutWindow(_vm.Session) { Owner = Front }.ShowDialog() == true;
+    }
+
     public bool ShowLabelSize()
     {
         if (_vm is null)

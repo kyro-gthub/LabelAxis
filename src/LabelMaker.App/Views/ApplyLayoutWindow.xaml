@@ -1,0 +1,68 @@
+<Window x:Class="LabelMaker.App.Views.ApplyLayoutWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Style="{StaticResource AppWindow}"
+        Background="{DynamicResource Br.Surface}" TextElement.Foreground="{DynamicResource Br.Text}"
+        Title="Apply positions to other pages" Height="720" Width="520" MinHeight="520" MinWidth="460"
+        WindowStartupLocation="CenterOwner">
+  <DockPanel Margin="18">
+    <DockPanel DockPanel.Dock="Bottom" Margin="0,14,0,0">
+      <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+        <Button Content="Cancel" Style="{StaticResource GhostButton}" IsCancel="True" Margin="0,0,8,0" />
+        <Button x:Name="ApplyButton" Content="Apply" Style="{StaticResource PrimaryButton}" IsDefault="True" Click="OnApply" />
+      </StackPanel>
+      <TextBlock x:Name="SummaryText" TextWrapping="Wrap" VerticalAlignment="Center" Margin="0,0,12,0"
+                 FontFamily="{StaticResource Font.UiSemiBold}" FontSize="12.5" Foreground="{DynamicResource Br.Accent}" />
+    </DockPanel>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+      <StackPanel>
+        <TextBlock Text="COPY FROM THIS PAGE" Style="{StaticResource PanelSectionHeader}" />
+        <Border Style="{StaticResource InsetPanel}" Padding="12,10" Margin="0,0,0,14">
+          <StackPanel>
+            <RadioButton x:Name="SelectedObjectsBox" GroupName="source" Margin="0,3" Click="OnChanged" />
+            <RadioButton x:Name="AllObjectsBox" GroupName="source" Margin="0,3" Click="OnChanged" />
+          </StackPanel>
+        </Border>
+
+        <TextBlock Text="WHAT TO COPY" Style="{StaticResource PanelSectionHeader}" />
+        <Border Style="{StaticResource InsetPanel}" Padding="12,10" Margin="0,0,0,14">
+          <StackPanel>
+            <CheckBox x:Name="PositionBox" Content="Position (where it sits on the label)" IsChecked="True" Margin="0,3" Click="OnChanged" />
+            <CheckBox x:Name="SizeBox" Content="Size (width and height)" Margin="0,3" Click="OnChanged" />
+            <CheckBox x:Name="RotationBox" Content="Rotation and slant" Margin="0,3" Click="OnChanged" />
+          </StackPanel>
+        </Border>
+
+        <TextBlock Text="WHICH OBJECTS" Style="{StaticResource PanelSectionHeader}" />
+        <Border Style="{StaticResource InsetPanel}" Padding="12,10" Margin="0,0,0,14">
+          <StackPanel>
+            <WrapPanel>
+              <CheckBox x:Name="TextKindBox" Content="Text" IsChecked="True" Margin="0,3,16,3" Click="OnChanged" />
+              <CheckBox x:Name="BarcodeKindBox" Content="Barcodes" IsChecked="True" Margin="0,3,16,3" Click="OnChanged" />
+              <CheckBox x:Name="ImageKindBox" Content="Images" IsChecked="True" Margin="0,3,16,3" Click="OnChanged" />
+              <CheckBox x:Name="ShapeKindBox" Content="Shapes and lines" IsChecked="True" Margin="0,3,16,3" Click="OnChanged" />
+              <CheckBox x:Name="TableKindBox" Content="Tables" IsChecked="True" Margin="0,3,16,3" Click="OnChanged" />
+            </WrapPanel>
+            <TextBlock Text="Match each one on the other pages by" Margin="0,10,0,2" FontSize="12" Foreground="{DynamicResource Br.TextMuted}" />
+            <RadioButton x:Name="SameNameBox" GroupName="match" IsChecked="True" Margin="0,3" Click="OnChanged"
+                         Content="Its name (pages copied from this one keep the names)" />
+            <RadioButton x:Name="SameOrderBox" GroupName="match" Margin="0,3" Click="OnChanged"
+                         Content="Its order: 1st text to 1st text, 2nd barcode to 2nd barcode…" />
+          </StackPanel>
+        </Border>
+
+        <TextBlock Text="WHICH PAGES" Style="{StaticResource PanelSectionHeader}" />
+        <Border Style="{StaticResource InsetPanel}" Padding="12,10">
+          <StackPanel>
+            <StackPanel x:Name="PageList" />
+            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+              <Button Content="Tick all" Style="{StaticResource GhostButton}" Padding="10,3" Margin="0,0,6,0" Click="OnTickAll" />
+              <Button Content="Untick all" Style="{StaticResource GhostButton}" Padding="10,3" Click="OnUntickAll" />
+            </StackPanel>
+          </StackPanel>
+        </Border>
+      </StackPanel>
+    </ScrollViewer>
+  </DockPanel>
+</Window>
