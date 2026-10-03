@@ -60,6 +60,31 @@ public sealed class PageChoiceTests
     }
 
     [Fact]
+    public void Each_page_can_print_its_own_number_of_copies()
+    {
+        (ProjectModel p, LabelPage a, LabelPage b) = Project();
+        a.Document.PrintCopies = 3;
+
+        // Page B has no number of its own, so it takes the job's "copies of every page".
+        PrintablePages.For(p, new PrintSettings { CopiesPerPage = 2 })
+            .Should().Equal(a.Document, a.Document, a.Document, b.Document, b.Document);
+
+        b.Document.PrintCopies = 1;
+        PrintablePages.For(p, new PrintSettings { PagesToPrint = PagesToPrint.Chosen, ChosenPages = { 1, 2 }, CopiesPerPage = 5 })
+            .Should().Equal(a.Document, a.Document, a.Document, b.Document);
+    }
+
+    [Fact]
+    public void A_page_keeps_its_copies_when_duplicated_and_silly_numbers_are_clamped()
+    {
+        var page = new LabelDocument { PrintCopies = 6 };
+        page.Clone().PrintCopies.Should().Be(6);
+
+        PrintablePages.CopiesOf(new LabelDocument { PrintCopies = 0 }, new PrintSettings()).Should().Be(1);
+        PrintablePages.CopiesOf(new LabelDocument { PrintCopies = 99999 }, new PrintSettings()).Should().Be(1000);
+    }
+
+    [Fact]
     public void The_page_choice_is_for_one_job_and_is_not_saved_with_the_project()
     {
         var s = new PrintSettings { PagesToPrint = PagesToPrint.Chosen, CurrentPage = 2, ChosenPages = { 1, 2 } };

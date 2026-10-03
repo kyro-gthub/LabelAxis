@@ -99,7 +99,7 @@
                            Content="Current page" ToolTip="The page that was on screen when you pressed Print" />
               <RadioButton x:Name="PagesChosenBox" GroupName="pages" Margin="0,3" Click="OnFieldChanged"
                            Content="Selected pages" ToolTip="Tick the pages to print below" />
-              <Border x:Name="PageListFrame" Margin="22,4,0,0" MaxHeight="168" HorizontalAlignment="Left" MinWidth="260"
+              <Border x:Name="PageListFrame" Margin="22,4,0,0" MaxHeight="220" HorizontalAlignment="Left" MinWidth="340"
                       BorderBrush="{DynamicResource Br.Border}" BorderThickness="1" CornerRadius="6"
                       Background="{DynamicResource Br.Surface}">
                 <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="8,4">
@@ -112,9 +112,9 @@
               </StackPanel>
             </StackPanel>
             <DockPanel x:Name="CopiesPerPageRow" Margin="22,6,0,4">
-              <TextBlock Text="Copies of each page" Style="{StaticResource FieldLabel}" Width="130" />
-              <TextBox x:Name="CopiesPerPageBox" Style="{StaticResource NumberBox}" Width="64" HorizontalAlignment="Left" TextChanged="OnFieldChanged"
-                       ToolTip="Print every page this many times in a row, e.g. 4 fills four spots with page 1, then four with page 2" />
+              <TextBlock Text="Copies of every page" Style="{StaticResource FieldLabel}" Width="130" />
+              <TextBox x:Name="CopiesPerPageBox" Style="{StaticResource NumberBox}" Width="64" HorizontalAlignment="Left" TextChanged="OnCopiesPerPageChanged"
+                       ToolTip="Sets every page in the list above to this many copies. Change a page's own box to give it a different number." />
             </DockPanel>
             <TextBlock x:Name="ContentText" TextWrapping="Wrap" FontSize="12.5" Margin="0,8,0,0" />
             <TextBlock x:Name="PositionText" TextWrapping="Wrap" FontSize="12"
