@@ -71,7 +71,11 @@ public partial class PrintPreviewWindow : Window
 
         ShowOutlines.IsChecked = session.Project.PrintSettings.PrintLabelOutlines;
         Loaded += (_, _) => Build();
-        SizeChanged += (_, _) => { if (_fitMode) { ApplyZoom(); } };
+        // Refit when the viewing area itself changes size. The window's own SizeChanged can
+        // arrive before the page area has been laid out at the new size (maximize, snap),
+        // which left the sheet fitted to the old, smaller window.
+        Scroller.SizeChanged += (_, _) => { if (_fitMode) { ApplyZoom(); } };
+        StateChanged += (_, _) => Dispatcher.BeginInvoke(() => { if (_fitMode) { ApplyZoom(); } }, System.Windows.Threading.DispatcherPriority.Loaded);
     }
 
     // ---- building ---------------------------------------------------------

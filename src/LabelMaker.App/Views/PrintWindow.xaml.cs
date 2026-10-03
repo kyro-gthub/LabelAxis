@@ -386,12 +386,9 @@ public partial class PrintWindow : Window
         }
 
         DocumentPage page = paginator.GetPage(0);
-        double scale = Math.Min(230 / page.Size.Width, 330 / page.Size.Height);
-
+        _thumbPageSize = page.Size;
         var paper = new Rectangle
         {
-            Width = page.Size.Width * scale,
-            Height = page.Size.Height * scale,
             Fill = PrintPreviewWindow.SheetBrush(page),
             HorizontalAlignment = HorizontalAlignment.Center,
             VerticalAlignment = VerticalAlignment.Center,
@@ -416,12 +413,35 @@ public partial class PrintWindow : Window
             },
         };
 
+        _thumbPaper = paper;
+        FitThumbnail();
         ThumbHost.Children.Add(frame);
         ThumbCaption.Text = summary.TotalSheets != sheets
             ? $"Sheet {summary.FirstSheet:N0} of {summary.TotalSheets:N0}; this job prints {sheets:N0} of them."
             : sheets > 1
                 ? $"Sheet 1 of {sheets:N0}. Open Preview to page through the rest."
                 : "The only sheet in this job.";
+    }
+
+    private Rectangle? _thumbPaper;
+    private Size _thumbPageSize;
+
+    private void OnThumbHostSizeChanged(object sender, SizeChangedEventArgs e) => FitThumbnail();
+
+    /// <summary>The sheet picture as big as the space beside the form allows, keeping the paper's shape.</summary>
+    private void FitThumbnail()
+    {
+        if (_thumbPaper is null || _thumbPageSize.Width <= 0 || _thumbPageSize.Height <= 0)
+        {
+            return;
+        }
+
+        // Before the first layout the host has no size yet; start from the old fixed size.
+        double w = ThumbHost.ActualWidth > 20 ? ThumbHost.ActualWidth - 4 : 230;
+        double h = ThumbHost.ActualHeight > 20 ? ThumbHost.ActualHeight - 4 : 330;
+        double scale = Math.Min(w / _thumbPageSize.Width, h / _thumbPageSize.Height);
+        _thumbPaper.Width = Math.Max(10, _thumbPageSize.Width * scale);
+        _thumbPaper.Height = Math.Max(10, _thumbPageSize.Height * scale);
     }
 
     // ---- actions ----------------------------------------------------------
