@@ -1,3 +1,5 @@
+using LabelMaker.Core.Units;
+
 namespace LabelMaker.Core.Model.Objects;
 
 public enum ShapeKind
@@ -10,6 +12,9 @@ public enum ShapeKind
 
     /// <summary>Regular N-gon or N-point star (see <see cref="ShapeObject.PolygonPoints"/> / <see cref="ShapeObject.StarInnerRatio"/>).</summary>
     Polygon = 5,
+
+    /// <summary>A shape drawn dot by dot (see <see cref="ShapeObject.CustomPoints"/>).</summary>
+    Custom = 6,
 }
 
 public enum DashStyle
@@ -58,6 +63,15 @@ public sealed class ShapeObject : LabelObject
     /// </summary>
     public double StarInnerRatio { get; set; }
 
+    /// <summary>
+    /// The dots of a <see cref="ShapeKind.Custom"/> shape, in order, as fractions of the box
+    /// (0,0 top-left to 1,1 bottom-right), so the shape stretches with its box.
+    /// </summary>
+    public List<PointMm> CustomPoints { get; set; } = new();
+
+    /// <summary>Joins the last dot back to the first and fills the inside; off draws an open line.</summary>
+    public bool ClosedPath { get; set; } = true;
+
     /// <summary>Draw an arrow head at the end point for <see cref="ShapeKind.Arrow"/>.</summary>
     public double ArrowHeadSizeMm { get; set; } = 3.0;
 
@@ -78,6 +92,8 @@ public sealed class ShapeObject : LabelObject
             PolygonPoints = PolygonPoints,
             StarInnerRatio = StarInnerRatio,
             ArrowHeadSizeMm = ArrowHeadSizeMm,
+            CustomPoints = new List<PointMm>(CustomPoints),
+            ClosedPath = ClosedPath,
         };
         CopyBaseTo(copy);
         return copy;

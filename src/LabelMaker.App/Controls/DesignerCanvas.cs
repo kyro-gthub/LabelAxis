@@ -30,7 +30,7 @@ namespace LabelMaker.App.Controls;
 /// edges / centres to guides, to other objects, and to the label edges / centre
 /// while moving or resizing.
 /// </summary>
-public sealed class DesignerCanvas : FrameworkElement
+public sealed partial class DesignerCanvas : FrameworkElement
 {
     private const double K = UnitConverter.DiuPerInch / UnitConverter.MmPerInch; // DIU per mm
     private const double HandleSize = 8.0;
@@ -152,6 +152,8 @@ public sealed class DesignerCanvas : FrameworkElement
 
     public void Attach(DocumentSession session)
     {
+        CancelCustomShape();
+        _editShape = null;
         if (_session is not null)
         {
             _session.DocumentChanged -= OnSessionChanged;
@@ -527,7 +529,11 @@ public sealed class DesignerCanvas : FrameworkElement
             DrawGrid(dc, label, Settings.GridSizeMm);
         }
 
-        DrawSelection(dc);
+        // While a custom shape's dots are edited, its resize handles would sit on top of the dots.
+        if (_editShape is null)
+        {
+            DrawSelection(dc);
+        }
 
         dc.Pop();
         dc.Pop();
@@ -554,6 +560,8 @@ public sealed class DesignerCanvas : FrameworkElement
         {
             DrawRulers(dc, label);
         }
+
+        DrawPointTool(dc);
 
         // Every change of zoom or position ends up here, so the scroll bars follow from one place.
         Dispatcher.BeginInvoke(RaiseScrollChanged, System.Windows.Threading.DispatcherPriority.Render);
@@ -1034,6 +1042,12 @@ public sealed class DesignerCanvas : FrameworkElement
             return;
         }
 
+        // The custom shape tool takes clicks while it is on.
+        if (IsPointToolActive && PointToolMouseDown(e, screen))
+        {
+            return;
+        }
+
         // Ruler drag -> new guide (only the ruler strips themselves; never competes with objects)
         if (RulerPad > 0 && !(_session.ActiveGuides.Locked))
         {
@@ -1127,6 +1141,13 @@ public sealed class DesignerCanvas : FrameworkElement
             return;
         }
 
+        if (e.ClickCount == 2 && hit is ShapeObject { Shape: ShapeKind.Custom } custom && !custom.Locked)
+        {
+            BeginPointEdit(custom);
+            e.Handled = true;
+            return;
+        }
+
         if (e.ClickCount == 2 && hit is TextObject && !hit.Locked)
         {
             _session.SetSelection(new[] { hit });
@@ -1192,6 +1213,11 @@ public sealed class DesignerCanvas : FrameworkElement
             _pan = _panStartValue + (screen - _panStartScreen);
             ViewChanged?.Invoke(this, EventArgs.Empty);
             InvalidateVisual();
+            return;
+        }
+
+        if (IsPointToolActive && PointToolMouseMove(screen))
+        {
             return;
         }
 
@@ -1449,6 +1475,12 @@ public sealed class DesignerCanvas : FrameworkElement
     {
         Point screen = e.GetPosition(this);
 
+        if (!_panning && IsPointToolActive && PointToolMouseUp())
+        {
+            e.Handled = true;
+            return;
+        }
+
         if (_guideDrag is { } g && _session is not null)
         {
             var guides = _session.ActiveGuides;
@@ -1603,6 +1635,11 @@ public sealed class DesignerCanvas : FrameworkElement
             _spaceDown = true;
             Cursor = Cursors.SizeAll;
             e.Handled = true;
+            return;
+        }
+
+        if (IsPointToolActive && PointToolKey(e))
+        {
             return;
         }
 

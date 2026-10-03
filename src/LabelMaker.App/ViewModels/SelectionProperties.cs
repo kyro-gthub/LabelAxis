@@ -857,7 +857,12 @@ public sealed class SelectionProperties : ObservableObject
     }
 
     // ---- Shape ----
-    public static IReadOnlyList<ShapeKind> ShapeKinds { get; } = Enum.GetValues<ShapeKind>();
+    private static readonly IReadOnlyList<ShapeKind> AllShapeKinds = Enum.GetValues<ShapeKind>();
+
+    // A custom shape is drawn dot by dot, so it is only offered for a shape that already is one.
+    private static readonly IReadOnlyList<ShapeKind> DrawableShapeKinds = AllShapeKinds.Where(k => k != ShapeKind.Custom).ToList();
+
+    public IReadOnlyList<ShapeKind> ShapeKinds => IsCustomShape ? AllShapeKinds : DrawableShapeKinds;
 
     public static IReadOnlyList<LabelMaker.Core.Model.Objects.DashStyle> DashStyles { get; } =
         Enum.GetValues<LabelMaker.Core.Model.Objects.DashStyle>();
@@ -886,6 +891,23 @@ public sealed class SelectionProperties : ObservableObject
     public bool IsPolygon => (Obj as ShapeObject)?.Shape == ShapeKind.Polygon;
 
     public bool IsRoundRect => (Obj as ShapeObject)?.Shape == ShapeKind.RoundRectangle;
+
+    public bool IsCustomShape => (Obj as ShapeObject)?.Shape == ShapeKind.Custom;
+
+    /// <summary>A custom shape joined up and filled, or an open line through its dots.</summary>
+    public bool ClosedPath
+    {
+        get => (Obj as ShapeObject)?.ClosedPath ?? true;
+        set
+        {
+            if (Obj is ShapeObject s)
+            {
+                Set(nameof(ClosedPath), () => s.ClosedPath, v => s.ClosedPath = v, value);
+            }
+        }
+    }
+
+    public int CustomDotCount => (Obj as ShapeObject)?.CustomPoints.Count ?? 0;
 
     public LabelMaker.Core.Model.Objects.DashStyle DashStyleValue
     {
