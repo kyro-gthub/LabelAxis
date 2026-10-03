@@ -80,6 +80,9 @@ public interface IShellServices
     /// <summary>Copies <paramref name="source"/>'s formatting to text boxes on other pages. Returns true if applied.</summary>
     bool ShowApplyTextStyle(LabelMaker.Core.Model.Objects.TextObject source);
 
+    /// <summary>Moves objects on other pages to where they are on the page on screen. Returns true if applied.</summary>
+    bool ShowApplyLayout();
+
     /// <summary>
     /// Interactive crop for <paramref name="image"/>. Returns the chosen normalised
     /// rectangle, or null on cancel; the caller applies it through the undo stack.

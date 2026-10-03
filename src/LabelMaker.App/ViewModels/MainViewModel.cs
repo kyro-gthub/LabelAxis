@@ -555,6 +555,7 @@ public sealed partial class MainViewModel : ObservableObject
     public RelayCommand PickColorCommand { get; private set; } = null!;
     public RelayCommand ApplyTextStyleCommand { get; private set; } = null!;
     public RelayCommand DrawCustomShapeCommand { get; private set; } = null!;
+    public RelayCommand ApplyLayoutCommand { get; private set; } = null!;
     public RelayCommand EditShapeDotsCommand { get; private set; } = null!;
     public RelayCommand ApplySwatchCommand { get; private set; } = null!;
     public RelayCommand AlignRightCommand { get; private set; } = null!;
@@ -732,6 +733,7 @@ public sealed partial class MainViewModel : ObservableObject
 
         // Parameter is "fill" or "stroke": which of the shape's two colours to edit.
         DrawCustomShapeCommand = new RelayCommand(() => _canvas?.BeginCustomShape());
+        ApplyLayoutCommand = new RelayCommand(ApplyLayoutToOtherPages, () => _session.ActiveLabel.Objects.Count > 0);
         EditShapeDotsCommand = new RelayCommand(
             () => { if (_session.Selection is [ShapeObject { Shape: ShapeKind.Custom } s]) { _canvas?.BeginPointEdit(s); } },
             () => _session.Selection is [ShapeObject { Shape: ShapeKind.Custom, Locked: false }]);
@@ -1772,6 +1774,22 @@ public sealed partial class MainViewModel : ObservableObject
     /// on it, and the dialog can still switch to every page or a chosen few. From the master
     /// label, printing goes back to what the job was set to before.
     /// </summary>
+    /// <summary>Puts objects on other pages where they are on this page.</summary>
+    private void ApplyLayoutToOtherPages()
+    {
+        if (_session.Project.Pages.Count == 0)
+        {
+            _shell.Info("This project has only one page. Add or duplicate a page first, then its objects can be lined up with this one.");
+            return;
+        }
+
+        if (_shell.ShowApplyLayout())
+        {
+            RefreshCanvas();
+            StatusText = "Positions applied to other pages";
+        }
+    }
+
     /// <summary>Gives the selected text box's formatting to text boxes on other pages.</summary>
     private void ApplyTextStyleToOtherPages()
     {
