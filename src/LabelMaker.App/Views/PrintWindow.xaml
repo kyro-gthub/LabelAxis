@@ -78,8 +78,11 @@
             <ComboBox x:Name="PrinterBox" SelectionChanged="OnPrinterChanged" />
             <TextBlock x:Name="PrinterStatus" FontSize="11.5" Margin="0,8,0,0" TextWrapping="Wrap"
                        Foreground="{DynamicResource Br.TextMuted}" />
-            <Button Content="Calibration wizard…" Style="{StaticResource GhostButton}"
-                    HorizontalAlignment="Left" Margin="0,10,0,0" Click="OnCalibration" />
+            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+              <Button Content="Calibration wizard…" Style="{StaticResource GhostButton}" Margin="0,0,8,0" Click="OnCalibration" />
+              <Button x:Name="NetworkPrintersButton" Content="Wi-Fi printers…" Style="{StaticResource GhostButton}" Click="OnNetworkPrinters"
+                      ToolTip="Find a printer on your Wi-Fi or office network and print to it directly, with no driver to install" />
+            </StackPanel>
           </StackPanel>
         </Border>
 

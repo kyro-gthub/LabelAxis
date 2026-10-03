@@ -1,0 +1,70 @@
+<Window x:Class="LabelMaker.App.Views.NetworkPrintersWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Style="{StaticResource AppWindow}"
+        Background="{DynamicResource Br.Surface}" TextElement.Foreground="{DynamicResource Br.Text}"
+        Title="Wi-Fi printers" Height="640" Width="620" MinHeight="480" MinWidth="520"
+        WindowStartupLocation="CenterOwner">
+  <DockPanel Margin="18">
+    <DockPanel DockPanel.Dock="Bottom" Margin="0,14,0,0">
+      <Button DockPanel.Dock="Right" Content="Done" Style="{StaticResource PrimaryButton}" IsDefault="True" IsCancel="True" Click="OnDone" />
+      <Button Content="Open Windows printer settings…" Style="{StaticResource GhostButton}" HorizontalAlignment="Left" Click="OnWindowsSettings"
+              ToolTip="Add the printer to Windows instead (Settings › Printers &amp; scanners), to print to it like any installed printer" />
+    </DockPanel>
+
+    <StackPanel DockPanel.Dock="Top">
+      <TextBlock TextWrapping="Wrap" FontSize="12.5" Margin="0,0,0,12"
+                 Text="Print straight to a printer on your Wi-Fi or office network, with no driver to install. LabelAxis sends each sheet exactly as the preview shows it. Most printers made in the last ten years (AirPrint, Mopria or IPP Everywhere) can do this." />
+
+      <TextBlock Text="MY WI-FI PRINTERS" Style="{StaticResource PanelSectionHeader}" />
+      <Border Style="{StaticResource InsetPanel}" Padding="10" Margin="0,0,0,14">
+        <DockPanel>
+          <Button DockPanel.Dock="Right" x:Name="RemoveButton" Content="Remove" Style="{StaticResource GhostButton}" VerticalAlignment="Top"
+                  Margin="8,0,0,0" Click="OnRemove" IsEnabled="False" />
+          <StackPanel>
+            <ListBox x:Name="SavedList" MinHeight="70" MaxHeight="150" SelectionChanged="OnSavedSelected" BorderThickness="0" Background="Transparent"
+                     HorizontalContentAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+              <ListBox.ItemTemplate>
+                <DataTemplate>
+                  <StackPanel Margin="2,4">
+                    <TextBlock Text="{Binding Title}" FontFamily="{StaticResource Font.UiSemiBold}" FontSize="12.5" TextTrimming="CharacterEllipsis" />
+                    <TextBlock Text="{Binding Detail}" FontSize="11.5" Foreground="{DynamicResource Br.TextMuted}" TextWrapping="Wrap" />
+                  </StackPanel>
+                </DataTemplate>
+              </ListBox.ItemTemplate>
+            </ListBox>
+            <TextBlock x:Name="SavedEmpty" Text="None yet. Find one below, or type its address." FontSize="11.5"
+                       Foreground="{DynamicResource Br.TextMuted}" Margin="4,2,0,0" />
+          </StackPanel>
+        </DockPanel>
+      </Border>
+
+      <TextBlock Text="ADD A PRINTER" Style="{StaticResource PanelSectionHeader}" />
+      <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+        <Button x:Name="FindButton" Content="Find printers on my network" Style="{StaticResource GhostButton}" Click="OnFind" Margin="0,0,10,0" />
+        <TextBlock x:Name="FindText" VerticalAlignment="Center" FontSize="11.5" Foreground="{DynamicResource Br.TextMuted}" TextWrapping="Wrap" MaxWidth="340" />
+      </StackPanel>
+      <DockPanel Margin="0,0,0,8">
+        <TextBlock Text="Or by address" Style="{StaticResource FieldLabel}" Width="96" />
+        <Button DockPanel.Dock="Right" x:Name="LookUpButton" Content="Look up" Style="{StaticResource GhostButton}" Margin="8,0,0,0" Click="OnLookUp" />
+        <TextBox x:Name="AddressBox" ToolTip="The printer's IP address or name, e.g. 192.168.1.40 (it is on the printer's network settings page)" />
+      </DockPanel>
+    </StackPanel>
+
+    <DockPanel>
+      <Button DockPanel.Dock="Bottom" x:Name="AddButton" Content="Add to my printers" Style="{StaticResource GhostButton}" HorizontalAlignment="Left"
+              Margin="0,8,0,0" Click="OnAdd" IsEnabled="False" />
+      <ListBox x:Name="FoundList" SelectionChanged="OnFoundSelected" BorderThickness="1" BorderBrush="{DynamicResource Br.Border}"
+               Background="{DynamicResource Br.Bg}" HorizontalContentAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+        <ListBox.ItemTemplate>
+          <DataTemplate>
+            <StackPanel Margin="2,4">
+              <TextBlock Text="{Binding Title}" FontFamily="{StaticResource Font.UiSemiBold}" FontSize="12.5" TextTrimming="CharacterEllipsis" />
+              <TextBlock Text="{Binding Detail}" FontSize="11.5" Foreground="{DynamicResource Br.TextMuted}" TextWrapping="Wrap" />
+            </StackPanel>
+          </DataTemplate>
+        </ListBox.ItemTemplate>
+      </ListBox>
+    </DockPanel>
+  </DockPanel>
+</Window>

@@ -32,8 +32,14 @@ public partial class PrintWindow : Window
     private readonly System.Windows.Threading.DispatcherTimer _refreshDelay =
         new() { Interval = TimeSpan.FromMilliseconds(300) };
 
-    public PrintWindow(DocumentSession session, WpfPrintServer printServer, IShellServices shell, PrintHistoryStore history)
+    private readonly LabelMaker.Core.Settings.AppSettings? _settings;
+    private readonly Action? _saveSettings;
+
+    public PrintWindow(DocumentSession session, WpfPrintServer printServer, IShellServices shell, PrintHistoryStore history,
+        LabelMaker.Core.Settings.AppSettings? settings = null, Action? saveSettings = null)
     {
+        _settings = settings;
+        _saveSettings = saveSettings;
         _session = session;
         _printServer = printServer;
         _shell = shell;
@@ -339,14 +345,25 @@ public partial class PrintWindow : Window
 
     private void LoadPrinters()
     {
+        PrinterBox.Items.Clear();
         IReadOnlyList<string> printers = _printServer.InstalledPrinters();
         foreach (string p in printers)
         {
             PrinterBox.Items.Add(p);
         }
 
+        // Wi-Fi printers added here print directly, without being installed in Windows.
+        foreach (Core.Printing.Ipp.IppPrinterInfo info in _settings?.NetworkPrinters ?? new List<Core.Printing.Ipp.IppPrinterInfo>())
+        {
+            PrinterBox.Items.Add(new NetworkPrinterItem(info));
+        }
+
         string? wanted = _session.Project.PrintSettings.PrinterName ?? _printServer.DefaultPrinter();
-        if (wanted is not null && printers.Contains(wanted))
+        if (PrinterBox.Items.OfType<NetworkPrinterItem>().FirstOrDefault(n => n.Name == wanted) is { } network)
+        {
+            PrinterBox.SelectedItem = network;
+        }
+        else if (wanted is not null && printers.Contains(wanted))
         {
             PrinterBox.SelectedItem = wanted;
         }
@@ -362,7 +379,22 @@ public partial class PrintWindow : Window
         }
     }
 
-    private string? SelectedPrinter => PrinterBox.SelectedItem as string;
+    private string? SelectedPrinter => PrinterBox.SelectedItem switch
+    {
+        string name => name,
+        NetworkPrinterItem network => network.Name,
+        _ => null,
+    };
+
+    private Core.Printing.Ipp.IppPrinterInfo? SelectedNetworkPrinter => (PrinterBox.SelectedItem as NetworkPrinterItem)?.Info;
+
+    /// <summary>A Wi-Fi printer in the printer list.</summary>
+    private sealed record NetworkPrinterItem(Core.Printing.Ipp.IppPrinterInfo Info)
+    {
+        public string Name => IppPrintJob.DisplayName(Info);
+
+        public override string ToString() => Name;
+    }
 
     // ---- live summary -----------------------------------------------------
 
@@ -449,9 +481,11 @@ public partial class PrintWindow : Window
             PrintButton.IsEnabled = false;
         }
 
-        PrinterStatus.Text = SelectedPrinter is null
-            ? "No printer selected."
-            : DescribeMedia(SelectedPrinter);
+        PrinterStatus.Text = SelectedNetworkPrinter is { } wifi
+            ? $"On the network at {WifiPrinterFinder.HostOf(wifi)}: {wifi.Describe()}, no driver needed."
+            : SelectedPrinter is null
+                ? "No printer selected."
+                : DescribeMedia(SelectedPrinter);
     }
 
     private string DescribeMedia(string printer)
@@ -556,6 +590,13 @@ public partial class PrintWindow : Window
     private void OnSystemDialog(object sender, RoutedEventArgs e)
     {
         Apply();
+        if (SelectedNetworkPrinter is not null)
+        {
+            MessageBox.Show(this, "The Windows dialog is for printers installed in Windows. A Wi-Fi printer added here prints with the Print button.",
+                "LabelAxis", MessageBoxButton.OK, MessageBoxImage.Information);
+            return;
+        }
+
         try
         {
             if (_printServer.PrepareWithSystemDialog(_session.Project, _session.Data, _session.Project.PrintSettings) is { } job)
@@ -572,6 +613,20 @@ public partial class PrintWindow : Window
     private void OnPrint(object sender, RoutedEventArgs e)
     {
         Apply();
+        if (SelectedNetworkPrinter is { } wifi)
+        {
+            try
+            {
+                SendToNetwork(wifi);
+            }
+            catch (Exception ex)
+            {
+                Fail(ex);
+            }
+
+            return;
+        }
+
         if (SelectedPrinter is not { } printer)
         {
             return;
@@ -587,6 +642,90 @@ public partial class PrintWindow : Window
         catch (Exception ex)
         {
             Fail(ex);
+        }
+    }
+
+    /// <summary>
+    /// Prints on a Wi-Fi printer without a driver: the same sheets the preview shows, drawn at
+    /// the printer's resolution and sent over IPP, with progress and a print history entry.
+    /// </summary>
+    private void SendToNetwork(Core.Printing.Ipp.IppPrinterInfo printer)
+    {
+        PrintSettings settings = _session.Project.PrintSettings;
+        string name = IppPrintJob.DisplayName(printer);
+        DocumentPaginator paginator = settings.Content == PrintContent.Pages
+            ? _printServer.BuildPagesPaginator(_session.Project, settings, name)
+            : _printServer.BuildPaginator(_session.Project, _session.Data, settings, name);
+        PrintJobSummary summary = paginator switch
+        {
+            LabelSheetPaginator l => l.Summary,
+            MultiPageSheetPaginator m => m.Summary,
+            _ => new PrintJobSummary { Sheets = paginator.PageCount, TotalSheets = paginator.PageCount },
+        };
+
+        int sheets = paginator.PageCount;
+        PrintLog log = PrintLog.Start(_history, _session, settings, summary, PrintHistoryKind.Printer, name, null);
+        int drawn = 0;
+        try
+        {
+            string heading = settings.Copies > 1 ? $"Printing {sheets:N0} sheet(s) × {settings.Copies} on {name}" : $"Printing {sheets:N0} sheet(s) on {name}";
+            JobProgressWindow.Run(this, heading, "sheets", sheets, async (progress, token) =>
+            {
+                var counting = new Progress<int>(n =>
+                {
+                    drawn = n;
+                    ((IProgress<int>)progress).Report(n);
+                });
+                await IppPrintJob.SendAsync(printer, paginator, Math.Max(1, settings.Copies), $"LabelAxis — {_session.Project.Metadata.Title}", counting, token);
+                return true;
+            });
+
+            log.Completed();
+            settings.FirstSheet = null;
+            settings.LastSheet = null;
+            DialogResult = true;
+        }
+        catch (OperationCanceledException)
+        {
+            log.Cancelled(0);
+            SummaryText.Text = "Cancelled before the job reached the printer.";
+        }
+        catch (Exception ex) when (ex is System.IO.IOException or System.Net.Http.HttpRequestException or System.IO.InvalidDataException or InvalidOperationException)
+        {
+            log.Failed(0, ex);
+            MessageBox.Show(this, $"Printing on {name} failed after drawing {drawn} of {sheets} sheet(s):\n\n{ex.Message}\n\n" +
+                                  "Check the printer is on and on the same network, or add it in Windows instead.",
+                "LabelAxis", MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+    }
+
+    private void OnNetworkPrinters(object sender, RoutedEventArgs e)
+    {
+        if (_settings is null)
+        {
+            return;
+        }
+
+        var win = new NetworkPrintersWindow(_settings, _saveSettings ?? (() => { })) { Owner = this };
+        win.ShowDialog();
+        if (win.Changed)
+        {
+            string? keep = SelectedPrinter;
+            LoadPrinters();
+            if (PrinterBox.Items.OfType<object>().FirstOrDefault(i => i.ToString() == keep) is { } again)
+            {
+                PrinterBox.SelectedItem = again;
+            }
+
+            // Newly added: pick it, which is almost always why it was added.
+            if (_settings.NetworkPrinters.LastOrDefault() is { } latest &&
+                PrinterBox.Items.OfType<NetworkPrinterItem>().FirstOrDefault(n => n.Info.Uri == latest.Uri) is { } item &&
+                keep != item.Name)
+            {
+                PrinterBox.SelectedItem = item;
+            }
+
+            Refresh();
         }
     }
 
