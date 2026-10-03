@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Style="{StaticResource AppWindow}"
         Background="{DynamicResource Br.Surface}" TextElement.Foreground="{DynamicResource Br.Text}"
-        Title="Print" Height="760" Width="820" MinHeight="560" MinWidth="720"
+        Title="Print" Height="760" Width="820" MinHeight="560" MinWidth="780"
         WindowStartupLocation="CenterOwner">
   <DockPanel>
 
@@ -47,8 +47,16 @@
       </DockPanel>
     </Border>
 
+    <!-- The form stops at a comfortable reading width; the sheet picture takes the rest, so a
+         maximized window shows a big sheet instead of a stretched form. -->
+    <Grid>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="5*" MinWidth="460" MaxWidth="700" />
+        <ColumnDefinition Width="3*" MinWidth="290" />
+      </Grid.ColumnDefinitions>
+
     <!-- sheet thumbnail -->
-    <Border DockPanel.Dock="Right" Width="290" Background="{DynamicResource Br.Bg}"
+    <Border Grid.Column="1" Background="{DynamicResource Br.Bg}"
             BorderBrush="{DynamicResource Br.Border}" BorderThickness="1,0,0,0">
       <DockPanel Margin="16">
         <TextBlock DockPanel.Dock="Top" Text="FIRST SHEET" Style="{StaticResource PanelSectionHeader}" />
@@ -56,12 +64,12 @@
                    Foreground="{DynamicResource Br.TextMuted}" Margin="0,10,0,0" />
         <Border Background="{DynamicResource CanvasBackground}" BorderBrush="{DynamicResource Br.Border}"
                 BorderThickness="1" CornerRadius="8" Padding="14">
-          <Grid x:Name="ThumbHost" />
+          <Grid x:Name="ThumbHost" SizeChanged="OnThumbHostSizeChanged" />
         </Border>
       </DockPanel>
     </Border>
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="18,16">
+    <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto" Padding="18,16">
       <StackPanel>
 
         <TextBlock Text="PRINTER" Style="{StaticResource PanelSectionHeader}" />
@@ -206,5 +214,6 @@
         </Border>
       </StackPanel>
     </ScrollViewer>
+    </Grid>
   </DockPanel>
 </Window>
