@@ -64,6 +64,9 @@ public sealed class DesignerCanvas : FrameworkElement
     private Dictionary<string, double> _dragStartRotation = new();
     private Dictionary<string, (double X, double Y)> _dragStartSkew = new();
 
+    // Grow-to-fit text boxes: how much taller than their text each was when the drag began.
+    private Dictionary<string, double> _dragStartTextRoom = new();
+
     // Resizing a whole group: its box when the drag began; members scale inside it.
     private RectMm? _groupResizeStart;
     private double _rotateStartAngle;
@@ -1257,6 +1260,7 @@ public sealed class DesignerCanvas : FrameworkElement
             }
 
             ResizeGroup(groupStart, to);
+            KeepTextInsideBoxes();
             _activeSnapLines = groupLines;
             InvalidateVisual();
             return;
@@ -1546,6 +1550,7 @@ public sealed class DesignerCanvas : FrameworkElement
         _dragStartBounds.Clear();
         _dragStartRotation.Clear();
         _dragStartSkew.Clear();
+        _dragStartTextRoom.Clear();
         _groupResizeStart = null;
         _activeSnapLines = Array.Empty<SnapLine>();
     }
@@ -1811,12 +1816,17 @@ public sealed class DesignerCanvas : FrameworkElement
     private static readonly WpfTextMeasurer FitMeasurer = new();
 
     /// <summary>
-    /// A grow-to-fit text box cannot be dragged shorter than its text: the edge being dragged
-    /// stops where the text ends (the top edge when a top handle is dragged).
+    /// Keeps grow-to-fit text boxes fitted to their text while a handle is dragged.
+    /// A left or right handle changes the width, so the text re-wraps and the height follows
+    /// it both ways: taller when the box gets narrower, shorter again when it gets wider. Any
+    /// extra room the box had below its text when the drag began is kept. Every other handle
+    /// sets the height itself, so there the box only stops short of cutting the text off (the
+    /// top edge stops when a top handle is dragged).
     /// </summary>
     private void KeepTextInsideBoxes()
     {
         bool fromTop = _activeHandle is Handle.TopLeft or Handle.Top or Handle.TopRight;
+        bool sideways = _activeHandle is Handle.Left or Handle.Right;
         foreach (TextObject text in _session!.Selection.OfType<TextObject>())
         {
             if (text.Locked || text.AutoFit != LabelMaker.Core.Model.Text.TextAutoFit.ResizeBox)
@@ -1826,11 +1836,34 @@ public sealed class DesignerCanvas : FrameworkElement
 
             double needed = TextBoxFit.RequiredHeightMm(text, FitMeasurer);
             RectMm b = text.Bounds;
-            if (b.Height < needed)
+            if (sideways)
+            {
+                double target = needed + _dragStartTextRoom.GetValueOrDefault(text.Id);
+                if (Math.Abs(target - b.Height) > 0.005)
+                {
+                    text.Bounds = WithHeightKeepingTop(text, b, target);
+                }
+            }
+            else if (b.Height < needed)
             {
                 text.Bounds = fromTop ? b with { Y = b.Bottom - needed, Height = needed } : b with { Height = needed };
             }
         }
+    }
+
+    /// <summary>
+    /// <paramref name="b"/> with a new height and its top edge left where it is on screen,
+    /// measured along the object's own axes so a rotated box does not slide sideways.
+    /// </summary>
+    private static RectMm WithHeightKeepingTop(LabelObject obj, RectMm b, double height)
+    {
+        if (ObjectGeometry.IsAxisAligned(obj))
+        {
+            return b with { Height = height };
+        }
+
+        PointMm shift = ObjectGeometry.Linear(obj).ApplyVector(0, (height - b.Height) / 2.0);
+        return RectMm.FromCenter(new PointMm(b.Center.X + shift.X, b.Center.Y + shift.Y), new SizeMm(b.Width, height));
     }
 
     private IReadOnlyList<SnapLine> ApplyResizeSnap()
@@ -1944,6 +1977,9 @@ public sealed class DesignerCanvas : FrameworkElement
         _dragStartBounds = _session!.Selection.ToDictionary(o => o.Id, o => o.Bounds);
         _dragStartRotation = _session.Selection.ToDictionary(o => o.Id, o => o.RotationDegrees);
         _dragStartSkew = _session.Selection.ToDictionary(o => o.Id, o => (o.SkewXDegrees, o.SkewYDegrees));
+        _dragStartTextRoom = _session.Selection.OfType<TextObject>()
+            .Where(t => t.AutoFit == LabelMaker.Core.Model.Text.TextAutoFit.ResizeBox)
+            .ToDictionary(t => t.Id, t => Math.Max(0, t.Bounds.Height - TextBoxFit.RequiredHeightMm(t, FitMeasurer)));
     }
 
     private LabelObject? HitObject(Point mm)
