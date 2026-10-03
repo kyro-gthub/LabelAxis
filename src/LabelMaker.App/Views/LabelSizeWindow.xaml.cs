@@ -17,12 +17,24 @@ namespace LabelMaker.App.Views;
 public partial class LabelSizeWindow : Window
 {
     private readonly DocumentSession _session;
+    private readonly IReadOnlyList<LabelTemplate> _templates;
+    private readonly HashSet<string> _favorites;
+    private LabelTemplate? _picked;
+    private bool _settingSize;
+    private string? _refitNote;
     private double _widthMm;
     private double _heightMm;
 
-    public LabelSizeWindow(DocumentSession session, Unit displayUnit)
+    public LabelSizeWindow(DocumentSession session, Unit displayUnit, TemplateStore? templates = null, IEnumerable<string>? favorites = null)
     {
         _session = session;
+        _favorites = new HashSet<string>(favorites ?? Array.Empty<string>(), StringComparer.Ordinal);
+        _templates = (templates?.All ?? Array.Empty<LabelTemplate>())
+            .Where(t => !t.IsRoll)
+            .OrderByDescending(t => _favorites.Contains(t.Id))
+            .ThenBy(t => t.Brand, StringComparer.OrdinalIgnoreCase)
+            .ThenBy(t => t.ProductCode, StringComparer.OrdinalIgnoreCase)
+            .ToList();
         InitializeComponent();
 
         SizeMm current = _session.ActiveLabel.SizeMm;
@@ -47,6 +59,8 @@ public partial class LabelSizeWindow : Window
             ? "There is no sheet to re-fit; the label prints on its own."
             : "Keeps the page and margins, recalculating how many labels fit across and down. " +
               "Leave it off to keep the current grid and change only the design size.";
+
+        ShowTemplates();
     }
 
     private Unit SelectedUnit => (UnitBox.SelectedItem as string) switch
@@ -60,8 +74,89 @@ public partial class LabelSizeWindow : Window
     private void ShowValues()
     {
         Unit u = SelectedUnit;
+        _settingSize = true;
         WidthBox.Text = UnitConverter.FromMillimetres(_widthMm, u).ToString("0.###", CultureInfo.CurrentCulture);
         HeightBox.Text = UnitConverter.FromMillimetres(_heightMm, u).ToString("0.###", CultureInfo.CurrentCulture);
+        _settingSize = false;
+    }
+
+    // ---- picking a size from a label sheet ------------------------------------------------
+
+    /// <summary>The sheets matching the search, favourites first.</summary>
+    private void ShowTemplates()
+    {
+        string q = TemplateSearch.Text?.Trim() ?? string.Empty;
+        string compact = q.Replace(" ", string.Empty, StringComparison.Ordinal).Replace("×", "x", StringComparison.Ordinal);
+        TemplateList.ItemsSource = _templates
+            .Where(t => q.Length == 0 ||
+                        t.Name.Contains(q, StringComparison.OrdinalIgnoreCase) ||
+                        t.ProductCode.Contains(q, StringComparison.OrdinalIgnoreCase) ||
+                        t.Brand.Contains(q, StringComparison.OrdinalIgnoreCase) ||
+                        SizeKey(t).Contains(compact, StringComparison.OrdinalIgnoreCase))
+            .Select(t => new TemplateRow(t, _favorites.Contains(t.Id)))
+            .ToList();
+    }
+
+    private static string SizeKey(LabelTemplate t) =>
+        string.Create(CultureInfo.InvariantCulture, $"{t.Grid.LabelWidthMm:0.##}x{t.Grid.LabelHeightMm:0.##}");
+
+    private void OnTemplateSearch(object sender, TextChangedEventArgs e) => ShowTemplates();
+
+    /// <summary>Takes the picked sheet's label size, and offers to switch to its sheet layout as well.</summary>
+    private void OnTemplatePicked(object sender, SelectionChangedEventArgs e)
+    {
+        if (TemplateList.SelectedItem is not TemplateRow row)
+        {
+            return;
+        }
+
+        _picked = row.Template;
+        _widthMm = row.Template.Grid.LabelWidthMm;
+        _heightMm = row.Template.Grid.LabelHeightMm;
+        ShowValues();
+        LabelGrid g = row.Template.Grid;
+        UseTemplateSheet.Content = $"Also print on the {row.Title.TrimStart('★', ' ')} sheet ({g.Columns} × {g.Rows} on {row.Template.EffectivePage.Name})";
+        UseTemplateSheet.IsChecked = true;
+        UpdateSheetChoice();
+    }
+
+    /// <summary>Typing a size by hand lets go of the picked sheet.</summary>
+    private void OnSizeTyped(object sender, TextChangedEventArgs e)
+    {
+        if (_settingSize || _picked is null)
+        {
+            return;
+        }
+
+        _picked = null;
+        TemplateList.SelectedItem = null;
+        UpdateSheetChoice();
+    }
+
+    private void OnUseTemplateSheet(object sender, RoutedEventArgs e) => UpdateSheetChoice();
+
+    private void UpdateSheetChoice()
+    {
+        bool picked = _picked is not null;
+        UseTemplateSheet.Visibility = picked ? Visibility.Visible : Visibility.Collapsed;
+        RefitSheet.Visibility = picked && UseTemplateSheet.IsChecked == true ? Visibility.Collapsed : Visibility.Visible;
+        _refitNote ??= SheetNote.Text;
+        SheetNote.Text = picked && UseTemplateSheet.IsChecked == true
+            ? "The project will print on that sheet: its paper, margins and number of labels across and down."
+            : _refitNote;
+    }
+
+    /// <summary>One sheet in the list: brand and code, grid and paper, label size.</summary>
+    private sealed record TemplateRow(LabelTemplate Template, bool IsFavorite)
+    {
+        public string Title => (IsFavorite ? "★  " : string.Empty) +
+            (Template.Brand == CustomSheet.Brand ? Template.Name : $"{Template.Brand} {Template.ProductCode}".Trim());
+
+        public string Subtitle => $"{Template.Grid.Columns} × {Template.Grid.Rows} per {Template.EffectivePage.Name}";
+
+        public string SizeText => string.Create(CultureInfo.InvariantCulture, $"{Template.Grid.LabelWidthMm:0.##} × {Template.Grid.LabelHeightMm:0.##} mm");
+
+        public override string ToString() => Title;
     }
 
     private bool ReadValues()
@@ -116,7 +211,15 @@ public partial class LabelSizeWindow : Window
             }
         }
 
-        if (RefitSheet.IsChecked == true && _session.Project.Template is { } template)
+        if (_picked is { } sheet && UseTemplateSheet.IsChecked == true &&
+            Math.Abs(sheet.Grid.LabelWidthMm - target.Width) < 0.01 && Math.Abs(sheet.Grid.LabelHeightMm - target.Height) < 0.01)
+        {
+            // The chosen sheet itself, so printing lands exactly where that sheet's labels are.
+            ProjectModel project = _session.Project;
+            commands.Add(new SetPropertyCommand<LabelTemplate?>(
+                "Use sheet", () => project.Template, v => project.Template = v, sheet));
+        }
+        else if (RefitSheet.IsChecked == true && _session.Project.Template is { } template)
         {
             ProjectModel project = _session.Project;
             commands.Add(new SetPropertyCommand<LabelTemplate?>(

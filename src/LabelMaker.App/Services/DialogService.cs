@@ -343,7 +343,7 @@ public sealed class DialogService : IShellServices
             return false;
         }
 
-        var win = new LabelSizeWindow(_vm.Session, _env.Settings.DisplayUnit) { Owner = _owner };
+        var win = new LabelSizeWindow(_vm.Session, _env.Settings.DisplayUnit, _env.Templates, _env.Settings.FavoriteTemplateIds) { Owner = _owner };
         return win.ShowDialog() == true;
     }
 

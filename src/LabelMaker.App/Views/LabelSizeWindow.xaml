@@ -3,15 +3,14 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Style="{StaticResource AppWindow}"
         Background="{DynamicResource Br.Surface}" TextElement.Foreground="{DynamicResource Br.Text}"
-        Title="Label size" Height="430" Width="430" WindowStartupLocation="CenterOwner"
-        ResizeMode="NoResize">
+        Title="Label size" Height="720" Width="520" MinHeight="560" MinWidth="460" WindowStartupLocation="CenterOwner">
   <DockPanel Margin="18">
     <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
       <Button Content="Cancel" Style="{StaticResource GhostButton}" IsCancel="True" Margin="0,0,8,0" />
       <Button Content="Apply size" Style="{StaticResource PrimaryButton}" IsDefault="True" Click="OnApply" />
     </StackPanel>
 
-    <StackPanel>
+    <StackPanel DockPanel.Dock="Top">
       <TextBlock Text="CURRENT LABEL" Style="{StaticResource PanelSectionHeader}" />
       <Border Style="{StaticResource InsetPanel}" Padding="12,10" Margin="0,0,0,14">
         <TextBlock x:Name="CurrentText" TextWrapping="Wrap" FontSize="12.5" />
@@ -29,18 +28,46 @@
           <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
         <TextBlock Grid.Column="0" Text="Width" Style="{StaticResource FieldLabel}" Width="46" />
-        <TextBox   Grid.Column="1" x:Name="WidthBox" Style="{StaticResource NumberBox}" />
+        <TextBox   Grid.Column="1" x:Name="WidthBox" Style="{StaticResource NumberBox}" TextChanged="OnSizeTyped" />
         <TextBlock Grid.Column="3" Text="Height" Style="{StaticResource FieldLabel}" Width="46" />
-        <TextBox   Grid.Column="4" x:Name="HeightBox" Style="{StaticResource NumberBox}" />
+        <TextBox   Grid.Column="4" x:Name="HeightBox" Style="{StaticResource NumberBox}" TextChanged="OnSizeTyped" />
         <ComboBox  Grid.Column="6" x:Name="UnitBox" Width="72" SelectionChanged="OnUnitChanged" />
       </Grid>
 
       <CheckBox x:Name="ScaleObjects" Content="Scale the objects to match the new size" Margin="0,0,0,8" />
       <CheckBox x:Name="AllPages" Content="Apply to every page in the project" IsChecked="True" Margin="0,0,0,8" />
+      <CheckBox x:Name="UseTemplateSheet" Margin="0,0,0,6" Visibility="Collapsed" Click="OnUseTemplateSheet"
+                ToolTip="Prints on the chosen sheet: its paper, margins and the number of labels across and down" />
       <CheckBox x:Name="RefitSheet" IsChecked="True" Margin="0,0,0,6"
                 Content="Re-fit the sheet grid to this label size" />
       <TextBlock x:Name="SheetNote" TextWrapping="Wrap" FontSize="11.5"
-                 Foreground="{DynamicResource Br.TextMuted}" Margin="24,0,0,0" />
+                 Foreground="{DynamicResource Br.TextMuted}" Margin="24,0,0,12" />
+
+      <TextBlock Text="OR PICK A SIZE FROM A LABEL SHEET" Style="{StaticResource PanelSectionHeader}" />
+      <Border Style="{StaticResource SearchField}" Margin="0,0,0,8">
+        <DockPanel>
+          <Image DockPanel.Dock="Left" Source="{StaticResource Icon.Search}" Width="15" Height="15" Margin="2,0,8,0" />
+          <TextBox x:Name="TemplateSearch" Style="{StaticResource PlainTextBox}" Tag="Search brand, code or size, e.g. 3100 or 38x21…"
+                   TextChanged="OnTemplateSearch" />
+        </DockPanel>
+      </Border>
     </StackPanel>
+
+    <ListBox x:Name="TemplateList" SelectionChanged="OnTemplatePicked" BorderThickness="1"
+             BorderBrush="{DynamicResource Br.Border}" Background="{DynamicResource Br.Bg}"
+             HorizontalContentAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+      <ListBox.ItemTemplate>
+        <DataTemplate>
+          <DockPanel Margin="2,3">
+            <TextBlock DockPanel.Dock="Right" Text="{Binding SizeText}" FontFamily="{StaticResource Font.Mono}" FontSize="12"
+                       Foreground="{DynamicResource Br.Text2}" Margin="10,0,2,0" VerticalAlignment="Center" />
+            <StackPanel>
+              <TextBlock Text="{Binding Title}" FontFamily="{StaticResource Font.UiSemiBold}" FontSize="12.5" TextTrimming="CharacterEllipsis" />
+              <TextBlock Text="{Binding Subtitle}" FontSize="11" Foreground="{DynamicResource Br.TextMuted}" TextTrimming="CharacterEllipsis" />
+            </StackPanel>
+          </DockPanel>
+        </DataTemplate>
+      </ListBox.ItemTemplate>
+    </ListBox>
   </DockPanel>
 </Window>
