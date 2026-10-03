@@ -10,8 +10,9 @@ public static class PrintablePages
     /// on it, then the numbered pages. <see cref="PrintSettings.PagesToPrint"/> narrows that to
     /// the page on screen or to pages ticked by hand (the master label among them if ticked).
     /// Otherwise a range or a chosen list (1-based page numbers, as in the panel) prints just
-    /// those numbered pages. Each page is repeated <see cref="PrintSettings.CopiesPerPage"/>
-    /// times, one after another.
+    /// those numbered pages. Each page is repeated <see cref="CopiesOf"/> times, one after
+    /// another: its own <see cref="LabelDocument.PrintCopies"/>, or the job's
+    /// <see cref="PrintSettings.CopiesPerPage"/>.
     /// </summary>
     public static IReadOnlyList<LabelDocument> For(ProjectModel project, PrintSettings settings)
     {
@@ -56,8 +57,15 @@ public static class PrintablePages
             pages.AddRange(project.Pages.Select(p => p.Document));
         }
 
-        int copies = Math.Clamp(settings.CopiesPerPage, 1, 1000);
-        return copies == 1 ? pages : pages.SelectMany(p => Enumerable.Repeat(p, copies)).ToList();
+        return pages.SelectMany(p => Enumerable.Repeat(p, CopiesOf(p, settings))).ToList();
+    }
+
+    /// <summary>How many times <paramref name="page"/> is printed in a job of pages.</summary>
+    public static int CopiesOf(LabelDocument page, PrintSettings settings)
+    {
+        ArgumentNullException.ThrowIfNull(page);
+        ArgumentNullException.ThrowIfNull(settings);
+        return Math.Clamp(page.PrintCopies ?? settings.CopiesPerPage, 1, 1000);
     }
 
     /// <summary>Every page in panel order, the master label first, whether or not it has content.</summary>

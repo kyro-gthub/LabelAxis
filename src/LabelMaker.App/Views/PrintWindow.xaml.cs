@@ -57,7 +57,16 @@ public partial class PrintWindow : Window
         LastSheetBox.Text = s.LastSheet?.ToString(CultureInfo.InvariantCulture) ?? string.Empty;
 
         _refreshDelay.Tick += (_, _) => { _refreshDelay.Stop(); Refresh(); };
-        Closed += (_, _) => _refreshDelay.Stop();
+        Closed += (_, _) =>
+        {
+            _refreshDelay.Stop();
+
+            // Copies set per page are kept with the pages, so the project needs saving.
+            if (_pageCopiesEdited)
+            {
+                _session.MarkDirty();
+            }
+        };
 
         _loading = false;
         Refresh();
@@ -132,19 +141,46 @@ public partial class PrintWindow : Window
 
         for (int i = 0; i < count; i++)
         {
+            LabelDocument page = i == 0 ? project.MasterLabel : project.Pages[i - 1].Document;
             var box = new CheckBox
             {
                 Content = PageCaption(i),
                 Tag = i,
                 IsChecked = ticked.Contains(i),
-                Margin = new Thickness(0, 3, 0, 3),
+                VerticalAlignment = VerticalAlignment.Center,
             };
             box.Click += (_, _) =>
             {
                 PagesChosenBox.IsChecked = true;
                 Refresh();
             };
-            PageList.Children.Add(box);
+
+            // How many of this page to print; remembered with the page.
+            var copies = new TextBox
+            {
+                Style = (Style)FindResource("NumberBox"),
+                Width = 52,
+                Text = PrintablePages.CopiesOf(page, s).ToString(CultureInfo.InvariantCulture),
+                ToolTip = "How many of this page to print, one after another",
+            };
+            copies.TextChanged += (_, _) => OnPageCopiesChanged(page, copies);
+
+            var row = new DockPanel { Margin = new Thickness(0, 1, 0, 1), LastChildFill = true };
+            var unit = new TextBlock
+            {
+                Text = "copies",
+                Margin = new Thickness(6, 0, 0, 0),
+                VerticalAlignment = VerticalAlignment.Center,
+                FontSize = 11.5,
+                Foreground = (Brush)FindResource("Br.TextMuted"),
+            };
+            DockPanel.SetDock(unit, Dock.Right);
+            DockPanel.SetDock(copies, Dock.Right);
+            row.Children.Add(unit);
+            row.Children.Add(copies);
+            row.Children.Add(box);
+            PageList.Children.Add(row);
+            _pageRows.Add((box, copies, page));
         }
 
         PagesCurrentBox.Content = $"Current page ({PageCaption(current)})";
@@ -161,7 +197,54 @@ public partial class PrintWindow : Window
         ? $"★  {_session.Project.MasterLabel.Name}"
         : $"{position}.  {_session.Project.Pages[position - 1].Name}";
 
-    private IEnumerable<CheckBox> PageBoxes => PageList.Children.OfType<CheckBox>();
+    private readonly List<(CheckBox Box, TextBox Copies, LabelDocument Page)> _pageRows = new();
+    private bool _syncingCopies;
+    private bool _pageCopiesEdited;
+
+    private IEnumerable<CheckBox> PageBoxes => _pageRows.Select(r => r.Box);
+
+    /// <summary>A page's own copies box: the number is kept with that page.</summary>
+    private void OnPageCopiesChanged(LabelDocument page, TextBox box)
+    {
+        if (_syncingCopies || _loading)
+        {
+            return;
+        }
+
+        if (int.TryParse(box.Text.Trim(), NumberStyles.Integer, CultureInfo.InvariantCulture, out int n) && n >= 1)
+        {
+            n = Math.Min(n, 1000);
+            int everyPage = Math.Clamp(ParseInt(CopiesPerPageBox.Text, 1), 1, 1000);
+            page.PrintCopies = n == everyPage ? null : n;
+            _pageCopiesEdited = true;
+            RefreshSoon();
+        }
+    }
+
+    /// <summary>"Copies of every page" sets them all at once, replacing per-page numbers.</summary>
+    private void OnCopiesPerPageChanged(object sender, TextChangedEventArgs e)
+    {
+        if (_loading)
+        {
+            return;
+        }
+
+        if (int.TryParse(CopiesPerPageBox.Text.Trim(), NumberStyles.Integer, CultureInfo.InvariantCulture, out int n) && n >= 1)
+        {
+            n = Math.Min(n, 1000);
+            _syncingCopies = true;
+            foreach ((_, TextBox copies, LabelDocument page) in _pageRows)
+            {
+                _pageCopiesEdited |= page.PrintCopies is not null;
+                page.PrintCopies = null;
+                copies.Text = n.ToString(CultureInfo.InvariantCulture);
+            }
+
+            _syncingCopies = false;
+        }
+
+        RefreshSoon();
+    }
 
     private void OnTickAllPages(object sender, RoutedEventArgs e) => TickAllPages(true);
 
@@ -223,12 +306,16 @@ public partial class PrintWindow : Window
 
     private string DescribePages(PrintSettings s)
     {
-        int pages = PrintablePages.For(_session.Project, s).Count / Math.Max(1, s.CopiesPerPage);
-        string copies = s.CopiesPerPage > 1 ? $", {s.CopiesPerPage} copies of each" : string.Empty;
+        IReadOnlyList<LabelDocument> docs = PrintablePages.For(_session.Project, s);
+        int pages = docs.Distinct().Count();
+        int labels = docs.Count;
+        string copies = labels == pages ? string.Empty
+            : docs.Distinct().Select(d => PrintablePages.CopiesOf(d, s)).Distinct().Count() == 1 ? $", {labels / Math.Max(1, pages)} copies of each"
+            : $", {labels} labels in all (each page's own number of copies)";
         return s.PagesToPrint switch
         {
             PagesToPrint.Current => $"Just the current page, {PageCaption(Math.Clamp(s.CurrentPage, 0, _session.Project.Pages.Count)).Replace("  ", " ")}" +
-                                    (s.CopiesPerPage > 1 ? $", {s.CopiesPerPage} copies placed one after another." : "."),
+                                    (labels > 1 ? $", {labels} copies placed one after another." : "."),
             PagesToPrint.Chosen when pages == 0 => "No pages ticked yet. Tick the pages to print.",
             PagesToPrint.Chosen => $"{pages} selected page(s){copies}, placed one after another on each sheet.",
             _ => $"{pages} page(s) from the Pages panel{copies}, placed one after another on each sheet.",

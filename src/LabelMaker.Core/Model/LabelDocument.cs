@@ -28,6 +28,13 @@ public sealed class LabelDocument
     /// <summary>User ruler guides that objects snap to (spec §2 "guides", "snap-to-object").</summary>
     public GuideCollection Guides { get; set; } = new();
 
+    /// <summary>
+    /// How many times this page is printed, one after another, when printing pages; null uses
+    /// the job's "copies of every page". Saved with the project, so page 1 can always print
+    /// 6 and page 2 always 12.
+    /// </summary>
+    public int? PrintCopies { get; set; }
+
     public RectMm Bounds => new(0, 0, SizeMm.Width, SizeMm.Height);
 
     public LabelObject? FindObject(string id) => Objects.FirstOrDefault(o => o.Id == id);
@@ -45,6 +52,7 @@ public sealed class LabelDocument
         Background = Background.Clone(),
         Objects = Objects.Select(o => o.Clone()).ToList(),
         Guides = Guides.Clone(),
+        PrintCopies = PrintCopies,
     };
 }
 
