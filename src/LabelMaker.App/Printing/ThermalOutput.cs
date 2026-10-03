@@ -23,6 +23,7 @@ public static class ThermalSinks
     public static IThermalSink Open(ThermalPrintSettings settings, string? filePath, string jobName) => settings.Destination switch
     {
         ThermalDestination.Network => new NetworkSink(settings.NetworkAddress),
+        ThermalDestination.SerialPort => new SerialSink(settings.SerialPortName ?? string.Empty, settings.BaudRate),
         ThermalDestination.File => new FileSink(filePath ?? throw new InvalidOperationException("Choose a file to save to.")),
         _ => new RawSpoolerSink(settings.PrinterName ?? throw new InvalidOperationException("Choose a printer."), jobName),
     };

@@ -23,6 +23,12 @@ public enum ThermalDestination
 
     /// <summary>A .zpl/.prn file, for sending with another tool or checking the output.</summary>
     File = 2,
+
+    /// <summary>
+    /// A COM port: a Bluetooth printer paired in Windows (which gives it an "outgoing" COM
+    /// port), or a printer on a serial or USB-serial cable.
+    /// </summary>
+    SerialPort = 3,
 }
 
 public enum ThermalAfterPrint
@@ -53,6 +59,12 @@ public sealed class ThermalPrintSettings
 
     /// <summary>host or host:port for <see cref="ThermalDestination.Network"/>.</summary>
     public string NetworkAddress { get; set; } = string.Empty;
+
+    /// <summary>COM port for <see cref="ThermalDestination.SerialPort"/>, e.g. "COM5".</summary>
+    public string? SerialPortName { get; set; }
+
+    /// <summary>Serial speed. A Bluetooth COM port ignores it; a cable must match the printer.</summary>
+    public int BaudRate { get; set; } = 9600;
 
     /// <summary>Print head resolution: 203, 300 or 600 dots per inch.</summary>
     public int Dpi { get; set; } = 203;

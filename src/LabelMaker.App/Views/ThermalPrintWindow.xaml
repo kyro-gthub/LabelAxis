@@ -65,18 +65,50 @@
                   <ComboBoxItem Content="Windows printer" />
                   <ComboBoxItem Content="Network (IP address)" />
                   <ComboBoxItem Content="File (.zpl / .prn)" />
+                  <ComboBoxItem Content="Bluetooth or serial port (COM)" />
                 </ComboBox>
               </DockPanel>
+              <StackPanel x:Name="SerialRows">
+                <DockPanel Margin="0,3">
+                  <TextBlock Text="Port" Style="{StaticResource FieldLabel}" Width="130" />
+                  <ComboBox x:Name="SerialPortBox" IsEditable="True" SelectionChanged="OnChanged"
+                            ToolTip="A paired Bluetooth printer shows as 'Bluetooth'. Use its outgoing port." />
+                </DockPanel>
+                <StackPanel Orientation="Horizontal" Margin="130,2,0,3">
+                  <Button Content="↻  Look again" Style="{StaticResource GhostButton}" Padding="10,4" Margin="0,0,6,0" Click="OnRefreshPorts"
+                          ToolTip="Look for COM ports again, e.g. after pairing a printer" />
+                  <Button Content="Test" Style="{StaticResource GhostButton}" Padding="10,4" Click="OnTestSerial"
+                          ToolTip="Check that the port opens (for Bluetooth: that Windows can connect to the printer)" />
+                </StackPanel>
+                <DockPanel x:Name="BaudRow" Margin="0,3">
+                  <TextBlock Text="Speed (baud)" Style="{StaticResource FieldLabel}" Width="130" />
+                  <ComboBox x:Name="BaudBox" Width="120" HorizontalAlignment="Left" SelectionChanged="OnChanged"
+                            ToolTip="Bluetooth ignores this. For a serial cable, use the speed set on the printer (often 9600)." />
+                </DockPanel>
+                <TextBlock Margin="130,2,0,4" TextWrapping="Wrap" FontSize="11.5" Foreground="{DynamicResource Br.TextMuted}"
+                           Text="Bluetooth printer: switch it on and pair it in Windows Settings › Bluetooth &amp; devices. Windows then gives it a COM port, listed here as Bluetooth." />
+              </StackPanel>
               <DockPanel x:Name="PrinterRow" Margin="0,3">
                 <TextBlock Text="Printer" Style="{StaticResource FieldLabel}" Width="130" />
                 <ComboBox x:Name="PrinterBox" SelectionChanged="OnChanged" />
               </DockPanel>
-              <DockPanel x:Name="AddressRow" Margin="0,3">
-                <TextBlock Text="Address" Style="{StaticResource FieldLabel}" Width="130" />
-                <Button DockPanel.Dock="Right" Content="Test" Style="{StaticResource GhostButton}" Margin="6,0,0,0" Click="OnTestNetwork"
-                        ToolTip="Check that the printer answers on this address" />
-                <TextBox x:Name="AddressBox" ToolTip="For example 192.168.1.50 or 192.168.1.50:9100" TextChanged="OnTextChanged" />
-              </DockPanel>
+              <StackPanel x:Name="AddressRow">
+                <DockPanel Margin="0,3">
+                  <TextBlock Text="Address" Style="{StaticResource FieldLabel}" Width="130" />
+                  <TextBox x:Name="AddressBox" ToolTip="For example 192.168.1.50 or 192.168.1.50:9100" TextChanged="OnTextChanged" />
+                </DockPanel>
+                <StackPanel Orientation="Horizontal" Margin="130,2,0,3">
+                  <Button x:Name="FindButton" Content="Find printers…" Style="{StaticResource GhostButton}" Padding="10,4" Margin="0,0,6,0" Click="OnFindNetwork"
+                          ToolTip="Look for label printers on this PC's Wi-Fi or network (port 9100)" />
+                  <Button Content="Test" Style="{StaticResource GhostButton}" Padding="10,4" Click="OnTestNetwork"
+                          ToolTip="Check that the printer answers on this address" />
+                </StackPanel>
+              </StackPanel>
+              <StackPanel x:Name="FoundRow" Margin="130,2,0,4" Visibility="Collapsed">
+                <TextBlock x:Name="FoundText" TextWrapping="Wrap" FontSize="11.5" Foreground="{DynamicResource Br.TextMuted}" Margin="0,0,0,4" />
+                <ListBox x:Name="FoundList" MaxHeight="120" SelectionChanged="OnFoundSelected"
+                         ToolTip="Click a printer to use its address" />
+              </StackPanel>
               <DockPanel Margin="0,3">
                 <TextBlock Text="Resolution" Style="{StaticResource FieldLabel}" Width="130" />
                 <ComboBox x:Name="DpiBox" SelectionChanged="OnChanged">

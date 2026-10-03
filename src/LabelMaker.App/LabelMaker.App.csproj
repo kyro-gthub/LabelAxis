@@ -14,6 +14,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="System.IO.Ports" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\LabelMaker.Core\LabelMaker.Core.csproj" />
     <ProjectReference Include="..\LabelMaker.Export\LabelMaker.Export.csproj" />
     <ProjectReference Include="..\LabelMaker.Data\LabelMaker.Data.csproj" />

@@ -49,13 +49,24 @@ public partial class ThermalPrintWindow : Window
             PrinterBox.Items.Add(printer);
         }
 
+        foreach (int baud in new[] { 1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200 })
+        {
+            BaudBox.Items.Add(baud);
+        }
+
+        LoadPorts(Print.Thermal.SerialPortName);
+
         LoadSettings();
         _refresh.Tick += (_, _) =>
         {
             _refresh.Stop();
             Refresh();
         };
-        Closed += (_, _) => _refresh.Stop();
+        Closed += (_, _) =>
+        {
+            _refresh.Stop();
+            _stopFinding?.Invoke();
+        };
         _loading = false;
         Loaded += (_, _) => Refresh();
     }
@@ -77,6 +88,7 @@ public partial class ThermalPrintWindow : Window
         string? printer = t.PrinterName ?? PrinterBox.Items.OfType<string>().FirstOrDefault(IsLikelyLabelPrinter) ?? _printServer.DefaultPrinter();
         PrinterBox.SelectedItem = PrinterBox.Items.OfType<string>().FirstOrDefault(p => p == printer) ?? PrinterBox.Items.OfType<object>().FirstOrDefault();
         AddressBox.Text = t.NetworkAddress;
+        BaudBox.SelectedItem = BaudBox.Items.OfType<int>().Contains(t.BaudRate) ? t.BaudRate : 9600;
         DpiBox.SelectedItem = DpiBox.Items.OfType<ComboBoxItem>().FirstOrDefault(i => (string)i.Tag == t.Dpi.ToString(CultureInfo.InvariantCulture)) ?? DpiBox.Items[0];
 
         RollMedia roll = _session.Project.Template?.Roll ?? new RollMedia();
@@ -108,6 +120,8 @@ public partial class ThermalPrintWindow : Window
         t.Destination = (ThermalDestination)Math.Max(0, DestinationBox.SelectedIndex);
         t.PrinterName = PrinterBox.SelectedItem as string;
         t.NetworkAddress = AddressBox.Text.Trim();
+        t.SerialPortName = SelectedPortName();
+        t.BaudRate = BaudBox.SelectedItem is int baud ? baud : 9600;
         t.Dpi = DpiBox.SelectedItem is ComboBoxItem { Tag: string dpi } ? int.Parse(dpi, CultureInfo.InvariantCulture) : 203;
 
         var sensing = (MediaSensing)Math.Max(0, SensingBox.SelectedIndex);
@@ -142,6 +156,11 @@ public partial class ThermalPrintWindow : Window
         ThermalDestination destination = (ThermalDestination)Math.Max(0, DestinationBox.SelectedIndex);
         PrinterRow.Visibility = destination == ThermalDestination.WindowsPrinter ? Visibility.Visible : Visibility.Collapsed;
         AddressRow.Visibility = destination == ThermalDestination.Network ? Visibility.Visible : Visibility.Collapsed;
+        SerialRows.Visibility = destination == ThermalDestination.SerialPort ? Visibility.Visible : Visibility.Collapsed;
+        if (destination != ThermalDestination.Network)
+        {
+            FoundRow.Visibility = Visibility.Collapsed;
+        }
         ThresholdRow.Visibility = DitherBox.SelectedIndex == 0 ? Visibility.Visible : Visibility.Collapsed;
         PrintButtonText.Text = destination == ThermalDestination.File ? "Save…" : "Print";
     }
@@ -279,6 +298,134 @@ public partial class ThermalPrintWindow : Window
         Apply();
         UseDriverInstead = true;
         DialogResult = false;
+    }
+
+    // ---- Bluetooth / serial ports ------------------------------------------------------
+
+    /// <summary>Lists the COM ports, Bluetooth printers first, keeping <paramref name="wanted"/> selected.</summary>
+    private void LoadPorts(string? wanted)
+    {
+        SerialPortBox.Items.Clear();
+        IReadOnlyList<SerialPortInfo> ports = SerialPrinters.List();
+        foreach (SerialPortInfo port in ports)
+        {
+            SerialPortBox.Items.Add(port);
+        }
+
+        SerialPortInfo? match = ports.FirstOrDefault(p => string.Equals(p.PortName, wanted, StringComparison.OrdinalIgnoreCase))
+                                ?? ports.FirstOrDefault(p => p.IsBluetooth)
+                                ?? (string.IsNullOrWhiteSpace(wanted) ? ports.FirstOrDefault() : null);
+        if (match is not null)
+        {
+            SerialPortBox.SelectedItem = match;
+        }
+        else
+        {
+            SerialPortBox.Text = wanted ?? string.Empty;
+        }
+    }
+
+    /// <summary>The chosen port's name: from the list, or "COM7" typed in by hand.</summary>
+    private string? SelectedPortName()
+    {
+        if (SerialPortBox.SelectedItem is SerialPortInfo info)
+        {
+            return info.PortName;
+        }
+
+        string typed = SerialPortBox.Text.Trim();
+        string name = new(typed.TakeWhile(c => !char.IsWhiteSpace(c) && c != '—').ToArray());
+        return name.Length == 0 ? null : name.ToUpperInvariant();
+    }
+
+    private void OnRefreshPorts(object sender, RoutedEventArgs e)
+    {
+        LoadPorts(SelectedPortName());
+        if (SerialPortBox.Items.Count == 0)
+        {
+            MessageBox.Show(this, "No COM ports were found.\n\nFor a Bluetooth printer: switch it on, then pair it in Windows Settings › Bluetooth & devices. " +
+                "Windows gives a paired Bluetooth printer a COM port; press ↻ again afterwards.", "Thermal print", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+    }
+
+    private async void OnTestSerial(object sender, RoutedEventArgs e)
+    {
+        string? port = SelectedPortName();
+        if (port is null)
+        {
+            MessageBox.Show(this, "Choose the printer's COM port first.", "Thermal print", MessageBoxButton.OK, MessageBoxImage.Information);
+            return;
+        }
+
+        var button = (Button)sender;
+        button.IsEnabled = false;
+        Cursor = System.Windows.Input.Cursors.Wait;
+        try
+        {
+            await SerialSink.TestAsync(port, BaudBox.SelectedItem is int baud ? baud : 9600);
+            MessageBox.Show(this, $"{port} opened. The printer is ready to print.", "Thermal print", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+        catch (Exception ex) when (ex is IOException or InvalidOperationException or UnauthorizedAccessException)
+        {
+            MessageBox.Show(this, ex.Message, "Thermal print", MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+        finally
+        {
+            button.IsEnabled = true;
+            Cursor = null;
+        }
+    }
+
+    // ---- network (Wi-Fi / cable) -------------------------------------------------------
+
+    /// <summary>Stops the network search that is running, if any (the Stop button, or closing the window).</summary>
+    private Action? _stopFinding;
+
+    /// <summary>Looks for printers answering on port 9100 on this PC's networks; pressing again stops.</summary>
+    private async void OnFindNetwork(object sender, RoutedEventArgs e)
+    {
+        if (_stopFinding is not null)
+        {
+            _stopFinding();
+            return;
+        }
+
+        FoundRow.Visibility = Visibility.Visible;
+        FoundList.Items.Clear();
+        FindButton.Content = "Stop";
+        using var cts = new CancellationTokenSource();
+        _stopFinding = cts.Cancel;
+        try
+        {
+            var progress = new Progress<int>(p => FoundText.Text = $"Looking for printers on your network… {p}%");
+            IReadOnlyList<FoundPrinter> found = await NetworkPrinterFinder.FindAsync(progress, cts.Token);
+            foreach (FoundPrinter printer in found)
+            {
+                FoundList.Items.Add(printer);
+            }
+
+            FoundText.Text = found.Count == 0
+                ? "No printer answered on port 9100. Check the printer is on the same Wi-Fi or network as this PC, or type its address (it is often printed on the printer's settings label)."
+                : $"Found {found.Count} printer(s). Click one to use it.";
+            FoundList.Visibility = found.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
+        }
+        catch (OperationCanceledException)
+        {
+            FoundText.Text = "Stopped.";
+        }
+        finally
+        {
+            _stopFinding = null;
+            FindButton.Content = "Find printers…";
+        }
+    }
+
+    private void OnFoundSelected(object sender, SelectionChangedEventArgs e)
+    {
+        if (FoundList.SelectedItem is FoundPrinter printer)
+        {
+            AddressBox.Text = printer.AddressText;
+        }
     }
 
     private async void OnTestNetwork(object sender, RoutedEventArgs e)
