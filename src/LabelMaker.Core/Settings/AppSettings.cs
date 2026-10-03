@@ -67,6 +67,9 @@ public sealed class AppSettings
     /// <summary>Sheet templates starred in the Label manager, shown first under Favourites.</summary>
     public List<string> FavoriteTemplateIds { get; set; } = new();
 
+    /// <summary>Wi-Fi / network printers added in the Print dialog, printed to directly over IPP.</summary>
+    public List<Printing.Ipp.IppPrinterInfo> NetworkPrinters { get; set; } = new();
+
     public int MaxRecentProjects { get; set; } = 12;
 
     public void AddRecent(string path, string title)

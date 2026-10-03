@@ -280,7 +280,7 @@ public sealed class DialogService : IShellServices
             return false;
         }
 
-        var win = new PrintWindow(_vm.Session, _vm.PrintServer, this, _env.PrintHistory) { Owner = Front };
+        var win = new PrintWindow(_vm.Session, _vm.PrintServer, this, _env.PrintHistory, _env.Settings, _env.SaveSettings) { Owner = Front };
         bool sent = win.ShowDialog() == true;
 
         // Reprint chosen from the history inside the dialog: run it now that the dialog is closed.

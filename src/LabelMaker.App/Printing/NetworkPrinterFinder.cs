@@ -21,7 +21,11 @@ public static class NetworkPrinterFinder
 {
     public const int RawPort = 9100;
 
-    public static async Task<IReadOnlyList<FoundPrinter>> FindAsync(IProgress<int>? progress, CancellationToken cancellation)
+    public static Task<IReadOnlyList<FoundPrinter>> FindAsync(IProgress<int>? progress, CancellationToken cancellation) =>
+        FindAsync(RawPort, progress, cancellation);
+
+    /// <summary>Every address on this PC's networks that answers on <paramref name="port"/> (9100 raw printing, 631 IPP).</summary>
+    public static async Task<IReadOnlyList<FoundPrinter>> FindAsync(int port, IProgress<int>? progress, CancellationToken cancellation)
     {
         List<IPAddress> candidates = CandidateAddresses().ToList();
         var found = new List<FoundPrinter>();
@@ -33,12 +37,12 @@ public static class NetworkPrinterFinder
             await gate.WaitAsync(cancellation).ConfigureAwait(false);
             try
             {
-                if (await AnswersAsync(address, RawPort, TimeSpan.FromMilliseconds(400), cancellation).ConfigureAwait(false))
+                if (await AnswersAsync(address, port, TimeSpan.FromMilliseconds(400), cancellation).ConfigureAwait(false))
                 {
                     string? name = await HostNameAsync(address).ConfigureAwait(false);
                     lock (found)
                     {
-                        found.Add(new FoundPrinter(address, RawPort, name));
+                        found.Add(new FoundPrinter(address, port, name));
                     }
                 }
             }
