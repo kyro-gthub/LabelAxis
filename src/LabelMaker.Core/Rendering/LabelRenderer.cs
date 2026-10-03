@@ -173,6 +173,7 @@ public sealed class LabelRenderer
                     break;
                 case ImageObject image:
                     RenderImage(image, local, surface);
+                    RenderImageBorder(image, local, surface);
                     break;
                 case ShapeObject shape:
                     RenderShape(shape, local, surface);
@@ -291,6 +292,54 @@ public sealed class LabelRenderer
         if (shapeClipped)
         {
             surface.Pop();
+        }
+    }
+
+    /// <summary>
+    /// The outline border, drawn just inside the box so it never sticks out past it, and
+    /// following the crop shape (circle or rounded box). A double border is two lines a
+    /// third of the thickness each, with a third left open between them.
+    /// </summary>
+    internal static void RenderImageBorder(ImageObject image, RectMm local, IDrawingSurface surface)
+    {
+        if (!image.HasBorder)
+        {
+            return;
+        }
+
+        double width = Math.Min(image.BorderWidthMm, Math.Min(local.Width, local.Height) / 2.0);
+        if (image.BorderLines == ImageBorderLines.Double)
+        {
+            double line = width / 3.0;
+            StrokeImageOutline(image, local, line / 2.0, line, surface);
+            StrokeImageOutline(image, local, width - (line / 2.0), line, surface);
+        }
+        else
+        {
+            StrokeImageOutline(image, local, width / 2.0, width, surface);
+        }
+    }
+
+    /// <summary>One outline line whose centre runs <paramref name="inset"/> inside the box.</summary>
+    private static void StrokeImageOutline(ImageObject image, RectMm local, double inset, double strokeWidth, IDrawingSurface surface)
+    {
+        RectMm r = local.Deflate(inset);
+        if (r.Width <= 0 || r.Height <= 0)
+        {
+            return;
+        }
+
+        switch (image.ClipShape)
+        {
+            case ImageClipShape.Ellipse:
+                surface.StrokeEllipse(r, image.BorderColor, strokeWidth, image.BorderDash);
+                break;
+            case ImageClipShape.RoundedRectangle:
+                surface.StrokeRectangle(r, image.BorderColor, strokeWidth, image.BorderDash, Math.Max(0, image.ClipCornerRadiusMm - inset));
+                break;
+            default:
+                surface.StrokeRectangle(r, image.BorderColor, strokeWidth, image.BorderDash);
+                break;
         }
     }
 

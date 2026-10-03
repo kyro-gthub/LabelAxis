@@ -1117,6 +1117,9 @@ public sealed class SelectionProperties : ObservableObject
             case "tableborder":
                 TableBorderHex = hex;
                 break;
+            case "imageborder":
+                ImageBorderHex = hex;
+                break;
             default:
                 FillHex = hex;
                 break;
@@ -1272,6 +1275,73 @@ public sealed class SelectionProperties : ObservableObject
             if (Obj is ImageObject i)
             {
                 Set(nameof(ClipCornerRadiusMm), () => i.ClipCornerRadiusMm, v => i.ClipCornerRadiusMm = Math.Max(0, v), In(value));
+            }
+        }
+    }
+
+    // ---- image outline border ----
+
+    public static IReadOnlyList<ImageBorderLines> ImageBorderLineChoices { get; } = Enum.GetValues<ImageBorderLines>();
+
+    /// <summary>Ticking it gives the image a thin black line; unticking removes the border.</summary>
+    public bool ImageHasBorder
+    {
+        get => (Obj as ImageObject)?.BorderWidthMm > 0.001;
+        set
+        {
+            if (Obj is ImageObject i && value != ImageHasBorder)
+            {
+                Set(nameof(ImageHasBorder), () => i.BorderWidthMm, v => i.BorderWidthMm = v, value ? 0.5 : 0);
+            }
+        }
+    }
+
+    public double ImageBorderWidth
+    {
+        get => Out((Obj as ImageObject)?.BorderWidthMm ?? 0.5);
+        set
+        {
+            if (Obj is ImageObject i)
+            {
+                Set(nameof(ImageBorderWidth), () => i.BorderWidthMm, v => i.BorderWidthMm = Math.Clamp(v, 0, 20), In(value));
+            }
+        }
+    }
+
+    public string ImageBorderHex
+    {
+        get => ((Obj as ImageObject)?.BorderColor ?? ColorRgba.Black).ToHex();
+        set
+        {
+            if (Obj is ImageObject i && ColorRgba.TryParse(value, out ColorRgba c))
+            {
+                Set(nameof(ImageBorderHex), () => i.BorderColor, v => i.BorderColor = v, c);
+            }
+        }
+    }
+
+    public Brush ImageBorderBrush => ToBrush((Obj as ImageObject)?.BorderColor ?? ColorRgba.Black);
+
+    public LabelMaker.Core.Model.Objects.DashStyle ImageBorderDash
+    {
+        get => (Obj as ImageObject)?.BorderDash ?? LabelMaker.Core.Model.Objects.DashStyle.Solid;
+        set
+        {
+            if (Obj is ImageObject i)
+            {
+                Set(nameof(ImageBorderDash), () => i.BorderDash, v => i.BorderDash = v, value);
+            }
+        }
+    }
+
+    public ImageBorderLines ImageBorderLines
+    {
+        get => (Obj as ImageObject)?.BorderLines ?? Core.Model.Objects.ImageBorderLines.Single;
+        set
+        {
+            if (Obj is ImageObject i)
+            {
+                Set(nameof(ImageBorderLines), () => i.BorderLines, v => i.BorderLines = v, value);
             }
         }
     }

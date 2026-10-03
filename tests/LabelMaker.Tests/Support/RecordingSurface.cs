@@ -30,9 +30,22 @@ internal sealed class RecordingSurface : IDrawingSurface
     public void PushClipRectangle(RectMm rectMm, double cornerRadiusMm = 0) => Ops.Add("clipRect");
     public void PushClipEllipse(RectMm rectMm) => Ops.Add("clipEllipse");
     public void FillRectangle(RectMm rectMm, ColorRgba fill, double cornerRadiusMm = 0) { RectanglesFilled++; Ops.Add("fillRect"); }
-    public void StrokeRectangle(RectMm rectMm, ColorRgba stroke, double strokeWidthMm, DashStyle dash = DashStyle.Solid, double cornerRadiusMm = 0) => Ops.Add("strokeRect");
+    /// <summary>Every outline drawn: which kind, where, how thick, the dash and the corner radius.</summary>
+    public List<(string Kind, RectMm Rect, double Width, DashStyle Dash, double Radius)> Strokes { get; } = new();
+
+    public void StrokeRectangle(RectMm rectMm, ColorRgba stroke, double strokeWidthMm, DashStyle dash = DashStyle.Solid, double cornerRadiusMm = 0)
+    {
+        Ops.Add("strokeRect");
+        Strokes.Add(("rect", rectMm, strokeWidthMm, dash, cornerRadiusMm));
+    }
+
     public void FillEllipse(RectMm rectMm, ColorRgba fill) => Ops.Add("fillEllipse");
-    public void StrokeEllipse(RectMm rectMm, ColorRgba stroke, double strokeWidthMm, DashStyle dash = DashStyle.Solid) => Ops.Add("strokeEllipse");
+    public void StrokeEllipse(RectMm rectMm, ColorRgba stroke, double strokeWidthMm, DashStyle dash = DashStyle.Solid)
+    {
+        Ops.Add("strokeEllipse");
+        Strokes.Add(("ellipse", rectMm, strokeWidthMm, dash, 0));
+    }
+
     public void StrokeLine(PointMm a, PointMm b, ColorRgba stroke, double strokeWidthMm, DashStyle dash = DashStyle.Solid) => Ops.Add("line");
     public void FillPolygon(IReadOnlyList<PointMm> points, ColorRgba fill, ColorRgba stroke, double strokeWidthMm) => Ops.Add($"polygon({points.Count})");
 

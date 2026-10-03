@@ -744,12 +744,13 @@ public sealed partial class MainViewModel : ObservableObject
                 "barbg" => _properties.BarBackgroundHex,
                 "tablefill" => _properties.TableHeaderFillHex,
                 "tableborder" => _properties.TableBorderHex,
+                "imageborder" => _properties.ImageBorderHex,
                 _ => _properties.FillHex,
             };
 
             if (!ColorRgba.TryParse(currentHex, out ColorRgba current))
             {
-                current = target is "stroke" or "text" ? ColorRgba.Black : ColorRgba.Transparent;
+                current = target is "stroke" or "text" or "imageborder" ? ColorRgba.Black : ColorRgba.Transparent;
             }
 
             string title = target switch
@@ -762,6 +763,7 @@ public sealed partial class MainViewModel : ObservableObject
                 "barbg" => "Barcode background",
                 "tablefill" => "Header fill",
                 "tableborder" => "Table border",
+                "imageborder" => "Image border colour",
                 _ => "Fill colour",
             };
 
