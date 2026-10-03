@@ -112,6 +112,70 @@ public partial class PrintWindow : Window
             PrintContent.VariableData when ContentRecordsBox.IsEnabled => ContentRecordsBox,
             _ => ContentFillBox,
         }).IsChecked = true;
+
+        LoadPageChoice(s);
+    }
+
+    /// <summary>All pages, the page that was on screen, or a ticked list of pages.</summary>
+    private void LoadPageChoice(PrintSettings s)
+    {
+        ProjectModel project = _session.Project;
+        int count = project.Pages.Count + 1;
+        int current = Math.Clamp(s.CurrentPage, 0, count - 1);
+
+        // Nothing ticked yet: start from the page on screen.
+        var ticked = new HashSet<int>(s.ChosenPages.Where(i => i >= 0 && i < count));
+        if (ticked.Count == 0)
+        {
+            ticked.Add(current);
+        }
+
+        for (int i = 0; i < count; i++)
+        {
+            var box = new CheckBox
+            {
+                Content = PageCaption(i),
+                Tag = i,
+                IsChecked = ticked.Contains(i),
+                Margin = new Thickness(0, 3, 0, 3),
+            };
+            box.Click += (_, _) =>
+            {
+                PagesChosenBox.IsChecked = true;
+                Refresh();
+            };
+            PageList.Children.Add(box);
+        }
+
+        PagesCurrentBox.Content = $"Current page ({PageCaption(current)})";
+        (s.PagesToPrint switch
+        {
+            PagesToPrint.Current => PagesCurrentBox,
+            PagesToPrint.Chosen => PagesChosenBox,
+            _ => PagesAllBox,
+        }).IsChecked = true;
+    }
+
+    /// <summary>A page as the Pages panel names it: ★ for the master label, then numbered pages.</summary>
+    private string PageCaption(int position) => position == 0
+        ? $"★  {_session.Project.MasterLabel.Name}"
+        : $"{position}.  {_session.Project.Pages[position - 1].Name}";
+
+    private IEnumerable<CheckBox> PageBoxes => PageList.Children.OfType<CheckBox>();
+
+    private void OnTickAllPages(object sender, RoutedEventArgs e) => TickAllPages(true);
+
+    private void OnUntickAllPages(object sender, RoutedEventArgs e) => TickAllPages(false);
+
+    private void TickAllPages(bool ticked)
+    {
+        foreach (CheckBox box in PageBoxes)
+        {
+            box.IsChecked = ticked;
+        }
+
+        PagesChosenBox.IsChecked = true;
+        Refresh();
     }
 
     private void ApplyLayout(PrintSettings s)
@@ -136,7 +200,11 @@ public partial class PrintWindow : Window
         s.Content = ContentPagesBox.IsChecked == true ? PrintContent.Pages
             : ContentRecordsBox.IsChecked == true ? PrintContent.VariableData
             : PrintContent.SheetFill;
-        CopiesPerPageRow.IsEnabled = s.Content == PrintContent.Pages;
+        CopiesPerPageRow.IsEnabled = PageChoicePanel.IsEnabled = s.Content == PrintContent.Pages;
+        s.PagesToPrint = PagesCurrentBox.IsChecked == true ? PagesToPrint.Current
+            : PagesChosenBox.IsChecked == true ? PagesToPrint.Chosen
+            : PagesToPrint.All;
+        s.ChosenPages = PageBoxes.Where(b => b.IsChecked == true).Select(b => (int)b.Tag).ToList();
 
         try
         {
@@ -155,10 +223,16 @@ public partial class PrintWindow : Window
 
     private string DescribePages(PrintSettings s)
     {
-        int pages = PrintablePages.For(_session.Project, s).Count;
-        return s.CopiesPerPage > 1
-            ? $"{pages / s.CopiesPerPage} page(s), {s.CopiesPerPage} copies of each, placed one after another on each sheet."
-            : $"{pages} page(s) from the Pages panel, placed one after another on each sheet.";
+        int pages = PrintablePages.For(_session.Project, s).Count / Math.Max(1, s.CopiesPerPage);
+        string copies = s.CopiesPerPage > 1 ? $", {s.CopiesPerPage} copies of each" : string.Empty;
+        return s.PagesToPrint switch
+        {
+            PagesToPrint.Current => $"Just the current page, {PageCaption(Math.Clamp(s.CurrentPage, 0, _session.Project.Pages.Count)).Replace("  ", " ")}" +
+                                    (s.CopiesPerPage > 1 ? $", {s.CopiesPerPage} copies placed one after another." : "."),
+            PagesToPrint.Chosen when pages == 0 => "No pages ticked yet. Tick the pages to print.",
+            PagesToPrint.Chosen => $"{pages} selected page(s){copies}, placed one after another on each sheet.",
+            _ => $"{pages} page(s) from the Pages panel{copies}, placed one after another on each sheet.",
+        };
     }
 
     private void OnPaperChanged(object sender, SelectionChangedEventArgs e) => Refresh();

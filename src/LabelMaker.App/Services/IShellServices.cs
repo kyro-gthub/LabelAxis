@@ -77,6 +77,9 @@ public interface IShellServices
     /// <summary>Change the working label size without starting a new project. Returns true if it changed.</summary>
     bool ShowLabelSize();
 
+    /// <summary>Copies <paramref name="source"/>'s formatting to text boxes on other pages. Returns true if applied.</summary>
+    bool ShowApplyTextStyle(LabelMaker.Core.Model.Objects.TextObject source);
+
     /// <summary>
     /// Interactive crop for <paramref name="image"/>. Returns the chosen normalised
     /// rectangle, or null on cancel; the caller applies it through the undo stack.

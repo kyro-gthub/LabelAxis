@@ -75,6 +75,47 @@
           </StackPanel>
         </Border>
 
+        <TextBlock Text="WHAT TO PRINT" Style="{StaticResource PanelSectionHeader}" />
+        <Border Style="{StaticResource InsetPanel}" Padding="14,12" Margin="0,0,0,16">
+          <StackPanel>
+            <RadioButton x:Name="ContentFillBox" GroupName="content" Margin="0,3" Click="OnFieldChanged"
+                         Content="Fill the sheet with the master label" />
+            <RadioButton x:Name="ContentRecordsBox" GroupName="content" Margin="0,3" Click="OnFieldChanged"
+                         Content="One label per data record" />
+            <RadioButton x:Name="ContentPagesBox" GroupName="content" Margin="0,3" Click="OnFieldChanged"
+                         Content="Pages: several pages on one sheet, one after another" />
+            <StackPanel x:Name="PageChoicePanel" Margin="22,6,0,2">
+              <RadioButton x:Name="PagesAllBox" GroupName="pages" Margin="0,3" Click="OnFieldChanged"
+                           Content="All pages" />
+              <RadioButton x:Name="PagesCurrentBox" GroupName="pages" Margin="0,3" Click="OnFieldChanged"
+                           Content="Current page" ToolTip="The page that was on screen when you pressed Print" />
+              <RadioButton x:Name="PagesChosenBox" GroupName="pages" Margin="0,3" Click="OnFieldChanged"
+                           Content="Selected pages" ToolTip="Tick the pages to print below" />
+              <Border x:Name="PageListFrame" Margin="22,4,0,0" MaxHeight="168" HorizontalAlignment="Left" MinWidth="260"
+                      BorderBrush="{DynamicResource Br.Border}" BorderThickness="1" CornerRadius="6"
+                      Background="{DynamicResource Br.Surface}">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="8,4">
+                  <StackPanel x:Name="PageList" />
+                </ScrollViewer>
+              </Border>
+              <StackPanel x:Name="PageListButtons" Orientation="Horizontal" Margin="22,6,0,0">
+                <Button Content="Tick all" Style="{StaticResource GhostButton}" Padding="10,3" Margin="0,0,6,0" Click="OnTickAllPages" />
+                <Button Content="Untick all" Style="{StaticResource GhostButton}" Padding="10,3" Click="OnUntickAllPages" />
+              </StackPanel>
+            </StackPanel>
+            <DockPanel x:Name="CopiesPerPageRow" Margin="22,6,0,4">
+              <TextBlock Text="Copies of each page" Style="{StaticResource FieldLabel}" Width="130" />
+              <TextBox x:Name="CopiesPerPageBox" Style="{StaticResource NumberBox}" Width="64" HorizontalAlignment="Left" TextChanged="OnFieldChanged"
+                       ToolTip="Print every page this many times in a row, e.g. 4 fills four spots with page 1, then four with page 2" />
+            </DockPanel>
+            <TextBlock x:Name="ContentText" TextWrapping="Wrap" FontSize="12.5" Margin="0,8,0,0" />
+            <TextBlock x:Name="PositionText" TextWrapping="Wrap" FontSize="12"
+                       Foreground="{DynamicResource Br.Text2}" Margin="0,6,0,0" />
+            <Button Content="Start position and page range…" Style="{StaticResource GhostButton}"
+                    HorizontalAlignment="Left" Margin="0,10,0,0" Click="OnAdvanced" />
+          </StackPanel>
+        </Border>
+
         <TextBlock Text="COPIES &amp; ORIENTATION" Style="{StaticResource PanelSectionHeader}" />
         <Border Style="{StaticResource InsetPanel}" Padding="14,12" Margin="0,0,0,16">
           <StackPanel>
@@ -151,28 +192,6 @@
             <CheckBox x:Name="CenterBox" Content="Centre the labels on the paper" Margin="22,8,0,0" Click="OnFieldChanged" />
             <TextBlock x:Name="LayoutText" TextWrapping="Wrap" FontSize="12" Margin="0,10,0,0"
                        Foreground="{DynamicResource Br.Text2}" />
-          </StackPanel>
-        </Border>
-
-        <TextBlock Text="WHAT TO PRINT" Style="{StaticResource PanelSectionHeader}" />
-        <Border Style="{StaticResource InsetPanel}" Padding="14,12" Margin="0,0,0,16">
-          <StackPanel>
-            <RadioButton x:Name="ContentFillBox" GroupName="content" Margin="0,3" Click="OnFieldChanged"
-                         Content="Fill the sheet with the master label" />
-            <RadioButton x:Name="ContentRecordsBox" GroupName="content" Margin="0,3" Click="OnFieldChanged"
-                         Content="One label per data record" />
-            <RadioButton x:Name="ContentPagesBox" GroupName="content" Margin="0,3" Click="OnFieldChanged"
-                         Content="Pages: several pages on one sheet, one after another" />
-            <DockPanel x:Name="CopiesPerPageRow" Margin="22,6,0,4">
-              <TextBlock Text="Copies of each page" Style="{StaticResource FieldLabel}" Width="130" />
-              <TextBox x:Name="CopiesPerPageBox" Style="{StaticResource NumberBox}" Width="64" HorizontalAlignment="Left" TextChanged="OnFieldChanged"
-                       ToolTip="Print every page this many times in a row, e.g. 4 fills four spots with page 1, then four with page 2" />
-            </DockPanel>
-            <TextBlock x:Name="ContentText" TextWrapping="Wrap" FontSize="12.5" Margin="0,8,0,0" />
-            <TextBlock x:Name="PositionText" TextWrapping="Wrap" FontSize="12"
-                       Foreground="{DynamicResource Br.Text2}" Margin="0,6,0,0" />
-            <Button Content="Start position and page range…" Style="{StaticResource GhostButton}"
-                    HorizontalAlignment="Left" Margin="0,10,0,0" Click="OnAdvanced" />
           </StackPanel>
         </Border>
 
