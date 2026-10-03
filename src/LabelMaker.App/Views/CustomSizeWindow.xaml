@@ -1,0 +1,135 @@
+<Window x:Class="LabelMaker.App.Views.CustomSizeWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Style="{StaticResource AppWindow}"
+        Background="{DynamicResource Br.Surface}" TextElement.Foreground="{DynamicResource Br.Text}"
+        Title="Custom sticker size" Height="720" Width="900" MinHeight="560" MinWidth="780"
+        WindowStartupLocation="CenterOwner">
+  <DockPanel>
+    <Border DockPanel.Dock="Bottom" Background="{DynamicResource Br.Bg}"
+            BorderBrush="{DynamicResource Br.Border}" BorderThickness="0,1,0,0" Padding="16,10">
+      <DockPanel>
+        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+          <Button Content="Cancel" Style="{StaticResource GhostButton}" IsCancel="True" Margin="0,0,8,0" />
+          <Button x:Name="SaveButton" Content="Save" Style="{StaticResource GhostButton}" Margin="0,0,8,0" Click="OnSave"
+                  ToolTip="Keep this size in the Label manager under My templates" />
+          <Button x:Name="UseButton" Content="Save and use" Style="{StaticResource PrimaryButton}" IsDefault="True" Click="OnSaveAndUse" />
+        </StackPanel>
+        <CheckBox x:Name="FavoriteBox" Content="★ Add to favourites" IsChecked="True" VerticalAlignment="Center"
+                  ToolTip="Favourites are listed first in the Label manager" />
+      </DockPanel>
+    </Border>
+
+    <Grid>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="5*" MinWidth="440" MaxWidth="560" />
+        <ColumnDefinition Width="3*" MinWidth="280" />
+      </Grid.ColumnDefinitions>
+
+      <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="18,16">
+        <StackPanel>
+          <TextBlock Text="STICKER" Style="{StaticResource PanelSectionHeader}" />
+          <Border Style="{StaticResource InsetPanel}" Padding="14,12" Margin="0,0,0,14">
+            <StackPanel>
+              <DockPanel Margin="0,3">
+                <TextBlock Text="Name" Style="{StaticResource FieldLabel}" Width="110" />
+                <TextBox x:Name="NameBox" TextChanged="OnChanged" />
+              </DockPanel>
+              <DockPanel Margin="0,3">
+                <TextBlock Text="Size" Style="{StaticResource FieldLabel}" Width="110" />
+                <TextBox x:Name="WidthBox" Style="{StaticResource NumberBox}" Width="70" TextChanged="OnChanged" ToolTip="Sticker width, mm" />
+                <TextBlock Text="×" VerticalAlignment="Center" Margin="8,0" Foreground="{DynamicResource Br.TextMuted}" />
+                <TextBox x:Name="HeightBox" Style="{StaticResource NumberBox}" Width="70" TextChanged="OnChanged" ToolTip="Sticker height, mm" />
+                <TextBlock Text="mm (width × height)" VerticalAlignment="Center" Margin="8,0,0,0" Foreground="{DynamicResource Br.TextMuted}" />
+              </DockPanel>
+              <DockPanel Margin="0,3">
+                <TextBlock Text="Shape" Style="{StaticResource FieldLabel}" Width="110" />
+                <ComboBox x:Name="ShapeBox" Width="200" HorizontalAlignment="Left" SelectionChanged="OnChanged" />
+              </DockPanel>
+              <DockPanel x:Name="RadiusRow" Margin="0,3">
+                <TextBlock Text="Corner radius" Style="{StaticResource FieldLabel}" Width="110" />
+                <TextBox x:Name="RadiusBox" Style="{StaticResource NumberBox}" Width="70" HorizontalAlignment="Left" TextChanged="OnChanged" />
+                <TextBlock Text="mm" VerticalAlignment="Center" Margin="8,0,0,0" Foreground="{DynamicResource Br.TextMuted}" />
+              </DockPanel>
+            </StackPanel>
+          </Border>
+
+          <TextBlock Text="PAPER" Style="{StaticResource PanelSectionHeader}" />
+          <Border Style="{StaticResource InsetPanel}" Padding="14,12" Margin="0,0,0,14">
+            <StackPanel>
+              <DockPanel Margin="0,3">
+                <TextBlock Text="Paper size" Style="{StaticResource FieldLabel}" Width="110" />
+                <ComboBox x:Name="PaperBox" Width="240" HorizontalAlignment="Left" SelectionChanged="OnChanged" />
+              </DockPanel>
+              <DockPanel x:Name="CustomPaperRow" Margin="110,3,0,3">
+                <TextBox x:Name="PaperWidthBox" Style="{StaticResource NumberBox}" Width="70" TextChanged="OnChanged" ToolTip="Paper width, mm" />
+                <TextBlock Text="×" VerticalAlignment="Center" Margin="8,0" Foreground="{DynamicResource Br.TextMuted}" />
+                <TextBox x:Name="PaperHeightBox" Style="{StaticResource NumberBox}" Width="70" TextChanged="OnChanged" ToolTip="Paper height, mm" />
+                <TextBlock Text="mm" VerticalAlignment="Center" Margin="8,0,0,0" Foreground="{DynamicResource Br.TextMuted}" />
+              </DockPanel>
+              <CheckBox x:Name="LandscapeBox" Content="Landscape" Margin="110,6,0,3" Click="OnChanged" />
+            </StackPanel>
+          </Border>
+
+          <TextBlock Text="LAYOUT ON THE PAPER" Style="{StaticResource PanelSectionHeader}" />
+          <Border Style="{StaticResource InsetPanel}" Padding="14,12">
+            <StackPanel>
+              <Grid>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="110" />
+                  <ColumnDefinition Width="Auto" />
+                  <ColumnDefinition Width="90" />
+                  <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                  <RowDefinition Height="Auto" />
+                  <RowDefinition Height="Auto" />
+                  <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <TextBlock Text="Top margin" Style="{StaticResource FieldLabel}" />
+                <TextBox x:Name="TopBox" Grid.Column="1" Style="{StaticResource NumberBox}" Width="70" Margin="0,3,18,3" TextChanged="OnChanged" />
+                <TextBlock Grid.Column="2" Text="Bottom" Style="{StaticResource FieldLabel}" />
+                <TextBox x:Name="BottomBox" Grid.Column="3" Style="{StaticResource NumberBox}" Width="70" TextChanged="OnChanged" />
+                <TextBlock Grid.Row="1" Text="Left margin" Style="{StaticResource FieldLabel}" />
+                <TextBox x:Name="LeftBox" Grid.Row="1" Grid.Column="1" Style="{StaticResource NumberBox}" Width="70" Margin="0,3,18,3" TextChanged="OnChanged" />
+                <TextBlock Grid.Row="1" Grid.Column="2" Text="Right" Style="{StaticResource FieldLabel}" />
+                <TextBox x:Name="RightBox" Grid.Row="1" Grid.Column="3" Style="{StaticResource NumberBox}" Width="70" TextChanged="OnChanged" />
+                <TextBlock Grid.Row="2" Text="Gap across" Style="{StaticResource FieldLabel}" />
+                <TextBox x:Name="HGapBox" Grid.Row="2" Grid.Column="1" Style="{StaticResource NumberBox}" Width="70" Margin="0,3,18,3" TextChanged="OnChanged"
+                         ToolTip="Space between stickers side by side, mm" />
+                <TextBlock Grid.Row="2" Grid.Column="2" Text="Gap down" Style="{StaticResource FieldLabel}" />
+                <TextBox x:Name="VGapBox" Grid.Row="2" Grid.Column="3" Style="{StaticResource NumberBox}" Width="70" TextChanged="OnChanged"
+                         ToolTip="Space between rows, mm" />
+              </Grid>
+
+              <RadioButton x:Name="AutoCountBox" GroupName="count" IsChecked="True" Margin="0,10,0,3" Click="OnChanged"
+                           Content="Fit as many stickers as the paper holds" />
+              <RadioButton x:Name="FixedCountBox" GroupName="count" Margin="0,3" Click="OnChanged"
+                           Content="Exactly this many:" />
+              <DockPanel x:Name="CountRow" Margin="22,4,0,3">
+                <TextBox x:Name="ColumnsBox" Style="{StaticResource NumberBox}" Width="60" TextChanged="OnChanged" ToolTip="Stickers across" />
+                <TextBlock Text="across ×" VerticalAlignment="Center" Margin="8,0" Foreground="{DynamicResource Br.TextMuted}" />
+                <TextBox x:Name="RowsBox" Style="{StaticResource NumberBox}" Width="60" TextChanged="OnChanged" ToolTip="Stickers down" />
+                <TextBlock Text="down" VerticalAlignment="Center" Margin="8,0,0,0" Foreground="{DynamicResource Br.TextMuted}" />
+              </DockPanel>
+              <CheckBox x:Name="CenterBox" Content="Centre the stickers on the paper" Margin="0,8,0,0" Click="OnChanged" />
+            </StackPanel>
+          </Border>
+        </StackPanel>
+      </ScrollViewer>
+
+      <Border Grid.Column="1" Background="{DynamicResource Br.Bg}" BorderBrush="{DynamicResource Br.Border}" BorderThickness="1,0,0,0">
+        <DockPanel Margin="16">
+          <TextBlock DockPanel.Dock="Top" Text="SHEET PREVIEW" Style="{StaticResource PanelSectionHeader}" />
+          <Border DockPanel.Dock="Bottom" Style="{StaticResource InsetPanel}" Padding="12,10" Margin="0,12,0,0">
+            <TextBlock x:Name="SummaryText" TextWrapping="Wrap" FontSize="12.5" />
+          </Border>
+          <Border Background="{DynamicResource CanvasBackground}" BorderBrush="{DynamicResource Br.Border}"
+                  BorderThickness="1" CornerRadius="8" Padding="14">
+            <Grid x:Name="PreviewHost" SizeChanged="OnPreviewSizeChanged" />
+          </Border>
+        </DockPanel>
+      </Border>
+    </Grid>
+  </DockPanel>
+</Window>

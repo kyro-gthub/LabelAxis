@@ -37,8 +37,14 @@ public partial class TemplateManagerWindow : Window
 
     // ---- listing ----------------------------------------------------------
 
-    private void Refresh()
+    private HashSet<string> Favorites => new(_env.Settings.FavoriteTemplateIds, StringComparer.Ordinal);
+
+    private void Refresh() => Refresh(null, null);
+
+    /// <summary>Rebuilds the lists, then goes back to <paramref name="category"/> and <paramref name="templateId"/> when given.</summary>
+    private void Refresh(string? category, string? templateId)
     {
+        HashSet<string> favorites = Favorites;
         IEnumerable<LabelTemplate> source = _env.Templates.All;
         string q = SearchBox.Text?.Trim() ?? string.Empty;
         if (q.Length > 0)
@@ -66,6 +72,8 @@ public partial class TemplateManagerWindow : Window
             }
         }
 
+        // Starred sheets first, so the sizes used every day are one click away.
+        Add("★ Favourites", "Starred sizes", "Icon.Sticker", t => favorites.Contains(t.Id));
         Add("All sheets", "Every installed template", "Icon.Gallery", _ => true);
 
         // One entry per brand, so other brands appear here automatically as they are imported.
@@ -81,17 +89,24 @@ public partial class TemplateManagerWindow : Window
             t => t.Grid.LabelWidthMm >= 40 && t.Grid.LabelHeightMm < 30);
         Add("Small & serial", "Sequential numbering", "Icon.Sticker", t => t.Grid.LabelWidthMm < 40);
         Add("Round & special", "Shaped labels", "Icon.Ellipse", t => t.Grid.LabelShape != LabelShape.Rectangle);
-        Add("My templates", "Imported or edited here", "Icon.Plus", t => t.IsUserDefined);
+        Add("My templates", "Custom sizes, imported or edited here", "Icon.Plus", t => t.IsUserDefined);
 
         Categories.ItemsSource = _categories;
-        Categories.SelectedIndex = 0;
+        int index = category is null ? -1 : _categories.FindIndex(c => c.Title == category);
+        Categories.SelectedIndex = Math.Max(0, index);
+        if (templateId is not null && List.ItemsSource is IEnumerable<Row> rows && rows.FirstOrDefault(r => r.Template.Id == templateId) is { } again)
+        {
+            List.SelectedItem = again;
+            List.ScrollIntoView(again);
+        }
     }
 
     private void OnCategory(object sender, SelectionChangedEventArgs e)
     {
         if (Categories.SelectedItem is Category c)
         {
-            List.ItemsSource = c.Templates.Select(t => new Row(t)).ToList();
+            HashSet<string> favorites = Favorites;
+            List.ItemsSource = c.Templates.Select(t => new Row(t, favorites.Contains(t.Id))).ToList();
             List.SelectedIndex = c.Templates.Count > 0 ? 0 : -1;
         }
     }
@@ -103,11 +118,15 @@ public partial class TemplateManagerWindow : Window
             PreviewHost.Children.Clear();
             PreviewTitle.Text = string.Empty;
             PreviewDetail.Text = string.Empty;
+            FavoriteButton.IsEnabled = EditButton.IsEnabled = DeleteButton.IsEnabled = false;
             return;
         }
 
         LabelTemplate t = row.Template;
         PreviewTitle.Text = $"{t.Brand} {t.ProductCode}".Trim();
+        FavoriteButton.Content = row.IsFavorite ? "★  In favourites" : "☆  Add to favourites";
+        FavoriteButton.IsEnabled = true;
+        EditButton.IsEnabled = DeleteButton.IsEnabled = t.IsUserDefined;
         PreviewDetail.Text =
             $"{t.Name}\n" +
             $"{t.Grid.Columns} × {t.Grid.Rows} = {t.Grid.Count} labels per {t.EffectivePage.Name} sheet\n" +
@@ -123,66 +142,10 @@ public partial class TemplateManagerWindow : Window
     private void DrawPreview(LabelTemplate t)
     {
         PreviewHost.Children.Clear();
-        PageSize page = t.EffectivePage;
-        if (page.WidthMm <= 0 || page.HeightMm <= 0)
+        if (t.EffectivePage.WidthMm > 0 && t.EffectivePage.HeightMm > 0)
         {
-            return;
+            PreviewHost.Children.Add(SheetPreview.Draw(this, t, 250, 330));
         }
-
-        double available = 250;
-        double scale = Math.Min(available / page.WidthMm, 330 / page.HeightMm);
-
-        var canvas = new Canvas
-        {
-            Width = page.WidthMm * scale,
-            Height = page.HeightMm * scale,
-            Background = Brushes.White,
-            HorizontalAlignment = HorizontalAlignment.Center,
-            VerticalAlignment = VerticalAlignment.Center,
-            SnapsToDevicePixels = true,
-        };
-
-        var border = new Border
-        {
-            BorderBrush = (Brush)FindResource("Br.BorderStrong"),
-            BorderThickness = new Thickness(1),
-            Child = canvas,
-            HorizontalAlignment = HorizontalAlignment.Center,
-            VerticalAlignment = VerticalAlignment.Center,
-        };
-
-        LabelGrid g = t.Grid;
-        var fill = (Brush)FindResource("Br.AccentSoft");
-        var stroke = (Brush)FindResource("Br.Accent");
-
-        for (int row = 0; row < g.Rows; row++)
-        {
-            for (int col = 0; col < g.Columns; col++)
-            {
-                double x = g.MarginLeftMm + (col * (g.LabelWidthMm + g.HGapMm));
-                double y = g.MarginTopMm + (row * (g.LabelHeightMm + g.VGapMm));
-
-                Shape cell = g.LabelShape == LabelShape.Ellipse
-                    ? new Ellipse()
-                    : new Rectangle
-                    {
-                        RadiusX = g.CornerRadiusMm * scale,
-                        RadiusY = g.CornerRadiusMm * scale,
-                    };
-
-                cell.Width = Math.Max(1, g.LabelWidthMm * scale);
-                cell.Height = Math.Max(1, g.LabelHeightMm * scale);
-                cell.Fill = fill;
-                cell.Stroke = stroke;
-                cell.StrokeThickness = 0.6;
-
-                Canvas.SetLeft(cell, x * scale);
-                Canvas.SetTop(cell, y * scale);
-                canvas.Children.Add(cell);
-            }
-        }
-
-        PreviewHost.Children.Add(border);
     }
 
     // ---- actions ----------------------------------------------------------
@@ -197,6 +160,94 @@ public partial class TemplateManagerWindow : Window
     }
 
     private void OnUse(object sender, RoutedEventArgs e) => Use();
+
+    // ---- favourites and custom sizes ----------------------------------------
+
+    private string? CurrentCategory => (Categories.SelectedItem as Category)?.Title;
+
+    private void OnToggleFavorite(object sender, RoutedEventArgs e)
+    {
+        if (List.SelectedItem is not Row row)
+        {
+            return;
+        }
+
+        List<string> favorites = _env.Settings.FavoriteTemplateIds;
+        if (!favorites.Remove(row.Template.Id))
+        {
+            favorites.Add(row.Template.Id);
+        }
+
+        _env.SaveSettings();
+        Refresh(CurrentCategory, row.Template.Id);
+    }
+
+    private void OnNewCustom(object sender, RoutedEventArgs e) => EditCustom(null);
+
+    private void OnEditCustom(object sender, RoutedEventArgs e)
+    {
+        if (List.SelectedItem is Row { Template.IsUserDefined: true } row)
+        {
+            EditCustom(row.Template);
+        }
+    }
+
+    /// <summary>Opens the custom size dialog for a new sheet or one of the user's own.</summary>
+    private void EditCustom(LabelTemplate? editing)
+    {
+        bool favorite = editing is not null && Favorites.Contains(editing.Id);
+        var win = new CustomSizeWindow(_env.Templates, editing, favorite) { Owner = this };
+        if (win.ShowDialog() != true || win.Result is not { } saved)
+        {
+            return;
+        }
+
+        List<string> favorites = _env.Settings.FavoriteTemplateIds;
+        favorites.Remove(saved.Id);
+        if (win.IsFavorite)
+        {
+            favorites.Add(saved.Id);
+        }
+
+        _env.SaveSettings();
+        if (win.UseNow)
+        {
+            SelectedTemplate = saved;
+            DialogResult = true;
+            return;
+        }
+
+        Refresh(win.IsFavorite ? "★ Favourites" : "My templates", saved.Id);
+    }
+
+    private void OnDeleteCustom(object sender, RoutedEventArgs e)
+    {
+        if (List.SelectedItem is not Row { Template.IsUserDefined: true } row)
+        {
+            return;
+        }
+
+        if (MessageBox.Show(this, $"Delete \"{row.Title.TrimStart('★', ' ')}\" from your templates?\n\nProjects that already use it keep their own copy of the sheet.",
+                "LabelAxis", MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes)
+        {
+            return;
+        }
+
+        try
+        {
+            _env.Templates.DeleteUserTemplate(row.Template.Id);
+            if (_env.Settings.FavoriteTemplateIds.Remove(row.Template.Id))
+            {
+                _env.SaveSettings();
+            }
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            MessageBox.Show(this, "The template file could not be deleted:\n\n" + ex.Message, "LabelAxis", MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+
+        Refresh(CurrentCategory, null);
+    }
 
     private void OnImport(object sender, RoutedEventArgs e)
     {
@@ -281,9 +332,10 @@ public partial class TemplateManagerWindow : Window
     }
 
     /// <summary>One sheet, read as brand / code / size rather than as raw JSON.</summary>
-    private sealed record Row(LabelTemplate Template)
+    private sealed record Row(LabelTemplate Template, bool IsFavorite)
     {
-        public string Title => $"{Template.Brand} {Template.ProductCode}".Trim();
+        public string Title => (IsFavorite ? "★  " : string.Empty) +
+            (Template.Brand == CustomSheet.Brand ? Template.Name : $"{Template.Brand} {Template.ProductCode}".Trim());
 
         public string Subtitle =>
             $"{Template.Grid.Columns} × {Template.Grid.Rows} per {Template.EffectivePage.Name}" +

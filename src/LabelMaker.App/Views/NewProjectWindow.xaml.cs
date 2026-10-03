@@ -11,11 +11,13 @@ namespace LabelMaker.App.Views;
 public partial class NewProjectWindow : Window
 {
     private readonly TemplateStore _store;
+    private readonly HashSet<string> _favorites;
 
-    public NewProjectWindow(TemplateStore store)
+    public NewProjectWindow(TemplateStore store, IEnumerable<string>? favorites = null)
     {
         InitializeComponent();
         _store = store;
+        _favorites = new HashSet<string>(favorites ?? Array.Empty<string>(), StringComparer.Ordinal);
         SearchBox.TextChanged += (_, _) => Refresh();
         Refresh();
 
@@ -29,7 +31,11 @@ public partial class NewProjectWindow : Window
     private void Refresh()
     {
         var query = new TemplateQuery { Text = SearchBox.Text };
-        List<Row> rows = _store.Search(query).Select(t => new Row(t)).ToList();
+        // Favourites (starred in the Label manager) come first.
+        List<Row> rows = _store.Search(query)
+            .Select(t => new Row(t, _favorites.Contains(t.Id)))
+            .OrderByDescending(r => r.IsFavorite)
+            .ToList();
         TemplateList.ItemsSource = rows;
 
         bool empty = rows.Count == 0;
@@ -130,11 +136,13 @@ public partial class NewProjectWindow : Window
     }
 
     /// <summary>One row of the sheet list; public so WPF bindings can read it.</summary>
-    public sealed class Row(LabelTemplate template)
+    public sealed class Row(LabelTemplate template, bool isFavorite = false)
     {
         public LabelTemplate Template { get; } = template;
 
-        public string ProductCode => Template.ProductCode;
+        public bool IsFavorite { get; } = isFavorite;
+
+        public string ProductCode => (IsFavorite ? "★ " : string.Empty) + Template.ProductCode;
 
         public string Brand => Template.Brand;
 

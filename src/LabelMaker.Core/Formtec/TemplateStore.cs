@@ -122,6 +122,39 @@ public sealed class TemplateStore
 
     public bool Remove(string id) => _byId.Remove(id);
 
+    /// <summary>
+    /// Forgets one of the user's own templates and deletes its file from the user folder
+    /// (whatever the file is called). Built-in sheets cannot be deleted. Returns false when
+    /// there was no such user template.
+    /// </summary>
+    public bool DeleteUserTemplate(string id)
+    {
+        if (Get(id) is not { IsUserDefined: true })
+        {
+            return false;
+        }
+
+        if (UserTemplateDirectory is { } directory && Directory.Exists(directory))
+        {
+            foreach (string file in Directory.EnumerateFiles(directory, "*.json", SearchOption.TopDirectoryOnly))
+            {
+                try
+                {
+                    if (TemplateJson.FromJson(File.ReadAllText(file), isUserDefined: true).Id == id)
+                    {
+                        File.Delete(file);
+                    }
+                }
+                catch (Exception ex) when (ex is IOException or System.Text.Json.JsonException or InvalidOperationException or ArgumentException)
+                {
+                    // An unreadable file is not this template; leave it alone.
+                }
+            }
+        }
+
+        return _byId.Remove(id);
+    }
+
     /// <summary>Duplicate a template under a new id and mark it user-defined.</summary>
     public LabelTemplate Duplicate(string sourceId, string newId, string? newName = null)
     {
