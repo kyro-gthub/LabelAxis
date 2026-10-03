@@ -125,7 +125,7 @@ public sealed class DialogService : IShellServices
 
     public void ShowNewProject(Action<LabelTemplate> onChosen)
     {
-        var win = new NewProjectWindow(_env.Templates) { Owner = _owner };
+        var win = new NewProjectWindow(_env.Templates, _env.Settings.FavoriteTemplateIds) { Owner = _owner };
         if (win.ShowDialog() == true && win.SelectedTemplate is { } template)
         {
             onChosen(template);

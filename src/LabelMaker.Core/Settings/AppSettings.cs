@@ -64,6 +64,9 @@ public sealed class AppSettings
     /// <summary>Colours chosen most recently in the colour dialog, newest first, as hex.</summary>
     public List<string> RecentColors { get; set; } = new();
 
+    /// <summary>Sheet templates starred in the Label manager, shown first under Favourites.</summary>
+    public List<string> FavoriteTemplateIds { get; set; } = new();
+
     public int MaxRecentProjects { get; set; } = 12;
 
     public void AddRecent(string path, string title)

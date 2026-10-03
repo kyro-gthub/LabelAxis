@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Style="{StaticResource AppWindow}"
         Background="{DynamicResource Br.Surface}" TextElement.Foreground="{DynamicResource Br.Text}"
-        Title="Label manager" Height="640" Width="1000" MinHeight="480" MinWidth="820"
+        Title="Label manager" Height="660" Width="1180" MinHeight="480" MinWidth="980"
         WindowStartupLocation="CenterOwner">
   <DockPanel>
 
@@ -17,6 +17,12 @@
                   IsDefault="True" Click="OnUse" />
         </StackPanel>
         <StackPanel Orientation="Horizontal">
+          <Button Content="＋ New custom size…" Style="{StaticResource GhostButton}" Margin="0,0,8,0" Click="OnNewCustom"
+                  ToolTip="Make a sticker sheet of any size: sticker size and shape, paper, margins and gaps" />
+          <Button x:Name="EditButton" Content="Edit…" Style="{StaticResource GhostButton}" Margin="0,0,8,0" Click="OnEditCustom" IsEnabled="False"
+                  ToolTip="Change one of your own sizes" />
+          <Button x:Name="DeleteButton" Content="Delete" Style="{StaticResource GhostButton}" Margin="0,0,16,0" Click="OnDeleteCustom" IsEnabled="False"
+                  ToolTip="Remove one of your own sizes" />
           <Button Content="Import JSON…" Style="{StaticResource GhostButton}" Margin="0,0,8,0" Click="OnImport" />
           <Button Content="Import CSV…" Style="{StaticResource GhostButton}" Margin="0,0,8,0" Click="OnImportCsv" />
           <Button Content="Export JSON…" Style="{StaticResource GhostButton}" Margin="0,0,8,0" Click="OnExport" />
@@ -68,6 +74,9 @@
             BorderBrush="{DynamicResource Br.Border}" BorderThickness="1,0,0,0">
       <DockPanel Margin="14">
         <TextBlock DockPanel.Dock="Top" Text="SHEET PREVIEW" Style="{StaticResource PanelSectionHeader}" />
+        <Button DockPanel.Dock="Top" x:Name="FavoriteButton" Content="☆  Add to favourites" Style="{StaticResource GhostButton}"
+                HorizontalAlignment="Left" Margin="0,0,0,10" Click="OnToggleFavorite" IsEnabled="False"
+                ToolTip="Starred sheets are listed first, under Favourites" />
         <Border DockPanel.Dock="Bottom" Style="{StaticResource InsetPanel}" Padding="12,10" Margin="0,12,0,0">
           <StackPanel>
             <TextBlock x:Name="PreviewTitle" FontFamily="{StaticResource Font.UiSemiBold}" FontSize="13"
