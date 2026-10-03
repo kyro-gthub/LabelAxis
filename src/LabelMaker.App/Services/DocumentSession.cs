@@ -15,7 +15,7 @@ namespace LabelMaker.App.Services;
 public sealed class DocumentSession
 {
     private readonly WpfImageSource _imageSource;
-    private static readonly WpfTextMeasurer TextMeasurer = new();
+    private static readonly WpfTextMeasurer Measurer = new();
     private int _recordIndex;
 
     public DocumentSession(ProjectDocument document, WpfImageSource imageSource)
@@ -29,6 +29,9 @@ public sealed class DocumentSession
     }
 
     public ProjectDocument Document { get; }
+
+    /// <summary>Measures text with the real fonts, for fitting text boxes to what they hold.</summary>
+    public LabelMaker.Core.Rendering.ITextMeasurer TextMeasurer => Measurer;
 
     public ProjectModel Project => Document.Project;
 

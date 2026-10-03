@@ -315,6 +315,17 @@ public sealed class DialogService : IShellServices
         return win.ShowDialog() == true ? win.Result : null;
     }
 
+    public bool ShowApplyTextStyle(LabelMaker.Core.Model.Objects.TextObject source)
+    {
+        if (_vm is null)
+        {
+            return false;
+        }
+
+        var win = new ApplyTextStyleWindow(_vm.Session, source) { Owner = Front };
+        return win.ShowDialog() == true;
+    }
+
     public bool ShowLabelSize()
     {
         if (_vm is null)

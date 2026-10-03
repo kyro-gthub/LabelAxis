@@ -3,6 +3,18 @@ using LabelMaker.Core.Printing.Thermal;
 
 namespace LabelMaker.Core.Model;
 
+public enum PagesToPrint
+{
+    /// <summary>Every page (the master label too when it has content), or the advanced range.</summary>
+    All = 0,
+
+    /// <summary>Only the page that was on screen when Print was opened.</summary>
+    Current = 1,
+
+    /// <summary>The pages ticked in the Print dialog.</summary>
+    Chosen = 2,
+}
+
 public enum PrintContent
 {
     /// <summary>Repeat the master label on every slot (optionally with variable data).</summary>
@@ -46,6 +58,21 @@ public sealed class PrintSettings
 
     /// <summary>Explicit 0-based record indices to print (empty = use range).</summary>
     public List<int> SelectedRecords { get; set; } = new();
+
+    /// <summary>
+    /// When printing pages: all of them, just the page that was on screen, or pages ticked
+    /// in the Print dialog. For this job only, like the sheet range.
+    /// </summary>
+    [JsonIgnore]
+    public PagesToPrint PagesToPrint { get; set; }
+
+    /// <summary>The page on screen, as its position in the Pages panel (0 = the master label).</summary>
+    [JsonIgnore]
+    public int CurrentPage { get; set; }
+
+    /// <summary>Pages ticked for <see cref="PagesToPrint.Chosen"/>, as Pages panel positions (0 = the master label).</summary>
+    [JsonIgnore]
+    public List<int> ChosenPages { get; set; } = new();
 
     /// <summary>Uniform output scale. 100 = physical size. Kept for correction only.</summary>
     public double ScalePercent { get; set; } = 100.0;
@@ -112,6 +139,9 @@ public sealed class PrintSettings
         FirstRecord = other.FirstRecord;
         LastRecord = other.LastRecord;
         SelectedRecords = new List<int>(other.SelectedRecords);
+        PagesToPrint = other.PagesToPrint;
+        CurrentPage = other.CurrentPage;
+        ChosenPages = new List<int>(other.ChosenPages);
         ScalePercent = other.ScalePercent;
         PrintLabelOutlines = other.PrintLabelOutlines;
         PrintCropMarks = other.PrintCropMarks;
@@ -135,6 +165,9 @@ public sealed class PrintSettings
         FirstRecord = FirstRecord,
         LastRecord = LastRecord,
         SelectedRecords = new List<int>(SelectedRecords),
+        PagesToPrint = PagesToPrint,
+        CurrentPage = CurrentPage,
+        ChosenPages = new List<int>(ChosenPages),
         ScalePercent = ScalePercent,
         PrintLabelOutlines = PrintLabelOutlines,
         PrintCropMarks = PrintCropMarks,

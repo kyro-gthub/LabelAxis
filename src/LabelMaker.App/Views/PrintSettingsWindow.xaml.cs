@@ -134,6 +134,9 @@ public partial class PrintSettingsWindow : Window
             probe.Layout = _session.Project.PrintSettings.Layout;
             probe.Landscape = _session.Project.PrintSettings.Landscape;
             probe.CopiesPerPage = _session.Project.PrintSettings.CopiesPerPage;
+            probe.PagesToPrint = _session.Project.PrintSettings.PagesToPrint;
+            probe.CurrentPage = _session.Project.PrintSettings.CurrentPage;
+            probe.ChosenPages = _session.Project.PrintSettings.ChosenPages;
             LabelTemplate template = LabelMaker.Core.Printing.PrintLayoutResolver.Resolve(_session.Project, probe);
 
             switch (probe.Content)

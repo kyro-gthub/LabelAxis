@@ -553,6 +553,7 @@ public sealed partial class MainViewModel : ObservableObject
     public RelayCommand CropImageCommand { get; private set; } = null!;
     public RelayCommand ClearCropCommand { get; private set; } = null!;
     public RelayCommand PickColorCommand { get; private set; } = null!;
+    public RelayCommand ApplyTextStyleCommand { get; private set; } = null!;
     public RelayCommand ApplySwatchCommand { get; private set; } = null!;
     public RelayCommand AlignRightCommand { get; private set; } = null!;
     public RelayCommand AlignBottomCommand { get; private set; } = null!;
@@ -681,7 +682,11 @@ public sealed partial class MainViewModel : ObservableObject
 
         PrintCommand = new RelayCommand(Print);
         PrintSettingsCommand = new RelayCommand(OpenPrintSettingsThenPrint);
-        PrintPreviewCommand = new RelayCommand(() => _shell.ShowPrintPreview());
+        PrintPreviewCommand = new RelayCommand(() =>
+        {
+            AimPrintAtActivePage();
+            _shell.ShowPrintPreview();
+        });
         PrintHistoryCommand = new RelayCommand(ShowPrintHistory);
         WelcomeCommand = new RelayCommand(ShowWelcome);
         NewThermalLabelCommand = new RelayCommand(NewThermalLabel);
@@ -724,6 +729,8 @@ public sealed partial class MainViewModel : ObservableObject
             () => _session.Selection.Count == 1 && _session.Selection[0] is ImageObject);
 
         // Parameter is "fill" or "stroke": which of the shape's two colours to edit.
+        ApplyTextStyleCommand = new RelayCommand(ApplyTextStyleToOtherPages,
+            () => _session.Selection.OfType<TextObject>().Any());
         PickColorCommand = new RelayCommand(p =>
         {
             string target = p as string ?? "fill";
@@ -1716,6 +1723,8 @@ public sealed partial class MainViewModel : ObservableObject
                 settings.Content = _session.Data is { RowCount: > 0 } ? PrintContent.VariableData : PrintContent.SheetFill;
             }
 
+            AimPrintAtActivePage();
+
             // A roll goes to the thermal dialog (printer commands, dot-exact preview);
             // it can still hand over to the Windows driver from there.
             if (_session.Project.Template is { IsRoll: true })
@@ -1740,6 +1749,51 @@ public sealed partial class MainViewModel : ObservableObject
         catch (Exception ex)
         {
             _shell.Warn("Printing failed:\n\n" + ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// Printing from a numbered page prints that page: the Print dialog and the preview open
+    /// on it, and the dialog can still switch to every page or a chosen few. From the master
+    /// label, printing goes back to what the job was set to before.
+    /// </summary>
+    /// <summary>Gives the selected text box's formatting to text boxes on other pages.</summary>
+    private void ApplyTextStyleToOtherPages()
+    {
+        if (_session.Selection.OfType<TextObject>().FirstOrDefault() is not { } source)
+        {
+            return;
+        }
+
+        if (_session.Project.Pages.Count == 0)
+        {
+            _shell.Info("This project has only one page. Add or duplicate a page first, then its text boxes can take this formatting.");
+            return;
+        }
+
+        if (_shell.ShowApplyTextStyle(source))
+        {
+            RefreshCanvas();
+            StatusText = "Formatting applied to other pages";
+        }
+    }
+
+    private void AimPrintAtActivePage()
+    {
+        PrintSettings settings = _session.Project.PrintSettings;
+        int position = _session.IsEditingMaster
+            ? 0
+            : _session.Project.Pages.FindIndex(p => p.Id == _session.ActivePageId) + 1;
+        settings.CurrentPage = Math.Max(0, position);
+
+        if (position > 0)
+        {
+            settings.Content = PrintContent.Pages;
+            settings.PagesToPrint = PagesToPrint.Current;
+        }
+        else if (settings.PagesToPrint == PagesToPrint.Current)
+        {
+            settings.PagesToPrint = PagesToPrint.All;
         }
     }
 
