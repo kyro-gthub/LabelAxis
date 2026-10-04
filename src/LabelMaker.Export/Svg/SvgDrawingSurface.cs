@@ -310,7 +310,7 @@ public sealed class SvgDrawingSurface : IDrawingSurface
                     .Append(Escape(span.FontFamily)).Append("\" font-size=\"").Append(F(UnitConverter.PointsToMm(span.FontSizePt)))
                     .Append("\" fill=\"").Append(Rgb(span.Foreground)).Append('"');
                 double trackingMm = span.LetterSpacingEm * UnitConverter.PointsToMm(span.FontSizePt);
-                if (Math.Abs(trackingMm) >= 1e-6)
+                if (Math.Abs(trackingMm) >= 1e-6 && !Bidi.NeedsShaping(span.Text))
                 {
                     _body.Append(" letter-spacing=\"").Append(F(trackingMm)).Append('"');
                     spanWidth += span.Text.Length * trackingMm;
@@ -333,7 +333,7 @@ public sealed class SvgDrawingSurface : IDrawingSurface
                         .Append(span.Strikethrough ? "line-through" : string.Empty).Append('"');
                 }
 
-                _body.Append(">").Append(Escape(span.Text)).Append("</text>");
+                _body.Append(">").Append(Escape(Bidi.ForDisplay(span))).Append("</text>");
                 x += spanWidth + (span.Text.EndsWith(' ') ? line.WordGapMm : 0);
             }
         }

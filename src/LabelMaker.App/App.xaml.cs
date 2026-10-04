@@ -12,11 +12,26 @@ public partial class App : Application
 {
     public AppEnvironment Environment { get; private set; } = null!;
 
+    /// <summary>
+    /// PDF export gets the fonts that come with LabelAxis, and WPF's text engine for Arabic and
+    /// Hebrew, which PdfSharp cannot join up or order right to left on its own.
+    /// </summary>
+    internal static void RegisterFontsForExport()
+    {
+        foreach ((string family, bool bold, byte[] data) in Rendering.BundledFonts.Files())
+        {
+            LabelMaker.Export.Pdf.WindowsFontResolver.AddPrivateFont(family, bold, data);
+        }
+
+        LabelMaker.Export.Pdf.PdfDrawingSurface.ComplexTextOutliner = new Rendering.WpfTextOutliner();
+    }
+
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
         Environment = new AppEnvironment();
         ThemeManager.Apply(Environment.Settings.DarkTheme ? AppTheme.Dark : AppTheme.Light);
+        RegisterFontsForExport();
 
         // A class handler catches every Window, derived types included -- an implicit
         // style would not, which is the same trap that left the dialogs light earlier.

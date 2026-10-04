@@ -15,6 +15,9 @@ using CoreRun = LabelMaker.Core.Model.Text.TextRun;
 using HAlign = LabelMaker.Core.Model.Text.HorizontalAlignment;
 using Thickness = System.Windows.Thickness;
 using WpfParagraph = System.Windows.Documents.Paragraph;
+using Bidi = LabelMaker.Core.Rendering.Bidi;
+using TextFlow = LabelMaker.Core.Rendering.TextFlow;
+using BundledFonts = LabelMaker.App.Rendering.BundledFonts;
 
 namespace LabelMaker.App.Controls;
 
@@ -116,9 +119,9 @@ public sealed class InlineTextEditor
             AcceptsTab = false,
             VerticalScrollBarVisibility = ScrollBarVisibility.Disabled,
             HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
-            FlowDirection = target.Direction == Core.Model.Text.TextDirection.RightToLeft
-                ? FlowDirection.RightToLeft
-                : FlowDirection.LeftToRight,
+            // Each paragraph sets its own direction (see ToFlowDocument), so Arabic and English
+            // paragraphs can share a box, as they do on the label.
+            FlowDirection = FlowDirection.LeftToRight,
             Document = ToFlowDocument(target, _scale),
             SpellCheck = { IsEnabled = false },
         };
@@ -394,7 +397,7 @@ public sealed class InlineTextEditor
     {
         var doc = new FlowDocument
         {
-            FontFamily = new FontFamily(obj.FontFamily),
+            FontFamily = BundledFonts.Resolve(obj.FontFamily),
             FontSize = PtToPx(obj.FontSizePt, scale),
             Foreground = ToBrush(obj.Foreground),
             TextAlignment = ToWpf(obj.HorizontalAlignment),
@@ -403,10 +406,14 @@ public sealed class InlineTextEditor
 
         foreach (CoreParagraph p in obj.Content.Paragraphs)
         {
+            bool rtl = obj.Direction == Core.Model.Text.TextDirection.RightToLeft ||
+                       Bidi.FirstStrong(p.PlainText) == TextFlow.RightToLeft;
             var para = new WpfParagraph
             {
                 Margin = new Thickness(0),
-                TextAlignment = ToWpf(p.Alignment ?? obj.HorizontalAlignment),
+                FlowDirection = rtl ? FlowDirection.RightToLeft : FlowDirection.LeftToRight,
+                // A right-to-left paragraph mirrors WPF's left and right; the label's are on the page.
+                TextAlignment = Mirror(ToWpf(p.Alignment ?? obj.HorizontalAlignment), rtl),
             };
 
             if (obj.LineSpacing is > 0 and not 1.0)
@@ -418,7 +425,7 @@ public sealed class InlineTextEditor
             {
                 var run = new Run(r.Text)
                 {
-                    FontFamily = new FontFamily(r.FontFamily ?? obj.FontFamily),
+                    FontFamily = BundledFonts.Resolve(r.FontFamily ?? obj.FontFamily),
                     FontSize = PtToPx(r.FontSizePt ?? obj.FontSizePt, scale),
                     FontWeight = (r.Bold ?? obj.Bold) ? FontWeights.Bold : FontWeights.Normal,
                     FontStyle = (r.Italic ?? obj.Italic) ? FontStyles.Italic : FontStyles.Normal,
@@ -509,7 +516,7 @@ public sealed class InlineTextEditor
 
     private static CoreParagraph NewParagraph(WpfParagraph para, TextObject obj)
     {
-        HAlign align = FromWpf(para.TextAlignment);
+        HAlign align = FromWpf(Mirror(para.TextAlignment, para.FlowDirection == FlowDirection.RightToLeft));
         return new CoreParagraph { Alignment = align == obj.HorizontalAlignment ? null : align };
     }
 
@@ -536,7 +543,7 @@ public sealed class InlineTextEditor
     {
         // Run's properties are inherited, so reading them gives the effective value
         // even when formatting came from a surrounding Bold/Span element.
-        string family = run.FontFamily.Source;
+        string family = BundledFonts.NameOf(run.FontFamily);
         double pt = Math.Round(PxToPt(run.FontSize, scale) * 2, MidpointRounding.AwayFromZero) / 2;
         bool bold = run.FontWeight.ToOpenTypeWeight() >= FontWeights.SemiBold.ToOpenTypeWeight();
         bool italic = run.FontStyle != FontStyles.Normal;
@@ -625,6 +632,13 @@ public sealed class InlineTextEditor
     private static SolidColorBrush ToBrush(ColorRgba c) => new(Color.FromArgb(c.A, c.R, c.G, c.B));
 
     private static ColorRgba FromWpf(Color c) => new(c.R, c.G, c.B, c.A);
+
+    private static TextAlignment Mirror(TextAlignment a, bool rightToLeft) => !rightToLeft ? a : a switch
+    {
+        TextAlignment.Left => TextAlignment.Right,
+        TextAlignment.Right => TextAlignment.Left,
+        _ => a,
+    };
 
     private static TextAlignment ToWpf(HAlign a) => a switch
     {

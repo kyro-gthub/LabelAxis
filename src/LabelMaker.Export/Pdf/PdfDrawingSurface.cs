@@ -36,6 +36,13 @@ public sealed class PdfDrawingSurface : IDrawingSurface
 
     public ITextMeasurer TextMeasurer { get; }
 
+    /// <summary>
+    /// Draws Arabic and Hebrew text as outlines from a full text engine (set by the app at
+    /// start-up), because PdfSharp writes letters one by one, unjoined and left to right.
+    /// Without one, such text is written as plain PDF text.
+    /// </summary>
+    public static ITextOutliner? ComplexTextOutliner { get; set; }
+
     public IImageSource Images { get; }
 
     private double Opacity => _opacity.Peek();
@@ -285,7 +292,21 @@ public sealed class PdfDrawingSurface : IDrawingSurface
                 var brush = Brush(span.Foreground);
                 double advance;
                 double trackingMm = span.LetterSpacingEm * UnitConverter.PointsToMm(span.FontSizePt);
-                if (Math.Abs(trackingMm) < 1e-6)
+                if (ComplexTextOutliner is { } outliner && Bidi.HasRightToLeft(span.Text))
+                {
+                    var path = new XGraphicsPath { FillMode = XFillMode.Winding };
+                    foreach (IReadOnlyList<PointMm> figure in outliner.Outline(span))
+                    {
+                        if (figure.Count >= 3)
+                        {
+                            path.AddPolygon(figure.Select(p => new XPoint((x + p.X) * MmToPt, (baseline + p.Y) * MmToPt)).ToArray());
+                        }
+                    }
+
+                    _gfx.DrawPath(brush, path);
+                    advance = TextMeasurer.MeasureWidthMm(span.Text, span.FontFamily, span.FontSizePt, span.Bold, span.Italic);
+                }
+                else if (Math.Abs(trackingMm) < 1e-6)
                 {
                     _gfx.DrawString(span.Text, font, brush, x * MmToPt, baseline * MmToPt, XStringFormats.BaseLineLeft);
                     advance = TextMeasurer.MeasureWidthMm(span.Text, span.FontFamily, span.FontSizePt, span.Bold, span.Italic);
@@ -417,6 +438,12 @@ public sealed class PdfDrawingSurface : IDrawingSurface
             if (string.IsNullOrEmpty(text))
             {
                 return 0;
+            }
+
+            // Arabic and Hebrew are drawn by the outliner, so they are measured by it as well.
+            if (ComplexTextOutliner is { } outliner && Bidi.HasRightToLeft(text))
+            {
+                return outliner.MeasureWidthMm(text, fontFamily, fontSizePt, bold, italic);
             }
 
             try
