@@ -1,8 +1,9 @@
 # LabelAxis
 
-A **Windows-first desktop application for designing and printing labels** — built
-around Formtec label sheets, reliable barcodes (Code 128 first), bulk /
-variable-data printing, fast search, and **physically accurate output**.
+**Label design and printing software for Windows.** Design labels, stickers and
+barcodes, and print them precisely on label sheets (Formtec, Avery and custom sizes),
+thermal label printers and network printers, with variable data from spreadsheets
+and databases, Arabic and other right-to-left text, and a built-in help guide.
 
 > Design → Barcode → Data → Formtec sheet → Print, done reliably.
 

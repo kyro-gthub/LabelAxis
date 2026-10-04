@@ -212,6 +212,8 @@ public sealed class DialogService : IShellServices
         }
     }
 
+    public void ShowAbout() => new AboutWindow(_env) { Owner = Front }.ShowDialog();
+
     public void ShowSettings()
     {
         if (_vm is null)
