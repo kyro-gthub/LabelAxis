@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Click-through tests: start LabelAxis and drive it through Windows UI Automation the way a
+    person would, on a SEPARATE TEST PC. They move the keyboard focus and open windows, so they
+    must never run on a PC someone is working on. See docs/UI-TESTS.md.
+
+    A plain program rather than a unit-test project, so it can be published as one folder and
+    run on a test PC that has no development tools.
+    UI Automation comes with Windows and .NET; nothing else is needed.
+  -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <RootNamespace>LabelMaker.UiTests</RootNamespace>
+    <AssemblyName>LabelAxis.UiTests</AssemblyName>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+</Project>

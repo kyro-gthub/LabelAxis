@@ -50,6 +50,15 @@ public interface IShellServices
     /// <summary>Help › About LabelAxis.</summary>
     void ShowAbout();
 
+    /// <summary>
+    /// Closes LabelAxis (asking to save changes as usual) and then starts <paramref name="program"/>,
+    /// for an update's setup program. Nothing happens when closing is cancelled.
+    /// </summary>
+    void QuitAndRun(string program, string arguments);
+
+    /// <summary>Opens a web address in the browser, or a folder in Explorer.</summary>
+    void OpenExternal(string target);
+
     /// <summary>The imported records in a resizable grid (moved out of the old bottom dock).</summary>
     void ShowDataTable();
 

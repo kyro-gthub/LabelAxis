@@ -1,3 +1,4 @@
+using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
@@ -27,6 +28,21 @@ public static class AppInfo
             return plus > 0 ? version[..plus] : version;
         }
     }
+
+    /// <summary>
+    /// Where this build looks for updates, set when it is built (build\installer.ps1 -UpdateUrl);
+    /// empty when none was given. Settings can name another address.
+    /// </summary>
+    public static string BuiltInUpdateAddress =>
+        typeof(AppInfo).Assembly.GetCustomAttributes<AssemblyMetadataAttribute>()
+            .FirstOrDefault(a => a.Key == "UpdateFeed")?.Value ?? string.Empty;
+
+    /// <summary>
+    /// True when the .NET runtime is inside the program folder (the offline installer and the
+    /// portable copy); false when it uses the runtime installed in Windows (the small installer).
+    /// </summary>
+    public static bool CarriesRuntime =>
+        File.Exists(Path.Combine(AppContext.BaseDirectory, "coreclr.dll"));
 
     /// <summary>"64-bit" or "32-bit".</summary>
     public static string Architecture => RuntimeInformation.ProcessArchitecture switch

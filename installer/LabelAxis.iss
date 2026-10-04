@@ -1,7 +1,14 @@
 ; Inno Setup script for LabelAxis.
-; Build with build\installer.ps1, which publishes the app first and passes the version:
-;   ISCC /DAppVersion=1.0.0 installer\LabelAxis.iss
-; Expects the published app in ..\artifacts\app (build\publish.ps1).
+; Build with build\installer.ps1 (or build\release.ps1), which publishes the app first and
+; passes the version:
+;   ISCC /DAppVersion=1.1.0 installer\LabelAxis.iss            the offline installer
+;   ISCC /DAppVersion=1.1.0 /DShared installer\LabelAxis.iss   the small installer
+;
+; The offline installer carries the .NET runtime inside the program folder (..\artifacts\app).
+; The small one installs the program without it (..\artifacts\app-shared) and, on a PC that
+; does not have the .NET 10 Desktop Runtime yet, downloads it from Microsoft and installs it
+; first. Most of the download is that runtime, and a PC needs it only once, so every later
+; update is small.
 
 #ifndef AppVersion
   #define AppVersion "1.0.0"
@@ -13,7 +20,13 @@
 #define AppDescription "Label design and printing"
 ; Never change the AppId: Windows uses it to recognise an upgrade of an installed copy.
 #define AppId          "{{7F3B9A54-2C1E-4E6A-9E2D-4B1C7F0A9D31}"
-#define SourceDir      "..\artifacts\app"
+#ifdef Shared
+  #define SourceDir    "..\artifacts\app-shared"
+  #define SetupName    "LabelAxis-Setup-" + AppVersion
+#else
+  #define SourceDir    "..\artifacts\app"
+  #define SetupName    "LabelAxis-Setup-" + AppVersion + "-Offline"
+#endif
 
 [Setup]
 AppId={#AppId}
@@ -69,7 +82,7 @@ LZMAUseSeparateProcess=yes
 LZMANumBlockThreads=4
 
 OutputDir=Output
-OutputBaseFilename=LabelAxis-Setup-{#AppVersion}
+OutputBaseFilename={#SetupName}
 
 ; Code signing (when a certificate is available): define a sign tool in the Inno Setup
 ; compiler (Tools > Configure Sign Tools), for example named "labelaxis" as
@@ -85,6 +98,24 @@ Name: "arabic"; MessagesFile: "compiler:Languages\Arabic.isl"
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 Name: "associate"; Description: "Open .labelproj project files with {#AppName}"; GroupDescription: "File types:"
+
+[CustomMessages]
+english.RuntimeTitle=Getting .NET for LabelAxis
+english.RuntimeDescription=LabelAxis needs the Microsoft .NET 10 Desktop Runtime. It is being downloaded from Microsoft and installed; this happens only once on this PC.
+english.RuntimeDownloadFailed=The Microsoft .NET 10 Desktop Runtime could not be downloaded. Check the internet connection and run Setup again, or use the offline installer (LabelAxis-Setup-{#AppVersion}-Offline.exe), which needs no download.
+english.RuntimeInstallFailed=The Microsoft .NET 10 Desktop Runtime could not be installed (error %1). Run Setup again, or use the offline installer (LabelAxis-Setup-{#AppVersion}-Offline.exe).
+arabic.RuntimeTitle=تنزيل ‎.NET‎ لبرنامج LabelAxis
+arabic.RuntimeDescription=يحتاج LabelAxis إلى Microsoft .NET 10 Desktop Runtime. يجري تنزيله من Microsoft وتثبيته؛ ويحدث ذلك مرة واحدة فقط على هذا الحاسوب.
+arabic.RuntimeDownloadFailed=تعذّر تنزيل Microsoft .NET 10 Desktop Runtime. تحقّق من الاتصال بالإنترنت وشغّل الإعداد مرة أخرى، أو استخدم المثبّت دون اتصال (LabelAxis-Setup-{#AppVersion}-Offline.exe) الذي لا يحتاج إلى تنزيل.
+arabic.RuntimeInstallFailed=تعذّر تثبيت Microsoft .NET 10 Desktop Runtime (الخطأ %1). شغّل الإعداد مرة أخرى، أو استخدم المثبّت دون اتصال (LabelAxis-Setup-{#AppVersion}-Offline.exe).
+
+#ifdef Shared
+[InstallDelete]
+; Upgrading a copy installed with the offline installer: its own copy of the .NET runtime
+; would be loaded instead of the shared one, so those files go (the list is made by
+; build\installer.ps1 from the two builds). Nothing else in the folder is touched.
+#include "obsolete-runtime-files.iss"
+#endif
 
 [Files]
 Source: "{#SourceDir}\*"; DestDir: "{app}"; Flags: recursesubdirs createallsubdirs ignoreversion
@@ -104,6 +135,90 @@ Root: HKA; Subkey: "Software\Classes\Applications\{#AppExeName}\SupportedTypes";
 
 [Run]
 Filename: "{app}\{#AppExeName}"; Description: "{cm:LaunchProgram,{#AppName}}"; Flags: nowait postinstall skipifsilent
+; An update started from LabelAxis (/RELAUNCH=1) starts it again when it is done.
+Filename: "{app}\{#AppExeName}"; Flags: nowait runasoriginaluser; Check: RelaunchAfterUpdate
 
-; Settings, templates, calibration and recovery snapshots in %APPDATA% / %LOCALAPPDATA%
-; are the user's own and are kept when LabelAxis is uninstalled.
+[Code]
+function RelaunchAfterUpdate: Boolean;
+begin
+  Result := ExpandConstant('{param:RELAUNCH|0}') = '1';
+end;
+
+#ifdef Shared
+const
+  RuntimeUrl = 'https://aka.ms/dotnet/10.0/windowsdesktop-runtime-win-x64.exe';
+  RuntimeFile = 'windowsdesktop-runtime-win-x64.exe';
+
+var
+  DownloadPage: TDownloadWizardPage;
+
+{ The .NET 10 Desktop Runtime is installed for all users under Program Files\dotnet. }
+function DesktopRuntimeInstalled: Boolean;
+var
+  Found: TFindRec;
+begin
+  Result := False;
+  if FindFirst(ExpandConstant('{commonpf64}\dotnet\shared\Microsoft.WindowsDesktop.App\10.*'), Found) then
+  begin
+    try
+      repeat
+        if (Found.Attributes and FILE_ATTRIBUTE_DIRECTORY) <> 0 then
+          Result := True;
+      until Result or not FindNext(Found);
+    finally
+      FindClose(Found);
+    end;
+  end;
+end;
+
+procedure InitializeWizard;
+begin
+  DownloadPage := CreateDownloadPage(CustomMessage('RuntimeTitle'), CustomMessage('RuntimeDescription'), nil);
+end;
+
+{ Downloads the runtime from Microsoft and installs it; returns an error message, or '' when done. }
+function InstallDesktopRuntime: String;
+var
+  ResultCode: Integer;
+begin
+  Result := '';
+  try
+    if WizardSilent then
+      DownloadTemporaryFile(RuntimeUrl, RuntimeFile, '', nil)
+    else
+    begin
+      DownloadPage.Clear;
+      DownloadPage.Add(RuntimeUrl, RuntimeFile, '');
+      DownloadPage.Show;
+      try
+        DownloadPage.Download;
+      finally
+        DownloadPage.Hide;
+      end;
+    end;
+  except
+    Result := CustomMessage('RuntimeDownloadFailed') + #13#10#13#10 + GetExceptionMessage;
+    Exit;
+  end;
+
+  { Microsoft's installer asks Windows for administrator rights itself; 3010 = done, restart
+    later; 1638 = a newer one is already there. }
+  if not ShellExec('', ExpandConstant('{tmp}\') + RuntimeFile, '/install /passive /norestart', '',
+                   SW_SHOW, ewWaitUntilTerminated, ResultCode) then
+    Result := FmtMessage(CustomMessage('RuntimeInstallFailed'), [IntToStr(ResultCode)])
+  else if (ResultCode <> 0) and (ResultCode <> 3010) and (ResultCode <> 1638) then
+    Result := FmtMessage(CustomMessage('RuntimeInstallFailed'), [IntToStr(ResultCode)])
+  else if not DesktopRuntimeInstalled then
+    Result := FmtMessage(CustomMessage('RuntimeInstallFailed'), [IntToStr(ResultCode)]);
+end;
+
+function PrepareToInstall(var NeedsRestart: Boolean): String;
+begin
+  Result := '';
+  if not DesktopRuntimeInstalled then
+    Result := InstallDesktopRuntime;
+end;
+#endif
+
+{ Settings, templates, calibration and recovery snapshots in %APPDATA% / %LOCALAPPDATA%
+  are the user's own and are kept when LabelAxis is uninstalled. }

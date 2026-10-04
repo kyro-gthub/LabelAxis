@@ -46,6 +46,17 @@ public sealed class AppSettings
     /// <summary>Interface language ("en", "ar", "ckb"); none follows the language of Windows.</summary>
     public string? Language { get; set; }
 
+    /// <summary>Look for a newer version about once a day.</summary>
+    public bool CheckForUpdates { get; set; } = true;
+
+    /// <summary>Where updates are published (a web address or a shared folder); none uses the one built in.</summary>
+    public string? UpdateAddress { get; set; }
+
+    public DateTimeOffset? LastUpdateCheckUtc { get; set; }
+
+    /// <summary>A version the user chose to skip; it is not offered again, a later one is.</summary>
+    public string? SkippedUpdateVersion { get; set; }
+
     /// <summary>Confirm before removing a page or clearing the data source.</summary>
     public bool ConfirmDestructiveActions { get; set; } = true;
 

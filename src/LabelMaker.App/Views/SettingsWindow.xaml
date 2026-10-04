@@ -83,6 +83,18 @@
         </StackPanel>
       </GroupBox>
 
+      <TextBlock Text="Updates" FontWeight="SemiBold" FontSize="13" Margin="0,14,0,8" Foreground="{DynamicResource Br.TextMuted}" />
+      <GroupBox>
+        <StackPanel>
+          <CheckBox x:Name="CheckForUpdatesBox" Content="Check for updates automatically (about once a day)" Margin="0,4"
+                    AutomationProperties.AutomationId="Settings.CheckForUpdates" />
+          <TextBlock Text="Update address" Style="{StaticResource FieldLabel}" Margin="0,8,0,4" />
+          <TextBox x:Name="UpdateAddressBox" Tag="https://… or \\server\share\LabelAxis" FlowDirection="LeftToRight"
+                   AutomationProperties.AutomationId="Settings.UpdateAddress" />
+          <TextBlock x:Name="UpdateAddressHint" TextWrapping="Wrap" Foreground="{DynamicResource Br.TextMuted}" FontSize="11.5" Margin="0,4,0,4" />
+        </StackPanel>
+      </GroupBox>
+
       <TextBlock Text="About" FontWeight="SemiBold" FontSize="13" Margin="0,14,0,8" Foreground="{DynamicResource Br.TextMuted}" />
       <GroupBox>
         <StackPanel>
@@ -95,8 +107,8 @@
       <TextBlock x:Name="StatusText" TextWrapping="Wrap" Foreground="{DynamicResource Br.TextMuted}" Margin="0,10,0,0" />
 
       <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
-        <Button Content="Cancel" IsCancel="True" Padding="16,6" Margin="0,0,8,0" />
-        <Button Content="Save" Style="{StaticResource AccentButton}" IsDefault="True" Padding="20,6" Click="OnSave" />
+        <Button Content="Cancel" IsCancel="True" Padding="16,6" Margin="0,0,8,0" AutomationProperties.AutomationId="Settings.Cancel" />
+        <Button Content="Save" Style="{StaticResource AccentButton}" IsDefault="True" Padding="20,6" Click="OnSave" AutomationProperties.AutomationId="Settings.Save" />
       </StackPanel>
     </StackPanel>
   </ScrollViewer>

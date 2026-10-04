@@ -18,6 +18,23 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- Where this build looks for updates: build\installer.ps1 -UpdateUrl https://… -->
+    <AssemblyMetadata Include="UpdateFeed" Value="$(UpdateFeedUrl)" Condition="'$(UpdateFeedUrl)' != ''" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(PublishReadyToRun)' == 'true'">
+    <!--
+      Compiled ahead of time: LabelAxis's own code and what it draws with, so it starts quickly.
+      Left as they are: the large libraries used only when importing Excel files or reading a
+      database. They are compiled the moment they are first used, and keeping them small makes
+      the download a good deal smaller.
+    -->
+    <PublishReadyToRunExclude Include="DocumentFormat.OpenXml.dll;DocumentFormat.OpenXml.Framework.dll;ClosedXML.dll;ClosedXML.Parser.dll;ExcelNumberFormat.dll;RBush.dll;SixLabors.Fonts.dll" />
+    <PublishReadyToRunExclude Include="Microsoft.Data.SqlClient.dll;Npgsql.dll;MySqlConnector.dll;System.Data.OleDb.dll;System.Data.Odbc.dll" />
+    <PublishReadyToRunExclude Include="Microsoft.Identity.Client.dll;Microsoft.IdentityModel.Abstractions.dll;Azure.Identity.dll;Azure.Core.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
     <!-- Licences that must travel with the app: its own, third-party notices, and every bundled font's. -->
     <None Include="..\..\LICENSE" Link="licenses\LICENSE.txt" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <None Include="..\..\THIRD-PARTY-NOTICES.txt" Link="licenses\THIRD-PARTY-NOTICES.txt" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />

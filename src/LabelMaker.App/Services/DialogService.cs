@@ -214,6 +214,21 @@ public sealed class DialogService : IShellServices
 
     public void ShowAbout() => new AboutWindow(_env) { Owner = Front }.ShowDialog();
 
+    public void QuitAndRun(string program, string arguments) =>
+        App.QuitAndRun(new System.Diagnostics.ProcessStartInfo(program, arguments) { UseShellExecute = true });
+
+    public void OpenExternal(string target)
+    {
+        try
+        {
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(target) { UseShellExecute = true });
+        }
+        catch (System.ComponentModel.Win32Exception ex)
+        {
+            Warn(Localization.Localizer.T("Could not open:") + "\n\n" + target + "\n\n" + ex.Message);
+        }
+    }
+
     public void ShowSettings()
     {
         if (_vm is null)

@@ -32,10 +32,39 @@ public partial class SettingsWindow : Window
         AutoSaveEnabledBox.IsChecked = s.AutoSaveEnabled;
         AutoSaveSecondsBox.Text = s.AutoSaveSeconds.ToString(CultureInfo.InvariantCulture);
         MaxRecentBox.Text = s.MaxRecentProjects.ToString(CultureInfo.InvariantCulture);
+
+        CheckForUpdatesBox.IsChecked = s.CheckForUpdates;
+        UpdateAddressBox.Text = s.UpdateAddress ?? string.Empty;
+        string builtIn = Services.AppInfo.BuiltInUpdateAddress;
+        string hint = builtIn.Length > 0
+            ? Localization.Localizer.F("Leave it empty to use the address built into this version: {0}", builtIn)
+            : Localization.Localizer.T("A web address (https://) or a shared folder where update.json and the setup programs are published.");
+        if (s.LastUpdateCheckUtc is { } last)
+        {
+            hint += "\n" + Localization.Localizer.F("Last checked {0}.", last.ToLocalTime().ToString("g", CultureInfo.CurrentCulture));
+        }
+
+        UpdateAddressHint.Text = hint;
     }
 
     private void OnSave(object sender, RoutedEventArgs e)
     {
+        // Checked first, so a bad address changes nothing.
+        string address = UpdateAddressBox.Text.Trim();
+        if (address.Length > 0)
+        {
+            try
+            {
+                LabelMaker.Core.Updates.UpdateSource.ToFeedUri(address);
+            }
+            catch (Exception ex) when (ex is FormatException or UriFormatException or ArgumentException or NotSupportedException or System.IO.PathTooLongException)
+            {
+                StatusText.Text = Localization.Localizer.T("The update address is not usable:") + " " + ex.Message;
+                UpdateAddressBox.Focus();
+                return;
+            }
+        }
+
         AppSettings s = _env.Settings;
         bool wasDark = s.DarkTheme;
         bool nowDark = ThemeDarkBox.IsChecked == true;
@@ -50,6 +79,16 @@ public partial class SettingsWindow : Window
         s.AutoSaveEnabled = AutoSaveEnabledBox.IsChecked == true;
         s.AutoSaveSeconds = Math.Max(30, ParseInt(AutoSaveSecondsBox.Text, s.AutoSaveSeconds));
         s.MaxRecentProjects = Math.Clamp(ParseInt(MaxRecentBox.Text, s.MaxRecentProjects), 1, 50);
+
+        s.CheckForUpdates = CheckForUpdatesBox.IsChecked == true;
+        if (!string.Equals(s.UpdateAddress ?? string.Empty, address, StringComparison.Ordinal))
+        {
+            // A new place may hold a version skipped at the old one.
+            s.SkippedUpdateVersion = null;
+            s.LastUpdateCheckUtc = null;
+        }
+
+        s.UpdateAddress = address.Length > 0 ? address : null;
 
         if (LanguageBox.SelectedItem is Localization.AppLanguage language)
         {
