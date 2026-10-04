@@ -47,6 +47,9 @@ public interface IShellServices
 
     void ShowSettings();
 
+    /// <summary>Help › About LabelAxis.</summary>
+    void ShowAbout();
+
     /// <summary>The imported records in a resizable grid (moved out of the old bottom dock).</summary>
     void ShowDataTable();
 

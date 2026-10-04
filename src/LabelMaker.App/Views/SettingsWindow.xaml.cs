@@ -15,6 +15,7 @@ public partial class SettingsWindow : Window
     public SettingsWindow(Services.AppEnvironment env, MainViewModel vm)
     {
         InitializeComponent();
+        AboutTitle.Text = $"{Services.AppInfo.Name} {Services.AppInfo.Version}";
         _env = env;
         _vm = vm;
 

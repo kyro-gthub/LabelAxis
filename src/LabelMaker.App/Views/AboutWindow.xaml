@@ -1,0 +1,63 @@
+<Window x:Class="LabelMaker.App.Views.AboutWindow"
+        xmlns:helpsvc="clr-namespace:LabelMaker.App.Services"
+        helpsvc:HelpGuide.Topic="getting-started"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Style="{StaticResource AppWindow}"
+        Background="{DynamicResource Br.Surface}" TextElement.Foreground="{DynamicResource Br.Text}"
+        Title="About LabelAxis" Width="520" SizeToContent="Height" ResizeMode="NoResize"
+        WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
+  <StackPanel>
+    <!-- header -->
+    <Border Background="{DynamicResource Br.AccentGradient}" Padding="28,26,28,24">
+      <DockPanel>
+        <Border DockPanel.Dock="Left" Width="72" Height="72" CornerRadius="18" Background="White" Margin="0,0,18,0">
+          <Image Source="pack://application:,,,/LabelAxis;component/Assets/logo.png" Width="56" Height="56" />
+        </Border>
+        <StackPanel VerticalAlignment="Center">
+          <TextBlock Text="LabelAxis" FontFamily="{StaticResource Font.UiExtraBold}" FontSize="26" Foreground="White" />
+          <TextBlock x:Name="TaglineText" FontSize="13" Foreground="#E6FFFFFF" Margin="0,2,0,0" />
+          <TextBlock x:Name="VersionText" FontSize="12" Foreground="#CCFFFFFF" Margin="0,6,0,0" />
+        </StackPanel>
+      </DockPanel>
+    </Border>
+
+    <StackPanel Margin="28,20,28,8">
+      <TextBlock x:Name="DescriptionText" TextWrapping="Wrap" FontSize="13" LineHeight="20" />
+
+      <TextBlock Text="THIS COPY" Style="{StaticResource PanelSectionHeader}" Margin="0,18,0,6" />
+      <Border Style="{StaticResource InsetPanel}" Padding="14,10">
+        <StackPanel>
+          <DockPanel Margin="0,2">
+            <TextBlock Text="Edition" Width="96" Foreground="{DynamicResource Br.TextMuted}" FontSize="12" />
+            <TextBlock x:Name="EditionText" FontSize="12" TextWrapping="Wrap" />
+          </DockPanel>
+          <DockPanel Margin="0,4,0,2">
+            <Button DockPanel.Dock="Right" Content="Open" Style="{StaticResource GhostButton}" Padding="10,2" Margin="8,0,0,0"
+                    VerticalAlignment="Top" Click="OnOpenData" ToolTip="Open the folder with your settings, templates and calibration" />
+            <TextBlock Text="Your data" Width="96" Foreground="{DynamicResource Br.TextMuted}" FontSize="12" />
+            <TextBlock x:Name="DataText" FontSize="12" TextWrapping="Wrap" FontFamily="{StaticResource Font.Mono}" />
+          </DockPanel>
+          <DockPanel Margin="0,4,0,2">
+            <TextBlock Text="System" Width="96" Foreground="{DynamicResource Br.TextMuted}" FontSize="12" />
+            <TextBlock x:Name="SystemText" FontSize="12" TextWrapping="Wrap" />
+          </DockPanel>
+        </StackPanel>
+      </Border>
+
+      <TextBlock x:Name="CopyrightText" FontSize="11.5" Foreground="{DynamicResource Br.TextMuted}" Margin="0,14,0,0" TextWrapping="Wrap" />
+    </StackPanel>
+
+    <Border BorderBrush="{DynamicResource Br.Border}" BorderThickness="0,1,0,0" Background="{DynamicResource Br.Bg}" Padding="20,12" Margin="0,8,0,0">
+      <DockPanel>
+        <Button DockPanel.Dock="Right" Content="Close" Style="{StaticResource PrimaryButton}" IsDefault="True" IsCancel="True" Padding="22,6" />
+        <StackPanel Orientation="Horizontal">
+          <Button Content="Licences &amp; credits" Style="{StaticResource GhostButton}" Margin="0,0,8,0" Click="OnLicences"
+                  ToolTip="The open-source software and fonts LabelAxis is built with" />
+          <Button x:Name="CopyButton" Content="Copy details" Style="{StaticResource GhostButton}" Click="OnCopy"
+                  ToolTip="Copy the version and system details, to paste into a support message" />
+        </StackPanel>
+      </DockPanel>
+    </Border>
+  </StackPanel>
+</Window>

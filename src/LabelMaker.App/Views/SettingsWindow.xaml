@@ -79,8 +79,8 @@
       <TextBlock Text="About" FontWeight="SemiBold" FontSize="13" Margin="0,14,0,8" Foreground="{DynamicResource Br.TextMuted}" />
       <GroupBox>
         <StackPanel>
-          <TextBlock Text="LabelAxis 1.0" FontFamily="{StaticResource Font.UiSemiBold}" FontSize="13" Margin="0,2" />
-          <TextBlock Text="Windows-first label design &amp; printing. Formtec templates · barcodes · variable data · accurate printing."
+          <TextBlock x:Name="AboutTitle" Text="LabelAxis" FontFamily="{StaticResource Font.UiSemiBold}" FontSize="13" Margin="0,2" />
+          <TextBlock Text="Label design and printing software. Label sheets, thermal and network printers, barcodes and variable data."
                      TextWrapping="Wrap" Foreground="{DynamicResource Br.TextMuted}" FontSize="11.5" Margin="0,2" />
         </StackPanel>
       </GroupBox>
