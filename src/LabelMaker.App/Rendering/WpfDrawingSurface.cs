@@ -286,7 +286,8 @@ public sealed class WpfDrawingSurface : IDrawingSurface
             {
                 double baseline = lineTop + line.BaselineOffsetMm;
                 double trackingMm = span.LetterSpacingEm * UnitConverter.PointsToMm(span.FontSizePt);
-                if (Math.Abs(trackingMm) < 1e-6)
+                // Arabic is drawn a whole word at a time so its letters join; it is never letter-spaced.
+                if (Math.Abs(trackingMm) < 1e-6 || Bidi.NeedsShaping(span.Text))
                 {
                     FormattedText ft = BuildFormattedText(span);
                     _dc.DrawText(ft, new Point(x * K, (baseline * K) - ft.Baseline));
@@ -341,7 +342,7 @@ public sealed class WpfDrawingSurface : IDrawingSurface
 
         double emDiu = UnitConverter.PointsToMm(span.FontSizePt) * K;
         var ft = new FormattedText(
-            span.Text,
+            Bidi.ForDisplay(span),
             CultureInfo.CurrentCulture,
             FlowDirection.LeftToRight,
             typeface,

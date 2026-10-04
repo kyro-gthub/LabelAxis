@@ -82,7 +82,11 @@ public sealed class SelectionProperties : ObservableObject
 
     /// <summary>Installed font family names, for the Font picker (spec: choose a font from a list, not free text).</summary>
     public static IReadOnlyList<string> FontFamilies { get; } =
-        Fonts.SystemFontFamilies.Select(f => f.Source).Distinct().OrderBy(n => n, StringComparer.OrdinalIgnoreCase).ToList();
+        Fonts.SystemFontFamilies.Select(f => f.Source)
+            .Concat(Rendering.BundledFonts.Names)       // the Arabic fonts that come with LabelAxis
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .OrderBy(n => n, StringComparer.OrdinalIgnoreCase)
+            .ToList();
 
     public string TypeName => Obj?.Kind.ToString() ?? "—";
 

@@ -59,6 +59,10 @@ public static class TextLayouter
         foreach (Paragraph paragraph in content.Paragraphs)
         {
             HorizontalAlignment align = paragraph.Alignment ?? style.HorizontalAlignment;
+            // Arabic and Hebrew paragraphs run right to left: when the text box says so, or when
+            // the paragraph's first letter is right-to-left.
+            bool rtl = style.Direction == TextDirection.RightToLeft ||
+                       Bidi.FirstStrong(paragraph.PlainText) == TextFlow.RightToLeft;
             // A paragraph value only counts when it really differs from single spacing: every
             // paragraph used to carry 1.0, which silently overrode the text box's setting.
             double lineSpacing = paragraph.LineSpacing is { } own && own > 0 && Math.Abs(own - 1.0) > 0.001
@@ -69,7 +73,7 @@ public static class TextLayouter
                 lineSpacing = 1.0;
             }
 
-            List<WordPiece> pieces = Flatten(paragraph, style, scale)
+            List<WordPiece> pieces = Flatten(paragraph, style, scale, rtl)
                 .Select(p => p with
                 {
                     WidthMm = measurer.MeasureWidthMm(p.Text, p.Font, p.SizePt, p.Bold, p.Italic) + LetterSpacingWidth(p),
@@ -119,19 +123,29 @@ public static class TextLayouter
                 // block height again so bottom and middle alignment sit on the text, not on
                 // empty space after it. Trailing spaces do not count towards the width, or
                 // centred and right-aligned lines stop short of where they should.
+                // A right-to-left line ends at its left edge; the space after its last word would
+                // push the text right, so it goes (it never shows anyway).
+                if (rtl && spans.Count > 0)
+                {
+                    spans[^1] = spans[^1] with { Text = spans[^1].Text.TrimEnd(' ') };
+                }
+
+                IReadOnlyList<TextSpan> logical = (justify ? spans.ToList() : Merge(spans)).Where(s => s.Text.Length > 0).ToList();
+
                 double h = height * lineSpacing;
                 double lineBaseline = baseline > 0 ? baseline : height * 0.8;
                 capTop ??= totalHeight + lineBaseline - cap;
                 lastBaseline = totalHeight + lineBaseline;
                 lines.Add(new TextLine
                 {
-                    Spans = justify ? spans.ToList() : Merge(spans),
+                    Spans = Bidi.VisualOrder(logical, s => s.Text, rtl),
                     WidthMm = justify ? maxWidth : lineWidth,
                     WordGapMm = justify ? (maxWidth - lineWidth) / gaps : 0,
                     HeightMm = h,
                     BaselineOffsetMm = lineBaseline,
                     CapHeightMm = cap,
-                    Alignment = align,
+                    Alignment = !justify && rtl && align == HorizontalAlignment.Justify ? HorizontalAlignment.Right : align,
+                    RightToLeft = rtl,
                 });
                 totalHeight += h;
                 lastExtra = h - height;
@@ -188,7 +202,7 @@ public static class TextLayouter
     private readonly record struct WordPiece(
         string Text, string Font, double SizePt, bool Bold, bool Italic, bool Underline, bool Strike,
         ColorRgba Fg, ColorRgba? Bg, double LetterSpacingEm, double WidthMm, double LineHeightMm,
-        double BaselineMm = 0, double TrailingSpaceMm = 0, double CapHeightMm = 0)
+        double BaselineMm = 0, double TrailingSpaceMm = 0, double CapHeightMm = 0, bool Rtl = false)
     {
         public TextSpan ToSpan() => new()
         {
@@ -202,10 +216,11 @@ public static class TextLayouter
             Foreground = Fg,
             Background = Bg,
             LetterSpacingEm = LetterSpacingEm,
+            RightToLeft = Rtl,
         };
     }
 
-    private static List<WordPiece> Flatten(Paragraph paragraph, TextObject style, double scale)
+    private static List<WordPiece> Flatten(Paragraph paragraph, TextObject style, double scale, bool rtl)
     {
         var pieces = new List<WordPiece>();
         foreach (TextRun run in paragraph.Runs)
@@ -227,7 +242,7 @@ public static class TextLayouter
 
             foreach (string token in Tokenize(run.Text))
             {
-                pieces.Add(new WordPiece(token, font, sizePt, bold, italic, underline, strike, fg, bg, spacing, 0, 0));
+                pieces.Add(new WordPiece(token, font, sizePt, bold, italic, underline, strike, fg, bg, spacing, 0, 0, Rtl: rtl));
             }
         }
 
@@ -303,6 +318,7 @@ public static class TextLayouter
         return Math.Max(0, full - word) + (spaces * p.LetterSpacingEm * UnitConverter.PointsToMm(p.SizePt));
     }
 
+    // Arabic letters join up, so they are never spread apart (as in any word processor).
     private static double LetterSpacingWidth(WordPiece p) =>
-        p.LetterSpacingEm == 0 ? 0 : p.Text.Length * p.LetterSpacingEm * UnitConverter.PointsToMm(p.SizePt);
+        p.LetterSpacingEm == 0 || Bidi.NeedsShaping(p.Text) ? 0 : p.Text.Length * p.LetterSpacingEm * UnitConverter.PointsToMm(p.SizePt);
 }

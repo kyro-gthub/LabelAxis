@@ -18,6 +18,9 @@ public sealed record TextSpan
     public ColorRgba Foreground { get; init; } = ColorRgba.Black;
     public ColorRgba? Background { get; init; }
     public double LetterSpacingEm { get; init; }
+
+    /// <summary>The span sits in a right-to-left (Arabic, Hebrew) paragraph; see <see cref="Bidi.ForDisplay"/>.</summary>
+    public bool RightToLeft { get; init; }
 }
 
 public sealed class TextBlock
@@ -75,6 +78,9 @@ public sealed class TextLine
     public double WordGapMm { get; init; }
 
     public HorizontalAlignment Alignment { get; init; }
+
+    /// <summary>The line runs right to left; its spans are already in left-to-right drawing order.</summary>
+    public bool RightToLeft { get; init; }
 }
 
 /// <summary>Opaque, surface-native decoded image handle produced by an <see cref="IImageSource"/>.</summary>

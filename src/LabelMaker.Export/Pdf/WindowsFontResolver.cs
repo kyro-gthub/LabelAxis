@@ -30,6 +30,21 @@ public sealed class WindowsFontResolver : IFontResolver
             ["Consolas"] = ("consola.ttf", "consolab.ttf", "consolai.ttf", "consolaz.ttf"),
         };
 
+    // Fonts that come with the app rather than with Windows: family -> (regular, bold) bytes.
+    private static readonly Dictionary<string, (byte[]? Regular, byte[]? Bold)> PrivateFonts = new(StringComparer.OrdinalIgnoreCase);
+
+    /// <summary>Makes a font the app ships with available to PDF export under <paramref name="family"/>.</summary>
+    public static void AddPrivateFont(string family, bool bold, byte[] data)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(family);
+        ArgumentNullException.ThrowIfNull(data);
+        lock (Gate)
+        {
+            (byte[]? regular, byte[]? boldData) = PrivateFonts.GetValueOrDefault(family);
+            PrivateFonts[family] = bold ? (regular, data) : (data, boldData);
+        }
+    }
+
     public static void Register()
     {
         lock (Gate)
@@ -46,6 +61,14 @@ public sealed class WindowsFontResolver : IFontResolver
 
     public FontResolverInfo? ResolveTypeface(string familyName, bool isBold, bool isItalic)
     {
+        lock (Gate)
+        {
+            if (PrivateFonts.ContainsKey(familyName))
+            {
+                return new FontResolverInfo("private:" + familyName + "|" + (isBold ? "b" : string.Empty));
+            }
+        }
+
         string family = KnownFamilies.ContainsKey(familyName) ? familyName
             : familyName.Contains("mono", StringComparison.OrdinalIgnoreCase) ||
               familyName.Contains("consol", StringComparison.OrdinalIgnoreCase) ? "Consolas"
@@ -62,6 +85,21 @@ public sealed class WindowsFontResolver : IFontResolver
         if (_cache.TryGetValue(faceName, out byte[]? cached))
         {
             return cached;
+        }
+
+        if (faceName.StartsWith("private:", StringComparison.Ordinal))
+        {
+            string[] p = faceName["private:".Length..].Split('|');
+            lock (Gate)
+            {
+                (byte[]? regular, byte[]? boldData) = PrivateFonts.GetValueOrDefault(p[0]);
+                byte[]? data = p.Length > 1 && p[1].Contains('b') ? boldData ?? regular : regular ?? boldData;
+                if (data is not null)
+                {
+                    _cache[faceName] = data;
+                    return data;
+                }
+            }
         }
 
         string[] parts = faceName.Split('|');

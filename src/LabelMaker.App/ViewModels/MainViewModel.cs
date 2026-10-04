@@ -1716,6 +1716,11 @@ public sealed partial class MainViewModel : ObservableObject
 
     private static bool FontIsInstalled(string family)
     {
+        if (BundledFonts.Contains(family))
+        {
+            return true;    // comes with LabelAxis
+        }
+
         try
         {
             return System.Windows.Media.Fonts.SystemFontFamilies

@@ -19,7 +19,7 @@ internal static class WpfFontCache
 
     public static Typeface Typeface(string family, bool bold, bool italic) =>
         Typefaces.GetOrAdd((family, bold, italic), static key => new Typeface(
-            new FontFamily(key.Family),
+            BundledFonts.Resolve(key.Family),
             key.Italic ? FontStyles.Italic : FontStyles.Normal,
             key.Bold ? FontWeights.Bold : FontWeights.Normal,
             FontStretches.Normal));
