@@ -1,0 +1,36 @@
+LabelAxis — third-party software and fonts
+==========================================
+
+LabelAxis is built on the open-source components below. Each is used under its
+own licence; the licence names are those the components publish. Full licence
+texts are available at the addresses given (and, for fonts, in the "fonts"
+folder next to this file).
+
+Runtime
+-------
+  .NET runtime and Windows Desktop (WPF)        MIT          https://dot.net/
+  System.Data.Odbc, System.Data.OleDb,
+  System.IO.Ports                               MIT          https://dot.net/
+
+Libraries
+---------
+  PdfSharp 6          PDF export                MIT          https://docs.pdfsharp.net/
+  ZXing.Net           barcodes and QR codes     Apache-2.0   https://github.com/micjahn/ZXing.Net/
+  ClosedXML           Excel import              MIT          https://github.com/ClosedXML/ClosedXML
+  DocumentFormat.OpenXml (used by ClosedXML)    MIT          https://github.com/dotnet/Open-XML-SDK
+  CsvHelper           CSV import                MS-PL or Apache-2.0  https://joshclose.github.io/CsvHelper/
+  Microsoft.Data.Sqlite                         MIT          https://docs.microsoft.com/dotnet/standard/data/sqlite/
+  SQLitePCLRaw (used by Microsoft.Data.Sqlite)  Apache-2.0   https://github.com/ericsink/SQLitePCL.raw
+  Microsoft.Data.SqlClient                      MIT          https://aka.ms/sqlclientproject
+  MySqlConnector                                MIT          https://mysqlconnector.net/
+  Npgsql                                        PostgreSQL   https://github.com/npgsql/npgsql
+  OpenMcdf            Publisher file import     MPL-2.0      https://openmcdf.github.io/openmcdf/
+
+Fonts (SIL Open Font License 1.1 — https://openfontlicense.org)
+-----------------------------------------------------------------
+  Plus Jakarta Sans, DM Mono                    (the app's own interface)
+  Tajawal, IBM Plex Sans Arabic, Almarai,
+  Amiri, Scheherazade New                       (Arabic fonts for labels)
+
+  The fonts are bundled inside LabelAxis and are not sold on their own. Their
+  copyright notices and licence texts are in the "fonts" folder.
