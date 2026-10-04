@@ -72,7 +72,7 @@
           </TextBlock>
 
           <Menu Background="Transparent" VerticalAlignment="Center">
-            <MenuItem Header="_File">
+            <MenuItem AutomationProperties.AutomationId="Menu.File" Header="_File">
               <MenuItem Header="_New Project…" InputGestureText="Ctrl+N" Command="{Binding NewCommand}" />
               <MenuItem Header="New _thermal label…" Command="{Binding NewThermalLabelCommand}" />
               <MenuItem Header="_Open…" InputGestureText="Ctrl+O" Command="{Binding OpenCommand}" />
@@ -93,17 +93,17 @@
               <MenuItem Header="Open _Publisher file (all pages)…" Command="{Binding OpenPublisherPagesCommand}" />
               <MenuItem Header="_Import text and pictures from Publisher…" Command="{Binding ImportPublisherCommand}" />
               <Separator />
-              <MenuItem Header="_Label manager…" Command="{Binding TemplateManagerCommand}" />
+              <MenuItem AutomationProperties.AutomationId="Menu.LabelManager" Header="_Label manager…" Command="{Binding TemplateManagerCommand}" />
               <MenuItem Header="Label si_ze…" Command="{Binding LabelSizeCommand}" />
               <Separator />
-              <MenuItem Header="Se_ttings…" Command="{Binding SettingsCommand}" />
-              <MenuItem Header="_About LabelAxis" Command="{Binding AboutCommand}" />
+              <MenuItem AutomationProperties.AutomationId="Menu.Settings" Header="Se_ttings…" Command="{Binding SettingsCommand}" />
+              <MenuItem AutomationProperties.AutomationId="Menu.About" Header="_About LabelAxis" Command="{Binding AboutCommand}" />
               <Separator />
               <MenuItem Header="E_xit" Command="{Binding ExitCommand}" />
             </MenuItem>
 
-            <MenuItem Header="_Edit">
-              <MenuItem Header="_Undo" InputGestureText="Ctrl+Z" Command="{Binding UndoCommand}" />
+            <MenuItem AutomationProperties.AutomationId="Menu.Edit" Header="_Edit">
+              <MenuItem AutomationProperties.AutomationId="Menu.Undo" Header="_Undo" InputGestureText="Ctrl+Z" Command="{Binding UndoCommand}" />
               <MenuItem Header="_Redo" InputGestureText="Ctrl+Y" Command="{Binding RedoCommand}" />
               <Separator />
               <MenuItem Header="Cu_t" InputGestureText="Ctrl+X" Command="{Binding CutCommand}" />
@@ -114,7 +114,7 @@
               <MenuItem Header="Select _all" InputGestureText="Ctrl+A" Command="{Binding SelectAllCommand}" />
               <Separator />
               <MenuItem Header="_Find…" InputGestureText="Ctrl+F" Command="{Binding FindCommand}" />
-              <MenuItem Header="Find and _replace…" InputGestureText="Ctrl+H" Command="{Binding FindReplaceCommand}" />
+              <MenuItem AutomationProperties.AutomationId="Menu.FindReplace" Header="Find and _replace…" InputGestureText="Ctrl+H" Command="{Binding FindReplaceCommand}" />
               <MenuItem Header="Apply text _formatting to other pages…" Command="{Binding ApplyTextStyleCommand}" />
               <MenuItem Header="Apply _positions to other pages…" Command="{Binding ApplyLayoutCommand}"
                         ToolTip="Put objects on other pages where they are on this page" />
@@ -129,7 +129,7 @@
               <MenuItem Header="Flip _vertical" Command="{Binding FlipVerticalCommand}" />
             </MenuItem>
 
-            <MenuItem Header="D_ata">
+            <MenuItem AutomationProperties.AutomationId="Menu.Data" Header="D_ata">
               <MenuItem Header="_Import CSV / Excel…" Command="{Binding ImportDataCommand}" />
               <MenuItem Header="Connect to _database…" Command="{Binding ConnectDatabaseCommand}" />
               <MenuItem Header="_Edit connection…" Command="{Binding EditConnectionCommand}" />
@@ -147,8 +147,8 @@
               <MenuItem Header="Add date / time field" Command="{Binding AddDateFieldCommand}" />
             </MenuItem>
 
-            <MenuItem Header="_Print">
-              <MenuItem Header="_Print…" InputGestureText="Ctrl+P" Command="{Binding PrintCommand}" />
+            <MenuItem AutomationProperties.AutomationId="Menu.Print" Header="_Print">
+              <MenuItem AutomationProperties.AutomationId="Menu.PrintDialog" Header="_Print…" InputGestureText="Ctrl+P" Command="{Binding PrintCommand}" />
               <MenuItem Header="_Advanced Print Settings…" Command="{Binding PrintSettingsCommand}" />
               <MenuItem Header="Print Pre_view…" Command="{Binding PrintPreviewCommand}" />
               <MenuItem Header="Print _History…" Command="{Binding PrintHistoryCommand}" />
@@ -181,12 +181,13 @@
               <MenuItem Header="Snap to objects" IsCheckable="True" IsChecked="{Binding SnapToObjects}" />
             </MenuItem>
 
-            <MenuItem Header="_Help">
-              <MenuItem Header="_Help guide" InputGestureText="F1" Command="{Binding HelpCommand}" CommandParameter="" />
+            <MenuItem AutomationProperties.AutomationId="Menu.Help" Header="_Help">
+              <MenuItem AutomationProperties.AutomationId="Menu.HelpGuide" Header="_Help guide" InputGestureText="F1" Command="{Binding HelpCommand}" CommandParameter="" />
               <MenuItem Header="_Your first label" Command="{Binding HelpCommand}" CommandParameter="getting-started" />
               <MenuItem Header="_Keyboard shortcuts" Command="{Binding HelpCommand}" CommandParameter="shortcuts" />
               <MenuItem Header="T_roubleshooting" Command="{Binding HelpCommand}" CommandParameter="troubleshooting" />
               <Separator />
+              <MenuItem AutomationProperties.AutomationId="Menu.CheckForUpdates" Header="Check for _updates…" Command="{Binding CheckForUpdatesCommand}" />
               <MenuItem Header="_About LabelAxis" Command="{Binding AboutCommand}" />
             </MenuItem>
           </Menu>
@@ -219,22 +220,22 @@
           <RadioButton Style="{StaticResource ToolTile}" IsChecked="True" GroupName="tool" ToolTip="Select / move objects">
             <StackPanel><Image Style="{StaticResource ToolTileIcon}" Source="{StaticResource Icon.Select}" /><TextBlock Style="{StaticResource ToolTileLabel}" Text="Select" /></StackPanel>
           </RadioButton>
-          <Button Style="{StaticResource ToolTileButton}" Command="{Binding AddTextCommand}" ToolTip="Add a text box">
+          <Button Style="{StaticResource ToolTileButton}" Command="{Binding AddTextCommand}" AutomationProperties.AutomationId="Tool.AddText" ToolTip="Add a text box">
             <StackPanel><Image Style="{StaticResource ToolTileIcon}" Source="{StaticResource Icon.Text}" /><TextBlock Style="{StaticResource ToolTileLabel}" Text="Text" /></StackPanel>
           </Button>
-          <Button Style="{StaticResource ToolTileButton}" Command="{Binding AddImageCommand}" ToolTip="Add an image">
+          <Button Style="{StaticResource ToolTileButton}" Command="{Binding AddImageCommand}" AutomationProperties.AutomationId="Tool.AddImage" ToolTip="Add an image">
             <StackPanel><Image Style="{StaticResource ToolTileIcon}" Source="{StaticResource Icon.Image}" /><TextBlock Style="{StaticResource ToolTileLabel}" Text="Image" /></StackPanel>
           </Button>
-          <Button Style="{StaticResource ToolTileButton}" Command="{Binding AddBarcodeCommand}" ToolTip="Add a barcode">
+          <Button Style="{StaticResource ToolTileButton}" Command="{Binding AddBarcodeCommand}" AutomationProperties.AutomationId="Tool.AddBarcode" ToolTip="Add a barcode">
             <StackPanel><Image Style="{StaticResource ToolTileIcon}" Source="{StaticResource Icon.Barcode}" /><TextBlock Style="{StaticResource ToolTileLabel}" Text="Barcode" /></StackPanel>
           </Button>
-          <Button Style="{StaticResource ToolTileButton}" Command="{Binding AddQrCodeCommand}" ToolTip="Add a QR code">
+          <Button Style="{StaticResource ToolTileButton}" Command="{Binding AddQrCodeCommand}" AutomationProperties.AutomationId="Tool.AddQrCode" ToolTip="Add a QR code">
             <StackPanel><Image Style="{StaticResource ToolTileIcon}" Source="{StaticResource Icon.QrCode}" /><TextBlock Style="{StaticResource ToolTileLabel}" Text="QR Code" /></StackPanel>
           </Button>
-          <Button Style="{StaticResource ToolTileButton}" Command="{Binding AddTableCommand}" ToolTip="Add a table">
+          <Button Style="{StaticResource ToolTileButton}" Command="{Binding AddTableCommand}" AutomationProperties.AutomationId="Tool.AddTable" ToolTip="Add a table">
             <StackPanel><Image Style="{StaticResource ToolTileIcon}" Source="{StaticResource Icon.Table}" /><TextBlock Style="{StaticResource ToolTileLabel}" Text="Table" /></StackPanel>
           </Button>
-          <Button Style="{StaticResource ToolTileButton}" ToolTip="Add a shape" Click="OnAlignMenu">
+          <Button Style="{StaticResource ToolTileButton}" ToolTip="Add a shape" Click="OnAlignMenu" AutomationProperties.AutomationId="Tool.Shapes">
             <StackPanel Orientation="Horizontal">
               <StackPanel><Image Style="{StaticResource ToolTileIcon}" Source="{StaticResource Icon.Shape}" /><TextBlock Style="{StaticResource ToolTileLabel}" Text="Shapes" /></StackPanel>
               <Path Data="M 0,0 L 8,0 L 4,5 Z" Fill="{DynamicResource Br.TextMuted}" Margin="4,0,0,0" VerticalAlignment="Center" />
@@ -262,7 +263,7 @@
               </ContextMenu>
             </Button.ContextMenu>
           </Button>
-          <Button Style="{StaticResource ToolTileButton}" ToolTip="Add a line" Click="OnAlignMenu">
+          <Button Style="{StaticResource ToolTileButton}" ToolTip="Add a line" Click="OnAlignMenu" AutomationProperties.AutomationId="Tool.Lines">
             <StackPanel Orientation="Horizontal">
               <StackPanel><Image Style="{StaticResource ToolTileIcon}" Source="{StaticResource Icon.Line}" /><TextBlock Style="{StaticResource ToolTileLabel}" Text="Lines" /></StackPanel>
               <Path Data="M 0,0 L 8,0 L 4,5 Z" Fill="{DynamicResource Br.TextMuted}" Margin="4,0,0,0" VerticalAlignment="Center" />
@@ -375,6 +376,23 @@
       </Grid>
     </Border>
 
+    <!-- ═════════════ Update bar: a newer version is available ═════════════ -->
+    <Border DockPanel.Dock="Top" Background="{DynamicResource Br.AccentSoft}" BorderBrush="{DynamicResource Br.Border}"
+            BorderThickness="0,0,0,1" Padding="16,8" AutomationProperties.AutomationId="Main.UpdateBar"
+            Visibility="{Binding UpdateBarVisible, Converter={StaticResource BoolVisConv}}">
+      <DockPanel>
+        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+          <Button Content="Update now" Style="{StaticResource AccentButton}" Padding="14,4" Margin="8,0,0,0"
+                  Command="{Binding InstallUpdateCommand}" AutomationProperties.AutomationId="Main.UpdateNow" />
+          <Button Content="What's new" Padding="12,4" Margin="8,0,0,0" Command="{Binding UpdateNotesCommand}" />
+          <Button Content="Later" Padding="12,4" Margin="8,0,0,0" Command="{Binding DismissUpdateCommand}" AutomationProperties.AutomationId="Main.UpdateLater" />
+          <Button Content="Skip this version" Padding="12,4" Margin="8,0,0,0" Command="{Binding SkipUpdateCommand}" />
+        </StackPanel>
+        <TextBlock Text="{Binding UpdateBarText}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
+                   FontFamily="{StaticResource Font.UiSemiBold}" Foreground="{DynamicResource Br.Text}" />
+      </DockPanel>
+    </Border>
+
     <!-- ═════════════ Status bar ═════════════ -->
     <Border DockPanel.Dock="Bottom" Background="{DynamicResource Br.Bg}"
             BorderBrush="{DynamicResource Br.Border}" BorderThickness="0,1,0,0" Padding="14,7">
@@ -472,9 +490,9 @@
                 <Button ToolTip="Next page (↓)" Command="{Binding NextPageCommand}" Style="{StaticResource IconGhost}" MinWidth="24" Margin="0,0,6,0">
                   <Path Data="M 0,0 L 5,6 L 10,0" Stroke="{DynamicResource Br.Text2}" StrokeThickness="1.5" />
                 </Button>
-                <Button Content="+" ToolTip="Add page" Command="{Binding AddPageCommand}" Style="{StaticResource IconGhost}" />
+                <Button Content="+" ToolTip="Add page" Command="{Binding AddPageCommand}" Style="{StaticResource IconGhost}" AutomationProperties.AutomationId="Pages.Add" />
                 <Button Content="⧉" ToolTip="Duplicate page" Command="{Binding DuplicatePageCommand}" Style="{StaticResource IconGhost}" />
-                <Button Content="✕" ToolTip="Remove page" Command="{Binding RemovePageCommand}" Style="{StaticResource IconGhost}" />
+                <Button Content="✕" ToolTip="Remove page" Command="{Binding RemovePageCommand}" Style="{StaticResource IconGhost}" AutomationProperties.AutomationId="Pages.Remove" />
                 <Button ToolTip="Sort and arrange pages" Style="{StaticResource IconGhost}" MinWidth="24" Click="OnAlignMenu">
                   <Path Data="M 0,1 L 10,1 M 0,5 L 7,5 M 0,9 L 4,9" Stroke="{DynamicResource Br.Text2}" StrokeThickness="1.5" />
                   <Button.ContextMenu>

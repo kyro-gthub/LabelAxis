@@ -393,6 +393,7 @@ public sealed partial class MainViewModel
         LastRecordCommand = new RelayCommand(() => _session.RecordIndex = _session.RecordCount - 1);
 
         AboutCommand = new RelayCommand(() => _shell.ShowAbout());
+        BuildUpdateCommands();
         SettingsCommand = new RelayCommand(() => _shell.ShowSettings());
         ReplaceImageCommand = new RelayCommand(ReplaceSelectedImage, () => Properties.IsImage);
         ToggleObjectLockCommand = new RelayCommand(p => ToggleObjectLock(p as ObjectListItem));

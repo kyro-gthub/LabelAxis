@@ -6,22 +6,31 @@
     copy started from this folder keeps its settings, user templates, calibration
     and recovery snapshots in .\Data instead of %APPDATA%.
 
-    Usage:  powershell -ExecutionPolicy Bypass -File build\portable.ps1 [-Version 1.0.0] [-OutputDir E:\]
+    Usage:  powershell -ExecutionPolicy Bypass -File build\portable.ps1 [-Version 1.1.0] [-OutputDir E:\] [-SkipPublish]
 #>
 param(
-    [string]$Version = '1.0.0',
-    [string]$OutputDir = 'E:\'
+    [string]$Version = '',
+    [string]$OutputDir = 'E:\',
+    [switch]$SkipPublish,
+    [string]$UpdateUrl = ''
 )
 
 $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $PSScriptRoot
 Set-Location $root
 
+if (-not $Version) {
+    [xml]$props = Get-Content (Join-Path $root 'Directory.Build.props')
+    $Version = ($props.Project.PropertyGroup | Where-Object { $_.Version } | Select-Object -First 1).Version
+}
+
 $stageName = "LabelAxis-$Version-portable"
 $stage = Join-Path $root "artifacts\$stageName"
 
-Write-Host '== Publish (self-contained win-x64) ==' -ForegroundColor Cyan
-& (Join-Path $PSScriptRoot 'publish.ps1')
+if (-not $SkipPublish) {
+    Write-Host '== Publish ==' -ForegroundColor Cyan
+    & (Join-Path $PSScriptRoot 'publish.ps1') -UpdateUrl $UpdateUrl
+}
 
 Write-Host '== Stage ==' -ForegroundColor Cyan
 Remove-Item $stage -Recurse -Force -ErrorAction SilentlyContinue

@@ -17,12 +17,18 @@ public sealed class AppEnvironment
     /// </summary>
     public const string PortableMarkerFileName = "portable.txt";
 
-    public AppEnvironment()
+    /// <param name="dataDirectory">
+    /// A folder to keep settings, templates and the rest in instead of the usual places
+    /// (<c>LabelAxis.exe --data-dir &lt;folder&gt;</c>), so the automated click-through tests
+    /// start from a clean, known state and never touch the user's own settings.
+    /// </param>
+    public AppEnvironment(string? dataDirectory = null)
     {
-        string? portableRoot = FindPortableRoot();
+        string? portableRoot = dataDirectory is null ? FindPortableRoot() : null;
         IsPortable = portableRoot is not null;
 
-        Paths = portableRoot is null ? new AppPaths() : new AppPaths(portableRoot, portableRoot);
+        string? root = dataDirectory ?? portableRoot;
+        Paths = root is null ? new AppPaths() : new AppPaths(root, root);
         Paths.EnsureCreated();
 
         Settings = AppSettings.Load(Paths.SettingsFilePath);

@@ -143,6 +143,27 @@ public static class Localizer
 
     private static void Apply(object sender)
     {
+        // The labels themselves, not only what is drawn: screen readers (and the click-through
+        // tests) read a button's content, a menu's header and a tooltip, not the text inside.
+        if (sender is FrameworkElement element && !Translator.IsEmpty && !GetOff(element))
+        {
+            TranslateLocal(element, FrameworkElement.ToolTipProperty);
+            if (element is HeaderedItemsControl)
+            {
+                TranslateLocal(element, HeaderedItemsControl.HeaderProperty);
+            }
+            else if (element is HeaderedContentControl)
+            {
+                TranslateLocal(element, HeaderedContentControl.HeaderProperty);
+            }
+
+            // Not a list row made for a string in the user's data (its DataContext is that string).
+            if (element is ContentControl { Content: string content } control && !Equals(control.DataContext, content))
+            {
+                TranslateLocal(element, ContentControl.ContentProperty);
+            }
+        }
+
         switch (sender)
         {
             case Window window:
@@ -174,6 +195,19 @@ public static class Localizer
             case ContextMenu or ToolTip when IsRightToLeft:
                 ((FrameworkElement)sender).FlowDirection = FlowDirection.RightToLeft;
                 break;
+        }
+    }
+
+    // A text written in the window (not bound to data) is replaced by its translation.
+    private static void TranslateLocal(DependencyObject d, DependencyProperty property)
+    {
+        if (d.GetValue(property) is string text && text.Length > 0 && !BindingOperations.IsDataBound(d, property))
+        {
+            string translated = T(text);
+            if (!string.Equals(translated, text, StringComparison.Ordinal))
+            {
+                d.SetCurrentValue(property, translated);
+            }
         }
     }
 

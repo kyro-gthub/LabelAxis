@@ -103,6 +103,7 @@ internal static class MessageBox
                     IsDefault = isDefault,
                     IsCancel = isCancel,
                 };
+                System.Windows.Automation.AutomationProperties.SetAutomationId(b, "MessageBox." + result);
                 if (isDefault && Application.Current.TryFindResource("AccentButton") is Style accent)
                 {
                     b.Style = accent;

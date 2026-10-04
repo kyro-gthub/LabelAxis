@@ -26,10 +26,20 @@ public partial class App : Application
         LabelMaker.Export.Pdf.PdfDrawingSurface.ComplexTextOutliner = new Rendering.WpfTextOutliner();
     }
 
+    private static string? _dataDirectory;
+
+    /// <summary>The folder after <c>--data-dir</c> on the command line, if any.</summary>
+    private static string? DataDirectoryArgument(string[] args)
+    {
+        int i = Array.FindIndex(args, a => string.Equals(a, "--data-dir", StringComparison.OrdinalIgnoreCase));
+        return i >= 0 && i + 1 < args.Length ? Path.GetFullPath(args[i + 1]) : null;
+    }
+
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
-        Environment = new AppEnvironment();
+        _dataDirectory = DataDirectoryArgument(e.Args);
+        Environment = new AppEnvironment(_dataDirectory);
         Localization.Localizer.Start(Localization.Localizer.Resolve(Environment.Settings.Language));
         ThemeManager.Apply(Environment.Settings.DarkTheme ? AppTheme.Dark : AppTheme.Light);
         RegisterFontsForExport();
@@ -91,9 +101,18 @@ public partial class App : Application
             // After the main window has drawn, so the welcome window sits over it.
             window.Dispatcher.BeginInvoke(DispatcherPriority.ApplicationIdle, window.ViewModel.ShowWelcome);
         }
+
+        // The daily look for a newer version, a little after start-up so it never slows it down.
+        var updateCheck = new DispatcherTimer(DispatcherPriority.ApplicationIdle) { Interval = TimeSpan.FromSeconds(12) };
+        updateCheck.Tick += async (_, _) =>
+        {
+            updateCheck.Stop();
+            await window.ViewModel.CheckForUpdatesInBackgroundAsync();
+        };
+        updateCheck.Start();
     }
 
-    private bool _restartOnExit;
+    private System.Diagnostics.ProcessStartInfo? _runOnExit;
 
     /// <summary>
     /// Closes LabelAxis and starts it again (after a change of language). The main window asks
@@ -101,16 +120,36 @@ public partial class App : Application
     /// </summary>
     internal static void Restart()
     {
+        if (System.Environment.ProcessPath is { } exe)
+        {
+            // A copy started with its own data folder (the click-through tests) keeps it.
+            var next = new System.Diagnostics.ProcessStartInfo(exe) { UseShellExecute = false };
+            if (_dataDirectory is { } data)
+            {
+                next.ArgumentList.Add("--data-dir");
+                next.ArgumentList.Add(data);
+            }
+
+            QuitAndRun(next);
+        }
+    }
+
+    /// <summary>
+    /// Closes LabelAxis, then starts <paramref name="next"/> once settings are saved: LabelAxis
+    /// itself again, or an update's setup program. Cancelling the save question stops it.
+    /// </summary>
+    internal static void QuitAndRun(System.Diagnostics.ProcessStartInfo next)
+    {
         if (Current is not App app || app.MainWindow is not { } main)
         {
             return;
         }
 
-        app._restartOnExit = true;
+        app._runOnExit = next;
         main.Close();
         if (main.IsVisible)
         {
-            app._restartOnExit = false;
+            app._runOnExit = null;
             return;
         }
 
@@ -120,15 +159,15 @@ public partial class App : Application
     protected override void OnExit(ExitEventArgs e)
     {
         Environment?.SaveSettings();
-        if (_restartOnExit && System.Environment.ProcessPath is { } exe)
+        if (_runOnExit is { } next)
         {
             try
             {
-                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(exe) { UseShellExecute = false });
+                System.Diagnostics.Process.Start(next);
             }
             catch (System.ComponentModel.Win32Exception)
             {
-                // Could not start again; the user can open LabelAxis themselves.
+                // Could not start it (or the user declined the administrator prompt).
             }
         }
 

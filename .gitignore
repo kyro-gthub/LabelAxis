@@ -32,3 +32,6 @@ Thumbs.db
 *.labelproj
 *.labelproj.bak
 *.labelproj.tmp
+
+## Made by build\installer.ps1 from the two builds
+installer/obsolete-runtime-files.iss

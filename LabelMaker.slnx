@@ -8,5 +8,6 @@
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/LabelMaker.Tests/LabelMaker.Tests.csproj" />
+    <Project Path="tests/LabelMaker.UiTests/LabelMaker.UiTests.csproj" />
   </Folder>
 </Solution>
