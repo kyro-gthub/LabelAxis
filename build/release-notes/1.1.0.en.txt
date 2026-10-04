@@ -1,0 +1,14 @@
+LabelAxis 1.1.0
+
+New
+• LabelAxis in Arabic and Central Kurdish (Sorani): menus, windows, messages and the help guide, laid out right to left. Choose it in File › Settings › Language. Technical names such as PDF, QR Code and Wi-Fi stay in English.
+• Automatic updates: LabelAxis looks for a newer version once a day and installs it for you when you choose Update now.
+• Wi-Fi printers can now be calibrated like any other printer.
+• Arabic text in exported PDF files can be selected, copied and searched.
+
+Smaller download
+• The main installer is now much smaller. On a PC without the Microsoft .NET 10 Desktop Runtime it downloads it once from Microsoft; an offline installer with everything inside is available too.
+
+Also
+• A new label starts with its sample text in the interface language.
+• Screen readers read buttons and menus in the interface language.

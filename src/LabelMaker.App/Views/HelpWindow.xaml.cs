@@ -57,7 +57,8 @@ public partial class HelpWindow : Window
         PageViewer.Document.FlowDirection = LabelMaker.Core.Rendering.Bidi.HasRightToLeft(topic.Title + topic.Category)
             ? FlowDirection.RightToLeft
             : FlowDirection.LeftToRight;
-        CrumbText.Text = topic.Category == topic.Title ? topic.Title : $"{topic.Category}  ›  {topic.Title}";
+        string category = Localization.Localizer.T(topic.Category);
+        CrumbText.Text = category == topic.Title ? topic.Title : $"{category}  ›  {topic.Title}";
         Title = $"{topic.Title} — LabelAxis Help";
         SelectInList(topic);
         UpdateButtons();
@@ -177,8 +178,12 @@ public partial class HelpWindow : Window
 
     // ---- rendering ------------------------------------------------------------------------
 
+    // True while drawing a page written in Arabic or Kurdish: its "Tip:" labels are translated too.
+    private bool _translatedPage;
+
     private FlowDocument Render(HelpTopic topic)
     {
+        _translatedPage = LabelMaker.Core.Rendering.Bidi.HasRightToLeft(topic.Title);
         var doc = new FlowDocument
         {
             PagePadding = new Thickness(36, 26, 36, 36),
@@ -268,7 +273,7 @@ public partial class HelpWindow : Window
     private Section Callout(HelpCallout c)
     {
         string accentKey = c.Kind == "Important" ? "Br.Danger" : "Br.Accent";
-        var label = new Run(c.Kind + ": ");
+        var label = new Run((_translatedPage ? Localization.Localizer.T(c.Kind) : c.Kind) + ": ");
         label.SetResourceReference(TextElement.FontFamilyProperty, "Font.UiSemiBold");
         label.SetResourceReference(TextElement.ForegroundProperty, accentKey);
         Paragraph p = Para(c.Inlines, new Thickness(0));
