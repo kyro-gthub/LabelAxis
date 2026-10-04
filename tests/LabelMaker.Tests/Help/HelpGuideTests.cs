@@ -121,7 +121,7 @@ public sealed class HelpGuideTests
             }
         }
 
-        string vm = File.ReadAllText(Path.Combine(app, "ViewModels", "MainViewModel.cs"));
+        string vm = string.Concat(Directory.EnumerateFiles(Path.Combine(app, "ViewModels"), "MainViewModel*.cs").Select(File.ReadAllText));
         foreach (Match m in Regex.Matches(vm, "=> \"([a-z-]+)\","))
         {
             used.Add(m.Groups[1].Value);
