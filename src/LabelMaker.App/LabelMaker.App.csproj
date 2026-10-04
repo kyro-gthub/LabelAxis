@@ -45,6 +45,8 @@
   <ItemGroup>
     <!-- The help guide's pages (Help window, F1). -->
     <EmbeddedResource Include="Help\*.md" LogicalName="LabelAxis.Help.%(Filename)%(Extension)" />
+    <EmbeddedResource Include="Help\ar\*.md" LogicalName="LabelAxis.Help.ar.%(Filename)%(Extension)" />
+    <EmbeddedResource Include="Help\ckb\*.md" LogicalName="LabelAxis.Help.ckb.%(Filename)%(Extension)" />
     <!-- Interface languages: English text → translation (Settings › Language). -->
     <EmbeddedResource Include="Languages\*.json" LogicalName="LabelAxis.Languages.%(Filename)%(Extension)" />
   </ItemGroup>

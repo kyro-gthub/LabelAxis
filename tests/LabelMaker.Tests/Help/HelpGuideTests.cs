@@ -84,6 +84,30 @@ public sealed class HelpGuideTests
         Enumerable.Range(0, 4).Select(list.LevelOf).Should().Equal(0, 1, 1, 0);
     }
 
+    [Theory]
+    [InlineData("ar")]
+    [InlineData("ckb")]
+    public void Every_page_is_translated_with_the_same_id_category_and_links(string language)
+    {
+        string folder = Path.Combine(Repo, "src", "LabelMaker.App", "Help");
+        foreach (string english in Directory.EnumerateFiles(folder, "*.md"))
+        {
+            string translatedFile = Path.Combine(folder, language, Path.GetFileName(english));
+            File.Exists(translatedFile).Should().BeTrue($"{Path.GetFileName(english)} needs a {language} translation");
+
+            HelpTopic original = HelpMarkup.Parse(File.ReadAllText(english));
+            HelpTopic translated = HelpMarkup.Parse(File.ReadAllText(translatedFile));
+            translated.Id.Should().Be(original.Id);
+            translated.Category.Should().Be(original.Category, "categories stay in English: they order the guide and are translated on screen");
+            translated.Order.Should().Be(original.Order);
+            Regex.IsMatch(translated.Title, "[؀-ۿ]").Should().BeTrue($"the {language} title of {original.Id} is in {language}");
+
+            static IEnumerable<string> Links(HelpTopic t) =>
+                t.Blocks.SelectMany(Inlines).OfType<HelpLink>().Select(l => l.TopicId).Distinct().Order();
+            Links(translated).Should().BeSubsetOf(Guide().Topics.Select(t => t.Id), $"links in the {language} {original.Id} page lead to pages");
+        }
+    }
+
     [Fact]
     public void Every_page_reads_has_a_unique_id_and_every_link_goes_to_a_real_page()
     {

@@ -77,29 +77,48 @@ public static class HelpGuide
             e.Handled = true;
         }));
 
+    // English pages are "LabelAxis.Help.01-getting-started.md"; their translations
+    // "LabelAxis.Help.ar.01-getting-started.md" (Help\ar, Help\ckb in the project).
+    private const string Prefix = "LabelAxis.Help.";
+
     private static HelpLibrary Load()
     {
         var topics = new List<HelpTopic>();
         var assembly = typeof(HelpGuide).Assembly;
-        foreach (string name in assembly.GetManifestResourceNames().Where(n => n.StartsWith("LabelAxis.Help.", StringComparison.Ordinal) && n.EndsWith(".md", StringComparison.Ordinal)))
+        string[] names = assembly.GetManifestResourceNames();
+        string language = Localization.Localizer.Current.Code;
+        foreach (string name in names.Where(n => n.StartsWith(Prefix, StringComparison.Ordinal) && n.EndsWith(".md", StringComparison.Ordinal) &&
+                                                 !n[Prefix.Length..^3].Contains('.', StringComparison.Ordinal)))
         {
-            using Stream? stream = assembly.GetManifestResourceStream(name);
-            if (stream is null)
+            // The page in the interface language when it has been translated, otherwise in English.
+            string translated = Prefix + language + "." + name[Prefix.Length..];
+            HelpTopic? topic = (language != "en" && names.Contains(translated) ? Read(assembly, translated) : null) ?? Read(assembly, name);
+            if (topic is not null)
             {
-                continue;
-            }
-
-            using var reader = new StreamReader(stream);
-            try
-            {
-                topics.Add(HelpMarkup.Parse(reader.ReadToEnd()));
-            }
-            catch (FormatException)
-            {
-                // A broken page is left out rather than taking the guide down.
+                topics.Add(topic);
             }
         }
 
         return new HelpLibrary(topics);
+    }
+
+    private static HelpTopic? Read(System.Reflection.Assembly assembly, string name)
+    {
+        using Stream? stream = assembly.GetManifestResourceStream(name);
+        if (stream is null)
+        {
+            return null;
+        }
+
+        using var reader = new StreamReader(stream);
+        try
+        {
+            return HelpMarkup.Parse(reader.ReadToEnd());
+        }
+        catch (FormatException)
+        {
+            // A broken page is left out rather than taking the guide down.
+            return null;
+        }
     }
 }

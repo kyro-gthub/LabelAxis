@@ -37,6 +37,12 @@ Install it in Windows, or for a network printer add it under `Wi-Fi printers…`
 
 Windows shows this for programs from a publisher it does not know yet. Choose **More info**, then **Run anyway**.
 
+## No update is offered
+
+- Check that an **update address** is set under `File > Settings… > Updates`, or that this version was built with one.
+- Try `Help > Check for updates…`: the message says what did not work.
+- A portable copy does not update itself; see [[files|Projects, saving and settings]].
+
 ## Something else went wrong
 
 LabelAxis keeps your work safe in a recovery snapshot and writes details to a log file (in `%LOCALAPPDATA%\LabelAxis\logs`). Restart the program and accept the offer to restore your work.
