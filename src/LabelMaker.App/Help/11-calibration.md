@@ -12,7 +12,7 @@ Most printers put the page a millimetre or two away from where they are told, an
 ## Calibrate a printer
 
 1. Open `Print > Printer Calibration Wizard…` (or `Calibration wizard…` in the Print window).
-2. Choose the printer and press `Print calibration target`. Use plain paper.
+2. Choose the printer (printers installed in Windows and your [[wifi-printers|Wi-Fi printers]] are both listed) and press `Print calibration target`. Use plain paper.
 3. Measure the printed target with a ruler as the wizard shows, and type how far it is off: **X offset** (left/right) and **Y offset** (up/down) in millimetres, and the **scale** if lines come out longer or shorter than they should.
 4. Press `Save calibration`.
 

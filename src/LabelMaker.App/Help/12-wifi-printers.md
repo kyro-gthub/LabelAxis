@@ -21,7 +21,7 @@ It now appears in the Print window's printer list as **Wi-Fi: model (address)**.
 
 Each sheet is drawn exactly as the preview shows it and sent at the printer's resolution, at real size (never shrunk to fit), with your copies and paper size. Printers that only accept PDF receive a PDF of the same sheets.
 
-> Note: Printer calibration is for printers installed in Windows. If a Wi-Fi printer prints slightly off, add it to Windows as well and calibrate it there.
+> Tip: If a Wi-Fi printer prints slightly off, calibrate it like any other printer: it is listed in `Print > Printer Calibration Wizard…` too, and the correction is used for every job sent to it.
 
 ## Install it in Windows instead
 

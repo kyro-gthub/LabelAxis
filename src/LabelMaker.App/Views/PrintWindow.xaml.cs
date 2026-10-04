@@ -482,7 +482,8 @@ public partial class PrintWindow : Window
         }
 
         PrinterStatus.Text = SelectedNetworkPrinter is { } wifi
-            ? $"On the network at {WifiPrinterFinder.HostOf(wifi)}: {wifi.Describe()}, no driver needed."
+            ? $"On the network at {WifiPrinterFinder.HostOf(wifi)}: {wifi.Describe()}, no driver needed." +
+              (_printServer.IsCalibrated(IppPrintJob.DisplayName(wifi)) ? " Calibrated." : " Not calibrated yet (Calibration wizard).")
             : SelectedPrinter is null
                 ? "No printer selected."
                 : DescribeMedia(SelectedPrinter);
