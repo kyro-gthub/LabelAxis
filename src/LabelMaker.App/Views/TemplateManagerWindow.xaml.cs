@@ -251,7 +251,7 @@ public partial class TemplateManagerWindow : Window
 
     private void OnImport(object sender, RoutedEventArgs e)
     {
-        var dlg = new OpenFileDialog { Filter = "Template JSON|*.json", Multiselect = true };
+        var dlg = new OpenFileDialog { Filter = Localization.Localizer.Filter("Template JSON|*.json"), Multiselect = true };
         if (dlg.ShowDialog(this) != true)
         {
             return;
@@ -308,7 +308,7 @@ public partial class TemplateManagerWindow : Window
             return;
         }
 
-        var dlg = new SaveFileDialog { Filter = "Template JSON|*.json", FileName = row.Template.Id };
+        var dlg = new SaveFileDialog { Filter = Localization.Localizer.Filter("Template JSON|*.json"), FileName = row.Template.Id };
         if (dlg.ShowDialog(this) == true)
         {
             _env.Templates.ExportJson(row.Template.Id, dlg.FileName);

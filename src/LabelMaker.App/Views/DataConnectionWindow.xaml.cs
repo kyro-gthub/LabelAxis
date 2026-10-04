@@ -245,10 +245,10 @@ public partial class DataConnectionWindow : Window
     {
         var dialog = new OpenFileDialog
         {
-            Title = Kind == DataSourceKind.Access ? "Choose an Access database" : "Choose a SQLite database",
-            Filter = Kind == DataSourceKind.Access
+            Title = Localization.Localizer.T(Kind == DataSourceKind.Access ? "Choose an Access database" : "Choose a SQLite database"),
+            Filter = Localization.Localizer.Filter(Kind == DataSourceKind.Access
                 ? "Access databases|*.accdb;*.mdb|All files|*.*"
-                : "SQLite databases|*.db;*.sqlite;*.sqlite3;*.db3|All files|*.*",
+                : "SQLite databases|*.db;*.sqlite;*.sqlite3;*.db3|All files|*.*"),
         };
         if (dialog.ShowDialog(this) == true)
         {

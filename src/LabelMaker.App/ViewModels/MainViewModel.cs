@@ -102,7 +102,7 @@ public sealed partial class MainViewModel : ObservableObject
         {
             Name = "Title",
             Bounds = new RectMm(2, 2, Math.Max(10, w - 4), Math.Min(8, h / 3)),
-            Content = RichTextContent.FromPlainText("Product name"),
+            Content = RichTextContent.FromPlainText(Localization.Localizer.T("Product name")),
             FontSizePt = 10,
             Bold = true,
         });

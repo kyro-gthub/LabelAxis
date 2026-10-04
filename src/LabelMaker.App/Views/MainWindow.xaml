@@ -1,6 +1,7 @@
 <Window x:Class="LabelMaker.App.Views.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:loc="clr-namespace:LabelMaker.App.Localization"
         xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
         xmlns:ctl="clr-namespace:LabelMaker.App.Controls"
         Title="LabelAxis" Height="860" Width="1480" MinHeight="560" MinWidth="880"
@@ -65,7 +66,7 @@
           <!-- The product logo itself, not a stand-in glyph on a gradient tile. -->
           <Image Source="pack://application:,,,/LabelAxis;component/Assets/logo.png" Width="28" Height="28" Margin="0,0,10,0"
                  RenderOptions.BitmapScalingMode="HighQuality" SnapsToDevicePixels="True" />
-          <TextBlock VerticalAlignment="Center" FontSize="15.5" Margin="0,0,22,0">
+          <TextBlock VerticalAlignment="Center" FontSize="15.5" Margin="0,0,22,0" loc:Localizer.Off="True" FlowDirection="LeftToRight">
             <!-- One line: a line break between the runs would put a space in the name. -->
             <Run Text="Label" FontFamily="{StaticResource Font.UiExtraBold}" Foreground="{DynamicResource Br.Text}" /><Run Text="Axis" FontFamily="{StaticResource Font.UiExtraBold}" Foreground="{DynamicResource Br.Accent}" />
           </TextBlock>
@@ -78,6 +79,7 @@
               <MenuItem Header="Open _Recent" ItemsSource="{Binding RecentProjects}">
                 <MenuItem.ItemContainerStyle>
                   <Style TargetType="MenuItem">
+                    <Setter Property="loc:Localizer.Off" Value="True" />
                     <Setter Property="Header" Value="{Binding Title}" />
                     <Setter Property="Command" Value="{Binding DataContext.OpenRecentCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
                     <Setter Property="CommandParameter" Value="{Binding Path}" />
@@ -631,7 +633,7 @@
               </DockPanel>
             </Border>
             <Border Style="{StaticResource InsetPanel}">
-              <ListBox ItemsSource="{Binding SearchResults}" SelectedItem="{Binding SelectedSearchResult}"
+              <ListBox ItemsSource="{Binding SearchResults}" SelectedItem="{Binding SelectedSearchResult}" loc:Localizer.Off="True"
                        DisplayMemberPath="Display" BorderThickness="0" Background="Transparent" />
             </Border>
           </DockPanel>
@@ -766,7 +768,7 @@
 
         <!-- canvas -->
         <Border Background="{DynamicResource CanvasBackground}" ClipToBounds="True">
-          <Border x:Name="CanvasHost" ClipToBounds="True" />
+          <Border x:Name="CanvasHost" ClipToBounds="True" FlowDirection="LeftToRight" />
         </Border>
       </DockPanel>
 

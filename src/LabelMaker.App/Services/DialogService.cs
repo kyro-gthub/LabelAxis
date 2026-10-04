@@ -27,7 +27,7 @@ public sealed class DialogService : IShellServices
 
     public string? PickOpenFile(string filter, string? title = null)
     {
-        var dlg = new OpenFileDialog { Filter = filter, Title = title ?? "Open" };
+        var dlg = new OpenFileDialog { Filter = Localization.Localizer.Filter(filter), Title = Localization.Localizer.T(title ?? "Open") };
         if (_env.Settings.LastProjectDirectory is { } dir && Directory.Exists(dir))
         {
             dlg.InitialDirectory = dir;
@@ -44,7 +44,7 @@ public sealed class DialogService : IShellServices
 
     public string? PickSaveFile(string filter, string defaultFileName, string? title = null)
     {
-        var dlg = new SaveFileDialog { Filter = filter, FileName = defaultFileName, Title = title ?? "Save" };
+        var dlg = new SaveFileDialog { Filter = Localization.Localizer.Filter(filter), FileName = defaultFileName, Title = Localization.Localizer.T(title ?? "Save") };
         if (_env.Settings.LastProjectDirectory is { } dir && Directory.Exists(dir))
         {
             dlg.InitialDirectory = dir;
@@ -64,7 +64,7 @@ public sealed class DialogService : IShellServices
 
     public string? PickFolder(string? title = null)
     {
-        var dlg = new OpenFolderDialog { Title = title ?? "Choose folder" };
+        var dlg = new OpenFolderDialog { Title = Localization.Localizer.T(title ?? "Choose folder") };
         return dlg.ShowDialog(_owner) == true ? dlg.FolderName : null;
     }
 
@@ -221,7 +221,25 @@ public sealed class DialogService : IShellServices
             return;
         }
 
-        new SettingsWindow(_env, _vm) { Owner = _owner }.ShowDialog();
+        var window = new SettingsWindow(_env, _vm) { Owner = _owner };
+        if (window.ShowDialog() == true && window.LanguageChanged)
+        {
+            OfferRestartForLanguage();
+        }
+    }
+
+    // Asked in the language on screen and in the new one, so whoever chose it can read it.
+    private void OfferRestartForLanguage()
+    {
+        const string Question = "The new language is used when LabelAxis starts again. Restart LabelAxis now?";
+        Localization.AppLanguage next = Localization.Localizer.Resolve(_env.Settings.Language);
+        string here = Localization.Localizer.T(Question);
+        string there = Localization.Localizer.Load(next).Translate(Question);
+        string message = here == there ? here : here + "\n\n" + there;
+        if (MessageBox.Show(_owner, message, "LabelAxis", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+        {
+            App.Restart();
+        }
     }
 
     public void ShowDataTable()

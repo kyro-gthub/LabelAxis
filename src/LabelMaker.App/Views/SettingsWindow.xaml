@@ -1,5 +1,6 @@
 <Window x:Class="LabelMaker.App.Views.SettingsWindow"
         xmlns:helpsvc="clr-namespace:LabelMaker.App.Services"
+        xmlns:loc="clr-namespace:LabelMaker.App.Localization"
         helpsvc:HelpGuide.Topic="files"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -12,6 +13,12 @@
       <TextBlock Text="Appearance" FontWeight="SemiBold" FontSize="13" Margin="0,0,0,8" Foreground="{DynamicResource Br.TextMuted}" />
       <GroupBox>
         <StackPanel>
+          <TextBlock Text="Language" Style="{StaticResource FieldLabel}" Margin="0,2,0,4" />
+          <ComboBox x:Name="LanguageBox" loc:Localizer.Off="True" DisplayMemberPath="Display" HorizontalAlignment="Left" MinWidth="260"
+                    AutomationProperties.AutomationId="Settings.Language" />
+          <TextBlock Text="Menus, windows and messages. Technical names such as PDF, QR Code and Wi-Fi stay in English. Used after LabelAxis restarts."
+                     TextWrapping="Wrap" Foreground="{DynamicResource Br.TextMuted}" FontSize="11.5" Margin="0,4,0,4" />
+          <Separator Margin="0,6" />
           <TextBlock Text="Theme" Style="{StaticResource FieldLabel}" Margin="0,2,0,4" />
           <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
             <RadioButton x:Name="ThemeLightBox" GroupName="theme" Content="Light" Margin="0,0,18,0" />

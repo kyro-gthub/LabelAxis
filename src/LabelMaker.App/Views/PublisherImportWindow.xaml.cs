@@ -128,7 +128,7 @@ public partial class PublisherImportWindow : Window
             return;
         }
 
-        var dialog = new OpenFolderDialog { Title = "Save pictures to folder" };
+        var dialog = new OpenFolderDialog { Title = Localization.Localizer.T("Save pictures to folder") };
         if (dialog.ShowDialog(this) != true)
         {
             return;

@@ -3,6 +3,7 @@
         helpsvc:HelpGuide.Topic="export"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:loc="clr-namespace:LabelMaker.App.Localization"
         Style="{StaticResource AppWindow}"
         Background="{DynamicResource Br.Surface}" TextElement.Foreground="{DynamicResource Br.Text}"
         Title="Import from Publisher" Height="680" Width="1000" MinHeight="480" MinWidth="760"
@@ -73,7 +74,7 @@
         </Border>
         <Border Style="{StaticResource InsetPanel}" Padding="0">
           <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="12,8">
-            <ItemsControl x:Name="StoryList">
+            <ItemsControl x:Name="StoryList" loc:Localizer.Off="True">
               <ItemsControl.ItemTemplate>
                 <DataTemplate>
                   <StackPanel Margin="0,0,0,12">
