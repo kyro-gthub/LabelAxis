@@ -18,6 +18,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- Licences that must travel with the app: its own, third-party notices, and every bundled font's. -->
+    <None Include="..\..\LICENSE" Link="licenses\LICENSE.txt" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <None Include="..\..\THIRD-PARTY-NOTICES.txt" Link="licenses\THIRD-PARTY-NOTICES.txt" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <None Include="Assets\Fonts\OFL-LICENSE.txt" Link="licenses\fonts\PlusJakartaSans-DMMono-OFL.txt" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <None Include="Assets\Fonts\Arabic\*-OFL.txt" Link="licenses\fonts\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
     <!-- The help guide's pages (Help window, F1). -->
     <EmbeddedResource Include="Help\*.md" LogicalName="LabelAxis.Help.%(Filename)%(Extension)" />
   </ItemGroup>
