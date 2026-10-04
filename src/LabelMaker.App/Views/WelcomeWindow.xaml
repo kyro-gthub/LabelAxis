@@ -45,7 +45,7 @@
             BorderBrush="{DynamicResource Br.Border}" BorderThickness="0,0,1,0">
       <DockPanel Margin="22,22,22,16">
         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,22">
-          <Image Source="/Assets/logo.png" Width="44" Height="44" Margin="0,0,12,0" />
+          <Image Source="pack://application:,,,/LabelAxis;component/Assets/logo.png" Width="44" Height="44" Margin="0,0,12,0" />
           <StackPanel VerticalAlignment="Center">
             <TextBlock FontFamily="{StaticResource Font.UiExtraBold}" FontSize="22">
               <Run Text="Label" /><Run Text="Axis" Foreground="{DynamicResource Br.Accent}" />
