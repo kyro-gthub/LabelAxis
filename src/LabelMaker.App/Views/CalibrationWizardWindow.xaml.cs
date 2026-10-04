@@ -17,6 +17,7 @@ public partial class CalibrationWizardWindow : Window
 
     private readonly AppEnvironment _env;
     private readonly ProjectModel _project;
+    private readonly Dictionary<string, Core.Printing.Ipp.IppPrinterInfo> _network;
 
     public CalibrationWizardWindow(AppEnvironment env, ProjectModel project)
     {
@@ -26,7 +27,10 @@ public partial class CalibrationWizardWindow : Window
 
         var printServer = new Printing.WpfPrintServer(new Rendering.SheetVisualRenderer(new Rendering.WpfTextMeasurer(),
             new Rendering.WpfImageSource(new Core.Serialization.AssetStore())), env.Calibration);
-        var printers = printServer.InstalledPrinters().ToList();
+        // Wi-Fi printers added in the Print window are calibrated here too, under the name they
+        // print with, so their jobs pick the correction up like any other printer's.
+        _network = env.Settings.NetworkPrinters.GroupBy(Printing.IppPrintJob.DisplayName).ToDictionary(g => g.Key, g => g.First());
+        var printers = printServer.InstalledPrinters().Concat(_network.Keys).ToList();
         PrinterBox.ItemsSource = printers;
         PrinterBox.SelectedItem = printServer.DefaultPrinter() ?? printers.FirstOrDefault();
         PrinterBox.SelectionChanged += (_, _) => LoadForSelectedPrinter();
@@ -48,18 +52,46 @@ public partial class CalibrationWizardWindow : Window
         StatusText.Text = c.IsIdentity ? "No calibration stored for this printer yet." : $"Last updated {c.UpdatedUtc.ToLocalTime():g}.";
     }
 
-    private void OnPrintTarget(object sender, RoutedEventArgs e)
+    /// <summary>Prints the target on the printer chosen above, on the paper the label sheets use, at 100%.</summary>
+    private async void OnPrintTarget(object sender, RoutedEventArgs e)
     {
-        var dlg = new PrintDialog();
-        if (dlg.ShowDialog() != true)
+        if (PrinterBox.SelectedItem is not string printer)
         {
+            StatusText.Text = "Select a printer first.";
             return;
         }
 
-        // The target must print on the same paper, at 100%, as the label sheets it calibrates.
         PageSize page = _project.Template?.EffectivePage ?? PageSize.A4;
-        dlg.PrintTicket = Printing.WpfPrintServer.TicketFor(dlg.PrintQueue, dlg.PrintTicket, page.WidthMm, page.HeightMm, landscape: false);
+        DrawingVisual visual = Target();
+        try
+        {
+            if (_network.TryGetValue(printer, out Core.Printing.Ipp.IppPrinterInfo? wifi))
+            {
+                StatusText.Text = $"Sending the target to {printer}…";
+                var paginator = new Printing.SinglePagePaginator(visual, new Size(page.WidthMm * K, page.HeightMm * K));
+                await Printing.IppPrintJob.SendAsync(wifi, paginator, 1, "LabelAxis calibration target", new Progress<int>(), CancellationToken.None);
+            }
+            else
+            {
+                using var server = new System.Printing.LocalPrintServer();
+                System.Printing.PrintQueue queue = server.GetPrintQueue(printer);
+                var dlg = new PrintDialog { PrintQueue = queue };
+                dlg.PrintTicket = Printing.WpfPrintServer.TicketFor(queue, null, page.WidthMm, page.HeightMm, landscape: false);
+                dlg.PrintVisual(visual, "LabelAxis calibration target");
+            }
+        }
+        catch (Exception ex) when (ex is IOException or InvalidOperationException or System.Printing.PrintQueueException or System.Net.Http.HttpRequestException)
+        {
+            StatusText.Text = "Could not print the target: " + ex.Message;
+            return;
+        }
 
+        StatusText.Text = "Target printed. Measure the crosshair centre from the sheet's top-left and enter the difference below.";
+    }
+
+    /// <summary>A crosshair 20 mm in from the sheet's top-left corner, with millimetre ticks.</summary>
+    private static DrawingVisual Target()
+    {
         var visual = new DrawingVisual();
         using (DrawingContext dc = visual.RenderOpen())
         {
@@ -83,8 +115,7 @@ public partial class CalibrationWizardWindow : Window
             }
         }
 
-        dlg.PrintVisual(visual, "LabelAxis calibration target");
-        StatusText.Text = "Target printed. Measure the crosshair centre from the sheet's top-left and enter the difference below.";
+        return visual;
     }
 
     private void OnSave(object sender, RoutedEventArgs e)
