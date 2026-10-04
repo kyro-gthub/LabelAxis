@@ -18,6 +18,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- The help guide's pages (Help window, F1). -->
+    <EmbeddedResource Include="Help\*.md" LogicalName="LabelAxis.Help.%(Filename)%(Extension)" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\LabelMaker.Core\LabelMaker.Core.csproj" />
     <ProjectReference Include="..\LabelMaker.Export\LabelMaker.Export.csproj" />
     <ProjectReference Include="..\LabelMaker.Data\LabelMaker.Data.csproj" />

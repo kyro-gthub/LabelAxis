@@ -556,6 +556,7 @@ public sealed partial class MainViewModel : ObservableObject
     public RelayCommand ApplyTextStyleCommand { get; private set; } = null!;
     public RelayCommand DrawCustomShapeCommand { get; private set; } = null!;
     public RelayCommand ApplyLayoutCommand { get; private set; } = null!;
+    public RelayCommand HelpCommand { get; private set; } = null!;
     public RelayCommand EditShapeDotsCommand { get; private set; } = null!;
     public RelayCommand ApplySwatchCommand { get; private set; } = null!;
     public RelayCommand AlignRightCommand { get; private set; } = null!;
@@ -734,6 +735,8 @@ public sealed partial class MainViewModel : ObservableObject
         // Parameter is "fill" or "stroke": which of the shape's two colours to edit.
         DrawCustomShapeCommand = new RelayCommand(() => _canvas?.BeginCustomShape());
         ApplyLayoutCommand = new RelayCommand(ApplyLayoutToOtherPages, () => _session.ActiveLabel.Objects.Count > 0);
+        HelpCommand = new RelayCommand(p => HelpGuide.Show(System.Windows.Application.Current?.MainWindow,
+            p as string is { Length: > 0 } topic ? topic : HelpTopicForSelection()));
         EditShapeDotsCommand = new RelayCommand(
             () => { if (_session.Selection is [ShapeObject { Shape: ShapeKind.Custom } s]) { _canvas?.BeginPointEdit(s); } },
             () => _session.Selection is [ShapeObject { Shape: ShapeKind.Custom, Locked: false }]);
@@ -1779,6 +1782,18 @@ public sealed partial class MainViewModel : ObservableObject
     /// on it, and the dialog can still switch to every page or a chosen few. From the master
     /// label, printing goes back to what the job was set to before.
     /// </summary>
+    /// <summary>The help page about what is selected (F1 in the main window), or the first steps.</summary>
+    public string HelpTopicForSelection() => _session.Selection.FirstOrDefault() switch
+    {
+        TextObject t when Bidi.HasRightToLeft(t.Content.PlainText) => "arabic",
+        TextObject => "text",
+        BarcodeObject => "barcodes",
+        ImageObject => "images",
+        ShapeObject => "shapes",
+        TableObject => "designing",
+        _ => HelpGuide.StartTopic,
+    };
+
     /// <summary>Puts objects on other pages where they are on this page.</summary>
     private void ApplyLayoutToOtherPages()
     {

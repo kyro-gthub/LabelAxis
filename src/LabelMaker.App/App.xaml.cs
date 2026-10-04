@@ -41,6 +41,7 @@ public partial class App : Application
             new RoutedEventHandler((sender, _) => ThemeManager.ApplyTitleBar((Window)sender)));
 
         DispatcherUnhandledException += OnUnhandledException;
+        HelpGuide.HookF1();
 
         var window = new MainWindow(Environment);
         MainWindow = window;
