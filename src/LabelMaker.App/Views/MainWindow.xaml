@@ -4,7 +4,7 @@
         xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
         xmlns:ctl="clr-namespace:LabelMaker.App.Controls"
         Title="LabelAxis" Height="860" Width="1480" MinHeight="560" MinWidth="880"
-        Icon="/Assets/icon.ico"
+        Icon="pack://application:,,,/LabelAxis;component/Assets/icon.ico"
         WindowStartupLocation="CenterScreen"
         WindowStyle="None"
         Style="{StaticResource AppWindow}"
@@ -63,7 +63,7 @@
         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="14,0,0,0"
                     shell:WindowChrome.IsHitTestVisibleInChrome="True">
           <!-- The product logo itself, not a stand-in glyph on a gradient tile. -->
-          <Image Source="/Assets/logo.png" Width="28" Height="28" Margin="0,0,10,0"
+          <Image Source="pack://application:,,,/LabelAxis;component/Assets/logo.png" Width="28" Height="28" Margin="0,0,10,0"
                  RenderOptions.BitmapScalingMode="HighQuality" SnapsToDevicePixels="True" />
           <TextBlock VerticalAlignment="Center" FontSize="15.5" Margin="0,0,22,0">
             <!-- One line: a line break between the runs would put a space in the name. -->
