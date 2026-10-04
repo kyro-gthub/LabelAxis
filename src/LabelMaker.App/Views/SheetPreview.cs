@@ -24,6 +24,9 @@ internal static class SheetPreview
             VerticalAlignment = VerticalAlignment.Center,
             SnapsToDevicePixels = true,
             ClipToBounds = true,
+
+            // The paper as it is, also in a right-to-left window (Canvas.Left counts from the right there).
+            FlowDirection = FlowDirection.LeftToRight,
         };
 
         var border = new Border

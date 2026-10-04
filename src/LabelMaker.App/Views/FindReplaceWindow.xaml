@@ -3,6 +3,7 @@
         helpsvc:HelpGuide.Topic="designing"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:loc="clr-namespace:LabelMaker.App.Localization"
         Style="{StaticResource AppWindow}"
         Background="{DynamicResource Br.Surface}" TextElement.Foreground="{DynamicResource Br.Text}"
         Title="Find and replace" Height="620" Width="600" MinHeight="460" MinWidth="540"
@@ -124,7 +125,7 @@
       <TextBlock DockPanel.Dock="Top" x:Name="ResultsHeader" Text="MATCHES" Style="{StaticResource PanelSectionHeader}" />
       <Border Style="{StaticResource InsetPanel}" Padding="0">
         <Grid>
-          <ListBox x:Name="Results" BorderThickness="0" Background="Transparent"
+          <ListBox x:Name="Results" loc:Localizer.Off="True" BorderThickness="0" Background="Transparent"
                    HorizontalContentAlignment="Stretch" SelectionChanged="OnResultSelected"
                    ScrollViewer.HorizontalScrollBarVisibility="Disabled">
             <ListBox.ItemTemplate>

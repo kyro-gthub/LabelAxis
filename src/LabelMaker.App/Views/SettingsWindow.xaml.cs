@@ -20,6 +20,8 @@ public partial class SettingsWindow : Window
         _vm = vm;
 
         AppSettings s = env.Settings;
+        LanguageBox.ItemsSource = Localization.Localizer.Languages;
+        LanguageBox.SelectedItem = Localization.Localizer.Resolve(s.Language);
         (s.DarkTheme ? ThemeDarkBox : ThemeLightBox).IsChecked = true;
         ReduceMotionBox.IsChecked = s.ReduceMotion;
         SnapPixelsBox.Text = s.SnapPixels.ToString("0.#", CultureInfo.InvariantCulture);
@@ -49,6 +51,12 @@ public partial class SettingsWindow : Window
         s.AutoSaveSeconds = Math.Max(30, ParseInt(AutoSaveSecondsBox.Text, s.AutoSaveSeconds));
         s.MaxRecentProjects = Math.Clamp(ParseInt(MaxRecentBox.Text, s.MaxRecentProjects), 1, 50);
 
+        if (LanguageBox.SelectedItem is Localization.AppLanguage language)
+        {
+            LanguageChanged = language.Code != Localization.Localizer.Current.Code;
+            s.Language = language.Code;
+        }
+
         _env.SaveSettings();
         _vm.NotifyAutoSaveSettingsChanged();
 
@@ -60,6 +68,9 @@ public partial class SettingsWindow : Window
 
         DialogResult = true;
     }
+
+    /// <summary>True when Save chose a language other than the one on screen (it shows after a restart).</summary>
+    public bool LanguageChanged { get; private set; }
 
     private static double ParseDouble(string text, double fallback) =>
         double.TryParse(text, NumberStyles.Float, CultureInfo.InvariantCulture, out double v) ? v : fallback;

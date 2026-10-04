@@ -30,6 +30,7 @@ public partial class App : Application
     {
         base.OnStartup(e);
         Environment = new AppEnvironment();
+        Localization.Localizer.Start(Localization.Localizer.Resolve(Environment.Settings.Language));
         ThemeManager.Apply(Environment.Settings.DarkTheme ? AppTheme.Dark : AppTheme.Light);
         RegisterFontsForExport();
 
@@ -92,9 +93,45 @@ public partial class App : Application
         }
     }
 
+    private bool _restartOnExit;
+
+    /// <summary>
+    /// Closes LabelAxis and starts it again (after a change of language). The main window asks
+    /// about unsaved work first as usual; if that is cancelled, nothing happens.
+    /// </summary>
+    internal static void Restart()
+    {
+        if (Current is not App app || app.MainWindow is not { } main)
+        {
+            return;
+        }
+
+        app._restartOnExit = true;
+        main.Close();
+        if (main.IsVisible)
+        {
+            app._restartOnExit = false;
+            return;
+        }
+
+        app.Shutdown();
+    }
+
     protected override void OnExit(ExitEventArgs e)
     {
         Environment?.SaveSettings();
+        if (_restartOnExit && System.Environment.ProcessPath is { } exe)
+        {
+            try
+            {
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(exe) { UseShellExecute = false });
+            }
+            catch (System.ComponentModel.Win32Exception)
+            {
+                // Could not start again; the user can open LabelAxis themselves.
+            }
+        }
+
         base.OnExit(e);
     }
 

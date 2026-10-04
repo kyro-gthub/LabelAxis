@@ -43,6 +43,9 @@ public sealed class AppSettings
 
     public bool DarkTheme { get; set; }
 
+    /// <summary>Interface language ("en", "ar", "ckb"); none follows the language of Windows.</summary>
+    public string? Language { get; set; }
+
     /// <summary>Confirm before removing a page or clearing the data source.</summary>
     public bool ConfirmDestructiveActions { get; set; } = true;
 

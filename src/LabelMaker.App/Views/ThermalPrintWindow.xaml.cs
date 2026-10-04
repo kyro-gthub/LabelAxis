@@ -464,9 +464,9 @@ public partial class ThermalPrintWindow : Window
         {
             var dialog = new SaveFileDialog
             {
-                Filter = settings.Language == ThermalLanguage.Zpl ? "ZPL commands|*.zpl|All files|*.*" : "TSPL commands|*.prn|All files|*.*",
+                Filter = Localization.Localizer.Filter(settings.Language == ThermalLanguage.Zpl ? "ZPL commands|*.zpl|All files|*.*" : "TSPL commands|*.prn|All files|*.*"),
                 FileName = SafeName(_session.Project.Metadata.Title) + ThermalEncoders.For(settings.Language).FileExtension,
-                Title = "Save printer commands",
+                Title = Localization.Localizer.T("Save printer commands"),
             };
             if (dialog.ShowDialog(this) != true)
             {

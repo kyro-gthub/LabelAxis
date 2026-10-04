@@ -89,7 +89,7 @@ public partial class BulkBarcodeWindow : Window
 
     private void OnGenerate(object sender, RoutedEventArgs e)
     {
-        var folder = new OpenFolderDialog { Title = "Choose output folder" };
+        var folder = new OpenFolderDialog { Title = Localization.Localizer.T("Choose output folder") };
         if (folder.ShowDialog(this) != true)
         {
             return;

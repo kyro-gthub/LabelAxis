@@ -52,6 +52,11 @@ public partial class HelpWindow : Window
 
         _current = topic;
         PageViewer.Document = Render(topic);
+
+        // A page not yet translated reads left to right, also in an Arabic or Kurdish window.
+        PageViewer.Document.FlowDirection = LabelMaker.Core.Rendering.Bidi.HasRightToLeft(topic.Title + topic.Category)
+            ? FlowDirection.RightToLeft
+            : FlowDirection.LeftToRight;
         CrumbText.Text = topic.Category == topic.Title ? topic.Title : $"{topic.Category}  ›  {topic.Title}";
         Title = $"{topic.Title} — LabelAxis Help";
         SelectInList(topic);
