@@ -127,6 +127,92 @@ public static class Bidi
     }
 
     /// <summary>
+    /// The characters of <paramref name="text"/> in the order they appear on the page, left to
+    /// right: Arabic and Hebrew runs reversed (with brackets mirrored), English words and numbers
+    /// kept in their own order, and in a right-to-left paragraph the runs themselves going right
+    /// to left. PDF viewers expect right-to-left text stored like this and turn it back into
+    /// reading order when it is selected, copied or searched.
+    /// </summary>
+    public static string VisualString(string text, bool rightToLeft)
+    {
+        ArgumentNullException.ThrowIfNull(text);
+        if (text.Length == 0 || (!rightToLeft && !HasRightToLeft(text)))
+        {
+            return text;
+        }
+
+        // Each character's direction; spaces and punctuation take their neighbours' when both
+        // agree, otherwise the paragraph's. Digits read left to right, as numbers do in Arabic.
+        var flows = new TextFlow[text.Length];
+        for (int i = 0; i < text.Length; i++)
+        {
+            char c = text[i];
+            flows[i] = IsRightToLeft(c) ? TextFlow.RightToLeft : char.IsLetterOrDigit(c) ? TextFlow.LeftToRight : TextFlow.Neutral;
+        }
+
+        TextFlow baseFlow = rightToLeft ? TextFlow.RightToLeft : TextFlow.LeftToRight;
+        for (int i = 0; i < text.Length; i++)
+        {
+            if (flows[i] != TextFlow.Neutral)
+            {
+                continue;
+            }
+
+            int j = i;
+            while (j < text.Length && flows[j] == TextFlow.Neutral)
+            {
+                j++;
+            }
+
+            TextFlow before = i > 0 ? flows[i - 1] : baseFlow;
+            TextFlow after = j < text.Length ? flows[j] : baseFlow;
+            TextFlow resolved = before == after ? before : baseFlow;
+            for (int k = i; k < j; k++)
+            {
+                flows[k] = resolved;
+            }
+
+            i = j - 1;
+        }
+
+        var runs = new List<string>();
+        for (int i = 0; i < text.Length;)
+        {
+            int j = i;
+            while (j < text.Length && flows[j] == flows[i])
+            {
+                j++;
+            }
+
+            string run = text[i..j];
+            runs.Add(flows[i] == TextFlow.RightToLeft ? new string(run.Reverse().Select(Mirror).ToArray()) : run);
+            i = j;
+        }
+
+        if (rightToLeft)
+        {
+            runs.Reverse();
+        }
+
+        return string.Concat(runs);
+    }
+
+    private static char Mirror(char c) => c switch
+    {
+        '(' => ')',
+        ')' => '(',
+        '[' => ']',
+        ']' => '[',
+        '{' => '}',
+        '}' => '{',
+        '<' => '>',
+        '>' => '<',
+        '«' => '»',
+        '»' => '«',
+        _ => c,
+    };
+
+    /// <summary>
     /// The text to hand to a text engine that applies the Unicode bidi rules itself (WPF, SVG
     /// viewers): in a right-to-left paragraph it is wrapped in a right-to-left embedding so
     /// numbers and punctuation sit where an Arabic reader expects them.

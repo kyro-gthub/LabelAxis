@@ -37,4 +37,4 @@ They appear in every font list next to the fonts installed in Windows (Windows i
 
 ## Printing and PDF
 
-Arabic prints and exports exactly as it looks on screen, on sheets, thermal printers and in PDF files.
+Arabic prints and exports exactly as it looks on screen, on sheets, thermal printers and in PDF files. In an exported PDF the Arabic words can also be selected, copied and found with the viewer's Find.

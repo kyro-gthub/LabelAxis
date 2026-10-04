@@ -60,6 +60,29 @@ public sealed class BidiTests
         Bidi.ForDisplay(rtl with { RightToLeft = false }).Should().Be(Price);
     }
 
+    [Fact]
+    public void On_page_order_reverses_arabic_keeps_numbers_and_english_and_mirrors_brackets()
+    {
+        const string A = "ا", B = "ب";   // two Arabic letters
+
+        // On the page the first letter is on the right.
+        Bidi.VisualString(A + B, rightToLeft: true).Should().Be(B + A);
+
+        // A word then a number, read right to left: on the page the number sits left of the word.
+        Bidi.VisualString(A + B + " 25", rightToLeft: true).Should().Be("25 " + B + A);
+
+        // English inside Arabic keeps its letters in order.
+        Bidi.VisualString(A + " Model X200", rightToLeft: true).Should().Be("Model X200 " + A);
+
+        // Brackets turn round in right-to-left text.
+        Bidi.VisualString("(" + A + ")", rightToLeft: true).Should().Be("(" + A + ")");
+        Bidi.VisualString(A + "(" + B + ")", rightToLeft: true).Should().Be("(" + B + ")" + A);
+
+        // Plain English is left alone; Arabic inside English is reversed in place.
+        Bidi.VisualString("Fresh apples", rightToLeft: false).Should().Be("Fresh apples");
+        Bidi.VisualString("Buy " + A + B + " now", rightToLeft: false).Should().Be("Buy " + B + A + " now");
+    }
+
     private static TextBlock Layout(string text, TextObject? style = null)
     {
         style ??= new TextObject { FontSizePt = 10 };

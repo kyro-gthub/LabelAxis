@@ -305,6 +305,7 @@ public sealed class PdfDrawingSurface : IDrawingSurface
 
                     _gfx.DrawPath(brush, path);
                     advance = TextMeasurer.MeasureWidthMm(span.Text, span.FontFamily, span.FontSizePt, span.Bold, span.Italic);
+                    DrawSearchableText(span, font, x, baseline, advance);
                 }
                 else if (Math.Abs(trackingMm) < 1e-6)
                 {
@@ -339,6 +340,43 @@ public sealed class PdfDrawingSurface : IDrawingSurface
 
                 x += advance + (span.Text.EndsWith(' ') ? line.WordGapMm : 0);
             }
+        }
+    }
+
+    // Fully transparent: the text is there for selecting, copying and searching, never seen.
+    private static readonly XSolidBrush InvisibleInk = new(XColor.FromArgb(0, 0, 0, 0));
+
+    /// <summary>
+    /// Under text drawn as outlines, the same words as real but invisible PDF text, in the
+    /// order they sit on the page and stretched to the outlines' width, the way scanned and
+    /// recognised PDFs are made. PDF viewers turn it back into reading order, so Arabic in an
+    /// exported PDF can be selected, copied and found with Find.
+    /// </summary>
+    private void DrawSearchableText(TextSpan span, XFont font, double xMm, double baselineMm, double widthMm)
+    {
+        string onPage = Bidi.VisualString(span.Text.TrimEnd(), span.RightToLeft);
+        if (onPage.Trim().Length == 0 || widthMm <= 0)
+        {
+            return;
+        }
+
+        try
+        {
+            double natural = _gfx.MeasureString(onPage, font).Width;
+            if (natural <= 0)
+            {
+                return;
+            }
+
+            double x = xMm * MmToPt;
+            XGraphicsState state = _gfx.Save();
+            _gfx.ScaleAtTransform(widthMm * MmToPt / natural, 1, new XPoint(x, baselineMm * MmToPt));
+            _gfx.DrawString(onPage, font, InvisibleInk, x, baselineMm * MmToPt, XStringFormats.BaseLineLeft);
+            _gfx.Restore(state);
+        }
+        catch (Exception ex) when (ex is InvalidOperationException or ArgumentException or NotSupportedException)
+        {
+            // A font without those letters: the outlines are still there; only searching is lost.
         }
     }
 
