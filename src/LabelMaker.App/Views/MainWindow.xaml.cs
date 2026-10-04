@@ -33,6 +33,7 @@ public partial class MainWindow : Window
         shell.Bind(_vm);
         _vm.PageRenameRequested += (_, _) => BeginPageRename();
         DataContext = _vm;
+        HelpGuide.ContextTopic = _ => _vm.HelpTopicForSelection();
 
         _canvas = new DesignerCanvas(_vm.SheetRenderer);
         _canvas.ContextMenu = BuildCanvasContextMenu();

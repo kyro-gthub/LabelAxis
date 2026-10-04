@@ -1,0 +1,71 @@
+<Window x:Class="LabelMaker.App.Views.HelpWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Style="{StaticResource AppWindow}"
+        Background="{DynamicResource Br.Surface}" TextElement.Foreground="{DynamicResource Br.Text}"
+        Title="LabelAxis Help" Height="760" Width="980" MinHeight="460" MinWidth="680"
+        WindowStartupLocation="Manual" ShowInTaskbar="True">
+  <Grid>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="290" MinWidth="220" />
+      <ColumnDefinition Width="*" />
+    </Grid.ColumnDefinitions>
+
+    <!-- topics -->
+    <Border Background="{DynamicResource Br.Bg}" BorderBrush="{DynamicResource Br.Border}" BorderThickness="0,0,1,0">
+      <DockPanel>
+        <Border DockPanel.Dock="Top" Padding="16,16,16,8">
+          <StackPanel>
+            <TextBlock Text="Help guide" FontFamily="{StaticResource Font.UiSemiBold}" FontSize="16" Margin="0,0,0,10" />
+            <Border Style="{StaticResource SearchField}">
+              <DockPanel>
+                <Image DockPanel.Dock="Left" Source="{StaticResource Icon.Search}" Width="15" Height="15" Margin="2,0,8,0" />
+                <TextBox x:Name="SearchBox" Style="{StaticResource PlainTextBox}" Tag="Search the guide…" TextChanged="OnSearch" />
+              </DockPanel>
+            </Border>
+          </StackPanel>
+        </Border>
+        <TextBlock x:Name="NoResults" DockPanel.Dock="Top" Margin="18,6,18,0" TextWrapping="Wrap" FontSize="12"
+                   Foreground="{DynamicResource Br.TextMuted}" Visibility="Collapsed" />
+        <ListBox x:Name="TopicList" BorderThickness="0" Background="Transparent" Margin="8,4,8,8"
+                 HorizontalContentAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                 SelectionChanged="OnTopicSelected">
+          <ListBox.GroupStyle>
+            <GroupStyle>
+              <GroupStyle.HeaderTemplate>
+                <DataTemplate>
+                  <TextBlock Text="{Binding Name}" Style="{StaticResource PanelSectionHeader}" Margin="8,12,0,4" />
+                </DataTemplate>
+              </GroupStyle.HeaderTemplate>
+            </GroupStyle>
+          </ListBox.GroupStyle>
+          <ListBox.ItemTemplate>
+            <DataTemplate>
+              <StackPanel Margin="4,5">
+                <TextBlock Text="{Binding Title}" FontSize="13" TextTrimming="CharacterEllipsis" />
+                <TextBlock Text="{Binding Snippet}" FontSize="11" TextWrapping="Wrap" Margin="0,2,0,0"
+                           Foreground="{DynamicResource Br.TextMuted}" Visibility="{Binding HasSnippet, Converter={StaticResource BoolToVis}}" />
+              </StackPanel>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+      </DockPanel>
+    </Border>
+
+    <!-- page -->
+    <DockPanel Grid.Column="1">
+      <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource Br.Border}" BorderThickness="0,0,0,1" Padding="14,9">
+        <DockPanel>
+          <StackPanel DockPanel.Dock="Left" Orientation="Horizontal">
+            <Button x:Name="BackButton" Content="◀" Style="{StaticResource IconGhost}" MinWidth="30" ToolTip="Back (Alt+Left)" Click="OnBack" />
+            <Button x:Name="ForwardButton" Content="▶" Style="{StaticResource IconGhost}" MinWidth="30" ToolTip="Forward (Alt+Right)" Click="OnForward" Margin="2,0,10,0" />
+          </StackPanel>
+          <Button DockPanel.Dock="Right" Content="Keyboard shortcuts" Style="{StaticResource GhostButton}" Padding="10,4" Click="OnShortcuts" />
+          <TextBlock x:Name="CrumbText" VerticalAlignment="Center" FontSize="12" Foreground="{DynamicResource Br.TextMuted}" TextTrimming="CharacterEllipsis" />
+        </DockPanel>
+      </Border>
+      <FlowDocumentScrollViewer x:Name="PageViewer" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
+                                IsToolBarVisible="False" Focusable="True" />
+    </DockPanel>
+  </Grid>
+</Window>

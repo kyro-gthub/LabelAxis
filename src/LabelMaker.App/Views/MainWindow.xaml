@@ -178,6 +178,15 @@
               <MenuItem Header="Snap to guides" IsCheckable="True" IsChecked="{Binding SnapToGuides}" />
               <MenuItem Header="Snap to objects" IsCheckable="True" IsChecked="{Binding SnapToObjects}" />
             </MenuItem>
+
+            <MenuItem Header="_Help">
+              <MenuItem Header="_Help guide" InputGestureText="F1" Command="{Binding HelpCommand}" CommandParameter="" />
+              <MenuItem Header="_Your first label" Command="{Binding HelpCommand}" CommandParameter="getting-started" />
+              <MenuItem Header="_Keyboard shortcuts" Command="{Binding HelpCommand}" CommandParameter="shortcuts" />
+              <MenuItem Header="T_roubleshooting" Command="{Binding HelpCommand}" CommandParameter="troubleshooting" />
+              <Separator />
+              <MenuItem Header="_About LabelAxis" Command="{Binding AboutCommand}" />
+            </MenuItem>
           </Menu>
         </StackPanel>
 
