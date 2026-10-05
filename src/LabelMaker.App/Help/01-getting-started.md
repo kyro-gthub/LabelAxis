@@ -17,6 +17,10 @@ LabelAxis designs labels and stickers and prints them on label sheets (A4 or Let
 4. Press `Ctrl+P` to print. The picture on the right of the Print window shows the whole sheet exactly as it will come out.
 5. Save with `Ctrl+S`. Projects are saved as **.labelproj** files.
 
+## Or start from a ready-made design
+
+`File > New from a design…` (also on the Welcome window) shows 66 finished designs: price tags, product and barcode labels, food, shipping, stock, school and office, pharmacy, badges and QR labels. Each opens as a new project on the right label sheet or thermal roll. Change the words, put your logo in the grey picture box (`Image Settings > Replace image`), and print. Choose **Data fields** at the bottom of the window to keep `{Product}`, `{Price}` and so on for printing from a spreadsheet ([[data|Printing from a spreadsheet]]).
+
 > Tip: Before printing on an expensive sheet, print once on plain paper and hold it against a label sheet up to the light. If it is a little off, the [[calibration|printer calibration]] fixes it for good.
 
 ## Find your way around

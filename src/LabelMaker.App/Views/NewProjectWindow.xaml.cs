@@ -12,11 +12,14 @@ public partial class NewProjectWindow : Window
 {
     private readonly TemplateStore _store;
     private readonly HashSet<string> _favorites;
+    private readonly IList<string>? _savedFavorites;
 
-    public NewProjectWindow(TemplateStore store, IEnumerable<string>? favorites = null)
+    /// <param name="favorites">The starred sheets; a custom size starred here is added to it.</param>
+    public NewProjectWindow(TemplateStore store, IList<string>? favorites = null)
     {
         InitializeComponent();
         _store = store;
+        _savedFavorites = favorites;
         _favorites = new HashSet<string>(favorites ?? Array.Empty<string>(), StringComparer.Ordinal);
         SearchBox.TextChanged += (_, _) => Refresh();
         Refresh();
@@ -27,6 +30,41 @@ public partial class NewProjectWindow : Window
     }
 
     public LabelTemplate? SelectedTemplate { get; private set; }
+
+    /// <summary>True when a custom size was made here (the settings then need saving).</summary>
+    public bool FavoritesChanged { get; private set; }
+
+    /// <summary>A label of any size: made in the custom size window, kept with the user's own sheets.</summary>
+    private void OnCustomSize(object sender, RoutedEventArgs e)
+    {
+        var win = new CustomSizeWindow(_store, editing: null, isFavorite: true) { Owner = this };
+        if (win.ShowDialog() != true || win.Result is not { } saved)
+        {
+            return;
+        }
+
+        if (win.IsFavorite && _favorites.Add(saved.Id))
+        {
+            _savedFavorites?.Add(saved.Id);
+            FavoritesChanged = true;
+        }
+
+        if (win.UseNow)
+        {
+            SelectedTemplate = saved;
+            DialogResult = true;
+            return;
+        }
+
+        // Saved only: shown and picked in the list, ready for Create.
+        SearchBox.Text = string.Empty;
+        Refresh();
+        if (TemplateList.Items.Cast<Row>().FirstOrDefault(r => r.Template.Id == saved.Id) is { } row)
+        {
+            TemplateList.SelectedItem = row;
+            TemplateList.ScrollIntoView(row);
+        }
+    }
 
     private void Refresh()
     {

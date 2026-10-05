@@ -34,6 +34,14 @@ public sealed class TableObject : LabelObject
     public HorizontalAlignment CellAlignment { get; set; } = HorizontalAlignment.Left;
     public double CellPaddingMm { get; set; } = 1.0;
 
+    /// <summary>Colour of the cell text.</summary>
+    public ColorRgba TextColor { get; set; } = ColorRgba.Black;
+
+    /// <summary>Colour of the header row's text (null: <see cref="TextColor"/>), e.g. white on a dark header.</summary>
+    public ColorRgba? HeaderTextColor { get; set; }
+
+    public bool Bold { get; set; }
+
     public string CellAt(int row, int col)
     {
         int i = (row * Columns) + col;
@@ -94,6 +102,9 @@ public sealed class TableObject : LabelObject
             FontSizePt = FontSizePt,
             CellAlignment = CellAlignment,
             CellPaddingMm = CellPaddingMm,
+            TextColor = TextColor,
+            HeaderTextColor = HeaderTextColor,
+            Bold = Bold,
         };
         CopyBaseTo(copy);
         return copy;

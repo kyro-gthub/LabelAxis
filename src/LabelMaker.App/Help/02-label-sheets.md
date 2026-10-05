@@ -19,7 +19,7 @@ Press `☆ Add to favourites` above the sheet drawing. Starred sheets are listed
 
 ## Make your own sticker size
 
-In the Label manager press `＋ New custom size…` and fill in:
+In the Label manager press `＋ New custom size…`, or `Custom size…` in the New Project window, and fill in:
 
 - **Sticker:** a name, the width and height in millimetres, and the shape: rectangle, rounded corners (with a corner radius) or round / oval.
 - **Paper:** A4, Letter or another size, or your own paper size; portrait or landscape.
