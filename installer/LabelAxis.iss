@@ -1,8 +1,8 @@
 ; Inno Setup script for LabelAxis.
 ; Build with build\installer.ps1 (or build\release.ps1), which publishes the app first and
 ; passes the version:
-;   ISCC /DAppVersion=1.1.0 installer\LabelAxis.iss            the offline installer
-;   ISCC /DAppVersion=1.1.0 /DShared installer\LabelAxis.iss   the small installer
+;   ISCC /DAppVersion=1.0.0 installer\LabelAxis.iss            the offline installer
+;   ISCC /DAppVersion=1.0.0 /DShared installer\LabelAxis.iss   the small installer
 ;
 ; The offline installer carries the .NET runtime inside the program folder (..\artifacts\app).
 ; The small one installs the program without it (..\artifacts\app-shared) and, on a PC that

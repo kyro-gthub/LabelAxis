@@ -5,13 +5,13 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Style="{StaticResource AppWindow}"
         Background="{DynamicResource Br.Surface}" TextElement.Foreground="{DynamicResource Br.Text}"
-        Title="Apply positions to other pages" Height="720" Width="520" MinHeight="520" MinWidth="460"
+        Title="Apply page format to other pages" Height="820" Width="560" MinHeight="560" MinWidth="480"
         WindowStartupLocation="CenterOwner">
   <DockPanel Margin="18">
     <DockPanel DockPanel.Dock="Bottom" Margin="0,14,0,0">
       <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
         <Button Content="Cancel" Style="{StaticResource GhostButton}" IsCancel="True" Margin="0,0,8,0" />
-        <Button x:Name="ApplyButton" Content="Apply" Style="{StaticResource PrimaryButton}" IsDefault="True" Click="OnApply" />
+        <Button x:Name="ApplyButton" AutomationProperties.AutomationId="PageFormat.Apply" Content="Apply" Style="{StaticResource PrimaryButton}" IsDefault="True" Click="OnApply" />
       </StackPanel>
       <TextBlock x:Name="SummaryText" TextWrapping="Wrap" VerticalAlignment="Center" Margin="0,0,12,0"
                  FontFamily="{StaticResource Font.UiSemiBold}" FontSize="12.5" Foreground="{DynamicResource Br.Accent}" />
@@ -31,8 +31,21 @@
         <Border Style="{StaticResource InsetPanel}" Padding="12,10" Margin="0,0,0,14">
           <StackPanel>
             <CheckBox x:Name="PositionBox" Content="Position (where it sits on the label)" IsChecked="True" Margin="0,3" Click="OnChanged" />
-            <CheckBox x:Name="SizeBox" Content="Size (width and height)" Margin="0,3" Click="OnChanged" />
-            <CheckBox x:Name="RotationBox" Content="Rotation and slant" Margin="0,3" Click="OnChanged" />
+            <CheckBox x:Name="SizeBox" Content="Size (width and height)" IsChecked="True" Margin="0,3" Click="OnChanged" />
+            <CheckBox x:Name="RotationBox" Content="Rotation and slant" IsChecked="True" Margin="0,3" Click="OnChanged" />
+            <CheckBox x:Name="LookBox" Content="Look and settings" IsChecked="True" Margin="0,3" Click="OnChanged" />
+            <TextBlock Text="Font and colours, barcode type, bar height and caption, image fit and border, shape outline and fill, table lines. Each page keeps its own words, barcode value and picture."
+                       TextWrapping="Wrap" Margin="26,0,0,4" FontSize="12" Foreground="{DynamicResource Br.TextMuted}" />
+            <WrapPanel x:Name="TextPartsPanel" Margin="26,2,0,4">
+              <TextBlock Text="For text:" Margin="0,3,10,3" FontSize="12" Foreground="{DynamicResource Br.TextMuted}" />
+              <CheckBox x:Name="FontPartBox" Content="Font" IsChecked="True" Margin="0,3,14,3" Click="OnChanged" />
+              <CheckBox x:Name="SizePartBox" Content="Text size" IsChecked="True" Margin="0,3,14,3" Click="OnChanged" />
+              <CheckBox x:Name="StylePartBox" Content="Bold, italic, underline" IsChecked="True" Margin="0,3,14,3" Click="OnChanged" />
+              <CheckBox x:Name="ColourPartBox" Content="Colours" IsChecked="True" Margin="0,3,14,3" Click="OnChanged" />
+              <CheckBox x:Name="AlignPartBox" Content="Alignment" IsChecked="True" Margin="0,3,14,3" Click="OnChanged" />
+              <CheckBox x:Name="SpacingPartBox" Content="Line and letter spacing" IsChecked="True" Margin="0,3,14,3" Click="OnChanged" />
+            </WrapPanel>
+            <CheckBox x:Name="AddMissingBox" AutomationProperties.AutomationId="PageFormat.AddMissing" Content="Add the objects a page doesn't have (copied with their words and pictures)" Margin="0,8,0,3" Click="OnChanged" />
           </StackPanel>
         </Border>
 
@@ -41,13 +54,15 @@
           <StackPanel>
             <WrapPanel>
               <CheckBox x:Name="TextKindBox" Content="Text" IsChecked="True" Margin="0,3,16,3" Click="OnChanged" />
-              <CheckBox x:Name="BarcodeKindBox" Content="Barcodes" IsChecked="True" Margin="0,3,16,3" Click="OnChanged" />
+              <CheckBox x:Name="BarcodeKindBox" Content="Barcodes and QR codes" IsChecked="True" Margin="0,3,16,3" Click="OnChanged" />
               <CheckBox x:Name="ImageKindBox" Content="Images" IsChecked="True" Margin="0,3,16,3" Click="OnChanged" />
               <CheckBox x:Name="ShapeKindBox" Content="Shapes and lines" IsChecked="True" Margin="0,3,16,3" Click="OnChanged" />
               <CheckBox x:Name="TableKindBox" Content="Tables" IsChecked="True" Margin="0,3,16,3" Click="OnChanged" />
             </WrapPanel>
             <TextBlock Text="Match each one on the other pages by" Margin="0,10,0,2" FontSize="12" Foreground="{DynamicResource Br.TextMuted}" />
-            <RadioButton x:Name="SameNameBox" GroupName="match" IsChecked="True" Margin="0,3" Click="OnChanged"
+            <RadioButton x:Name="NameThenOrderBox" GroupName="match" IsChecked="True" Margin="0,3" Click="OnChanged"
+                         Content="Its name, or else its order (recommended)" />
+            <RadioButton x:Name="SameNameBox" GroupName="match" Margin="0,3" Click="OnChanged"
                          Content="Its name (pages copied from this one keep the names)" />
             <RadioButton x:Name="SameOrderBox" GroupName="match" Margin="0,3" Click="OnChanged"
                          Content="Its order: 1st text to 1st text, 2nd barcode to 2nd barcode…" />

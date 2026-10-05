@@ -1,10 +1,14 @@
-LabelAxis 1.1.0
+LabelAxis 1.0.0
 
 New
 • LabelAxis in Arabic and Central Kurdish (Sorani): menus, windows, messages and the help guide, laid out right to left. Choose it in File › Settings › Language. Technical names such as PDF, QR Code and Wi-Fi stay in English.
 • Automatic updates: LabelAxis looks for a newer version once a day and installs it for you when you choose Update now.
 • Wi-Fi printers can now be calibrated like any other printer.
 • Arabic text in exported PDF files can be selected, copied and searched.
+• Your own fonts: add a .ttf or .otf file with "Add font…" next to the font list (or in Settings › Fonts), without installing it in Windows. A project that uses it keeps a copy, so it looks the same on another PC.
+• Apply page format to other pages (Edit menu, or right-click a page): every object on the other pages takes the position, size, rotation and look of its match on this page — font, colours, barcode type and size, borders — while each page keeps its own words, barcode values and pictures. It can also add the objects a page is missing.
+• Pages are numbered 1, 2, 3… in the page list, the first page too.
+• A tidier status bar that no longer overlaps on smaller screens.
 
 Smaller download
 • The main installer is now much smaller. On a PC without the Microsoft .NET 10 Desktop Runtime it downloads it once from Microsoft; an offline installer with everything inside is available too.

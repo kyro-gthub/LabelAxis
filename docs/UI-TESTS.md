@@ -15,6 +15,7 @@ would land in the wrong place. The program refuses to start without `--test-pc`.
 | Add text, Undo | A text box appears in the object list; Undo removes it. |
 | Add objects | A barcode, a QR code and a table each appear in the object list. |
 | Add page, Undo | A page appears in the page list; Undo removes it. |
+| Page numbers, page format | Pages are numbered from 1; Apply page format with "add what a page is missing" copies a table onto page 1; Undo takes it away. |
 | Print window | Opens with the printer list and the preview, closes without printing. |
 | Label manager | Lists the label sheets; searching "3100" narrows the list. |
 | Find and replace | Finds the text on the sample label. |

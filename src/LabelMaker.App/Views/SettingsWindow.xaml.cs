@@ -45,6 +45,49 @@ public partial class SettingsWindow : Window
         }
 
         UpdateAddressHint.Text = hint;
+        RefreshFonts();
+    }
+
+    private void RefreshFonts()
+    {
+        FontList.ItemsSource = Rendering.CustomFonts.Names
+            .Select(name => new FontRow(name, string.Join(", ", Rendering.CustomFonts.FilesOf(name))))
+            .ToList();
+        RemoveFontButton.IsEnabled = false;
+    }
+
+    /// <summary>A row of the font list: the family and its files.</summary>
+    private sealed record FontRow(string Family, string Files)
+    {
+        public override string ToString() => $"{Family}   ({Files})";
+    }
+
+    private void OnFontSelected(object sender, System.Windows.Controls.SelectionChangedEventArgs e) =>
+        RemoveFontButton.IsEnabled = FontList.SelectedItem is not null;
+
+    // Fonts are added and removed at once, not on Save: the font lists show them straight away.
+    private void OnAddFont(object sender, RoutedEventArgs e)
+    {
+        if (_vm.AddFontFromFile() is { } family)
+        {
+            RefreshFonts();
+            StatusText.Text = Localization.Localizer.F("Font “{0}” added", family);
+        }
+    }
+
+    private void OnRemoveFont(object sender, RoutedEventArgs e)
+    {
+        if (FontList.SelectedItem is not FontRow row ||
+            MessageBox.Show(this, Localization.Localizer.F("Remove the font “{0}” from LabelAxis? Labels that use it are drawn in another font until it is added again.", row.Family),
+                "LabelAxis", MessageBoxButton.OKCancel, MessageBoxImage.Question) != MessageBoxResult.OK)
+        {
+            return;
+        }
+
+        Rendering.CustomFonts.Remove(row.Family);
+        _vm.RedrawCanvas();
+        RefreshFonts();
+        StatusText.Text = Localization.Localizer.F("Font “{0}” removed", row.Family);
     }
 
     private void OnSave(object sender, RoutedEventArgs e)

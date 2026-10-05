@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using System.Windows.Media;
 using LabelMaker.App.Mvvm;
 using LabelMaker.App.Services;
@@ -80,10 +81,39 @@ public sealed class SelectionProperties : ObservableObject
     public bool IsShape => Obj is ShapeObject;
     public bool IsImage => Obj is ImageObject;
 
-    /// <summary>Installed font family names, for the Font picker (spec: choose a font from a list, not free text).</summary>
-    public static IReadOnlyList<string> FontFamilies { get; } =
+    /// <summary>
+    /// Font family names for the Font picker (spec: choose a font from a list, not free text):
+    /// the installed fonts, the Arabic fonts that come with LabelAxis and the fonts the user
+    /// added, kept up to date as fonts are added or removed.
+    /// </summary>
+    public static ObservableCollection<string> FontFamilies { get; } = BuildFontFamilies();
+
+    private static ObservableCollection<string> BuildFontFamilies()
+    {
+        var list = new ObservableCollection<string>(AllFontFamilies());
+        Rendering.CustomFonts.Changed += (_, _) =>
+        {
+            List<string> now = AllFontFamilies();
+            foreach (string gone in list.Except(now).ToList())
+            {
+                list.Remove(gone);
+            }
+
+            for (int i = 0; i < now.Count; i++)
+            {
+                if (i >= list.Count || !string.Equals(list[i], now[i], StringComparison.Ordinal))
+                {
+                    list.Insert(i, now[i]);
+                }
+            }
+        };
+        return list;
+    }
+
+    private static List<string> AllFontFamilies() =>
         Fonts.SystemFontFamilies.Select(f => f.Source)
             .Concat(Rendering.BundledFonts.Names)       // the Arabic fonts that come with LabelAxis
+            .Concat(Rendering.CustomFonts.Names)        // and the ones added from font files
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .OrderBy(n => n, StringComparer.OrdinalIgnoreCase)
             .ToList();

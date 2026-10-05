@@ -116,8 +116,8 @@
               <MenuItem Header="_Find…" InputGestureText="Ctrl+F" Command="{Binding FindCommand}" />
               <MenuItem AutomationProperties.AutomationId="Menu.FindReplace" Header="Find and _replace…" InputGestureText="Ctrl+H" Command="{Binding FindReplaceCommand}" />
               <MenuItem Header="Apply text _formatting to other pages…" Command="{Binding ApplyTextStyleCommand}" />
-              <MenuItem Header="Apply _positions to other pages…" Command="{Binding ApplyLayoutCommand}"
-                        ToolTip="Put objects on other pages where they are on this page" />
+              <MenuItem AutomationProperties.AutomationId="Menu.PageFormat" Header="Apply page f_ormat to other pages…" Command="{Binding ApplyLayoutCommand}"
+                        ToolTip="Give the objects on other pages the place, size and look they have on this page" />
               <Separator />
               <MenuItem Header="_Group" InputGestureText="Ctrl+G" Command="{Binding GroupCommand}" />
               <MenuItem Header="U_ngroup" InputGestureText="Ctrl+Shift+G" Command="{Binding UngroupCommand}" />
@@ -216,6 +216,13 @@
     <Border DockPanel.Dock="Top" Background="{DynamicResource Br.Bg}"
             BorderBrush="{DynamicResource Br.Border}" BorderThickness="0,0,0,1">
       <Grid Margin="10,8">
+        <!-- Two columns, so the tools never slide under Preview and Print: in a narrow window
+             the tools scroll sideways instead. -->
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" Margin="0,0,10,0">
         <StackPanel Orientation="Horizontal">
           <RadioButton Style="{StaticResource ToolTile}" IsChecked="True" GroupName="tool" ToolTip="Select / move objects">
             <StackPanel><Image Style="{StaticResource ToolTileIcon}" Source="{StaticResource Icon.Select}" /><TextBlock Style="{StaticResource ToolTileLabel}" Text="Select" /></StackPanel>
@@ -358,8 +365,9 @@
             <StackPanel><Image Style="{StaticResource ToolTileIcon}" Source="{StaticResource Icon.ZoomIn}" /><TextBlock Style="{StaticResource ToolTileLabel}" Text="Zoom In" /></StackPanel>
           </Button>
         </StackPanel>
+        </ScrollViewer>
 
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+        <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
           <Button Style="{StaticResource GhostButton}" Command="{Binding PrintPreviewCommand}" Margin="0,0,10,0">
             <StackPanel Orientation="Horizontal">
               <Image Source="{StaticResource Icon.Eye}" Width="16" Height="16" Margin="0,0,8,0" />
@@ -394,25 +402,36 @@
     </Border>
 
     <!-- ═════════════ Status bar ═════════════ -->
+    <!-- One row of columns, so nothing can slide over anything else: the sheet name takes the
+         room that is left and is shortened with "…" when the window is narrow. -->
     <Border DockPanel.Dock="Bottom" Background="{DynamicResource Br.Bg}"
-            BorderBrush="{DynamicResource Br.Border}" BorderThickness="0,1,0,0" Padding="14,7">
+            BorderBrush="{DynamicResource Br.Border}" BorderThickness="0,1,0,0" Padding="14,6">
       <Grid>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="Auto" />
+          <ColumnDefinition Width="*" MinWidth="60" />
+          <ColumnDefinition Width="Auto" />
+          <ColumnDefinition Width="Auto" />
+          <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+
         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
           <Image Source="{StaticResource Icon.Check}" Width="15" Height="15" Margin="0,0,7,0" />
-          <TextBlock Text="{Binding SaveStateText}" Style="{StaticResource StatusText}" Margin="0,0,16,0" />
-          <Rectangle Style="{StaticResource StatusDivider}" />
-          <Image Source="{StaticResource Icon.FileDoc}" Width="15" Height="15" Margin="0,0,7,0" />
-          <TextBlock Text="{Binding DocumentTabTitle}" Style="{StaticResource StatusText}" Margin="0,0,16,0" />
-          <Rectangle Style="{StaticResource StatusDivider}" />
-          <Image Source="{StaticResource Icon.Sheet}" Width="15" Height="15" Margin="0,0,7,0" />
-          <TextBlock Text="{Binding SheetSummary}" Style="{StaticResource StatusText}" Margin="0,0,16,0" />
-          <Rectangle Style="{StaticResource StatusDivider}" />
-          <Image Source="{StaticResource Icon.Search}" Width="15" Height="15" Margin="0,0,7,0" />
-          <TextBlock Text="{Binding ZoomText}" Style="{StaticResource StatusText}" Margin="0,0,16,0" />
-          <Rectangle Style="{StaticResource StatusDivider}" />
+          <TextBlock Text="{Binding SaveStateText}" Style="{StaticResource StatusText}" Margin="0,0,14,0" />
+          <Rectangle Style="{StaticResource StatusDivider}" Margin="0,0,14,0" />
+        </StackPanel>
 
-          <!-- Steps the canvas through the merged records, one at a time. -->
-          <Image Source="{StaticResource Icon.Database}" Width="15" Height="15" Margin="0,0,7,0" />
+        <DockPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,14,0">
+          <Image Source="{StaticResource Icon.Sheet}" Width="15" Height="15" Margin="0,0,7,0" />
+          <TextBlock Text="{Binding SheetSummary}" Style="{StaticResource StatusText}" TextTrimming="CharacterEllipsis"
+                     ToolTip="{Binding SheetSummary}" />
+        </DockPanel>
+
+        <!-- Steps the canvas through the merged records; only there when records are loaded. -->
+        <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center"
+                    Visibility="{Binding HasData, Converter={StaticResource BoolToVis}}">
+          <Rectangle Style="{StaticResource StatusDivider}" Margin="0,0,10,0" />
+          <Image Source="{StaticResource Icon.Database}" Width="15" Height="15" Margin="0,0,4,0" />
           <Button Content="⏮" Style="{StaticResource IconGhost}" MinWidth="24" ToolTip="First record"
                   Command="{Binding FirstRecordCommand}" />
           <Button Content="◀" Style="{StaticResource IconGhost}" MinWidth="24" ToolTip="Previous record"
@@ -422,28 +441,37 @@
           <Button Content="▶" Style="{StaticResource IconGhost}" MinWidth="24" ToolTip="Next record"
                   Command="{Binding NextRecordCommand}" />
           <Button Content="⏭" Style="{StaticResource IconGhost}" MinWidth="24" ToolTip="Last record"
-                  Command="{Binding LastRecordCommand}" />
+                  Command="{Binding LastRecordCommand}" Margin="0,0,14,0" />
         </StackPanel>
 
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-          <Border Background="{DynamicResource Br.Surface2}" BorderBrush="{DynamicResource Br.Border}" BorderThickness="1"
-                  CornerRadius="8" Padding="10,4" Margin="0,0,14,0">
-            <StackPanel Orientation="Horizontal">
-              <Image Source="{StaticResource Icon.Print}" Width="14" Height="14" Margin="0,0,7,0" />
-              <TextBlock Text="{Binding PrinterName}" Style="{StaticResource StatusText}" />
-            </StackPanel>
-          </Border>
-          <Ellipse Width="8" Height="8" Fill="{DynamicResource Br.Ok}" VerticalAlignment="Center" Margin="0,0,7,0" />
-          <TextBlock Text="{Binding CalibrationStatus}" Style="{StaticResource StatusText}" Margin="0,0,16,0" />
-          <Image Source="{StaticResource Icon.Database}" Width="15" Height="15" Margin="0,0,7,0" />
-          <TextBlock Text="{Binding RecordsReadyText}" Style="{StaticResource StatusText}" Margin="0,0,14,0" />
-          <Button Style="{StaticResource PrimaryButton}" Command="{Binding PrintCommand}" Padding="16,6">
-            <StackPanel Orientation="Horizontal">
-              <Image Source="{StaticResource Icon.PrintWhite}" Width="15" Height="15" Margin="0,0,7,0" />
-              <TextBlock Text="Print All" VerticalAlignment="Center" />
-            </StackPanel>
-          </Button>
+        <StackPanel Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Center">
+          <Rectangle Style="{StaticResource StatusDivider}" Margin="0,0,14,0" />
+          <Image Source="{StaticResource Icon.Search}" Width="15" Height="15" Margin="0,0,7,0" />
+          <TextBlock Text="{Binding ZoomText}" Style="{StaticResource StatusText}" Margin="0,0,14,0" />
         </StackPanel>
+
+        <Border Grid.Column="4" Background="{DynamicResource Br.Surface2}" BorderBrush="{DynamicResource Br.Border}" BorderThickness="1"
+                CornerRadius="8" Padding="10,3" VerticalAlignment="Center">
+          <StackPanel Orientation="Horizontal">
+            <Image Source="{StaticResource Icon.Print}" Width="14" Height="14" Margin="0,0,7,0" />
+            <TextBlock Text="{Binding PrinterName}" Style="{StaticResource StatusText}" MaxWidth="240"
+                       TextTrimming="CharacterEllipsis" ToolTip="{Binding PrinterName}" />
+            <Rectangle Style="{StaticResource StatusDivider}" Margin="10,0" />
+            <Ellipse Width="8" Height="8" VerticalAlignment="Center" Margin="0,0,7,0">
+              <Ellipse.Style>
+                <Style TargetType="Ellipse">
+                  <Setter Property="Fill" Value="{DynamicResource Br.TextMuted}" />
+                  <Style.Triggers>
+                    <DataTrigger Binding="{Binding IsCalibrated}" Value="True">
+                      <Setter Property="Fill" Value="{DynamicResource Br.Ok}" />
+                    </DataTrigger>
+                  </Style.Triggers>
+                </Style>
+              </Ellipse.Style>
+            </Ellipse>
+            <TextBlock Text="{Binding CalibrationStatus}" Style="{StaticResource StatusText}" />
+          </StackPanel>
+        </Border>
       </Grid>
     </Border>
 
@@ -535,6 +563,7 @@
                     <Separator />
                     <MenuItem Header="_Rename" InputGestureText="Double-click, F2" Command="{Binding RenamePageCommand}" />
                     <MenuItem Header="Label _size…" Command="{Binding LabelSizeCommand}" />
+                    <MenuItem Header="Apply this page's _format to other pages…" Command="{Binding ApplyLayoutCommand}" />
                     <Separator />
                     <MenuItem Header="Move page _up" InputGestureText="Ctrl+↑" Command="{Binding MovePageUpCommand}" />
                     <MenuItem Header="Move page do_wn" InputGestureText="Ctrl+↓" Command="{Binding MovePageDownCommand}" />
@@ -849,9 +878,9 @@
                              Foreground="{DynamicResource Br.TextMuted}" Margin="0,4,0,0" />
                 </StackPanel>
               </Border>
-              <Button Content="Apply positions to other pages…" Style="{StaticResource GhostButton}" HorizontalAlignment="Left"
+              <Button Content="Apply page format to other pages…" Style="{StaticResource GhostButton}" HorizontalAlignment="Left"
                       Margin="0,10,0,0" Command="{Binding ApplyLayoutCommand}"
-                      ToolTip="Put the text, barcodes, images and so on of other pages where they are on this page" />
+                      ToolTip="Give the text, barcodes, images and so on of other pages the place, size and look they have on this page" />
             </StackPanel>
           </ScrollViewer>
 
@@ -906,6 +935,9 @@
 
                   <DockPanel Margin="0,3">
                     <TextBlock Text="Font" Style="{StaticResource FieldLabel}" Width="86" />
+                    <Button DockPanel.Dock="Right" Content="Add font…" Style="{StaticResource GhostButton}" Padding="8,2" Margin="6,0,0,0"
+                            ToolTip="Add a font from a font file (.ttf or .otf) and use it here"
+                            Command="{Binding DataContext.AddFontCommand, RelativeSource={RelativeSource AncestorType=ScrollViewer}}" />
                     <ComboBox IsEditable="True" IsTextSearchEnabled="True" ItemsSource="{Binding FontFamilies}"
                               SelectedItem="{Binding FontFamily}" />
                   </DockPanel>
@@ -1164,6 +1196,9 @@
                   </DockPanel>
                   <DockPanel Margin="0,3">
                     <TextBlock Text="Font" Style="{StaticResource FieldLabel}" Width="86" />
+                    <Button DockPanel.Dock="Right" Content="Add font…" Style="{StaticResource GhostButton}" Padding="8,2" Margin="6,0,0,0"
+                            ToolTip="Add a font from a font file (.ttf or .otf) and use it here"
+                            Command="{Binding DataContext.AddFontCommand, RelativeSource={RelativeSource AncestorType=ScrollViewer}}" />
                     <ComboBox IsEditable="True" IsTextSearchEnabled="True" ItemsSource="{Binding FontFamilies}" SelectedItem="{Binding TableFontFamily}" />
                   </DockPanel>
                   <DockPanel Margin="0,3">

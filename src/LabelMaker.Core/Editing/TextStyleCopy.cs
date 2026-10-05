@@ -95,7 +95,7 @@ public static class TextStyleCopy
     private static bool SameName(TextObject a, TextObject b) =>
         !string.IsNullOrWhiteSpace(a.Name) && string.Equals(a.Name.Trim(), b.Name.Trim(), StringComparison.OrdinalIgnoreCase);
 
-    private static void Apply(TextObject source, TextObject target, TextStyleParts parts)
+    internal static void Apply(TextObject source, TextObject target, TextStyleParts parts)
     {
         IEnumerable<TextRun> runs = target.Content.Paragraphs.SelectMany(p => p.Runs).ToList();
         if (parts.HasFlag(TextStyleParts.Font))

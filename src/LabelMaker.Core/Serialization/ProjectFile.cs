@@ -161,6 +161,11 @@ public static class ProjectFile
             Scan(page.Document);
         }
 
+        foreach (ProjectFont font in project.Fonts)
+        {
+            ids.Add(font.AssetId);
+        }
+
         return ids;
     }
 

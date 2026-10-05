@@ -25,9 +25,25 @@ public sealed class WpfTextMeasurer : ITextMeasurer
 
     private readonly ConcurrentDictionary<(string Text, string Family, double Size, bool Bold, bool Italic), double> _widths = new();
     private readonly ConcurrentDictionary<(string Family, double Size), double> _lineHeights = new();
+    private int _fontGeneration = WpfFontCache.Generation;
+
+    // A font added or removed since the last measurement can change what a family name draws with.
+    private void ForgetOldFonts()
+    {
+        int now = WpfFontCache.Generation;
+        if (now != _fontGeneration)
+        {
+            _widths.Clear();
+            _lineHeights.Clear();
+            _baselines.Clear();
+            _capHeights.Clear();
+            _fontGeneration = now;
+        }
+    }
 
     public double MeasureWidthMm(string text, string fontFamily, double fontSizePt, bool bold, bool italic)
     {
+        ForgetOldFonts();
         if (string.IsNullOrEmpty(text))
         {
             return 0;
@@ -49,9 +65,12 @@ public sealed class WpfTextMeasurer : ITextMeasurer
         return width;
     }
 
-    public double LineHeightMm(string fontFamily, double fontSizePt) =>
-        _lineHeights.GetOrAdd((fontFamily, Math.Round(fontSizePt, 3)),
+    public double LineHeightMm(string fontFamily, double fontSizePt)
+    {
+        ForgetOldFonts();
+        return _lineHeights.GetOrAdd((fontFamily, Math.Round(fontSizePt, 3)),
             key => Build("Ag", key.Family, key.Size, false, false).Height / K);
+    }
 
     /// <summary>The font's own ascent; a fixed fraction of the line put the baseline too high or low for many fonts.</summary>
     public double BaselineMm(string fontFamily, double fontSizePt) =>

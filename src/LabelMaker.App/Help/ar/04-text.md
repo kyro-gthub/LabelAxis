@@ -3,7 +3,7 @@ id: text
 title: النص
 category: Designing
 order: 2
-keywords: text, font, size, bold, italic, colour, color, highlight, align, line spacing, letter spacing, grow, shrink, wrap, edit, format, apply formatting, other pages, نص, خط, حجم, عريض, مائل, لون, تظليل, محاذاة, تباعد الأسطر, تباعد الأحرف, تنسيق, صفحات أخرى
+keywords: text, font, size, bold, italic, colour, color, highlight, align, line spacing, letter spacing, grow, shrink, wrap, edit, format, apply formatting, other pages, نص, خط, حجم, عريض, مائل, لون, تظليل, محاذاة, تباعد الأسطر, تباعد الأحرف, تنسيق, صفحات أخرى, custom font, add font, font file, ttf, otf
 ---
 # النص
 
@@ -19,6 +19,12 @@ keywords: text, font, size, bold, italic, colour, color, highlight, align, line 
 تحت `إعدادات النص`: الخط، والحجم، و**عريض** / *مائل* / تسطير / يتوسطه خط، واللون، والتظليل، والمحاذاة (يسار، وسط، يمين، ضبط؛ أعلى، منتصف، أسفل)، وتباعد الأسطر، وتباعد الأحرف، والحشو.
 
 > Note: تغيير نمط في اللوحة يطبّقه على المربع كله، حتى على الكلمات المنسّقة وحدها.
+
+## خطوطك الخاصة
+
+اضغط `إضافة خط…` بجانب قائمة الخطوط واختر ملف خط (`.ttf` أو `.otf`): يُضاف الخط إلى LabelAxis دون تثبيته في Windows، ويُطبَّق على النص المحدد. ثم يظهر في كل قوائم الخطوط، وعلى الشاشة، وفي الطباعة، وفي ملفات PDF. تعرض `ملف › الإعدادات › الخطوط` الخطوط التي أضفتها وتزيلها.
+
+يحتفظ المشروع الذي يستخدم خطًا كهذا بنسخة منه داخله، فيبدو كما هو على حاسوب آخر: فتح المشروع هناك يضيف الخط.
 
 ## عندما لا يتسع النص
 

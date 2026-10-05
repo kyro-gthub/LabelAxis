@@ -110,11 +110,16 @@ public sealed partial class MainViewModel
 
     private static bool FontIsInstalled(string family)
     {
-        if (BundledFonts.Contains(family))
+        if (BundledFonts.Contains(family) || Rendering.CustomFonts.Contains(family))
         {
-            return true;    // comes with LabelAxis
+            return true;    // comes with LabelAxis, or added to it from a font file
         }
 
+        return IsInstalledInWindows(family);
+    }
+
+    private static bool IsInstalledInWindows(string family)
+    {
         try
         {
             return System.Windows.Media.Fonts.SystemFontFamilies

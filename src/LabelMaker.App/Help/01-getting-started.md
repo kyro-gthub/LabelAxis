@@ -24,7 +24,7 @@ LabelAxis designs labels and stickers and prints them on label sheets (A4 or Let
 - **Left:** `Pages` (the label designs in this project) and `Data` (a spreadsheet or database for printing many different labels).
 - **Middle:** the label itself, with rulers, guides and a grid.
 - **Right:** `Properties` (settings of the selected object), `Layers` (every object, front to back) and `Page` (the label sheet and the page on screen).
-- **Bottom:** the sheet, zoom, printer and data in use, and `Print All`.
+- **Bottom:** whether the project is saved, the label sheet, the record shown (when data is loaded), the zoom, and the printer with its calibration.
 
 ## Where next
 

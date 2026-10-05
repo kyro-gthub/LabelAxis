@@ -19,7 +19,7 @@ Look at `When it overflows` in Text Settings: **Grow the box** keeps all text vi
 
 ## A font looks different on another PC
 
-The other PC does not have that font. The fonts that come with LabelAxis (the five Arabic fonts and the app's own) are always there; for others, install the font on that PC too. The preflight check warns about missing fonts.
+The other PC does not have that font. The fonts that come with LabelAxis (the five Arabic fonts and the app's own) are always there, and a font you added with `Add font…` travels inside the project and is added when the project is opened there. For a font installed only in Windows, install it on that PC too, or add its file with `Add font…` so the project carries it. The preflight check warns about missing fonts.
 
 ## Pictures print blurry
 
@@ -39,7 +39,7 @@ Windows shows this for programs from a publisher it does not know yet. Choose **
 
 ## No update is offered
 
-- Check that an **update address** is set under `File > Settings… > Updates`, or that this version was built with one.
+- Check that the PC can reach github.com, or that the **update address** under `File > Settings… > Updates` is right (leave it empty for the built-in one).
 - Try `Help > Check for updates…`: the message says what did not work.
 - A portable copy does not update itself; see [[files|Projects, saving and settings]].
 

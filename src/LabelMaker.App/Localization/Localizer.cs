@@ -100,9 +100,69 @@ public static class Localizer
             return;
         }
 
-        EventManager.RegisterClassHandler(typeof(FrameworkElement), FrameworkElement.LoadedEvent,
-            new RoutedEventHandler(OnLoaded), handledEventsToo: true);
+        // Loaded only reaches elements that have a Loaded handler of their own somewhere below
+        // them, so most labels and menus would never hear it. Instead each window hands down an
+        // inherited flag: every element takes it the moment it joins the window — all of them
+        // when the window first lays itself out, and later the parts of templates, list rows,
+        // tab pages and drop-downs as they are made.
+        EventManager.RegisterClassHandler(typeof(Window), FrameworkElement.SizeChangedEvent,
+            new SizeChangedEventHandler((sender, _) => Activate((FrameworkElement)sender)), handledEventsToo: true);
+        EventManager.RegisterClassHandler(typeof(Window), FrameworkElement.LoadedEvent,
+            new RoutedEventHandler((sender, _) => Activate((FrameworkElement)sender)), handledEventsToo: true);
+
+        // Menus and tooltips open in a little window of their own.
+        EventManager.RegisterClassHandler(typeof(ContextMenu), ContextMenu.OpenedEvent,
+            new RoutedEventHandler((sender, _) => Activate((FrameworkElement)sender)), handledEventsToo: true);
+        EventManager.RegisterClassHandler(typeof(ToolTip), ToolTip.OpenedEvent,
+            new RoutedEventHandler((sender, _) => Activate((FrameworkElement)sender)), handledEventsToo: true);
     }
+
+    // Inherited by everything inside a window once the window has it; see Start.
+    private static readonly DependencyProperty ActiveProperty = DependencyProperty.RegisterAttached(
+        "Active", typeof(bool), typeof(Localizer),
+        new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.Inherits, OnActiveChanged));
+
+    private static void Activate(FrameworkElement root)
+    {
+        if (root.ReadLocalValue(ActiveProperty) is not true)
+        {
+            root.SetValue(ActiveProperty, true);
+        }
+
+        // Already inheriting it (a menu inside a window): it still needs its own direction.
+        Apply(root);
+    }
+
+    private static void OnActiveChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        if (e.NewValue is true && d is FrameworkElement element)
+        {
+            Apply(element);
+        }
+    }
+
+    // Off is inherited too, but while an element is joining a window its inherited values are
+    // still being brought up to date, so the setting is looked for on the element and above it.
+    private static bool IsOff(DependencyObject d)
+    {
+        for (DependencyObject? node = d; node is not null; node = InheritanceParent(node))
+        {
+            if (node.ReadLocalValue(OffProperty) is true)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static DependencyObject? InheritanceParent(DependencyObject node) => node switch
+    {
+        FrameworkElement { Parent: { } logical } => logical,
+        FrameworkContentElement { Parent: { } logical } => logical,
+        Visual or System.Windows.Media.Media3D.Visual3D => VisualTreeHelper.GetParent(node),
+        _ => null,
+    };
 
     /// <summary>
     /// Set on a list or panel that shows the user's own text (records, search results, file
@@ -139,13 +199,11 @@ public static class Localizer
         }
     }
 
-    private static void OnLoaded(object sender, RoutedEventArgs e) => Apply(sender);
-
     private static void Apply(object sender)
     {
         // The labels themselves, not only what is drawn: screen readers (and the click-through
         // tests) read a button's content, a menu's header and a tooltip, not the text inside.
-        if (sender is FrameworkElement element && !Translator.IsEmpty && !GetOff(element))
+        if (sender is FrameworkElement element && !Translator.IsEmpty && !IsOff(element))
         {
             TranslateLocal(element, FrameworkElement.ToolTipProperty);
             if (element is HeaderedItemsControl)
@@ -179,7 +237,7 @@ public static class Localizer
                 Attach(text);
                 break;
 
-            case AccessText access when !GetOff(access):
+            case AccessText access when !IsOff(access):
                 Watch(access, AccessText.TextProperty);
                 break;
 
@@ -225,7 +283,7 @@ public static class Localizer
 
         // The user's own text is not translated, but in a right-to-left window it still has to
         // keep its own order ("Apples (red)" must not show as "(Apples (red").
-        if (GetOff(text))
+        if (IsOff(text))
         {
             if (IsRightToLeft)
             {
@@ -235,9 +293,11 @@ public static class Localizer
             return;
         }
 
-        // A TextBlock written with Text= (or filled by a template) is watched as a whole; one
-        // made of several runs ("Label" + "Axis", a bold word) is translated run by run.
-        if (DependencyPropertyHelper.GetValueSource(text, TextBlock.TextProperty).BaseValueSource != BaseValueSource.Default)
+        // A TextBlock written with Text= (or filled by a template, or empty until code fills it)
+        // is watched as a whole; one made of several runs ("Label" + "Axis", a bold word) is
+        // translated run by run.
+        if (DependencyPropertyHelper.GetValueSource(text, TextBlock.TextProperty).BaseValueSource != BaseValueSource.Default ||
+            text.Inlines.Count == 0)
         {
             Watch(text, TextBlock.TextProperty);
             return;
@@ -246,7 +306,7 @@ public static class Localizer
         // A list first: changing a run's text changes the collection being walked.
         foreach (Run run in Runs(text.Inlines).ToList())
         {
-            if (GetOff(run))
+            if (IsOff(run))
             {
                 continue;
             }
@@ -323,7 +383,7 @@ public static class Localizer
             return;
         }
 
-        string translated = GetOff(d) ? text : T(text);
+        string translated = IsOff(d) ? text : T(text);
         if (d is not Window)
         {
             translated = KeepOwnOrder(translated);

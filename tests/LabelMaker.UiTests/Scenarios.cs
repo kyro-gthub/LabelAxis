@@ -81,6 +81,35 @@ internal static class Scenarios
         AppDriver.WaitUntil(() => AppDriver.Rows(pages) == before, AppDriver.Wait, "Undo to remove the page");
     }
 
+    [Scenario("Pages are numbered from 1, and Apply page format adds this page's objects to the other pages")]
+    public static void PageFormat(string exe)
+    {
+        using AppDriver app = AppDriver.Start(exe);
+        AutomationElement pages = app.Find("PageList");
+        AutomationElement objects = app.Find("ObjectListBox");
+        int onFirst = AppDriver.Rows(objects);
+
+        // A second page with a table, which the first page does not have.
+        AppDriver.Click(app.Find("Pages.Add"));
+        AppDriver.WaitUntil(() => AppDriver.Rows(pages) == 2, AppDriver.Wait, "the new page in the page list");
+        AutomationElementCollection rows = pages.FindAll(TreeScope.Children, new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.ListItem));
+        Check(rows[0].Current.Name.StartsWith("1.", StringComparison.Ordinal), $"The first page is shown as \"{rows[0].Current.Name}\", not numbered 1.");
+        Check(rows[1].Current.Name.StartsWith("2.", StringComparison.Ordinal), $"The second page is shown as \"{rows[1].Current.Name}\", not numbered 2.");
+        AppDriver.Click(app.Find("Tool.AddTable"));
+        AppDriver.WaitUntil(() => AppDriver.Rows(objects) == 1, AppDriver.Wait, "the table on the new page");
+
+        app.Menu("Menu.Edit", "Menu.PageFormat");
+        AutomationElement window = WindowWith(app, "PageFormat.Apply", "the Apply page format window");
+        AppDriver.Click(app.Find("PageFormat.AddMissing", window));
+        AppDriver.Click(app.Find("PageFormat.Apply", window));
+        AppDriver.WaitUntil(() => !app.Windows().Any(w => AppDriver.FindIn(w, "PageFormat.Apply") is not null), AppDriver.Wait, "the window to close");
+
+        AppDriver.Click(rows[0]);
+        AppDriver.WaitUntil(() => AppDriver.Rows(objects) == onFirst + 1, AppDriver.Wait, "the table copied onto page 1");
+        app.Menu("Menu.Edit", "Menu.Undo");
+        AppDriver.WaitUntil(() => AppDriver.Rows(objects) == onFirst, AppDriver.Wait, "Undo to take the copied table away");
+    }
+
     [Scenario("The Print window opens and closes without printing")]
     public static void PrintWindow(string exe)
     {

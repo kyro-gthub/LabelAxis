@@ -300,14 +300,9 @@ public sealed partial class MainViewModel : ObservableObject
 
     public string PrinterName => _env.Settings.LastPrinterName ?? "System default printer";
 
-    public string CalibrationStatus =>
-        _env.Settings.LastPrinterName is { } printer && _env.Calibration.Has(printer)
-            ? "Calibration: aligned"
-            : "Calibration: not set";
+    public bool IsCalibrated => _env.Settings.LastPrinterName is { } printer && _env.Calibration.Has(printer);
 
-    public string RecordsReadyText => _session.RecordCount > 0
-        ? $"{_session.RecordCount:N0} records ready to print"
-        : "No variable data";
+    public string CalibrationStatus => IsCalibrated ? "Calibration: aligned" : "Calibration: not set";
 
     /// <summary>Switches the project to another label sheet. Also used by the Label manager's "Use this sheet".</summary>
     public void ApplyTemplate(LabelTemplate template)

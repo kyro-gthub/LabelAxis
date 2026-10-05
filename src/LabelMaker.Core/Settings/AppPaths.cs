@@ -35,6 +35,7 @@ public sealed class AppPaths
         RecoveryDirectory = Path.Combine(LocalDirectory, "recovery");
         LogDirectory = Path.Combine(LocalDirectory, "logs");
         CacheDirectory = Path.Combine(LocalDirectory, "cache");
+        FontsDirectory = Path.Combine(RoamingDirectory, "fonts");
     }
 
     public string RoamingDirectory { get; }
@@ -54,6 +55,9 @@ public sealed class AppPaths
     public string RecoveryDirectory { get; }
     public string LogDirectory { get; }
     public string CacheDirectory { get; }
+
+    /// <summary>Font files added to LabelAxis (Settings › Fonts, or "Add font…" by the font list), one folder per family.</summary>
+    public string FontsDirectory { get; }
 
     /// <summary>
     /// Settings, templates, calibration and recovery snapshots saved under the old
