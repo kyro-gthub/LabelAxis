@@ -69,22 +69,19 @@ What's new is taken from `build\release-notes\<v>.en.txt`, `.ar.txt` and `.ckb.t
 
 ### Automatic updates
 
-Every build looks for updates at the newest **GitHub release** of the project:
-`https://github.com/OWNER/LabelAxis/releases/latest/download/` (the `UpdateFeedUrl`
-property in `Directory.Build.props`). `-UpdateUrl` builds in another address instead, and
-users (or an administrator) can enter their own in *Settings › Updates*. An address can be:
+No update address is built in by default. `build\release.ps1 -UpdateUrl <address>` builds one
+in; users (or an administrator) can also enter one in *Settings › Updates*. An address can be:
 
 * a web folder reached by **https://** (plain http is refused), such as a GitHub release's
   `https://github.com/<owner>/<repo>/releases/latest/download/` folder;
 * a **shared network folder**, for example `\server\share\LabelAxis`.
 
 **Publishing on GitHub.** The repository must be public (copies of LabelAxis download
-without signing in) and named as in the address above; if it has another name, change
-`UpdateFeedUrl` and rebuild. For each version:
+without signing in), and its `…/releases/latest/download/` folder is the address to build in. For each version:
 
 1. Raise `<Version>` in `Directory.Build.props` (copies only update to a *higher* number)
    and write `build\release-notes\<v>.en.txt` (and `.ar.txt`, `.ckb.txt`).
-2. Run `build\release.ps1`.
+2. Run `build\release.ps1 -UpdateUrl https://github.com/<owner>/<repo>/releases/latest/download/`.
 3. On GitHub: *Releases › Draft a new release*, tag `v<version>`, and attach **every file**
    from `E:\LabelAxis-<version>-release\` (both setups, the portable zip, `update.json`,
    `SHA256SUMS.txt`). Publish it; it becomes the "latest" release.

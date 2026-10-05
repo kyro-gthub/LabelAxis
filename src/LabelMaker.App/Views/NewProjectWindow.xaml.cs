@@ -15,7 +15,7 @@ public partial class NewProjectWindow : Window
     private readonly IList<string>? _savedFavorites;
 
     /// <param name="favorites">The starred sheets; a custom size starred here is added to it.</param>
-    public NewProjectWindow(TemplateStore store, IList<string>? favorites = null)
+    public NewProjectWindow(TemplateStore store, IList<string>? favorites = null, bool showDesigns = true)
     {
         InitializeComponent();
         _store = store;
@@ -26,10 +26,46 @@ public partial class NewProjectWindow : Window
 
         // The first preview is drawn before layout has sized the canvas; draw it again at its real size.
         PreviewCanvas.SizeChanged += (_, _) => { if (TemplateList.SelectedItem is Row row) { DrawSheetPreview(row.Template); } };
-        Loaded += (_, _) => SearchBox.Focus();
+        Gallery.Store = store;
+        Gallery.SelectionChanged += (_, _) => DesignCreateButton.IsEnabled = Gallery.SelectedDesign is not null;
+        Gallery.DesignActivated += (_, _) => OnCreateFromDesign(this, new RoutedEventArgs());
+        DesignCreateButton.IsEnabled = Gallery.SelectedDesign is not null;
+        ShowTab(showDesigns);
     }
 
     public LabelTemplate? SelectedTemplate { get; private set; }
+
+    /// <summary>The ready-made design chosen instead of a blank sheet, or null.</summary>
+    public LabelMaker.Core.Designs.LabelDesign? ChosenDesign { get; private set; }
+
+    /// <summary>With <see cref="ChosenDesign"/>: keep its data fields instead of its sample words.</summary>
+    public bool UseDataFields => Gallery.UseDataFields;
+
+    private void OnTab(object sender, RoutedEventArgs e) => ShowTab(DesignsTab.IsChecked == true);
+
+    private void ShowTab(bool designs)
+    {
+        DesignsTab.IsChecked = designs;
+        SheetsTab.IsChecked = !designs;
+        Gallery.Visibility = designs ? Visibility.Visible : Visibility.Collapsed;
+        DesignButtons.Visibility = Gallery.Visibility;
+        SheetsPanel.Visibility = designs ? Visibility.Collapsed : Visibility.Visible;
+        DesignCreateButton.IsDefault = designs;
+        SheetCreateButton.IsDefault = !designs;
+        if (!designs)
+        {
+            Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Input, () => SearchBox.Focus());
+        }
+    }
+
+    private void OnCreateFromDesign(object sender, RoutedEventArgs e)
+    {
+        if (Gallery.SelectedDesign is { } design)
+        {
+            ChosenDesign = design;
+            DialogResult = true;
+        }
+    }
 
     /// <summary>True when a custom size was made here (the settings then need saving).</summary>
     public bool FavoritesChanged { get; private set; }

@@ -1,13 +1,35 @@
 <Window x:Class="LabelMaker.App.Views.NewProjectWindow"
         xmlns:helpsvc="clr-namespace:LabelMaker.App.Services"
+        xmlns:views="clr-namespace:LabelMaker.App.Views"
         helpsvc:HelpGuide.Topic="label-sheets"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Style="{StaticResource AppWindow}"
         Background="{DynamicResource Br.Surface}" TextElement.Foreground="{DynamicResource Br.Text}"
-        Title="New Project — choose a label sheet" Height="560" Width="720"
+        Title="New Project" Height="780" Width="1180" MinHeight="560" MinWidth="900"
         WindowStartupLocation="CenterOwner">
-  <DockPanel Margin="10">
+  <DockPanel>
+    <!-- Two ways to start: a finished design, or an empty label on a sheet of your choice. -->
+    <Border DockPanel.Dock="Top" Background="{DynamicResource Br.Bg}" BorderBrush="{DynamicResource Br.Border}"
+            BorderThickness="0,0,0,1" Padding="18,14,18,0">
+      <StackPanel Orientation="Horizontal">
+        <RadioButton x:Name="DesignsTab" GroupName="newtab" Style="{StaticResource PanelTab}" IsChecked="True" Margin="0,0,24,0"
+                     Content="Ready-made designs" Click="OnTab" AutomationProperties.AutomationId="NewProject.DesignsTab" />
+        <RadioButton x:Name="SheetsTab" GroupName="newtab" Style="{StaticResource PanelTab}"
+                     Content="Blank label sheet" Click="OnTab" AutomationProperties.AutomationId="NewProject.SheetsTab" />
+      </StackPanel>
+    </Border>
+
+    <Grid>
+      <views:DesignGalleryView x:Name="Gallery" />
+      <!-- On the gallery's bottom strip, beside the fill choice. -->
+          <StackPanel x:Name="DesignButtons" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,18,14">
+            <Button Content="Cancel" Style="{StaticResource GhostButton}" IsCancel="True" Margin="0,0,8,0" />
+            <Button x:Name="DesignCreateButton" Content="Use this design" Style="{StaticResource PrimaryButton}" IsDefault="True"
+                    Click="OnCreateFromDesign" AutomationProperties.AutomationId="NewProject.UseDesign" />
+          </StackPanel>
+
+  <DockPanel x:Name="SheetsPanel" Margin="10" Visibility="Collapsed">
     <DockPanel DockPanel.Dock="Top" Margin="0,0,0,8">
       <TextBlock Text="Search (product code, name, category):" VerticalAlignment="Center" Margin="0,0,8,0" />
       <TextBox x:Name="SearchBox" />
@@ -15,7 +37,7 @@
 
     <DockPanel DockPanel.Dock="Bottom" Margin="0,8,0,0">
       <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
-        <Button Content="Create" IsDefault="True" Padding="20,5" Click="OnCreate" />
+        <Button x:Name="SheetCreateButton" Content="Create" Padding="20,5" Click="OnCreate" AutomationProperties.AutomationId="NewProject.Create" />
         <Button Content="Cancel" IsCancel="True" Padding="20,5" Margin="8,0,0,0" />
       </StackPanel>
       <!-- Any size, not only the sheets in the list. -->
@@ -57,6 +79,8 @@
           </Border>
         </DockPanel>
       </Border>
+    </Grid>
+  </DockPanel>
     </Grid>
   </DockPanel>
 </Window>

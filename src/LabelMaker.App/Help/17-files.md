@@ -28,7 +28,7 @@ A project (.labelproj file) holds the label sheet, every page, the pictures it u
 
 LabelAxis looks for a newer version about once a day, and whenever you choose `Help > Check for updates…`. When there is one, a bar above the label offers `Update now`, `What's new`, `Later` and `Skip this version`. **Update now** downloads the new version, checks that it is exactly the published file, closes LabelAxis (asking to save your work), installs it and starts LabelAxis again. Your settings, templates and calibration are kept.
 
-Updates come from the LabelAxis releases on GitHub. Under `File > Settings… > Updates` you can switch the daily check off, or enter another **update address**: the web address (https://) or shared folder where your organisation publishes LabelAxis updates itself.
+Under `File > Settings… > Updates` you can switch the daily check off, or enter the **update address**: the web address (https://, for example a GitHub release folder) or shared folder where LabelAxis updates are published. A version built with an address uses it when the box is left empty.
 
 ## Portable copy
 
