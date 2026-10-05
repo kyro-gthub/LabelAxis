@@ -253,7 +253,7 @@ public sealed partial class MainViewModel
         DataRecord record = data.CreateRecord();
         _session.Execute(new InsertRecordsCommand(_session, data, atIndex, new[] { record }));
         _activeTab.RecordsEditedSinceLoad = true;
-        OnPropertyChanged(nameof(RecordsReadyText));
+        OnPropertyChanged(nameof(HasData));
         return record;
     }
 

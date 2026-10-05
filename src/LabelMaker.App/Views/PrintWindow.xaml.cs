@@ -198,10 +198,10 @@ public partial class PrintWindow : Window
         }).IsChecked = true;
     }
 
-    /// <summary>A page as the Pages panel names it: ★ for the master label, then numbered pages.</summary>
+    /// <summary>A page as the Pages panel names it: numbered from 1, the first page too.</summary>
     private string PageCaption(int position) => position == 0
-        ? $"★  {_session.Project.MasterLabel.Name}"
-        : $"{position}.  {_session.Project.Pages[position - 1].Name}";
+        ? $"1.  {_session.Project.MasterLabel.Name}"
+        : $"{position + 1}.  {_session.Project.Pages[position - 1].Name}";
 
     private readonly List<(CheckBox Box, TextBox Copies, LabelDocument Page)> _pageRows = new();
     private bool _syncingCopies;

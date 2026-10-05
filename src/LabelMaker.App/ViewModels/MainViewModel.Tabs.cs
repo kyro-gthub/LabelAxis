@@ -192,7 +192,7 @@ public sealed partial class MainViewModel
         _properties.RefreshAll();
         foreach (string name in new[]
                  {
-                     nameof(ActiveTab), nameof(PrinterName), nameof(CalibrationStatus), nameof(RecordsReadyText),
+                     nameof(ActiveTab), nameof(PrinterName), nameof(CalibrationStatus), nameof(IsCalibrated),
                      nameof(TemplateSummary), nameof(LockGuides), nameof(SharedGuides), nameof(RecordText), nameof(DataSourceSummary),
                      nameof(HasData), nameof(CanRefreshData), nameof(ActivePageName), nameof(ZoomText), nameof(SelectionInfo),
                  })
@@ -309,7 +309,7 @@ public sealed partial class MainViewModel
     {
         OnPropertyChanged(nameof(RecordText));
         OnPropertyChanged(nameof(DataSourceSummary));
-        OnPropertyChanged(nameof(RecordsReadyText));
+        OnPropertyChanged(nameof(HasData));
         OnPropertyChanged(nameof(HasData));
         OnPropertyChanged(nameof(CanRefreshData));
         DataChanged?.Invoke(this, EventArgs.Empty);
@@ -320,7 +320,7 @@ public sealed partial class MainViewModel
     {
         OnPropertyChanged(nameof(RecordText));
         OnPropertyChanged(nameof(DataSourceSummary));
-        OnPropertyChanged(nameof(RecordsReadyText));
+        OnPropertyChanged(nameof(HasData));
         RecordsEdited?.Invoke(this, EventArgs.Empty);
     }
 

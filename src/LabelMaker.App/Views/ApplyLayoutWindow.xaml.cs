@@ -1,14 +1,17 @@
 using System.Windows;
 using System.Windows.Controls;
+using LabelMaker.App.Localization;
 using LabelMaker.App.Services;
 using LabelMaker.Core.Editing;
 using LabelMaker.Core.Model;
+using LabelMaker.Core.Printing;
 
 namespace LabelMaker.App.Views;
 
 /// <summary>
-/// Moves the text, barcodes, images and so on of other pages to where they are on the page on
-/// screen, so a run of similar pages lines up, in one undo step.
+/// Gives the text, barcodes, images and so on of other pages the place, size and look they
+/// have on the page on screen — each page keeping its own words, barcode values and pictures —
+/// and can add what a page is missing, all in one undo step.
 /// </summary>
 public partial class ApplyLayoutWindow : Window
 {
@@ -25,21 +28,21 @@ public partial class ApplyLayoutWindow : Window
         InitializeComponent();
 
         SelectedObjectsBox.Content = _selected.Count == 1
-            ? $"The selected object ({Describe(_selected[0])})"
-            : $"The {_selected.Count} selected objects";
+            ? Localizer.F("The selected object ({0})", Describe(_selected[0]))
+            : Localizer.F("The {0} selected objects", _selected.Count);
         SelectedObjectsBox.IsEnabled = _selected.Count > 0;
-        AllObjectsBox.Content = $"Every object on this page ({_sourcePage.Objects.Count})";
-        (_selected.Count > 0 ? SelectedObjectsBox : AllObjectsBox).IsChecked = true;
+        AllObjectsBox.Content = Localizer.F("Every object on this page ({0})", _sourcePage.Objects.Count);
+        AllObjectsBox.IsChecked = true;
 
         int current = _session.IsEditingMaster ? 0 : _session.Project.Pages.FindIndex(p => p.Id == _session.ActivePageId) + 1;
         ProjectModel project = session.Project;
         for (int i = 0; i <= project.Pages.Count; i++)
         {
-            string caption = i == 0 ? $"★  {project.MasterLabel.Name}" : $"{i}.  {project.Pages[i - 1].Name}";
+            string caption = $"{i + 1}.  {(i == 0 ? project.MasterLabel.Name : project.Pages[i - 1].Name)}";
             var box = new CheckBox { IsChecked = i != current, IsEnabled = i != current, Margin = new Thickness(0, 3, 0, 3) };
             if (i == current)
             {
-                caption += "  (this page — the one copied from)";
+                caption = Localizer.F("{0}  (this page — the one copied from)", caption);
             }
 
             box.Click += OnChanged;
@@ -52,10 +55,20 @@ public partial class ApplyLayoutWindow : Window
 
     private IEnumerable<LabelObject> Sources => SelectedObjectsBox.IsChecked == true ? _selected : _sourcePage.Objects;
 
-    private LayoutParts Parts =>
-        (PositionBox.IsChecked == true ? LayoutParts.Position : 0) |
-        (SizeBox.IsChecked == true ? LayoutParts.Size : 0) |
-        (RotationBox.IsChecked == true ? LayoutParts.Rotation : 0);
+    private PageFormatParts Parts =>
+        (PositionBox.IsChecked == true ? PageFormatParts.Position : 0) |
+        (SizeBox.IsChecked == true ? PageFormatParts.Size : 0) |
+        (RotationBox.IsChecked == true ? PageFormatParts.Rotation : 0) |
+        (LookBox.IsChecked == true ? PageFormatParts.Look : 0) |
+        (AddMissingBox.IsChecked == true ? PageFormatParts.AddMissing : 0);
+
+    private TextStyleParts TextParts =>
+        (FontPartBox.IsChecked == true ? TextStyleParts.Font : 0) |
+        (SizePartBox.IsChecked == true ? TextStyleParts.Size : 0) |
+        (StylePartBox.IsChecked == true ? TextStyleParts.Style : 0) |
+        (ColourPartBox.IsChecked == true ? TextStyleParts.Colour : 0) |
+        (AlignPartBox.IsChecked == true ? TextStyleParts.Alignment : 0) |
+        (SpacingPartBox.IsChecked == true ? TextStyleParts.Spacing : 0);
 
     private HashSet<ObjectKind> Kinds
     {
@@ -91,10 +104,18 @@ public partial class ApplyLayoutWindow : Window
         }
     }
 
-    private LayoutMatch Match => SameOrderBox.IsChecked == true ? LayoutMatch.SameOrder : LayoutMatch.SameName;
+    private LayoutMatch Match =>
+        SameOrderBox.IsChecked == true ? LayoutMatch.SameOrder
+        : SameNameBox.IsChecked == true ? LayoutMatch.SameName
+        : LayoutMatch.NameThenOrder;
 
     private IReadOnlyList<(LabelObject Source, LabelObject Target)> Pairs(IEnumerable<int> positions) =>
         LayoutCopy.Pairs(_session.Project, _sourcePage, Sources, positions, Kinds, Match);
+
+    private IReadOnlyList<(LabelObject Source, LabelDocument Page)> Missing(IEnumerable<int> positions) =>
+        AddMissingBox.IsChecked == true
+            ? LayoutCopy.Unmatched(_session.Project, _sourcePage, Sources, positions, Kinds, Match)
+            : Array.Empty<(LabelObject, LabelDocument)>();
 
     private void OnChanged(object sender, RoutedEventArgs e) => Refresh();
 
@@ -114,6 +135,7 @@ public partial class ApplyLayoutWindow : Window
 
     private void Refresh()
     {
+        TextPartsPanel.IsEnabled = LookBox.IsChecked == true;
         foreach ((CheckBox box, int position, string caption) in _pages)
         {
             if (!box.IsEnabled)
@@ -123,28 +145,34 @@ public partial class ApplyLayoutWindow : Window
             }
 
             int count = Pairs(new[] { position }).Count;
-            box.Content = $"{caption}  ·  {(count == 1 ? "1 object" : $"{count} objects")}";
+            int add = Missing(new[] { position }).Count;
+            box.Content = add > 0 ? Localizer.F("{0}  ·  {1} objects  ·  {2} to add", caption, count, add)
+                : count == 1 ? Localizer.F("{0}  ·  1 object", caption)
+                : Localizer.F("{0}  ·  {1} objects", caption, count);
         }
 
         int[] ticked = _pages.Where(p => p.Box.IsChecked == true && p.Box.IsEnabled).Select(p => p.Position).ToArray();
-        int objects = Pairs(ticked).Count;
-        int pages = ticked.Count(p => Pairs(new[] { p }).Count > 0);
+        int matched = Pairs(ticked).Count;
+        int missing = Missing(ticked).Count;
+        int pages = ticked.Count(p => Pairs(new[] { p }).Count + Missing(new[] { p }).Count > 0);
 
-        if (Parts == LayoutParts.None)
+        if ((Parts & ~PageFormatParts.AddMissing) == PageFormatParts.None && missing == 0)
         {
-            SummaryText.Text = "Tick at least one thing to copy.";
+            SummaryText.Text = Localizer.T("Tick at least one thing to copy.");
             ApplyButton.IsEnabled = false;
         }
-        else if (objects == 0)
+        else if (matched + missing == 0)
         {
-            SummaryText.Text = Match == LayoutMatch.SameName
+            SummaryText.Text = Localizer.T(Match == LayoutMatch.SameName
                 ? "Nothing on the ticked pages has the same name. Try matching by order."
-                : "Nothing to match on the ticked pages.";
+                : "Nothing to match on the ticked pages.");
             ApplyButton.IsEnabled = false;
         }
         else
         {
-            SummaryText.Text = $"Moves {objects} object(s) on {pages} page(s). Undo puts them back.";
+            SummaryText.Text = missing == 0
+                ? Localizer.F("Changes {0} object(s) on {1} page(s). Undo puts them back.", matched, pages)
+                : Localizer.F("Changes {0} object(s) and adds {1} on {2} page(s). Undo puts them back.", matched, missing, pages);
             ApplyButton.IsEnabled = true;
         }
     }
@@ -152,7 +180,7 @@ public partial class ApplyLayoutWindow : Window
     private void OnApply(object sender, RoutedEventArgs e)
     {
         int[] ticked = _pages.Where(p => p.Box.IsChecked == true && p.Box.IsEnabled).Select(p => p.Position).ToArray();
-        if (LayoutCopy.Build(Pairs(ticked), Parts, _session.TextMeasurer) is { } command)
+        if (PageFormatCopy.Build(Pairs(ticked), Missing(ticked), PrintablePages.All(_session.Project).ToList(), Parts, TextParts, _session.TextMeasurer) is { } command)
         {
             _session.Execute(command);
         }
@@ -161,5 +189,5 @@ public partial class ApplyLayoutWindow : Window
     }
 
     private static string Describe(LabelObject o) =>
-        string.IsNullOrWhiteSpace(o.Name) ? o.Kind.ToString().ToLowerInvariant() : $"“{o.Name.Trim()}”";
+        string.IsNullOrWhiteSpace(o.Name) ? Localizer.T(o.Kind.ToString()) : $"“{o.Name.Trim()}”";
 }

@@ -42,7 +42,7 @@ public partial class ApplyTextStyleWindow : Window
         ProjectModel project = session.Project;
         for (int i = 0; i <= project.Pages.Count; i++)
         {
-            string caption = i == 0 ? $"★  {project.MasterLabel.Name}" : $"{i}.  {project.Pages[i - 1].Name}";
+            string caption = $"{i + 1}.  {(i == 0 ? project.MasterLabel.Name : project.Pages[i - 1].Name)}";
             if (i == current)
             {
                 caption += "  (this page)";

@@ -87,19 +87,19 @@ public sealed partial class MainViewModel
         _ => HelpGuide.StartTopic,
     };
 
-    /// <summary>Puts objects on other pages where they are on this page.</summary>
+    /// <summary>Gives the objects on other pages the place, size and look they have on this page.</summary>
     private void ApplyLayoutToOtherPages()
     {
         if (_session.Project.Pages.Count == 0)
         {
-            _shell.Info("This project has only one page. Add or duplicate a page first, then its objects can be lined up with this one.");
+            _shell.Info("This project has only one page. Add or duplicate a page first, then it can be given this page's format.");
             return;
         }
 
         if (_shell.ShowApplyLayout())
         {
             RefreshCanvas();
-            StatusText = "Positions applied to other pages";
+            StatusText = "Page format applied to other pages";
         }
     }
 

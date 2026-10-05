@@ -42,6 +42,7 @@ public partial class App : Application
         Environment = new AppEnvironment(_dataDirectory);
         Localization.Localizer.Start(Localization.Localizer.Resolve(Environment.Settings.Language));
         ThemeManager.Apply(Environment.Settings.DarkTheme ? AppTheme.Dark : AppTheme.Light);
+        Rendering.CustomFonts.Load(Environment.Paths.FontsDirectory);
         RegisterFontsForExport();
 
         // A class handler catches every Window, derived types included -- an implicit

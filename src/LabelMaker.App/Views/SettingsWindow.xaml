@@ -83,6 +83,19 @@
         </StackPanel>
       </GroupBox>
 
+      <TextBlock Text="Fonts" FontWeight="SemiBold" FontSize="13" Margin="0,14,0,8" Foreground="{DynamicResource Br.TextMuted}" />
+      <GroupBox>
+        <StackPanel>
+          <TextBlock Text="Fonts added from font files, without installing them in Windows. They are in every font list, and a project that uses one keeps a copy inside it."
+                     TextWrapping="Wrap" Foreground="{DynamicResource Br.TextMuted}" FontSize="11.5" Margin="0,0,0,6" />
+          <ListBox x:Name="FontList" loc:Localizer.Off="True" Height="96" Margin="0,0,0,6" SelectionChanged="OnFontSelected" />
+          <StackPanel Orientation="Horizontal">
+            <Button Content="Add font…" Padding="12,4" Margin="0,0,8,0" Click="OnAddFont" AutomationProperties.AutomationId="Settings.AddFont" />
+            <Button x:Name="RemoveFontButton" Content="Remove" Padding="12,4" IsEnabled="False" Click="OnRemoveFont" />
+          </StackPanel>
+        </StackPanel>
+      </GroupBox>
+
       <TextBlock Text="Updates" FontWeight="SemiBold" FontSize="13" Margin="0,14,0,8" Foreground="{DynamicResource Br.TextMuted}" />
       <GroupBox>
         <StackPanel>

@@ -7,7 +7,8 @@
       update.json                       what LabelAxis reads to find this version
       SHA256SUMS.txt                    fingerprints of the files above
 
-    To publish: copy the whole folder's files to the update address (a web folder reached by
+    To publish: attach the folder's files to a new GitHub release (see docs/BUILD.md), or copy
+    them to another update address (a web folder reached by
     https://, or a shared network folder). Copies of LabelAxis that look there find the new
     version within a day, or at once with Help › Check for updates.
 
@@ -19,7 +20,7 @@
 #>
 param(
     [string]$OutputDir = 'E:\',
-    # Built into the app as its update address. Leave empty to set it later in Settings › Updates.
+    # Built into the app as its update address. Empty: the GitHub releases address in Directory.Build.props.
     [string]$UpdateUrl = ''
 )
 

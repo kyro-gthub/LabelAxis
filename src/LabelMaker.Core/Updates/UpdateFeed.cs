@@ -90,7 +90,15 @@ public sealed record UpdateFeed
 /// <summary>Reads the update file and fetches packages over https or from a folder, and checks fingerprints.</summary>
 public static class UpdateSource
 {
-    private static readonly HttpClient Http = new() { Timeout = TimeSpan.FromMinutes(10) };
+    private static readonly HttpClient Http = CreateClient();
+
+    // GitHub (where releases are published) asks every caller to name itself.
+    private static HttpClient CreateClient()
+    {
+        var http = new HttpClient { Timeout = TimeSpan.FromMinutes(10) };
+        http.DefaultRequestHeaders.UserAgent.ParseAdd("LabelAxis-Updater/1.0");
+        return http;
+    }
 
     /// <summary>
     /// The address typed in Settings or built into the app, as a URI: https:// web addresses,

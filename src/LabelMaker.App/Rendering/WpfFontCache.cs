@@ -24,6 +24,18 @@ internal static class WpfFontCache
             key.Bold ? FontWeights.Bold : FontWeights.Normal,
             FontStretches.Normal));
 
+    /// <summary>Forgets the typefaces, after a font is added or removed (a name may now mean another font).</summary>
+    public static void Clear()
+    {
+        Typefaces.Clear();
+        Interlocked.Increment(ref _generation);
+    }
+
+    private static int _generation;
+
+    /// <summary>Goes up each time the fonts change, so measurements made with the old fonts can be thrown away.</summary>
+    public static int Generation => Volatile.Read(ref _generation);
+
     public static SolidColorBrush Brush(ColorRgba c) =>
         Brushes.GetOrAdd(c, static color =>
         {

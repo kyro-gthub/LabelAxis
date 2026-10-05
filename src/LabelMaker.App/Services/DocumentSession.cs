@@ -159,10 +159,10 @@ public sealed class DocumentSession
     {
         var page = new LabelPage
         {
-            Name = name ?? $"Page {Project.Pages.Count + 1}",
+            Name = name ?? $"Page {Project.Pages.Count + 2}",
             Document = new LabelDocument
             {
-                Name = name ?? $"Page {Project.Pages.Count + 1}",
+                Name = name ?? $"Page {Project.Pages.Count + 2}",
                 SizeMm = ActiveLabel.SizeMm,
             },
         };
@@ -185,7 +185,11 @@ public sealed class DocumentSession
         else
         {
             // Duplicating the master creates the first real page from it.
-            source = new LabelPage { Name = "Master copy", Document = Project.MasterLabel.Clone() };
+            source = new LabelPage
+            {
+                Name = string.IsNullOrWhiteSpace(Project.MasterLabel.Name) ? "Page 1" : Project.MasterLabel.Name,
+                Document = Project.MasterLabel.Clone(),
+            };
         }
 
         LabelPage copy = source.Clone();

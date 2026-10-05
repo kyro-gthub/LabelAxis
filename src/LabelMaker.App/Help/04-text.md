@@ -3,7 +3,7 @@ id: text
 title: Text
 category: Designing
 order: 2
-keywords: text, font, size, bold, italic, colour, color, highlight, align, line spacing, letter spacing, grow, shrink, wrap, edit, format, apply formatting, other pages
+keywords: text, font, size, bold, italic, colour, color, highlight, align, line spacing, letter spacing, grow, shrink, wrap, edit, format, apply formatting, other pages, custom font, add font, font file, ttf, otf
 ---
 # Text
 
@@ -19,6 +19,12 @@ Click `Text` on the toolbar to add a text box.
 Under `Text Settings`: font, size, **B** / *I* / underline / strikethrough, colour, highlight, alignment (left, centre, right, justify; top, middle, bottom), line spacing, letter spacing and padding.
 
 > Note: Changing a style in the panel applies it to the whole box, also to words formatted on their own.
+
+## Fonts of your own
+
+Press `Add font…` beside the font list and choose a font file (`.ttf` or `.otf`): the font is added to LabelAxis, without installing it in Windows, and given to the selected text. It is then in every font list, on screen, in print and in PDF files. `File > Settings > Fonts` lists the fonts you added and removes them.
+
+A project that uses such a font keeps a copy of it inside, so it looks the same on another PC: opening the project there adds the font.
 
 ## When the text does not fit
 

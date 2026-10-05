@@ -91,11 +91,11 @@ public sealed partial class MainViewModel
     /// </summary>
     private void RebuildPages()
     {
-        var wanted = new List<PageListItem> { new(null, MasterPageName, 0, IsMaster: true) };
+        var wanted = new List<PageListItem> { new(null, MasterPageName, 1, IsMaster: true) };
         for (int i = 0; i < _session.Project.Pages.Count; i++)
         {
             LabelPage p = _session.Project.Pages[i];
-            wanted.Add(new PageListItem(p.Id, p.Name, i + 1, IsMaster: false));
+            wanted.Add(new PageListItem(p.Id, p.Name, i + 2, IsMaster: false));
         }
 
         _suppressPageSelection = true;

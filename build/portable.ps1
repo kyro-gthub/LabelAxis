@@ -6,7 +6,7 @@
     copy started from this folder keeps its settings, user templates, calibration
     and recovery snapshots in .\Data instead of %APPDATA%.
 
-    Usage:  powershell -ExecutionPolicy Bypass -File build\portable.ps1 [-Version 1.1.0] [-OutputDir E:\] [-SkipPublish]
+    Usage:  powershell -ExecutionPolicy Bypass -File build\portable.ps1 [-Version 1.0.0] [-OutputDir E:\] [-SkipPublish]
 #>
 param(
     [string]$Version = '',

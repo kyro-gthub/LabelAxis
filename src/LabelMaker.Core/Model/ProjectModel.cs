@@ -77,6 +77,12 @@ public sealed class ProjectModel
 
     public PrintSettings PrintSettings { get; set; } = new();
 
+    /// <summary>
+    /// Font files added to LabelAxis that this project uses, kept inside the project (as assets) so
+    /// it looks the same on a PC that does not have them.
+    /// </summary>
+    public List<ProjectFont> Fonts { get; set; } = new();
+
     /// <summary>Sparse per-record overrides keyed by 0-based record index.</summary>
     public Dictionary<int, List<ObjectOverride>> RecordOverrides { get; set; } = new();
 
@@ -98,7 +104,7 @@ public sealed class ProjectModel
             Template = template,
             MasterLabel = new LabelDocument
             {
-                Name = "Master label",
+                Name = "Page 1",
                 SizeMm = template.LabelSizeMm,
             },
         };
@@ -118,10 +124,26 @@ public sealed class ProjectModel
         Sequences = Sequences.Select(s => s.Clone()).ToList(),
         Variables = Variables.Select(v => v.Clone()).ToList(),
         PrintSettings = PrintSettings.Clone(),
+        Fonts = Fonts.Select(f => f.Clone()).ToList(),
         RecordOverrides = RecordOverrides.ToDictionary(
             kv => kv.Key,
             kv => kv.Value.Select(o => o.Clone()).ToList()),
         ActiveDataConnectionId = ActiveDataConnectionId,
         SharedGuides = SharedGuides,
     };
+}
+
+/// <summary>A font file carried inside a project: its family name and the asset holding the file.</summary>
+public sealed class ProjectFont
+{
+    /// <summary>The family name labels use for it, as the font file gives it.</summary>
+    public string Family { get; set; } = string.Empty;
+
+    /// <summary>Key of the font file in the project's assets.</summary>
+    public string AssetId { get; set; } = string.Empty;
+
+    /// <summary>The file's own name ("Vazirmatn-Bold.ttf"), so it is written back under it.</summary>
+    public string FileName { get; set; } = string.Empty;
+
+    public ProjectFont Clone() => (ProjectFont)MemberwiseClone();
 }

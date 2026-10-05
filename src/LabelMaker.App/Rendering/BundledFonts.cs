@@ -29,7 +29,7 @@ public static class BundledFonts
 
     public static bool Contains(string family) => Families.Any(f => string.Equals(f.Family, family, StringComparison.OrdinalIgnoreCase));
 
-    /// <summary>The app's own copy for a bundled family, otherwise the installed font of that name.</summary>
+    /// <summary>The app's own copy for a bundled family, then a font the user added, otherwise the installed font of that name.</summary>
     public static FontFamily Resolve(string family)
     {
         foreach ((string name, _, _) in Families)
@@ -40,7 +40,7 @@ public static class BundledFonts
             }
         }
 
-        return new FontFamily(family);
+        return CustomFonts.Resolve(family) ?? new FontFamily(family);
     }
 
     /// <summary>The name a font is stored under: the family after "#" for one of the app's own fonts.</summary>

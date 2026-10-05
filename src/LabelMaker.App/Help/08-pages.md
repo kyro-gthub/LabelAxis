@@ -3,30 +3,35 @@ id: pages
 title: Pages: several labels in one project
 category: Pages
 order: 1
-keywords: page, pages, master label, duplicate, rename, reorder, remove, apply positions, line up, same place, apply formatting, other pages
+keywords: page, pages, master label, duplicate, rename, reorder, remove, apply positions, apply format, page format, line up, same place, same size, apply formatting, other pages, add missing
 ---
 # Pages: several labels in one project
 
-A project can hold several different label designs, called **pages**, listed under `Pages` on the left. The first one, marked ★, is the **master label**; it is the one repeated across the sheet when you print "Fill the sheet".
+A project can hold several different label designs, called **pages**, listed under `Pages` on the left and numbered 1, 2, 3… The first page is also the **master label**: the one repeated across the sheet when you print "Fill the sheet".
 
 ## Work with pages
 
 - `+` adds an empty page; the duplicate button copies the page on screen.
 - Double-click a page (or press `F2`) to rename it in place.
 - `Ctrl+↑` / `Ctrl+↓`, or dragging, change the order.
-- The remove button deletes the page on screen. The master label can be removed too while other pages exist; the next page then becomes the master label.
+- The remove button deletes the page on screen. The first page can be removed too while other pages exist; the next page then becomes page 1.
 
-> Tip: Make one label, then **duplicate** it for each product and change only the words. Duplicated pages keep their objects' names, which the two tools below use to find "the same" object on each page.
+> Tip: Make one label, then **duplicate** it for each product and change only the words. Duplicated pages keep their objects' names, which the tool below uses to find "the same" object on each page.
 
-## Put objects in the same place on every page
+## Give other pages this page's format
 
-`Edit > Apply positions to other pages…` (also on the `Page` tab) moves objects on other pages to where they are on the page on screen:
+`Edit > Apply page format to other pages…` (also when you right-click a page, and on the `Page` tab) makes the other pages look like the page on screen. Each text box, barcode, picture, shape and table there takes the place, size and look of its match on this page, and **keeps its own words, barcode value and picture**.
 
-- **Copy from:** the selected objects, or every object on this page.
-- **What to copy:** the position; tick **size** and **rotation** to copy those too.
-- **Which objects:** text, barcodes, images, shapes and tables, each on or off.
-- **Match by:** the object's **name**, or its **order** (the first text box to the first text box, the second barcode to the second barcode).
-- **Which pages:** tick them; each says how many objects would move.
+- **Copy from:** every object on this page, or only the selected objects.
+- **What to copy:**
+  - **Position**, **size**, and **rotation and slant**.
+  - **Look and settings:** font and colours, barcode type, bar height and the digits under the bars, how a picture fits and its border, a shape's outline and fill, a table's lines and text. For text you can pick which parts: font, text size, bold/italic/underline, colours, alignment, line and letter spacing.
+  - **Add the objects a page doesn't have:** an object on this page with no match on another page is copied there, with its words and picture.
+- **Which objects:** text, barcodes and QR codes, images, shapes and tables, each on or off.
+- **Match by:** its **name, or else its order** (recommended); its **name** only; or its **order** only (the first text box to the first text box, the second barcode to the second barcode). A QR code is only ever matched with a QR code, and a line barcode with a line barcode.
+- **Which pages:** tick them; each says how many objects would change, and how many would be added.
+
+A barcode type that cannot hold a page's value (EAN-13 for the letters "ABC") is not forced on that page; the barcode takes the rest of the look.
 
 ## Same text formatting on other pages
 

@@ -43,6 +43,17 @@ public sealed class PdfDrawingSurface : IDrawingSurface
     /// </summary>
     public static ITextOutliner? ComplexTextOutliner { get; set; }
 
+    private static readonly System.Collections.Concurrent.ConcurrentDictionary<string, bool> Outlined = new(StringComparer.OrdinalIgnoreCase);
+
+    /// <summary>
+    /// Marks a font family whose letters PdfSharp cannot embed (an OpenType font with PostScript
+    /// outlines): its text is drawn as outlines by <see cref="ComplexTextOutliner"/> too, with
+    /// invisible text on top so it can still be selected and searched.
+    /// </summary>
+    public static void DrawAsOutlines(string family) => Outlined[family] = true;
+
+    private static bool NeedsOutline(string text, string family) => Bidi.HasRightToLeft(text) || Outlined.ContainsKey(family);
+
     public IImageSource Images { get; }
 
     private double Opacity => _opacity.Peek();
@@ -292,7 +303,7 @@ public sealed class PdfDrawingSurface : IDrawingSurface
                 var brush = Brush(span.Foreground);
                 double advance;
                 double trackingMm = span.LetterSpacingEm * UnitConverter.PointsToMm(span.FontSizePt);
-                if (ComplexTextOutliner is { } outliner && Bidi.HasRightToLeft(span.Text))
+                if (ComplexTextOutliner is { } outliner && NeedsOutline(span.Text, span.FontFamily))
                 {
                     var path = new XGraphicsPath { FillMode = XFillMode.Winding };
                     foreach (IReadOnlyList<PointMm> figure in outliner.Outline(span))
@@ -479,7 +490,7 @@ public sealed class PdfDrawingSurface : IDrawingSurface
             }
 
             // Arabic and Hebrew are drawn by the outliner, so they are measured by it as well.
-            if (ComplexTextOutliner is { } outliner && Bidi.HasRightToLeft(text))
+            if (ComplexTextOutliner is { } outliner && NeedsOutline(text, fontFamily))
             {
                 return outliner.MeasureWidthMm(text, fontFamily, fontSizePt, bold, italic);
             }

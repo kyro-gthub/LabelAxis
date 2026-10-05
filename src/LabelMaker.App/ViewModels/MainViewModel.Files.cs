@@ -100,11 +100,15 @@ public sealed partial class MainViewModel
         try
         {
             ProjectDocument doc = ProjectFile.Load(path);
+            // Fonts the project carries that this PC lacks are added first, so it draws in them.
+            IReadOnlyList<string> fonts = Rendering.CustomFonts.InstallFrom(doc, IsInstalledInWindows);
             LoadSession(doc);
             _env.Settings.AddRecent(path, doc.Project.Metadata.Title);
             _env.SaveSettings();
             RefreshRecent();
-            StatusText = $"Opened {Path.GetFileName(path)}";
+            StatusText = fonts.Count == 0
+                ? $"Opened {Path.GetFileName(path)}"
+                : Localization.Localizer.F("Opened {0} and added its fonts: {1}", Path.GetFileName(path), string.Join(", ", fonts));
         }
         catch (Exception ex)
         {
@@ -142,6 +146,7 @@ public sealed partial class MainViewModel
         try
         {
             _session.SyncDataCache();
+            Rendering.CustomFonts.EmbedInto(_session.Document);
             ProjectFile.Save(_session.Document, path);
             _env.Settings.AddRecent(path, _session.Project.Metadata.Title);
             _env.Settings.LastTemplateId = _session.Project.Template?.Id;

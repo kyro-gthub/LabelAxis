@@ -78,6 +78,9 @@ public sealed partial class MainViewModel
 
     private void RefreshCanvas() => _canvas?.InvalidateVisual();
 
+    /// <summary>Draws the label again (after a font was removed in Settings).</summary>
+    public void RedrawCanvas() => RefreshCanvas();
+
     private void OnDocumentChanged()
     {
         _activeTab?.RefreshHeader();

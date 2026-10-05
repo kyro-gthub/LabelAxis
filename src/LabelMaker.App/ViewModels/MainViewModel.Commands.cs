@@ -112,6 +112,8 @@ public sealed partial class MainViewModel
     public RelayCommand ClearCropCommand { get; private set; } = null!;
     public RelayCommand PickColorCommand { get; private set; } = null!;
     public RelayCommand ApplyTextStyleCommand { get; private set; } = null!;
+
+    public RelayCommand AddFontCommand { get; private set; } = null!;
     public RelayCommand DrawCustomShapeCommand { get; private set; } = null!;
     public RelayCommand ApplyLayoutCommand { get; private set; } = null!;
     public RelayCommand HelpCommand { get; private set; } = null!;
@@ -298,6 +300,7 @@ public sealed partial class MainViewModel
         EditShapeDotsCommand = new RelayCommand(
             () => { if (_session.Selection is [ShapeObject { Shape: ShapeKind.Custom } s]) { _canvas?.BeginPointEdit(s); } },
             () => _session.Selection is [ShapeObject { Shape: ShapeKind.Custom, Locked: false }]);
+        AddFontCommand = new RelayCommand(() => AddFontFromFile());
         ApplyTextStyleCommand = new RelayCommand(ApplyTextStyleToOtherPages,
             () => _session.Selection.OfType<TextObject>().Any());
         PickColorCommand = new RelayCommand(p =>

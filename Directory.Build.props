@@ -11,11 +11,14 @@
 
     <Product>LabelAxis</Product>
     <Company>LabelAxis</Company>
-    <Version>1.1.0</Version>
+    <Version>1.0.0</Version>
     <!-- Show a clean "1.0.0" in file properties and Apps, not "1.0.0+<git commit>". -->
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
-    <AssemblyVersion>1.1.0.0</AssemblyVersion>
-    <FileVersion>1.1.0.0</FileVersion>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <!-- Where copies of LabelAxis look for updates: the newest GitHub release of the project.
+         Another address can be given to buildelease.ps1 -UpdateUrl, or typed in Settings › Updates. -->
+    <UpdateFeedUrl Condition="'$(UpdateFeedUrl)' == ''">https://github.com/OWNER/LabelAxis/releases/latest/download/</UpdateFeedUrl>
     <Copyright>Copyright © LabelAxis</Copyright>
     <NeutralLanguage>en-US</NeutralLanguage>
   </PropertyGroup>

@@ -23,7 +23,7 @@ dotnet build LabelMaker.slnx
 # Release build
 dotnet build LabelMaker.slnx -c Release
 
-# Run the 130-test suite
+# Run the unit tests
 dotnet test tests/LabelMaker.Tests -c Release
 
 # Launch the designer
@@ -51,7 +51,7 @@ build\release.ps1   # all of the above in one folder, with update.json and SHA25
 ## Making a release
 
 ```powershell
-build\release.ps1 -OutputDir E:\ -UpdateUrl https://example.com/labelaxis/
+build\release.ps1 -OutputDir E:\
 ```
 
 This publishes once and writes `E:\LabelAxis-<version>-release\`:
@@ -69,16 +69,30 @@ What's new is taken from `build\release-notes\<v>.en.txt`, `.ar.txt` and `.ckb.t
 
 ### Automatic updates
 
-`-UpdateUrl` is built into the app as its update address; without it, users (or an
-administrator) enter one in *Settings › Updates*. The address can be:
+Every build looks for updates at the newest **GitHub release** of the project:
+`https://github.com/OWNER/LabelAxis/releases/latest/download/` (the `UpdateFeedUrl`
+property in `Directory.Build.props`). `-UpdateUrl` builds in another address instead, and
+users (or an administrator) can enter their own in *Settings › Updates*. An address can be:
 
-* a web folder reached by **https://** (plain http is refused), for example
-  `https://example.com/labelaxis/` or a GitHub release's
+* a web folder reached by **https://** (plain http is refused), such as a GitHub release's
   `https://github.com/<owner>/<repo>/releases/latest/download/` folder;
 * a **shared network folder**, for example `\server\share\LabelAxis`.
 
-To publish a release, copy the release folder's files there (overwriting the previous
-`update.json`). Each copy of LabelAxis checks about once a day: a newer version brings up
+**Publishing on GitHub.** The repository must be public (copies of LabelAxis download
+without signing in) and named as in the address above; if it has another name, change
+`UpdateFeedUrl` and rebuild. For each version:
+
+1. Raise `<Version>` in `Directory.Build.props` (copies only update to a *higher* number)
+   and write `build\release-notes\<v>.en.txt` (and `.ar.txt`, `.ckb.txt`).
+2. Run `build\release.ps1`.
+3. On GitHub: *Releases › Draft a new release*, tag `v<version>`, and attach **every file**
+   from `E:\LabelAxis-<version>-release\` (both setups, the portable zip, `update.json`,
+   `SHA256SUMS.txt`). Publish it; it becomes the "latest" release.
+
+**Elsewhere** (a website or a shared folder): copy the release folder's files there,
+overwriting the previous `update.json`.
+
+Each copy of LabelAxis checks about once a day: a newer version brings up
 a bar with *Update now*. LabelAxis downloads the setup program, checks its size and SHA-256
 against `update.json` (a mismatch, or a missing fingerprint, is refused), closes, runs it
 silently (`/SILENT /RELAUNCH=1`) and starts again. A copy installed with the offline
@@ -107,8 +121,8 @@ installer lays the files out anyway.
    removes them when it upgrades an offline install), and compiles both installers:
 
    ```powershell
-   ISCC /DAppVersion=1.1.0 /DShared  installer\LabelAxis.iss   # small
-   ISCC /DAppVersion=1.1.0 /DOffline installer\LabelAxis.iss   # offline
+   ISCC /DAppVersion=1.0.0 /DShared  installer\LabelAxis.iss   # small
+   ISCC /DAppVersion=1.0.0 /DOffline installer\LabelAxis.iss   # offline
    ```
 
 The installer is **per-user** by default (`PrivilegesRequired=lowest`; the first page
