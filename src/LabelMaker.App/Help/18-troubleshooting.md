@@ -39,7 +39,7 @@ Windows shows this for programs from a publisher it does not know yet. Choose **
 
 ## No update is offered
 
-- Check that the PC can reach github.com, or that the **update address** under `File > Settings… > Updates` is right (leave it empty for the built-in one).
+- Check that an **update address** is set under `File > Settings… > Updates`, or that this version was built with one, and that the PC can reach it.
 - Try `Help > Check for updates…`: the message says what did not work.
 - A portable copy does not update itself; see [[files|Projects, saving and settings]].
 

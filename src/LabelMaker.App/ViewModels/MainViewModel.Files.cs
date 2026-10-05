@@ -31,10 +31,9 @@ public sealed partial class MainViewModel
 {
     // ---------- file ----------
 
-    private void NewProject()
-    {
-        _shell.ShowNewProject(NewProjectFromTemplate);
-    }
+    /// <summary>New Project: a ready-made design, or a blank label sheet (<paramref name="designsFirst"/> false opens on those).</summary>
+    public void NewProject(bool designsFirst = true) =>
+        _shell.ShowNewProject(NewProjectFromTemplate, NewProjectFromDesign, designsFirst);
 
     /// <summary>A new project on <paramref name="template"/>, in its own tab.</summary>
     public void NewProjectFromTemplate(LabelTemplate template)

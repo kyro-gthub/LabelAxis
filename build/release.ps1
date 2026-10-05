@@ -20,7 +20,7 @@
 #>
 param(
     [string]$OutputDir = 'E:\',
-    # Built into the app as its update address. Empty: the GitHub releases address in Directory.Build.props.
+    # Built into the app as its update address (for example a GitHub release folder). Empty: none built in; set it in Settings › Updates.
     [string]$UpdateUrl = ''
 )
 

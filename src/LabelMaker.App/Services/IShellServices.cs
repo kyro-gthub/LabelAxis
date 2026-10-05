@@ -26,7 +26,11 @@ public interface IShellServices
 
     void ShowTextReport(string title, string content);
 
-    void ShowNewProject(Action<Core.Formtec.LabelTemplate> onChosen);
+    /// <summary>
+    /// New Project: a ready-made design (<paramref name="onDesign"/>, with whether to keep its
+    /// data fields) or a blank label sheet (<paramref name="onChosen"/>).
+    /// </summary>
+    void ShowNewProject(Action<Core.Formtec.LabelTemplate> onChosen, Action<Core.Designs.LabelDesign, bool>? onDesign = null, bool designsFirst = true);
 
     /// <summary>The "Start from a design" gallery: the design chosen and whether to keep its data fields, or null.</summary>
     (Core.Designs.LabelDesign Design, bool UseDataFields)? ShowDesignGallery();

@@ -123,16 +123,20 @@ public sealed class DialogService : IShellServices
     public void ShowTextReport(string title, string content) =>
         new TextReportWindow(title, content) { Owner = _owner }.ShowDialog();
 
-    public void ShowNewProject(Action<LabelTemplate> onChosen)
+    public void ShowNewProject(Action<LabelTemplate> onChosen, Action<LabelMaker.Core.Designs.LabelDesign, bool>? onDesign = null, bool designsFirst = true)
     {
-        var win = new NewProjectWindow(_env.Templates, _env.Settings.FavoriteTemplateIds) { Owner = _owner };
+        var win = new NewProjectWindow(_env.Templates, _env.Settings.FavoriteTemplateIds, designsFirst && onDesign is not null) { Owner = _owner };
         bool chosen = win.ShowDialog() == true;
         if (win.FavoritesChanged)
         {
             _env.SaveSettings();
         }
 
-        if (chosen && win.SelectedTemplate is { } template)
+        if (chosen && win.ChosenDesign is { } design && onDesign is not null)
+        {
+            onDesign(design, win.UseDataFields);
+        }
+        else if (chosen && win.SelectedTemplate is { } template)
         {
             onChosen(template);
         }
@@ -155,7 +159,7 @@ public sealed class DialogService : IShellServices
         switch (win.Action)
         {
             case WelcomeAction.NewFromTemplateDialog:
-                vm.NewCommand.Execute(null);
+                vm.NewProject(designsFirst: false);
                 break;
             case WelcomeAction.NewFromDesign:
                 vm.NewFromDesignCommand.Execute(null);

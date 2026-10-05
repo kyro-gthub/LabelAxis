@@ -137,7 +137,7 @@ public sealed partial class MainViewModel
 
     private void BuildCommands()
     {
-        NewCommand = new RelayCommand(NewProject);
+        NewCommand = new RelayCommand(() => NewProject());
         NewFromDesignCommand = new RelayCommand(NewFromDesign);
         OpenCommand = new RelayCommand(OpenProject);
         OpenRecentCommand = new RelayCommand(p => { if (p is string s) OpenProjectPath(s); });

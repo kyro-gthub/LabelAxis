@@ -16,9 +16,6 @@
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <FileVersion>1.0.0.0</FileVersion>
-    <!-- Where copies of LabelAxis look for updates: the newest GitHub release of the project.
-         Another address can be given to buildelease.ps1 -UpdateUrl, or typed in Settings › Updates. -->
-    <UpdateFeedUrl Condition="'$(UpdateFeedUrl)' == ''">https://github.com/OWNER/LabelAxis/releases/latest/download/</UpdateFeedUrl>
     <Copyright>Copyright © LabelAxis</Copyright>
     <NeutralLanguage>en-US</NeutralLanguage>
   </PropertyGroup>
