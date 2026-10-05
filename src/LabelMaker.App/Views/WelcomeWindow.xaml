@@ -6,7 +6,7 @@
         xmlns:loc="clr-namespace:LabelMaker.App.Localization"
         Style="{StaticResource AppWindow}"
         Background="{DynamicResource Br.Surface}" TextElement.Foreground="{DynamicResource Br.Text}"
-        Title="Welcome to LabelAxis" Height="640" Width="1020" MinHeight="520" MinWidth="860"
+        Title="Welcome to LabelAxis" Height="700" Width="1020" MinHeight="560" MinWidth="860"
         WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
   <Window.Resources>
     <Style x:Key="StartAction" TargetType="Button">
@@ -61,6 +61,17 @@
 
         <TextBlock DockPanel.Dock="Top" Text="START" Style="{StaticResource PanelSectionHeader}" />
         <StackPanel>
+          <Button Style="{StaticResource StartAction}" Click="OnNewFromDesign" AutomationProperties.AutomationId="Welcome.NewFromDesign">
+            <DockPanel>
+              <Border DockPanel.Dock="Left" Width="34" Height="34" CornerRadius="9" Background="{DynamicResource Br.AccentSoft}" Margin="0,0,12,0">
+                <Image Source="{StaticResource Icon.Sticker}" Width="17" Height="17" />
+              </Border>
+              <StackPanel VerticalAlignment="Center">
+                <TextBlock Text="Start from a design…" FontFamily="{StaticResource Font.UiSemiBold}" FontSize="13" />
+                <TextBlock Text="Price tags, product, food, shipping and more" FontSize="11.5" Foreground="{DynamicResource Br.TextMuted}" />
+              </StackPanel>
+            </DockPanel>
+          </Button>
           <Button Style="{StaticResource StartAction}" Click="OnNewFromTemplate">
             <DockPanel>
               <Border DockPanel.Dock="Left" Width="34" Height="34" CornerRadius="9" Background="{DynamicResource Br.AccentSoft}" Margin="0,0,12,0">

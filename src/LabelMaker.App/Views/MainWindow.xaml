@@ -73,7 +73,8 @@
 
           <Menu Background="Transparent" VerticalAlignment="Center">
             <MenuItem AutomationProperties.AutomationId="Menu.File" Header="_File">
-              <MenuItem Header="_New Project…" InputGestureText="Ctrl+N" Command="{Binding NewCommand}" />
+              <MenuItem AutomationProperties.AutomationId="Menu.NewProject" Header="_New Project…" InputGestureText="Ctrl+N" Command="{Binding NewCommand}" />
+              <MenuItem AutomationProperties.AutomationId="Menu.NewFromDesign" Header="New from a _design…" Command="{Binding NewFromDesignCommand}" />
               <MenuItem Header="New _thermal label…" Command="{Binding NewThermalLabelCommand}" />
               <MenuItem Header="_Open…" InputGestureText="Ctrl+O" Command="{Binding OpenCommand}" />
               <MenuItem Header="Open _Recent" ItemsSource="{Binding RecentProjects}">

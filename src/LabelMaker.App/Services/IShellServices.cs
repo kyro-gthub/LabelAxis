@@ -28,6 +28,9 @@ public interface IShellServices
 
     void ShowNewProject(Action<Core.Formtec.LabelTemplate> onChosen);
 
+    /// <summary>The "Start from a design" gallery: the design chosen and whether to keep its data fields, or null.</summary>
+    (Core.Designs.LabelDesign Design, bool UseDataFields)? ShowDesignGallery();
+
     /// <summary>The start window (new, open, recent, sheets); runs the chosen action on <paramref name="vm"/>.</summary>
     void ShowWelcome(ViewModels.MainViewModel vm);
 

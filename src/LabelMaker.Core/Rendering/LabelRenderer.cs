@@ -594,6 +594,8 @@ public sealed class LabelRenderer
                 {
                     FontFamily = table.FontFamily,
                     FontSizePt = table.FontSizePt,
+                    Bold = table.Bold,
+                    Foreground = r == 0 && table.FirstRowIsHeader && table.HeaderTextColor is { } header ? header : table.TextColor,
                     HorizontalAlignment = table.CellAlignment,
                     VerticalAlignment = VerticalAlignment.Middle,
                     WordWrap = true,

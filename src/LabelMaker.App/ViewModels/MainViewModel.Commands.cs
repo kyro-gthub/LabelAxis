@@ -32,6 +32,8 @@ public sealed partial class MainViewModel
     // ---------- commands ----------
 
     public RelayCommand NewCommand { get; private set; } = null!;
+
+    public RelayCommand NewFromDesignCommand { get; private set; } = null!;
     public RelayCommand OpenCommand { get; private set; } = null!;
     public RelayCommand OpenRecentCommand { get; private set; } = null!;
     public RelayCommand SaveCommand { get; private set; } = null!;
@@ -136,6 +138,7 @@ public sealed partial class MainViewModel
     private void BuildCommands()
     {
         NewCommand = new RelayCommand(NewProject);
+        NewFromDesignCommand = new RelayCommand(NewFromDesign);
         OpenCommand = new RelayCommand(OpenProject);
         OpenRecentCommand = new RelayCommand(p => { if (p is string s) OpenProjectPath(s); });
         SaveCommand = new RelayCommand(() => Save(false));

@@ -46,6 +46,33 @@ public sealed partial class MainViewModel
         StatusText = $"New project · {template.Name}";
     }
 
+    private void NewFromDesign()
+    {
+        if (_shell.ShowDesignGallery() is { } choice)
+        {
+            NewProjectFromDesign(choice.Design, choice.UseDataFields);
+        }
+    }
+
+    /// <summary>
+    /// A new project from a ready-made design, in its own tab: the design's sheet or roll, its
+    /// objects, and grey boxes for the pictures to replace.
+    /// </summary>
+    public void NewProjectFromDesign(LabelMaker.Core.Designs.LabelDesign design, bool useDataFields)
+    {
+        ProjectDocument document = LabelMaker.Core.Designs.DesignBuilder.Build(design, _env.Templates, new LabelMaker.Core.Designs.DesignBuildOptions
+        {
+            UseDataFields = useDataFields,
+            Measurer = new Rendering.WpfTextMeasurer(),
+            Placeholder = Rendering.DesignPlaceholders.Make,
+        });
+        string name = Localization.Localizer.T(design.Name);
+        document.Project.Metadata.Title = name;
+        _env.Settings.LastTemplateId = document.Project.Template?.Id;
+        LoadSession(document);
+        StatusText = Localization.Localizer.F("New project from the design “{0}”", name);
+    }
+
     /// <summary>A new project on a thermal roll defined in the thermal label window.</summary>
     private void NewThermalLabel()
     {

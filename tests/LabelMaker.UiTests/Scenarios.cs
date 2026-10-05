@@ -110,6 +110,36 @@ internal static class Scenarios
         AppDriver.WaitUntil(() => AppDriver.Rows(objects) == onFirst, AppDriver.Wait, "Undo to take the copied table away");
     }
 
+    [Scenario("Start from a design opens the first design as a new project with all its objects")]
+    public static void StartFromDesign(string exe)
+    {
+        using AppDriver app = AppDriver.Start(exe);
+        AutomationElement objects = app.Find("ObjectListBox");
+
+        app.Menu("Menu.File", "Menu.NewFromDesign");
+        AutomationElement gallery = WindowWith(app, "Designs.Use", "the Start from a design window");
+        AutomationElement list = app.Find("Designs.List", gallery);
+        AppDriver.WaitUntil(() => AppDriver.Rows(list) >= 60, AppDriver.Wait, "the designs in the gallery");
+        AppDriver.Click(app.Find("Designs.Use", gallery));
+        AppDriver.WaitUntil(() => !app.Windows().Any(w => AppDriver.FindIn(w, "Designs.Use") is not null), AppDriver.Wait, "the gallery to close");
+
+        // "Price tag – bold price": three words, a line, a price, a code and a date.
+        AppDriver.WaitUntil(() => AppDriver.Rows(objects) == 6, AppDriver.Wait, "the design's 6 objects in the object list");
+    }
+
+    [Scenario("The New Project window offers a custom size")]
+    public static void NewProjectCustomSize(string exe)
+    {
+        using AppDriver app = AppDriver.Start(exe);
+        app.Menu("Menu.File", "Menu.NewProject");
+        AutomationElement window = WindowWith(app, "NewProject.CustomSize", "the New Project window");
+        AppDriver.Click(app.Find("NewProject.CustomSize", window));
+        AutomationElement custom = AppDriver.WaitFor(() => app.Windows().FirstOrDefault(w => w.Current.Name.Contains("custom", StringComparison.OrdinalIgnoreCase)),
+            AppDriver.Wait, "the custom size window");
+        AppDriver.Close(custom);
+        AppDriver.Close(window);
+    }
+
     [Scenario("The Print window opens and closes without printing")]
     public static void PrintWindow(string exe)
     {

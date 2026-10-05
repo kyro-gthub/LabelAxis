@@ -14,6 +14,7 @@ public enum WelcomeAction
 {
     Blank,
     NewFromTemplateDialog,
+    NewFromDesign,
     NewFromTemplate,
     NewThermal,
     OpenDialog,
@@ -82,6 +83,8 @@ public partial class WelcomeWindow : Window
     private void OnBlank(object sender, RoutedEventArgs e) => Finish(WelcomeAction.Blank);
 
     private void OnNewFromTemplate(object sender, RoutedEventArgs e) => Finish(WelcomeAction.NewFromTemplateDialog);
+
+    private void OnNewFromDesign(object sender, RoutedEventArgs e) => Finish(WelcomeAction.NewFromDesign);
 
     private void OnNewThermal(object sender, RoutedEventArgs e) => Finish(WelcomeAction.NewThermal);
 

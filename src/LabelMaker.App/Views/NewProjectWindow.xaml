@@ -13,10 +13,16 @@
       <TextBox x:Name="SearchBox" />
     </DockPanel>
 
-    <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
-      <Button Content="Create" IsDefault="True" Padding="20,5" Click="OnCreate" />
-      <Button Content="Cancel" IsCancel="True" Padding="20,5" Margin="8,0,0,0" />
-    </StackPanel>
+    <DockPanel DockPanel.Dock="Bottom" Margin="0,8,0,0">
+      <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+        <Button Content="Create" IsDefault="True" Padding="20,5" Click="OnCreate" />
+        <Button Content="Cancel" IsCancel="True" Padding="20,5" Margin="8,0,0,0" />
+      </StackPanel>
+      <!-- Any size, not only the sheets in the list. -->
+      <Button x:Name="CustomSizeButton" Content="Custom size…" Padding="14,5" HorizontalAlignment="Left" Click="OnCustomSize"
+              AutomationProperties.AutomationId="NewProject.CustomSize"
+              ToolTip="Make a label of any width and height, on A4 or any paper, with your own margins and gaps" />
+    </DockPanel>
 
     <Grid>
       <Grid.ColumnDefinitions>

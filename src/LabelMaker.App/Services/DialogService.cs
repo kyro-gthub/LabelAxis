@@ -126,10 +126,22 @@ public sealed class DialogService : IShellServices
     public void ShowNewProject(Action<LabelTemplate> onChosen)
     {
         var win = new NewProjectWindow(_env.Templates, _env.Settings.FavoriteTemplateIds) { Owner = _owner };
-        if (win.ShowDialog() == true && win.SelectedTemplate is { } template)
+        bool chosen = win.ShowDialog() == true;
+        if (win.FavoritesChanged)
+        {
+            _env.SaveSettings();
+        }
+
+        if (chosen && win.SelectedTemplate is { } template)
         {
             onChosen(template);
         }
+    }
+
+    public (LabelMaker.Core.Designs.LabelDesign Design, bool UseDataFields)? ShowDesignGallery()
+    {
+        var win = new DesignGalleryWindow(_env.Templates) { Owner = Front };
+        return win.ShowDialog() == true && win.ChosenDesign is { } design ? (design, win.UseDataFields) : null;
     }
 
     public void ShowWelcome(MainViewModel vm)
@@ -144,6 +156,9 @@ public sealed class DialogService : IShellServices
         {
             case WelcomeAction.NewFromTemplateDialog:
                 vm.NewCommand.Execute(null);
+                break;
+            case WelcomeAction.NewFromDesign:
+                vm.NewFromDesignCommand.Execute(null);
                 break;
             case WelcomeAction.NewFromTemplate when win.ChosenTemplate is { } template:
                 vm.NewProjectFromTemplate(template);
