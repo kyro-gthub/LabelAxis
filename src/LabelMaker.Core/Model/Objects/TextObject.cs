@@ -25,6 +25,15 @@ public sealed class TextObject : LabelObject
     public ColorRgba Foreground { get; set; } = ColorRgba.Black;
     public ColorRgba Background { get; set; } = ColorRgba.Transparent;
 
+    /// <summary>
+    /// Second stop of a linear gradient from <see cref="Background"/> across the whole box.
+    /// Null means a plain background colour.
+    /// </summary>
+    public ColorRgba? BackgroundTo { get; set; }
+
+    /// <summary>The background gradient's direction in degrees clockwise from "left to right".</summary>
+    public double BackgroundAngleDegrees { get; set; } = 90;
+
     public HorizontalAlignment HorizontalAlignment { get; set; } = HorizontalAlignment.Left;
     public VerticalAlignment VerticalAlignment { get; set; } = VerticalAlignment.Top;
     public TextDirection Direction { get; set; } = TextDirection.LeftToRight;
@@ -72,6 +81,8 @@ public sealed class TextObject : LabelObject
             Strikethrough = Strikethrough,
             Foreground = Foreground,
             Background = Background,
+            BackgroundTo = BackgroundTo,
+            BackgroundAngleDegrees = BackgroundAngleDegrees,
             HorizontalAlignment = HorizontalAlignment,
             VerticalAlignment = VerticalAlignment,
             Direction = Direction,

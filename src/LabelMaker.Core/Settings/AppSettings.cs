@@ -81,6 +81,9 @@ public sealed class AppSettings
     /// <summary>Colours chosen most recently in the colour dialog, newest first, as hex.</summary>
     public List<string> RecentColors { get; set; } = new();
 
+    /// <summary>Gradients chosen most recently, newest first, as "#start #end angle".</summary>
+    public List<string> RecentGradients { get; set; } = new();
+
     /// <summary>Sheet templates starred in the Label manager, shown first under Favourites.</summary>
     public List<string> FavoriteTemplateIds { get; set; } = new();
 

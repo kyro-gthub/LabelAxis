@@ -24,7 +24,8 @@ public enum FindTargets
     BarcodeData = 2,
     TableCells = 4,
     ObjectNames = 8,
-    All = Text | BarcodeData | TableCells | ObjectNames,
+    PageNames = 16,
+    All = Text | BarcodeData | TableCells | ObjectNames | PageNames,
 }
 
 /// <summary>Where inside an object a match was found.</summary>
@@ -34,6 +35,9 @@ public enum FindField
     BarcodeData = 1,
     TableCell = 2,
     ObjectName = 3,
+
+    /// <summary>The page's own name; the match has no object.</summary>
+    PageName = 4,
 }
 
 public sealed record FindOptions
@@ -56,12 +60,13 @@ public sealed record FindOptions
 /// <summary>
 /// One occurrence. <see cref="Part"/> is the paragraph index for text and the cell
 /// index for tables (0 otherwise); <see cref="Start"/> is the offset inside that
-/// part's plain text, so a single match can be replaced on its own.
+/// part's plain text, so a single match can be replaced on its own. A match in a page's
+/// name (<see cref="FindField.PageName"/>) has no <see cref="Object"/>.
 /// </summary>
 public sealed record FindMatch(
     string? PageId,
     string PageName,
-    LabelObject Object,
+    LabelObject? Object,
     FindField Field,
     int Part,
     int Start,
@@ -144,6 +149,18 @@ public static class FindReplaceEngine
 
         foreach ((string? pageId, string pageName, LabelDocument doc) in Documents(project, activePageId, options.Scope))
         {
+            if (options.Targets.HasFlag(FindTargets.PageNames))
+            {
+                foreach (Match m in Matches(rx, pageName, options.SkipTokens))
+                {
+                    results.Add(new FindMatch(
+                        pageId, pageName, null, FindField.PageName, 0, m.Index, m.Length,
+                        Context(pageName, m.Index - ContextChars, m.Index, leading: true),
+                        m.Value,
+                        Context(pageName, m.Index + m.Length, m.Index + m.Length + ContextChars, leading: false)));
+                }
+            }
+
             foreach (LabelObject obj in doc.Objects)
             {
                 foreach ((FindField field, int part, string text) in Fields(obj, options.Targets))
@@ -223,7 +240,7 @@ public static class FindReplaceEngine
     /// </summary>
     public static IUndoableCommand? BuildReplaceOne(FindMatch match, FindOptions options, string replacement)
     {
-        if (Validate(options) is not null)
+        if (Validate(options) is not null || match.Object is null)
         {
             return null;
         }
@@ -313,6 +330,48 @@ public static class FindReplaceEngine
         }
 
         return commands;
+    }
+
+    /// <summary>
+    /// The new names of the pages whose names match, for renaming them (page names are not
+    /// objects, so the caller renames them through its own page commands). Page ids are
+    /// null for the first page (the master label).
+    /// </summary>
+    public static IReadOnlyList<(string? PageId, string NewName)> PageRenames(
+        ProjectModel project, string? activePageId, FindOptions options, string replacement, out int occurrences)
+    {
+        ArgumentNullException.ThrowIfNull(project);
+        occurrences = 0;
+        var renames = new List<(string?, string)>();
+        if (Validate(options) is not null || !options.Targets.HasFlag(FindTargets.PageNames))
+        {
+            return renames;
+        }
+
+        Regex rx = BuildRegex(options);
+        foreach ((string? pageId, string pageName, _) in Documents(project, activePageId, options.Scope))
+        {
+            string after = ReplaceInString(pageName, rx, options, replacement, onlyStart: null, out int changed);
+            if (changed > 0 && after.Trim().Length > 0)
+            {
+                occurrences += changed;
+                renames.Add((pageId, after.Trim()));
+            }
+        }
+
+        return renames;
+    }
+
+    /// <summary>The page's name with just <paramref name="match"/> replaced, or null if the name changed since.</summary>
+    public static string? RenamedPage(FindMatch match, FindOptions options, string replacement)
+    {
+        if (match.Field != FindField.PageName || Validate(options) is not null)
+        {
+            return null;
+        }
+
+        string after = ReplaceInString(match.PageName, BuildRegex(options), options, replacement, match.Start, out int count);
+        return count == 1 && after.Trim().Length > 0 ? after.Trim() : null;
     }
 
     /// <summary>Replaces matches in a plain string; <paramref name="onlyStart"/> limits it to one occurrence.</summary>

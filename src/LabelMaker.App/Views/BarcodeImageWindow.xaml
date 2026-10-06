@@ -5,7 +5,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Style="{StaticResource AppWindow}"
         Background="{DynamicResource Br.Surface}" TextElement.Foreground="{DynamicResource Br.Text}"
-        Title="Barcode image generator" Height="440" Width="560" WindowStartupLocation="CenterOwner">
+        Title="Barcode image generator" Height="440" Width="700" MinWidth="640" WindowStartupLocation="CenterOwner">
   <Grid Margin="12">
     <Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
     <Grid.RowDefinitions>
@@ -40,10 +40,23 @@
       </DockPanel>
     </Border>
 
-    <StackPanel Grid.Row="6" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right">
-      <Button Content="Save SVG…" Padding="14,4" Click="OnSaveSvg" />
-      <Button Content="Save PDF…" Padding="14,4" Margin="8,0,0,0" Click="OnSavePdf" />
-      <Button Content="Close" Padding="14,4" Margin="8,0,0,0" IsCancel="True" />
-    </StackPanel>
+    <!-- Wraps onto a second line when the names are long (as in Kurdish). -->
+    <WrapPanel Grid.Row="6" Grid.ColumnSpan="2" HorizontalAlignment="Right">
+      <StackPanel Orientation="Horizontal" Margin="0,4,8,0">
+        <TextBlock Text="PNG quality" VerticalAlignment="Center" Margin="0,0,8,0" />
+        <ComboBox x:Name="DpiBox" MinWidth="92" ToolTip="Dots per inch of the saved picture: more is sharper and bigger">
+          <ComboBoxItem Content="150 dpi" Tag="150" />
+          <ComboBoxItem Content="300 dpi" Tag="300" IsSelected="True" />
+          <ComboBoxItem Content="600 dpi" Tag="600" />
+          <ComboBoxItem Content="1200 dpi" Tag="1200" />
+        </ComboBox>
+      </StackPanel>
+      <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+        <Button Content="Save PNG…" Padding="14,4" Margin="0,0,8,0" Click="OnSavePng" />
+        <Button Content="Save SVG…" Padding="14,4" Click="OnSaveSvg" />
+        <Button Content="Save PDF…" Padding="14,4" Margin="8,0,0,0" Click="OnSavePdf" />
+        <Button Content="Close" Padding="14,4" Margin="8,0,0,0" IsCancel="True" />
+      </StackPanel>
+    </WrapPanel>
   </Grid>
 </Window>

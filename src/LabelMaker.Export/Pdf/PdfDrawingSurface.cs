@@ -151,6 +151,23 @@ public sealed class PdfDrawingSurface : IDrawingSurface
     public void FillRectangleGradient(
         RectMm r, ColorRgba from, ColorRgba to, double angleDegrees, double cornerRadiusMm = 0)
     {
+        var outline = new XGraphicsPath();
+        if (cornerRadiusMm > 0)
+        {
+            XRect box = Pt(r);
+            outline.AddRoundedRectangle(box.X, box.Y, box.Width, box.Height, cornerRadiusMm * MmToPt * 2, cornerRadiusMm * MmToPt * 2);
+        }
+        else
+        {
+            outline.AddRectangle(Pt(r));
+        }
+
+        if (SeeThrough(from, to))
+        {
+            FillBands(outline, r, from, to, angleDegrees);
+            return;
+        }
+
         XBrush brush = Gradient(r, from, to, angleDegrees);
         if (cornerRadiusMm > 0)
         {
@@ -162,8 +179,18 @@ public sealed class PdfDrawingSurface : IDrawingSurface
         }
     }
 
-    public void FillEllipseGradient(RectMm r, ColorRgba from, ColorRgba to, double angleDegrees) =>
+    public void FillEllipseGradient(RectMm r, ColorRgba from, ColorRgba to, double angleDegrees)
+    {
+        if (SeeThrough(from, to))
+        {
+            var outline = new XGraphicsPath();
+            outline.AddEllipse(Pt(r));
+            FillBands(outline, r, from, to, angleDegrees);
+            return;
+        }
+
         _gfx.DrawEllipse(Gradient(r, from, to, angleDegrees), Pt(r));
+    }
 
     public void FillPolygonGradient(
         IReadOnlyList<PointMm> points, ColorRgba from, ColorRgba to, double angleDegrees,
@@ -180,12 +207,26 @@ public sealed class PdfDrawingSurface : IDrawingSurface
 
         XPoint[] pts = points.Select(p => new XPoint(p.X * MmToPt, p.Y * MmToPt)).ToArray();
         XPen? pen = stroke.IsTransparent || strokeWidthMm <= 0 ? null : Pen(stroke, strokeWidthMm, DashStyle.Solid);
+        if (SeeThrough(from, to))
+        {
+            var outline = new XGraphicsPath { FillMode = XFillMode.Alternate };
+            outline.AddPolygon(pts);
+            FillBands(outline, bounds, from, to, angleDegrees);
+            if (pen is not null)
+            {
+                _gfx.DrawPolygon(pen, pts);
+            }
+
+            return;
+        }
+
         _gfx.DrawPolygon(pen, Gradient(bounds, from, to, angleDegrees), pts, XFillMode.Alternate);
     }
 
     /// <summary>
     /// PdfSharp only offers four gradient directions, so the requested angle snaps to
-    /// the nearest of them. Everything else about the fill is exact.
+    /// the nearest of them; pointing the other way round swaps the two colours. Everything
+    /// else about the fill is exact.
     /// </summary>
     private XBrush Gradient(RectMm r, ColorRgba from, ColorRgba to, double angleDegrees)
     {
@@ -202,8 +243,61 @@ public sealed class PdfDrawingSurface : IDrawingSurface
             _ => XLinearGradientMode.BackwardDiagonal,
         };
 
-        return new XLinearGradientBrush(Pt(r), ApplyOpacity(from), ApplyOpacity(to), mode);
+        // From 157.5° to 337.5° the colours run right to left, upwards, or up to the right.
+        bool reversed = a >= 157.5 && a < 337.5;
+        return reversed
+            ? new XLinearGradientBrush(Pt(r), ApplyOpacity(to), ApplyOpacity(from), mode)
+            : new XLinearGradientBrush(Pt(r), ApplyOpacity(from), ApplyOpacity(to), mode);
     }
+
+    /// <summary>PDF gradients cannot fade: a see-through colour or a faded object is drawn in bands instead.</summary>
+    private bool SeeThrough(ColorRgba from, ColorRgba to) => from.A < 255 || to.A < 255 || Opacity < 0.999;
+
+    /// <summary>How many bands make up a gradient drawn in bands: too fine to see on any label.</summary>
+    private const int GradientBands = 96;
+
+    /// <summary>
+    /// A gradient as thin bands of solid colour, each with its own opacity, across the outline
+    /// at exactly the requested angle.
+    /// </summary>
+    private void FillBands(XGraphicsPath outline, RectMm r, ColorRgba from, ColorRgba to, double angleDegrees)
+    {
+        double radians = angleDegrees * Math.PI / 180.0;
+        double dx = Math.Cos(radians), dy = Math.Sin(radians);
+        double cx = (r.X + (r.Width / 2)) * MmToPt, cy = (r.Y + (r.Height / 2)) * MmToPt;
+        // The gradient runs across the box along the angle, from edge to edge (as on screen).
+        double half = ((Math.Abs(dx) * r.Width) + (Math.Abs(dy) * r.Height)) / 2 * MmToPt;
+        double reach = Math.Sqrt((r.Width * r.Width) + (r.Height * r.Height)) * MmToPt;
+        if (half <= 0)
+        {
+            return;
+        }
+
+        XGraphicsState state = _gfx.Save();
+        _gfx.IntersectClip(outline);
+        double step = 2 * half / GradientBands;
+        for (int i = 0; i < GradientBands; i++)
+        {
+            double t = (i + 0.5) / GradientBands;
+            var colour = new ColorRgba(
+                Mix(from.R, to.R, t), Mix(from.G, to.G, t), Mix(from.B, to.B, t), Mix(from.A, to.A, t));
+            if (colour.IsTransparent)
+            {
+                continue;
+            }
+
+            // The first and last bands reach past the box so nothing at the corners is left out.
+            double start = i == 0 ? -reach : -half + (i * step);
+            double end = i == GradientBands - 1 ? reach : -half + ((i + 1) * step);
+            XPoint Along(double s, double side) => new(cx + (dx * s) - (dy * side), cy + (dy * s) + (dx * side));
+            XPoint[] band = { Along(start, -reach), Along(end, -reach), Along(end, reach), Along(start, reach) };
+            _gfx.DrawPolygon(Brush(colour), band, XFillMode.Winding);
+        }
+
+        _gfx.Restore(state);
+    }
+
+    private static byte Mix(byte a, byte b, double t) => (byte)Math.Round(a + ((b - a) * t));
 
     public void FillEllipse(RectMm r, ColorRgba fill)
     {

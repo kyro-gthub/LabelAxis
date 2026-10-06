@@ -288,6 +288,27 @@ public sealed class DocumentSession
     }
 
     /// <summary>
+    /// A command renaming several pages at once (a null id is the first page), already
+    /// applied: pass it to <see cref="Execute"/>, alone or inside a composite, for one undo step.
+    /// </summary>
+    public IUndoableCommand RenamePagesCommand(IReadOnlyList<(string? PageId, string Name)> renames) =>
+        new PageStructureCommand(this, renames.Count == 1 ? "Rename page" : "Rename pages", () =>
+        {
+            foreach ((string? id, string name) in renames)
+            {
+                if (id is null)
+                {
+                    Project.MasterLabel.Name = name;
+                }
+                else if (Project.Pages.FirstOrDefault(p => p.Id == id) is { } page)
+                {
+                    page.Name = name;
+                    page.Document.Name = name;
+                }
+            }
+        });
+
+    /// <summary>
     /// Undo for page-list edits (add, duplicate, remove, rename). It snapshots the
     /// page order, every page's name and the active page before and after the
     /// change; the pages themselves are kept by reference, so a removed page comes

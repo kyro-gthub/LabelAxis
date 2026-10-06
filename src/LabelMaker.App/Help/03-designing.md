@@ -42,6 +42,12 @@ Objects lower in the `Layers` list (on the right) are drawn behind those above t
 - `Ctrl+G` groups the selection so it moves and resizes as one; `Ctrl+Shift+G` ungroups.
 - `Ctrl+L` locks an object so it cannot be moved by accident.
 
+## Colours
+
+Click `…` beside any colour to open the colour window: pick in the big square, set the hue and opacity with the two sliders, type a hex code, or take a colour from anywhere on the screen with the eyedropper. **Palette**, **Recent** and (for fills) **Gradients** hold ready colours. **No colour** leaves that part empty; picking a colour after it makes the colour fully visible again.
+
+Shape fills and text highlights can be a **gradient**: choose **Gradient** at the top, click the start or the end colour to change it, set the direction with the arrows or in degrees, and `⇄` swaps the two colours.
+
 ## Zoom
 
 The mouse wheel zooms in and out where the pointer is; `Ctrl`+wheel scrolls up and down and `Shift`+wheel sideways. `Ctrl+1` fits the label in the window and `Ctrl+0` shows actual size. Hold `Space` (or the middle mouse button) and drag to move around.

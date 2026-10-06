@@ -18,17 +18,28 @@ namespace LabelMaker.App.Services;
 /// measured after every size or move, so it fits whatever the monitor layout, taskbar
 /// position or DPI.
 ///
+/// Some PCs maximise a window without a caption over the whole monitor, taskbar included,
+/// or (with monitors of different sizes) short of the screen's edge. So once maximised the
+/// window is also checked against the work area it should fill: if it hangs further past
+/// one edge than the others, or stops short of one, it is moved to exactly the work area
+/// (plus the usual even overhang), whatever the screen size, taskbar position or scaling.
+///
 /// It also keeps the minimum size within the monitor, so a small or highly scaled laptop
 /// screen never gets a window that is taller than the screen.
 /// </summary>
 public static class MaximiseFix
 {
     private const int MonitorDefaultToNearest = 0x00000002;
+    private const uint SwpNoZOrder = 0x0004;
+    private const uint SwpNoActivate = 0x0010;
+    private const uint SwpNoOwnerZOrder = 0x0200;
 
     public static void Attach(Window window, FrameworkElement content)
     {
         double designMinWidth = window.MinWidth;
         double designMinHeight = window.MinHeight;
+        int corrections = 0;
+        bool correctionQueued = false;
 
         void Update()
         {
@@ -48,8 +59,33 @@ public static class MaximiseFix
 
             if (window.WindowState != WindowState.Maximized)
             {
+                corrections = 0;
                 content.Margin = default;
                 return;
+            }
+
+            // How far the window reaches past each edge of the work area (negative: short of it).
+            int left = work.Left - rect.Left, top = work.Top - rect.Top;
+            int right = rect.Right - work.Right, bottom = rect.Bottom - work.Bottom;
+            int even = Math.Max(0, Math.Min(Math.Min(left, top), Math.Min(right, bottom)));
+            bool uneven = Math.Max(Math.Max(left, top), Math.Max(right, bottom)) - even > 1 ||
+                          Math.Min(Math.Min(left, top), Math.Min(right, bottom)) < even;
+            if (uneven && corrections < 2 && !correctionQueued)
+            {
+                // Covering the taskbar or falling short of an edge: put it exactly over the work area.
+                // Queued, so Windows finishes its own maximise first; tried twice at most per maximise.
+                correctionQueued = true;
+                window.Dispatcher.BeginInvoke(() =>
+                {
+                    correctionQueued = false;
+                    if (window.WindowState == WindowState.Maximized && TryGetWorkArea(hwnd, out NativeRect area))
+                    {
+                        corrections++;
+                        SetWindowPos(hwnd, IntPtr.Zero, area.Left - even, area.Top - even,
+                            area.Right - area.Left + (2 * even), area.Bottom - area.Top + (2 * even),
+                            SwpNoZOrder | SwpNoActivate | SwpNoOwnerZOrder);
+                    }
+                }, System.Windows.Threading.DispatcherPriority.Background);
             }
 
             content.Margin = new Thickness(
@@ -64,7 +100,11 @@ public static class MaximiseFix
             FitToMonitor(window);
             Update();
         };
-        window.StateChanged += (_, _) => Update();
+        window.StateChanged += (_, _) =>
+        {
+            corrections = 0;
+            Update();
+        };
         window.SizeChanged += (_, _) => Update();
         window.LocationChanged += (_, _) => Update();
         window.DpiChanged += (_, _) => Update();
@@ -117,6 +157,10 @@ public static class MaximiseFix
     [DllImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static extern bool GetWindowRect(IntPtr hwnd, out NativeRect rect);
+
+    [DllImport("user32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool SetWindowPos(IntPtr hwnd, IntPtr insertAfter, int x, int y, int cx, int cy, uint flags);
 
     [StructLayout(LayoutKind.Sequential)]
     private struct NativeRect

@@ -18,6 +18,8 @@ Click `Text` on the toolbar to add a text box.
 
 Under `Text Settings`: font, size, **B** / *I* / underline / strikethrough, colour, highlight, alignment (left, centre, right, justify; top, middle, bottom), line spacing, letter spacing and padding.
 
+The **highlight** fills the whole box behind the text. Click `…` beside it to choose a colour or, with **Gradient**, two colours blending into each other.
+
 > Note: Changing a style in the panel applies it to the whole box, also to words formatted on their own.
 
 ## Fonts of your own

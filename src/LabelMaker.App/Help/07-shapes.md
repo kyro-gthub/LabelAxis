@@ -11,7 +11,7 @@ keywords: shape, rectangle, rounded, ellipse, circle, triangle, polygon, star, l
 
 ## Shape Settings
 
-- **Fill** colour, or a **gradient** between two colours at an angle.
+- **Fill** colour, or a **gradient** between two colours at an angle: click `…` beside Fill, choose **Gradient** at the top of the colour window, then pick the start and end colours and the direction, or one of the ready-made gradients.
 - **Stroke** (outline) colour, **width** and **line style**.
 - Polygons and stars: the number of **points** and the **star depth**.
 

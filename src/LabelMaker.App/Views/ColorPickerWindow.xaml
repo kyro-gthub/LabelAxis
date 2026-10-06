@@ -29,6 +29,56 @@
     </Border>
 
     <StackPanel Width="344" Margin="18,18,18,14">
+      <!-- solid colour or gradient: only for fills that can take a gradient -->
+      <Border x:Name="KindBar" Visibility="Collapsed" HorizontalAlignment="Left" Background="{DynamicResource Br.Surface}"
+              CornerRadius="8" Padding="2" Margin="0,0,0,14">
+        <StackPanel Orientation="Horizontal">
+          <RadioButton x:Name="KindSolid" Content="Colour" GroupName="kind" Style="{StaticResource ChipToggle}" Margin="0"
+                       IsChecked="True" Click="OnKindChanged" ToolTip="One colour" />
+          <RadioButton x:Name="KindGradient" Content="Gradient" GroupName="kind" Style="{StaticResource ChipToggle}" Margin="0"
+                       Click="OnKindChanged" ToolTip="Two colours blending into each other" />
+        </StackPanel>
+      </Border>
+
+      <!-- gradient: its two colours either side of a preview, and its direction -->
+      <StackPanel x:Name="GradientPanel" Visibility="Collapsed" Margin="0,0,0,14">
+        <!-- Left to right in every language: the colours lie the way they will on the label. -->
+        <Grid FlowDirection="LeftToRight">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+          </Grid.ColumnDefinitions>
+          <Grid x:Name="StartStop" Grid.Column="0" Width="34" Height="34" Cursor="Hand"
+                ToolTip="Start colour: click, then choose it below" MouseLeftButtonUp="OnStartStop" />
+          <Border Grid.Column="1" x:Name="GradientFrame" Height="30" Margin="10,0" CornerRadius="8" BorderThickness="1"
+                  BorderBrush="{DynamicResource Br.BorderStrong}">
+            <Border x:Name="GradientBar" CornerRadius="7" />
+          </Border>
+          <Grid x:Name="EndStop" Grid.Column="2" Width="34" Height="34" Cursor="Hand"
+                ToolTip="End colour: click, then choose it below" MouseLeftButtonUp="OnEndStop" />
+          <Button Grid.Column="3" Style="{StaticResource IconGhost}" Padding="6,4" Margin="6,0,0,0" Click="OnReverseGradient"
+                  ToolTip="Swap the two colours">
+            <Path Data="M 0,4 L 12,4 M 9,1 L 12,4 L 9,7 M 14,11 L 2,11 M 5,8 L 2,11 L 5,14" Stroke="{DynamicResource Br.Text2}"
+                  StrokeThickness="1.4" StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
+          </Button>
+        </Grid>
+        <DockPanel Margin="0,10,0,0">
+          <TextBlock DockPanel.Dock="Left" Text="Direction" VerticalAlignment="Center" FontSize="12"
+                     Foreground="{DynamicResource Br.TextMuted}" Margin="0,0,10,0" />
+          <Border DockPanel.Dock="Right" Background="{DynamicResource Br.Surface}" CornerRadius="8" BorderThickness="1"
+                  BorderBrush="{DynamicResource Br.Border}" Margin="8,0,0,0" ToolTip="Angle in degrees, clockwise from left to right">
+            <StackPanel Orientation="Horizontal">
+              <TextBox x:Name="AngleBox" Style="{StaticResource PlainTextBox}" Width="34" Margin="6,0,0,0" VerticalAlignment="Center"
+                       HorizontalContentAlignment="Right" LostFocus="OnAngleCommitted" KeyDown="OnAngleKeyDown" />
+              <TextBlock Text="°" VerticalAlignment="Center" Margin="1,0,8,0" Foreground="{DynamicResource Br.TextMuted}" />
+            </StackPanel>
+          </Border>
+          <StackPanel x:Name="AngleButtons" Orientation="Horizontal" />
+        </DockPanel>
+      </StackPanel>
+
       <!-- colour field: saturation across, brightness down -->
       <Border x:Name="FieldFrame" Height="196" CornerRadius="12" BorderThickness="1"
               BorderBrush="{DynamicResource Br.BorderStrong}">
@@ -88,20 +138,32 @@
       <Rectangle Height="1" Fill="{DynamicResource Br.Border}" Margin="0,16,0,12" />
       <DockPanel Margin="0,0,0,10">
         <Button DockPanel.Dock="Right" Style="{StaticResource IconGhost}" Padding="6,3" Click="OnAddRecent"
-                ToolTip="Save the current colour to Recent">
+                ToolTip="Save the current colour or gradient for next time">
           <StackPanel Orientation="Horizontal">
             <Path Data="M 0,4 L 8,4 M 4,0 L 4,8" Stroke="{DynamicResource Br.Accent}" StrokeThickness="1.6" VerticalAlignment="Center" Margin="0,0,5,0" />
-            <TextBlock Text="Save colour" FontSize="12" Foreground="{DynamicResource Br.Accent}" />
+            <TextBlock x:Name="SaveLabel" Text="Save colour" FontSize="12" Foreground="{DynamicResource Br.Accent}" />
           </StackPanel>
         </Button>
         <StackPanel Orientation="Horizontal">
           <RadioButton x:Name="TabPalette" Content="Palette" GroupName="swatches" Style="{StaticResource PanelTab}" Margin="0,0,18,0"
                        IsChecked="True" Click="OnSwatchTab" />
-          <RadioButton x:Name="TabRecent" Content="Recent" GroupName="swatches" Style="{StaticResource PanelTab}" Click="OnSwatchTab" />
+          <RadioButton x:Name="TabRecent" Content="Recent" GroupName="swatches" Style="{StaticResource PanelTab}" Margin="0,0,18,0"
+                       Click="OnSwatchTab" />
+          <RadioButton x:Name="TabGradients" Content="Gradients" GroupName="swatches" Style="{StaticResource PanelTab}"
+                       Visibility="Collapsed" Click="OnSwatchTab" />
         </StackPanel>
       </DockPanel>
       <Grid MinHeight="92">
         <ctl:ColorPalette x:Name="Palette" HorizontalAlignment="Left" />
+        <ScrollViewer x:Name="GradientsPanel" Visibility="Collapsed" FlowDirection="LeftToRight" MaxHeight="136" VerticalScrollBarVisibility="Auto">
+          <StackPanel>
+            <ItemsControl x:Name="GradientRow">
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate><WrapPanel /></ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+            </ItemsControl>
+          </StackPanel>
+        </ScrollViewer>
         <StackPanel x:Name="RecentPanel" Visibility="Collapsed">
           <ItemsControl x:Name="RecentRow">
             <ItemsControl.ItemsPanel>

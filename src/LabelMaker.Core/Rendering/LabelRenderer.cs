@@ -195,7 +195,11 @@ public sealed class LabelRenderer
 
     private static void RenderText(TextObject text, RectMm local, VariableResolver resolver, IDrawingSurface surface)
     {
-        if (!text.Background.IsTransparent)
+        if (text.BackgroundTo is { } backgroundTo && !(text.Background.IsTransparent && backgroundTo.IsTransparent))
+        {
+            surface.FillRectangleGradient(local, text.Background, backgroundTo, text.BackgroundAngleDegrees);
+        }
+        else if (!text.Background.IsTransparent)
         {
             surface.FillRectangle(local, text.Background);
         }

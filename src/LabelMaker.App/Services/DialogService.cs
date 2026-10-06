@@ -435,4 +435,17 @@ public sealed class DialogService : IShellServices
         _env.SaveSettings();
         return win.Result;
     }
+
+    public FillChoice? PickFill(LabelMaker.Core.Model.ColorRgba initial, LabelMaker.Core.Model.ColorRgba? gradientTo, double angleDegrees, string title)
+    {
+        var start = new GradientStart(gradientTo, angleDegrees, _env.Settings.RecentGradients);
+        var win = new ColorPickerWindow(initial, title, _env.Settings.RecentColors, start) { Owner = _owner };
+        if (win.ShowDialog() != true)
+        {
+            return null;
+        }
+
+        _env.SaveSettings();
+        return new FillChoice(win.Result, win.ResultGradientTo, win.ResultAngle);
+    }
 }

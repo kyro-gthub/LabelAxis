@@ -37,7 +37,7 @@
         <Border Grid.Row="0" Grid.Column="1" Style="{StaticResource SearchField}">
           <DockPanel>
             <Image DockPanel.Dock="Left" Source="{DynamicResource Icon.Search}" Width="15" Height="15" Margin="2,0,8,0" />
-            <TextBox x:Name="FindBox" Style="{StaticResource PlainTextBox}" Tag="Text, barcode value, cell or name…"
+            <TextBox x:Name="FindBox" Style="{StaticResource PlainTextBox}" Tag="Text, barcode value, cell, page or object name…"
                      TextChanged="OnQueryChanged" KeyDown="OnFindKeyDown" />
           </DockPanel>
         </Border>
@@ -112,6 +112,8 @@
                 <CheckBox x:Name="TextBoxesBox" Content="Text" IsChecked="True" Margin="0,2,14,2" Click="OnOptionChanged" />
                 <CheckBox x:Name="BarcodesBox" Content="Barcodes" IsChecked="True" Margin="0,2,14,2" Click="OnOptionChanged" />
                 <CheckBox x:Name="TablesBox" Content="Tables" IsChecked="True" Margin="0,2,14,2" Click="OnOptionChanged" />
+                <CheckBox x:Name="PageNamesBox" Content="Page names" IsChecked="True" Margin="0,2,14,2" Click="OnOptionChanged"
+                          ToolTip="Find pages by their name: pick a match to open that page" />
                 <CheckBox x:Name="NamesBox" Content="Object names" Margin="0,2" Click="OnOptionChanged" />
               </WrapPanel>
             </StackPanel>

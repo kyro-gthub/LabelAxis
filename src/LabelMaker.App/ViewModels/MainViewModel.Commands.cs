@@ -342,6 +342,29 @@ public sealed partial class MainViewModel
                 _ => "Fill colour",
             };
 
+            // A shape's fill and a text box's background can also be a gradient.
+            if (target == "fill" && _session.Selection is [ShapeObject shape])
+            {
+                if (_shell.PickFill(shape.Fill, shape.GradientTo, shape.GradientAngleDegrees, title) is { } fill)
+                {
+                    _properties.ApplyFill(target, fill);
+                    RefreshCanvas();
+                }
+
+                return;
+            }
+
+            if (target == "highlight" && _session.Selection is [TextObject text])
+            {
+                if (_shell.PickFill(text.Background, text.BackgroundTo, text.BackgroundAngleDegrees, title) is { } fill)
+                {
+                    _properties.ApplyFill(target, fill);
+                    RefreshCanvas();
+                }
+
+                return;
+            }
+
             if (_shell.PickColor(current, title) is { } chosen)
             {
                 _properties.ApplySwatch(target, chosen.ToHex());
