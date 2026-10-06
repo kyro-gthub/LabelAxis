@@ -3,7 +3,7 @@ id: files
 title: المشاريع والحفظ والإعدادات
 category: Reference
 order: 2
-keywords: save, open, file, labelproj, autosave, recovery, backup, settings, theme, dark, portable, usb, recent, language, arabic, kurdish, sorani, update, new version, upgrade, حفظ, فتح, ملف, حفظ تلقائي, استرداد, نسخة احتياطية, إعدادات, سمة, داكن, محمولة, الأخيرة, لغة, عربي, كردي, تحديث, إصدار جديد
+keywords: save, open, file, labelproj, autosave, recovery, backup, settings, theme, dark, portable, usb, recent, language, arabic, kurdish, sorani, update, new version, upgrade, حفظ, فتح, ملف, حفظ تلقائي, استرداد, نسخة احتياطية, إعدادات, سمة, داكن, محمولة, الأخيرة, لغة, عربي, كردي, تحديث, إصدار جديد, themes, frost, aurora, midnight, graphite, ember, ocean, sakura, sage, glass
 ---
 # المشاريع والحفظ والإعدادات
 
@@ -18,7 +18,7 @@ keywords: save, open, file, labelproj, autosave, recovery, backup, settings, the
 
 ## الإعدادات
 
-`ملف › الإعدادات…`: اللغة، والسمة الفاتحة أو الداكنة، وحجم الشبكة ومدى الالتقاط، والحفظ التلقائي، ونافذة الترحيب، وإعادة فتح المشروع الأخير، والتحديثات، والتأكيد قبل إزالة الصفحات أو البيانات.
+`ملف › الإعدادات…`: اللغة، والمظهر (ثماني سمات فاتحة وداكنة؛ ويبدّلها أيضًا زر السمة أعلى يمين النافذة الرئيسية)، وحجم الشبكة ومدى الالتقاط، والحفظ التلقائي، ونافذة الترحيب، وإعادة فتح المشروع الأخير، والتحديثات، والتأكيد قبل إزالة الصفحات أو البيانات.
 
 ## اللغة
 

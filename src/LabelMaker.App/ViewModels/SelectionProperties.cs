@@ -943,6 +943,32 @@ public sealed class SelectionProperties : ObservableObject
 
     public int CustomDotCount => (Obj as ShapeObject)?.CustomPoints.Count ?? 0;
 
+    /// <summary>
+    /// Every dot of a custom shape curved (true), every one a sharp corner (false), or some of
+    /// each (null, shown as a part-ticked box). Single dots are switched while editing the dots.
+    /// </summary>
+    public bool? AllDotsCurved
+    {
+        get
+        {
+            if (Obj is not ShapeObject s || s.CustomPoints.Count == 0)
+            {
+                return false;
+            }
+
+            List<bool> flags = CustomShape.CurvedFlags(s.CurvedPoints, s.CustomPoints.Count);
+            return flags.All(c => c) ? true : flags.Any(c => c) ? null : false;
+        }
+        set
+        {
+            if (Obj is ShapeObject s && value is { } curved)
+            {
+                Set(nameof(AllDotsCurved), () => s.CurvedPoints, v => s.CurvedPoints = v,
+                    curved ? Enumerable.Repeat(true, s.CustomPoints.Count).ToList() : new List<bool>());
+            }
+        }
+    }
+
     public LabelMaker.Core.Model.Objects.DashStyle DashStyleValue
     {
         get => (Obj as ShapeObject)?.DashStyle ?? LabelMaker.Core.Model.Objects.DashStyle.Solid;

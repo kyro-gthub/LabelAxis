@@ -3,7 +3,7 @@ id: shapes
 title: Shapes, lines and custom shapes
 category: Designing
 order: 5
-keywords: shape, rectangle, rounded, ellipse, circle, triangle, polygon, star, line, arrow, dashed, custom shape, dots, draw, points, fill, gradient, stroke
+keywords: shape, rectangle, rounded, ellipse, circle, triangle, polygon, star, line, arrow, dashed, custom shape, dots, draw, points, fill, gradient, stroke, curve, curved, smooth, bezier
 ---
 # Shapes, lines and custom shapes
 
@@ -24,6 +24,7 @@ keywords: shape, rectangle, rounded, ellipse, circle, triangle, polygon, star, l
 While drawing:
 
 - `Shift` keeps the next line level, upright or at 45°.
+- `Alt`+click places a **curved** dot: the outline flows through it in a smooth curve instead of turning a corner.
 - `Backspace` takes the last dot away.
 - `Esc` cancels.
 - With **Snap to grid** on, dots land on the grid.
@@ -33,8 +34,11 @@ While drawing:
 **Double-click** it (or press `Edit dots…` in Shape Settings):
 
 - Drag a dot to move it.
+- Double-click a dot (or click it and press `C`) to switch it between a **sharp corner** (a square dot) and a **curve** (a round dot).
 - Double-click a line to add a dot there.
 - Click a dot, then `Delete`, to remove it (a shape keeps at least three).
 - `Enter` or a click elsewhere finishes; `Esc` puts it back as it was.
 
 **Closed shape** in Shape Settings joins the last dot to the first and fills the inside; untick it for an open line through the dots. Custom shapes move, resize, rotate and flip like any other object.
+
+**Curved** in Shape Settings makes every dot a curve, for smooth outlines such as clouds, leaves or badges; untick it to make every dot a sharp corner again. Curves print, export to PDF and SVG, and scale like the rest of the shape.

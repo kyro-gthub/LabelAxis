@@ -22,7 +22,8 @@ public partial class SettingsWindow : Window
         AppSettings s = env.Settings;
         LanguageBox.ItemsSource = Localization.Localizer.Languages;
         LanguageBox.SelectedItem = Localization.Localizer.Resolve(s.Language);
-        (s.DarkTheme ? ThemeDarkBox : ThemeLightBox).IsChecked = true;
+        ThemeList.ItemsSource = Services.ThemeManager.Themes;
+        ThemeList.SelectedItem = Services.ThemeManager.Themes.FirstOrDefault(t => t.Id == Services.ThemeManager.CurrentId);
         ReduceMotionBox.IsChecked = s.ReduceMotion;
         SnapPixelsBox.Text = s.SnapPixels.ToString("0.#", CultureInfo.InvariantCulture);
         GridSizeBox.Text = s.GridSizeMm.ToString("0.##", CultureInfo.InvariantCulture);
@@ -109,10 +110,13 @@ public partial class SettingsWindow : Window
         }
 
         AppSettings s = _env.Settings;
-        bool wasDark = s.DarkTheme;
-        bool nowDark = ThemeDarkBox.IsChecked == true;
+        string wasTheme = Services.ThemeManager.CurrentId;
+        string nowTheme = (ThemeList.SelectedItem as Services.ThemeInfo)?.Id ?? wasTheme;
 
-        _vm.ApplyTheme(nowDark);
+        if (nowTheme != wasTheme)
+        {
+            _vm.ApplyTheme(nowTheme);
+        }
         _vm.ReduceMotion = ReduceMotionBox.IsChecked == true;
         s.SnapPixels = Math.Clamp(ParseDouble(SnapPixelsBox.Text, s.SnapPixels), 1, 50);
         s.GridSizeMm = Math.Clamp(ParseDouble(GridSizeBox.Text, s.GridSizeMm), 0.1, 50);
@@ -143,9 +147,9 @@ public partial class SettingsWindow : Window
         _vm.NotifyAutoSaveSettingsChanged();
 
         // The palette is swapped in place (see ThemeManager), so the new theme shows at once.
-        if (nowDark != wasDark)
+        if (nowTheme != wasTheme)
         {
-            _vm.StatusText = nowDark ? "Dark theme on" : "Light theme on";
+            _vm.StatusText = Localization.Localizer.F("Theme: {0}", _vm.ThemeName);
         }
 
         DialogResult = true;

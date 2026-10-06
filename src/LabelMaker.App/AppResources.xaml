@@ -7,6 +7,9 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:conv="clr-namespace:LabelMaker.App.Mvvm">
   <ResourceDictionary.MergedDictionaries>
+    <!-- The glass theme tokens (LA.*; ThemeManager swaps them) and the glass control styles. -->
+    <ResourceDictionary Source="Themes/Theme.Frost.xaml" />
+    <ResourceDictionary Source="Themes/LabelAxis.Styles.xaml" />
     <ResourceDictionary Source="Theme.xaml" />
     <ResourceDictionary Source="Icons.xaml" />
   </ResourceDictionary.MergedDictionaries>
@@ -19,6 +22,24 @@
   <conv:LockIconConverter x:Key="LockIcon" />
   <conv:IconLookupConverter x:Key="IconLookup" />
   <conv:HexBrushConverter x:Key="HexBrush" />
+
+  <!-- A theme as the pickers show it: a swatch of its background with its three accent colours, its name and Dark / Light. -->
+  <DataTemplate x:Key="ThemeRow">
+    <DockPanel Height="38">
+      <Border DockPanel.Dock="Left" Width="34" Height="24" CornerRadius="7" Background="{Binding BackgroundBrush}"
+              BorderBrush="{DynamicResource Br.BorderStrong}" BorderThickness="1" ClipToBounds="True" Margin="0,0,10,0">
+        <Canvas>
+          <Ellipse Canvas.Left="3" Canvas.Top="3" Width="12" Height="12" Fill="{Binding AccentBrush}" />
+          <Ellipse Canvas.Left="11" Canvas.Top="7" Width="12" Height="12" Fill="{Binding AccentSecondaryBrush}" />
+          <Ellipse Canvas.Left="19" Canvas.Top="3" Width="9" Height="9" Fill="{Binding AccentTertiaryBrush}" />
+        </Canvas>
+      </Border>
+      <StackPanel VerticalAlignment="Center">
+        <TextBlock Text="{Binding Name}" FontSize="12.5" />
+        <TextBlock Text="{Binding Mode}" FontSize="10.5" Foreground="{DynamicResource Br.TextMuted}" />
+      </StackPanel>
+    </DockPanel>
+  </DataTemplate>
 
   <!-- Aliases kept for MainWindow.xaml -->
   <SolidColorBrush x:Key="PanelBackground" Color="{DynamicResource Clr.Bg}" />

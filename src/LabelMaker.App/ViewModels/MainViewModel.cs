@@ -399,12 +399,21 @@ public sealed partial class MainViewModel : ObservableObject
 
     /// <summary>Switches the live color palette (Settings > Appearance) and repaints the canvas, whose
     /// rulers/workspace chrome are drawn with theme-aware colors that aren't resource-bound.</summary>
-    public void ApplyTheme(bool dark)
+    public void ApplyTheme(string themeId)
     {
-        _env.Settings.DarkTheme = dark;
-        Services.ThemeManager.Apply(dark ? Services.AppTheme.Dark : Services.AppTheme.Light);
+        Services.ThemeManager.Apply(themeId);
+        _env.Settings.Theme = Services.ThemeManager.CurrentId;
+        _env.Settings.DarkTheme = Services.ThemeManager.IsDark;
+        _env.SaveSettings();
         RefreshCanvas();
+        OnPropertyChanged(nameof(ThemeName));
     }
+
+    /// <summary>The theme in use, for the theme button in the title bar.</summary>
+    public string ThemeName => Services.ThemeManager.Themes.FirstOrDefault(t => t.Id == Services.ThemeManager.CurrentId)?.Name ?? string.Empty;
+
+    /// <summary>Every theme, for the title bar's theme menu and Settings.</summary>
+    public IReadOnlyList<Services.ThemeInfo> AllThemes => Services.ThemeManager.Themes;
 
     public bool LockGuides
     {

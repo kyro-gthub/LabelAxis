@@ -3,7 +3,7 @@ id: files
 title: پڕۆژە، پاشەکەوتکردن و ڕێکخستنەکان
 category: Reference
 order: 2
-keywords: save, open, file, labelproj, autosave, recovery, backup, settings, theme, dark, portable, usb, recent, language, arabic, kurdish, sorani, update, new version, upgrade, پاشەکەوتکردن, کردنەوە, پەڕگە, پاشەکەوتی خۆکار, گەڕاندنەوە, یەدەگ, ڕێکخستنەکان, ڕووکار, تاریک, گوێزراوە, دواییەکان, زمان, عەرەبی, کوردی, سۆرانی, نوێکردنەوە, وەشانی نوێ
+keywords: save, open, file, labelproj, autosave, recovery, backup, settings, theme, dark, portable, usb, recent, language, arabic, kurdish, sorani, update, new version, upgrade, پاشەکەوتکردن, کردنەوە, پەڕگە, پاشەکەوتی خۆکار, گەڕاندنەوە, یەدەگ, ڕێکخستنەکان, ڕووکار, تاریک, گوێزراوە, دواییەکان, زمان, عەرەبی, کوردی, سۆرانی, نوێکردنەوە, وەشانی نوێ, themes, frost, aurora, midnight, graphite, ember, ocean, sakura, sage, glass
 ---
 # پڕۆژە، پاشەکەوتکردن و ڕێکخستنەکان
 
@@ -18,7 +18,7 @@ keywords: save, open, file, labelproj, autosave, recovery, backup, settings, the
 
 ## ڕێکخستنەکان
 
-`پەڕگە › ڕێکخستنەکان…`: زمان، ڕووکاری ڕووناک یان تاریک، قەبارەی تۆڕ و ماوەی لکان، پاشەکەوتی خۆکار، پەنجەرەی بەخێرهاتن، کردنەوەی دوایین پڕۆژە، نوێکردنەوەکان، و پشتڕاستکردنەوە پێش لابردنی لاپەڕە یان داتا.
+`پەڕگە › ڕێکخستنەکان…`: زمان، ڕووکار (هەشت ڕووکاری ڕووناک و تاریک؛ دوگمەی ڕووکار لە سەرەوەی لای ڕاستی پەنجەرە سەرەکییەکەش دەیانگۆڕێت)، قەبارەی تۆڕ و ماوەی لکان، پاشەکەوتی خۆکار، پەنجەرەی بەخێرهاتن، کردنەوەی دوایین پڕۆژە، نوێکردنەوەکان، و پشتڕاستکردنەوە پێش لابردنی لاپەڕە یان داتا.
 
 ## زمان
 

@@ -80,6 +80,8 @@ public sealed partial class DesignerCanvas
     protected override void OnRenderSizeChanged(SizeChangedInfo info)
     {
         base.OnRenderSizeChanged(info);
+        // Rounded like the canvas well it sits in, so the rulers do not poke out of its corners.
+        Clip = CornerRadius > 0 ? new RectangleGeometry(new Rect(RenderSize), CornerRadius, CornerRadius) : null;
         if (!_viewInitialised && ActualWidth > 0 && ActualHeight > 0)
         {
             FitToView();

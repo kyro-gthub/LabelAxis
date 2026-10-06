@@ -158,8 +158,8 @@
   </Style>
 
   <Style x:Key="AccentButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-    <Setter Property="Background" Value="{DynamicResource Br.AccentGradient}" />
-    <Setter Property="Foreground" Value="White" />
+    <Setter Property="Background" Value="{DynamicResource Br.Accent}" />
+    <Setter Property="Foreground" Value="{DynamicResource LA.Brush.OnAccent}" />
     <Setter Property="BorderThickness" Value="0" />
     <Setter Property="Padding" Value="18,8" />
     <Style.Triggers>
@@ -1151,23 +1151,24 @@
   <!-- ==================== tool bar ==================== -->
 
   <Style x:Key="ToolTileButton" TargetType="Button">
+    <Setter Property="Height" Value="52" />
     <Setter Property="Background" Value="Transparent" />
     <Setter Property="BorderThickness" Value="0" />
-    <Setter Property="Padding" Value="9,6" />
+    <Setter Property="Padding" Value="6,4" />
     <Setter Property="Margin" Value="1,0" />
-    <Setter Property="MinWidth" Value="56" />
+    <Setter Property="MinWidth" Value="62" />
     <Setter Property="Cursor" Value="Hand" />
     <Setter Property="Foreground" Value="{DynamicResource Br.Text2}" />
     <Setter Property="FontFamily" Value="{StaticResource Font.Ui}" />
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="Button">
-          <Border x:Name="bd" CornerRadius="9" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}">
+          <Border x:Name="bd" CornerRadius="12" Background="{TemplateBinding Background}" BorderBrush="Transparent" BorderThickness="1" Padding="{TemplateBinding Padding}">
             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
           </Border>
           <ControlTemplate.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-              <Setter TargetName="bd" Property="Background" Value="{DynamicResource Br.Hover}" />
+              <Setter TargetName="bd" Property="Background" Value="{DynamicResource LA.Brush.GlassFillHover}" />
             </Trigger>
             <Trigger Property="IsPressed" Value="True">
               <Setter TargetName="bd" Property="Background" Value="{DynamicResource Br.AccentSoft}" />
@@ -1183,25 +1184,27 @@
   </Style>
 
   <Style x:Key="ToolTile" TargetType="RadioButton">
+    <Setter Property="Height" Value="52" />
     <Setter Property="Background" Value="Transparent" />
-    <Setter Property="Padding" Value="9,6" />
+    <Setter Property="Padding" Value="6,4" />
     <Setter Property="Margin" Value="1,0" />
-    <Setter Property="MinWidth" Value="56" />
+    <Setter Property="MinWidth" Value="62" />
     <Setter Property="Cursor" Value="Hand" />
     <Setter Property="Foreground" Value="{DynamicResource Br.Text2}" />
     <Setter Property="FontFamily" Value="{StaticResource Font.Ui}" />
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="RadioButton">
-          <Border x:Name="bd" CornerRadius="9" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}">
+          <Border x:Name="bd" CornerRadius="12" Background="{TemplateBinding Background}" BorderBrush="Transparent" BorderThickness="1" Padding="{TemplateBinding Padding}">
             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
           </Border>
           <ControlTemplate.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-              <Setter TargetName="bd" Property="Background" Value="{DynamicResource Br.Hover}" />
+              <Setter TargetName="bd" Property="Background" Value="{DynamicResource LA.Brush.GlassFillHover}" />
             </Trigger>
             <Trigger Property="IsChecked" Value="True">
-              <Setter TargetName="bd" Property="Background" Value="{DynamicResource Br.AccentSoft}" />
+              <Setter TargetName="bd" Property="Background" Value="{DynamicResource LA.Brush.GlassFillHover}" />
+              <Setter TargetName="bd" Property="BorderBrush" Value="{DynamicResource LA.Brush.GlassBorder}" />
               <Setter Property="Foreground" Value="{DynamicResource Br.Accent}" />
             </Trigger>
           </ControlTemplate.Triggers>
@@ -1211,14 +1214,14 @@
   </Style>
 
   <Style x:Key="ToolTileIcon" TargetType="Image">
-    <Setter Property="Width" Value="20" />
-    <Setter Property="Height" Value="20" />
+    <Setter Property="Width" Value="18" />
+    <Setter Property="Height" Value="18" />
     <Setter Property="Stretch" Value="Uniform" />
     <Setter Property="HorizontalAlignment" Value="Center" />
   </Style>
 
   <Style x:Key="ToolTileLabel" TargetType="TextBlock">
-    <Setter Property="FontSize" Value="10.5" />
+    <Setter Property="FontSize" Value="11" />
     <Setter Property="HorizontalAlignment" Value="Center" />
     <Setter Property="Margin" Value="0,5,0,0" />
     <Setter Property="Foreground" Value="{DynamicResource Br.Text2}" />
@@ -1243,12 +1246,12 @@
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="Button">
-          <Border x:Name="bd" CornerRadius="9" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}">
-            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" TextElement.Foreground="White" />
+          <Border x:Name="bd" CornerRadius="11" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}">
+            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" TextElement.Foreground="{TemplateBinding Foreground}" />
           </Border>
           <ControlTemplate.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-              <Setter TargetName="bd" Property="Background" Value="{DynamicResource Br.AccentHover}" />
+              <Setter TargetName="bd" Property="Opacity" Value="0.9" />
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">
               <Setter Property="Opacity" Value="0.45" />
@@ -1261,7 +1264,7 @@
   </Style>
 
   <Style x:Key="GhostButton" TargetType="Button">
-    <Setter Property="Background" Value="{DynamicResource Br.Bg}" />
+    <Setter Property="Background" Value="{DynamicResource LA.Brush.GlassFillHover}" />
     <Setter Property="Foreground" Value="{DynamicResource Br.Text}" />
     <Setter Property="FontFamily" Value="{StaticResource Font.UiMedium}" />
     <Setter Property="FontSize" Value="12.5" />
@@ -1270,14 +1273,13 @@
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="Button">
-          <Border x:Name="bd" CornerRadius="9" Background="{TemplateBinding Background}"
-                  BorderBrush="{DynamicResource Br.BorderStrong}" BorderThickness="1" Padding="{TemplateBinding Padding}">
+          <Border x:Name="bd" CornerRadius="11" Background="{TemplateBinding Background}"
+                  BorderBrush="{DynamicResource LA.Brush.GlassBorder}" BorderThickness="1" Padding="{TemplateBinding Padding}">
             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
           </Border>
           <ControlTemplate.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-              <Setter TargetName="bd" Property="Background" Value="{DynamicResource Br.Hover}" />
-              <Setter TargetName="bd" Property="BorderBrush" Value="{DynamicResource Br.Accent}" />
+              <Setter TargetName="bd" Property="BorderBrush" Value="{DynamicResource LA.Brush.GlassBorderStrong}" />
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">
               <Setter Property="Opacity" Value="0.45" />
@@ -1505,9 +1507,10 @@
           </Border>
           <ControlTemplate.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-              <Setter TargetName="bd" Property="Background" Value="{DynamicResource Br.Hover}" />
+              <Setter TargetName="bd" Property="Background" Value="{DynamicResource LA.Brush.GlassFillHover}" />
             </Trigger>
             <Trigger Property="IsChecked" Value="True">
+              <Setter TargetName="bd" Property="Background" Value="{DynamicResource LA.Brush.GlassFillHover}" />
               <Setter TargetName="chev" Property="RenderTransform">
                 <Setter.Value>
                   <RotateTransform Angle="90" />
@@ -1539,6 +1542,14 @@
     <Setter Property="VerticalAlignment" Value="Center" />
   </Style>
 
+  <!-- A see-through panel of the main window: the toolbar, the side panels, the canvas options. -->
+  <Style x:Key="Shell.Glass" TargetType="Border">
+    <Setter Property="Background" Value="{DynamicResource LA.Brush.GlassFill}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource LA.Brush.GlassBorder}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="18" />
+  </Style>
+
   <!-- Compact on/off chip for view options (rulers, guides, grid, snapping). -->
   <Style x:Key="ChipToggle" TargetType="ToggleButton">
     <Setter Property="Margin" Value="0,0,4,0" />
@@ -1551,17 +1562,17 @@
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="ToggleButton">
-          <Border x:Name="bd" CornerRadius="7" BorderThickness="1" BorderBrush="Transparent"
+          <Border x:Name="bd" CornerRadius="8" BorderThickness="1" BorderBrush="Transparent"
                   Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}">
             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
           </Border>
           <ControlTemplate.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-              <Setter TargetName="bd" Property="Background" Value="{DynamicResource Br.Hover}" />
+              <Setter TargetName="bd" Property="Background" Value="{DynamicResource LA.Brush.GlassFillHover}" />
             </Trigger>
             <Trigger Property="IsChecked" Value="True">
-              <Setter TargetName="bd" Property="Background" Value="{DynamicResource Br.AccentSoft}" />
-              <Setter TargetName="bd" Property="BorderBrush" Value="{DynamicResource Br.Accent}" />
+              <Setter TargetName="bd" Property="Background" Value="{DynamicResource LA.Brush.AccentSubtle}" />
+              <Setter TargetName="bd" Property="BorderBrush" Value="{DynamicResource LA.Brush.AccentBorder}" />
               <Setter Property="Foreground" Value="{DynamicResource Br.Accent}" />
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">

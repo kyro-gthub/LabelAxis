@@ -439,7 +439,7 @@ public sealed class LabelRenderer
     /// <summary>A shape drawn dot by dot: filled when closed, an open line through the dots otherwise.</summary>
     private static void DrawCustom(IDrawingSurface surface, RectMm local, ShapeObject shape)
     {
-        List<PointMm> points = CustomShape.PointsIn(shape, local);
+        List<PointMm> points = CustomShape.OutlineIn(shape, local);
         if (points.Count < 2)
         {
             return;

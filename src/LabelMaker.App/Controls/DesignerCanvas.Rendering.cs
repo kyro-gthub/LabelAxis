@@ -17,11 +17,13 @@ public sealed partial class DesignerCanvas
 {
     // ---- rendering ------------------------------------------------------
 
-    private static bool IsDark => Services.ThemeManager.Current == Services.AppTheme.Dark;
+    private static Services.CanvasPalette Palette => Services.ThemeManager.Canvas;
 
     protected override void OnRender(DrawingContext dc)
     {
-        dc.DrawRectangle(new SolidColorBrush(IsDark ? Color.FromRgb(0x15, 0x16, 0x20) : Color.FromRgb(0xE9, 0xEE, 0xF4)), null, new Rect(RenderSize));
+        // See-through: the rounded canvas well behind it (and the glow of the window) shows. Still
+        // filled, so a click anywhere on the canvas reaches it.
+        dc.DrawRectangle(Brushes.Transparent, null, new Rect(RenderSize));
         if (_session is null)
         {
             return;
@@ -49,9 +51,9 @@ public sealed partial class DesignerCanvas
 
         var paperRect = new Rect(0, 0, label.SizeMm.Width * K, label.SizeMm.Height * K);
         double sh = 10 / _zoom;
-        dc.DrawRectangle(new SolidColorBrush(IsDark ? Color.FromArgb(90, 0, 0, 0) : Color.FromArgb(28, 40, 30, 90)), null,
+        dc.DrawRectangle(new SolidColorBrush(Palette.PaperShadow), null,
             new Rect(paperRect.X + sh, paperRect.Y + sh, paperRect.Width, paperRect.Height));
-        dc.DrawRectangle(Brushes.White, new Pen(new SolidColorBrush(IsDark ? Color.FromRgb(0x3A, 0x3D, 0x4A) : Color.FromRgb(0xCE, 0xD1, 0xDE)), 1.0 / _zoom), paperRect);
+        dc.DrawRectangle(Brushes.White, new Pen(new SolidColorBrush(Palette.PaperBorder), 1.0 / _zoom), paperRect);
         dc.DrawDrawing(visual.Drawing);
 
         if (Settings?.ShowGrid == true)
@@ -104,7 +106,7 @@ public sealed partial class DesignerCanvas
             return;
         }
 
-        var pen = new Pen(new SolidColorBrush(Color.FromArgb(30, 44, 111, 232)), 0.6 / _zoom);
+        var pen = new Pen(new SolidColorBrush(Color.FromArgb(30, Accent.R, Accent.G, Accent.B)), 0.6 / _zoom);
         pen.Freeze();
         for (double x = 0; x <= label.SizeMm.Width + 1e-6; x += stepMm)
         {
@@ -410,10 +412,10 @@ public sealed partial class DesignerCanvas
 
     private void DrawRulers(DrawingContext dc, LabelDocument label)
     {
-        var bg = new SolidColorBrush(IsDark ? Color.FromRgb(0x1F, 0x20, 0x2C) : Color.FromRgb(0xF6, 0xF7, 0xFB));
-        var line = new Pen(new SolidColorBrush(IsDark ? Color.FromRgb(0x33, 0x35, 0x4A) : Color.FromRgb(0xD6, 0xD9, 0xE4)), 1);
-        var tick = new Pen(new SolidColorBrush(IsDark ? Color.FromRgb(0x7A, 0x7F, 0xA0) : Color.FromRgb(0x9A, 0x9F, 0xB5)), 1);
-        var textBrush = new SolidColorBrush(IsDark ? Color.FromRgb(0xB5, 0xB8, 0xD0) : Color.FromRgb(0x6B, 0x70, 0x88));
+        var bg = new SolidColorBrush(Palette.RulerFill);
+        var line = new Pen(new SolidColorBrush(Palette.RulerLine), 1);
+        var tick = new Pen(new SolidColorBrush(Palette.RulerTick), 1);
+        var textBrush = new SolidColorBrush(Palette.RulerText);
 
         dc.DrawRectangle(bg, null, new Rect(0, 0, ActualWidth, RulerSize));
         dc.DrawRectangle(bg, null, new Rect(0, 0, RulerSize, ActualHeight));
