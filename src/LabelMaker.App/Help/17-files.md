@@ -3,7 +3,7 @@ id: files
 title: Projects, saving and settings
 category: Reference
 order: 2
-keywords: save, open, file, labelproj, autosave, recovery, backup, settings, theme, dark, portable, usb, recent, language, arabic, kurdish, sorani, update, new version, upgrade
+keywords: save, open, file, labelproj, autosave, recovery, backup, settings, theme, dark, portable, usb, recent, language, arabic, kurdish, sorani, update, new version, upgrade, themes, frost, aurora, midnight, graphite, ember, ocean, sakura, sage, glass
 ---
 # Projects, saving and settings
 
@@ -18,7 +18,7 @@ A project (.labelproj file) holds the label sheet, every page, the pictures it u
 
 ## Settings
 
-`File > Settings…`: the language, light or dark theme, grid size and snapping distance, auto-save, the welcome window, reopening the last project, updates, and confirmations before removing pages or data.
+`File > Settings…`: the language, look (eight themes, light and dark; the theme button at the top right of the main window switches them too), grid size and snapping distance, auto-save, the welcome window, reopening the last project, updates, and confirmations before removing pages or data.
 
 ## Language
 

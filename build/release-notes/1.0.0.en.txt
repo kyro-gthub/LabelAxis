@@ -6,6 +6,10 @@ New
 • Wi-Fi printers can now be calibrated like any other printer.
 • Arabic text in exported PDF files can be selected, copied and searched.
 • Your own fonts: add a .ttf or .otf file with "Add font…" next to the font list (or in Settings › Fonts), without installing it in Windows. A project that uses it keeps a copy, so it looks the same on another PC.
+• 66 ready-made label designs on the first tab of File › New Project: price tags, product and barcode labels, food, shipping, stock, school, pharmacy, badges and QR labels, each on its own sheet or roll.
+• A new look: see-through glass panels over soft colour glows, with eight themes (Frost, Aurora, Midnight, Graphite, Ember, Ocean, Sakura, Sage) in Settings or from the theme button at the top of the window.
+• Curves in custom shapes: any dot can be a smooth curve instead of a sharp corner.
+• New Project also has Custom size… for a label of any size.
 • Apply page format to other pages (Edit menu, or right-click a page): every object on the other pages takes the position, size, rotation and look of its match on this page — font, colours, barcode type and size, borders — while each page keeps its own words, barcode values and pictures. It can also add the objects a page is missing.
 • Pages are numbered 1, 2, 3… in the page list, the first page too.
 • A tidier status bar that no longer overlaps on smaller screens.

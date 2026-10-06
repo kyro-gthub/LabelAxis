@@ -98,6 +98,86 @@ public static class CustomShape
         return (RectMm.FromCenter(centre, new SizeMm(box.Width, box.Height)), points);
     }
 
+    /// <summary>How many straight pieces draw one curved stretch between two dots: smooth at any print size.</summary>
+    public const int CurveSteps = 24;
+
+    /// <summary>
+    /// The outline the shape is drawn with inside <paramref name="local"/>: its dots joined by
+    /// straight lines, except where a dot is curved — there the outline flows through it in a
+    /// smooth curve. Curves are laid out as short straight pieces, so every printer, PDF and
+    /// picture draws them the same way.
+    /// </summary>
+    public static List<PointMm> OutlineIn(ShapeObject shape, RectMm local)
+    {
+        ArgumentNullException.ThrowIfNull(shape);
+        return Outline(PointsIn(shape, local), shape.CurvedPoints, shape.ClosedPath && shape.CustomPoints.Count >= 3);
+    }
+
+    /// <summary>The outline through <paramref name="dots"/> (see <see cref="OutlineIn"/>).</summary>
+    public static List<PointMm> Outline(IReadOnlyList<PointMm> dots, IReadOnlyList<bool>? curved, bool closed)
+    {
+        ArgumentNullException.ThrowIfNull(dots);
+        var outline = new List<PointMm>();
+        if (dots.Count == 0)
+        {
+            return outline;
+        }
+
+        outline.Add(dots[0]);
+        int edges = closed ? dots.Count : dots.Count - 1;
+        for (int i = 0; i < edges; i++)
+        {
+            List<PointMm> edge = Edge(dots, curved, closed, i);
+            // The edge starts at the dot already in the outline; a closed outline ends where it began.
+            outline.AddRange(edge.Skip(1).Take(closed && i == edges - 1 ? edge.Count - 2 : edge.Count - 1));
+        }
+
+        return outline;
+    }
+
+    /// <summary>
+    /// The line from dot <paramref name="index"/> to the next one, as points from one dot to the
+    /// other: just the two dots when neither is curved, otherwise a smooth curve. A curved dot
+    /// gets a tangent along the line between its two neighbours (a Catmull-Rom curve).
+    /// </summary>
+    public static List<PointMm> Edge(IReadOnlyList<PointMm> dots, IReadOnlyList<bool>? curved, bool closed, int index)
+    {
+        ArgumentNullException.ThrowIfNull(dots);
+        int n = dots.Count;
+        PointMm At(int i) => closed ? dots[((i % n) + n) % n] : dots[Math.Clamp(i, 0, n - 1)];
+        bool Curved(int i)
+        {
+            int k = closed ? ((i % n) + n) % n : i;
+            return curved is not null && k >= 0 && k < curved.Count && curved[k];
+        }
+
+        PointMm a = At(index), b = At(index + 1);
+        if (!Curved(index) && !Curved(index + 1))
+        {
+            return new List<PointMm> { a, b };
+        }
+
+        PointMm before = At(index - 1), after = At(index + 2);
+        PointMm c1 = Curved(index) ? new PointMm(a.X + ((b.X - before.X) / 6), a.Y + ((b.Y - before.Y) / 6)) : a;
+        PointMm c2 = Curved(index + 1) ? new PointMm(b.X - ((after.X - a.X) / 6), b.Y - ((after.Y - a.Y) / 6)) : b;
+
+        var points = new List<PointMm>(CurveSteps + 1);
+        for (int s = 0; s <= CurveSteps; s++)
+        {
+            double t = s / (double)CurveSteps, u = 1 - t;
+            double w0 = u * u * u, w1 = 3 * u * u * t, w2 = 3 * u * t * t, w3 = t * t * t;
+            points.Add(new PointMm(
+                (w0 * a.X) + (w1 * c1.X) + (w2 * c2.X) + (w3 * b.X),
+                (w0 * a.Y) + (w1 * c1.Y) + (w2 * c2.Y) + (w3 * b.Y)));
+        }
+
+        return points;
+    }
+
+    /// <summary>The curved-dot flags for <paramref name="count"/> dots: as given, missing ones sharp.</summary>
+    public static List<bool> CurvedFlags(IReadOnlyList<bool>? curved, int count) =>
+        Enumerable.Range(0, count).Select(i => curved is not null && i < curved.Count && curved[i]).ToList();
+
     /// <summary>The dots mirrored left-right or top-bottom inside their box.</summary>
     public static List<PointMm> Mirrored(IEnumerable<PointMm> points, bool horizontal) =>
         points.Select(p => horizontal ? p with { X = 1 - p.X } : p with { Y = 1 - p.Y }).ToList();

@@ -35,7 +35,7 @@ public partial class MainWindow : Window
         DataContext = _vm;
         HelpGuide.ContextTopic = _ => _vm.HelpTopicForSelection();
 
-        _canvas = new DesignerCanvas(_vm.SheetRenderer);
+        _canvas = new DesignerCanvas(_vm.SheetRenderer) { CornerRadius = 17 };
         _canvas.ContextMenu = BuildCanvasContextMenu();
         _canvas.ContextMenu.Opened += OnCanvasContextMenuOpened;
 
@@ -200,6 +200,28 @@ public partial class MainWindow : Window
     }
 
     // ---- shell chrome ----------------------------------------------------
+
+    /// <summary>The theme menu of the title bar: each theme with its swatch; a click switches at once.</summary>
+    private void OnThemeMenu(object sender, RoutedEventArgs e)
+    {
+        var menu = new ContextMenu { PlacementTarget = ThemeButton, Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom };
+        var rowTemplate = (DataTemplate)FindResource("ThemeRow");
+        foreach (Services.ThemeInfo theme in Services.ThemeManager.Themes)
+        {
+            var item = new MenuItem
+            {
+                Header = theme,
+                HeaderTemplate = rowTemplate,
+                IsCheckable = true,
+                IsChecked = theme.Id == Services.ThemeManager.CurrentId,
+                MinWidth = 220,
+            };
+            item.Click += (_, _) => _vm.ApplyTheme(theme.Id);
+            menu.Items.Add(item);
+        }
+
+        menu.IsOpen = true;
+    }
 
     private void OnMinimise(object sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
 

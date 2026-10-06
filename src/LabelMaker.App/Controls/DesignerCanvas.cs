@@ -39,7 +39,8 @@ public sealed partial class DesignerCanvas : FrameworkElement
     private const double MinZoom = 0.05;
     private const double MaxZoom = 60.0;
 
-    private static readonly Color Accent = Color.FromRgb(0x2C, 0x6F, 0xE8);
+    // The theme's accent: selection outlines and handles follow the theme.
+    private static Color Accent => Services.ThemeManager.Canvas.Accent;
     private static readonly Color GuideColor = Color.FromRgb(0x12, 0xB5, 0xC9);
     private static readonly Color SnapColor = Color.FromRgb(0xFF, 0x2E, 0x88);
 
@@ -114,7 +115,13 @@ public sealed partial class DesignerCanvas : FrameworkElement
         ClipToBounds = true;
         SnapsToDevicePixels = true;
         AllowDrop = true;
+
+        // The rulers, workspace and selection are drawn in the theme's colours.
+        Services.ThemeManager.Changed += (_, _) => InvalidateVisual();
     }
+
+    /// <summary>Corner rounding of the canvas (the rounded canvas well of the main window).</summary>
+    public double CornerRadius { get; set; }
 
     public event EventHandler? ZoomChanged;
 

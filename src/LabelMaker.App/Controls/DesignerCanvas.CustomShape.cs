@@ -12,9 +12,10 @@ namespace LabelMaker.App.Controls;
 /// <summary>
 /// The custom shape tool: click dots on the label and they are joined into a shape. Click the
 /// first dot again (or press Enter, or double-click) to close it; Backspace takes the last dot
-/// back and Esc gives up. Shift keeps each new line level, upright or at 45°. Double-clicking a
-/// finished custom shape lets its dots be dragged, added (double-click a line) and removed
-/// (Delete on a dot).
+/// back and Esc gives up. Shift keeps each new line level, upright or at 45°; Alt+click places a
+/// curved dot. Double-clicking a finished custom shape lets its dots be dragged, added
+/// (double-click a line), removed (Delete on a dot) and switched between a sharp corner and a
+/// curve (double-click the dot, or C).
 /// </summary>
 public sealed partial class DesignerCanvas
 {
@@ -24,12 +25,14 @@ public sealed partial class DesignerCanvas
     // Drawing a new shape.
     private bool _drawingShape;
     private readonly List<PointMm> _newDots = new();
+    private readonly List<bool> _newCurved = new();
     private PointMm? _hoverDot;
 
     // Editing the dots of an existing shape.
     private ShapeObject? _editShape;
     private List<PointMm> _editDots = new();
-    private (RectMm Bounds, List<PointMm> Points) _editBefore;
+    private List<bool> _editCurved = new();
+    private (RectMm Bounds, List<PointMm> Points, List<bool> Curved) _editBefore;
     private int _dragDot = -1;
     private int _activeDot = -1;
 
@@ -42,9 +45,9 @@ public sealed partial class DesignerCanvas
     /// <summary>What to tell the user while the tool is on.</summary>
     public string PointToolHint => _drawingShape
         ? _newDots.Count < 3
-            ? "Custom shape: click on the label to place dots. Shift keeps lines straight. Esc cancels."
-            : "Custom shape: keep clicking to add dots. Click the first dot, double-click or press Enter to finish. Backspace removes the last dot."
-        : "Editing dots: drag a dot to move it, double-click a line to add one, Delete removes the chosen dot. Enter or click outside to finish, Esc to undo.";
+            ? "Custom shape: click on the label to place dots; Alt+click for a curved dot. Shift keeps lines straight. Esc cancels."
+            : "Custom shape: keep clicking to add dots (Alt+click curves). Click the first dot, double-click or press Enter to finish. Backspace removes the last dot."
+        : "Editing dots: drag a dot to move it, double-click a dot (or press C) to curve or sharpen it, double-click a line to add one, Delete removes the chosen dot. Enter or click outside to finish, Esc to undo.";
 
     /// <summary>Starts placing dots for a new custom shape.</summary>
     public void BeginCustomShape()
@@ -57,6 +60,7 @@ public sealed partial class DesignerCanvas
         EndPointEdit(commit: true);
         _drawingShape = true;
         _newDots.Clear();
+        _newCurved.Clear();
         _hoverDot = null;
         _session.ClearSelection();
         Cursor = Cursors.Cross;
@@ -76,7 +80,8 @@ public sealed partial class DesignerCanvas
         CancelCustomShape();
         _editShape = shape;
         _editDots = CustomShape.WorldPoints(shape);
-        _editBefore = (shape.Bounds, new List<PointMm>(shape.CustomPoints));
+        _editCurved = CustomShape.CurvedFlags(shape.CurvedPoints, _editDots.Count);
+        _editBefore = (shape.Bounds, new List<PointMm>(shape.CustomPoints), new List<bool>(shape.CurvedPoints));
         _dragDot = _activeDot = -1;
         _session.SetSelection(new[] { shape });
         Focus();
@@ -93,6 +98,7 @@ public sealed partial class DesignerCanvas
 
         _drawingShape = false;
         _newDots.Clear();
+        _newCurved.Clear();
         _hoverDot = null;
         Cursor = null;
         PointToolChanged?.Invoke(this, EventArgs.Empty);
@@ -107,6 +113,7 @@ public sealed partial class DesignerCanvas
         }
 
         List<PointMm> dots = _newDots.ToList();
+        List<bool> curved = _newCurved.ToList();
         bool closed = dots.Count >= 3;
         CancelCustomShape();
         if (dots.Count < 2)
@@ -115,6 +122,7 @@ public sealed partial class DesignerCanvas
         }
 
         ShapeObject shape = CustomShape.Create(dots, closed);
+        shape.CurvedPoints = curved.Any(c => c) ? CustomShape.CurvedFlags(curved, dots.Count) : new List<bool>();
         shape.Name = "Custom shape";
         _session.Execute(new AddObjectCommand(_session.ActiveLabel, shape));
         _session.SetSelection(new[] { shape });
@@ -138,19 +146,22 @@ public sealed partial class DesignerCanvas
             return;
         }
 
-        (RectMm bounds, List<PointMm> points) = (shape.Bounds, shape.CustomPoints);
+        (RectMm bounds, List<PointMm> points, List<bool> curvedNow) = (shape.Bounds, shape.CustomPoints, shape.CurvedPoints);
         shape.Bounds = _editBefore.Bounds;
         shape.CustomPoints = _editBefore.Points;
+        shape.CurvedPoints = _editBefore.Curved;
         _editShape = null;
         _dragDot = _activeDot = -1;
 
-        bool changed = bounds != _editBefore.Bounds || !points.SequenceEqual(_editBefore.Points);
+        bool changed = bounds != _editBefore.Bounds || !points.SequenceEqual(_editBefore.Points) ||
+                       !CustomShape.CurvedFlags(curvedNow, points.Count).SequenceEqual(CustomShape.CurvedFlags(_editBefore.Curved, _editBefore.Points.Count));
         if (commit && changed)
         {
             _session.Execute(new CompositeCommand("Edit shape dots", new IUndoableCommand[]
             {
                 new SetPropertyCommand<RectMm>("Edit shape dots", () => shape.Bounds, v => shape.Bounds = v, bounds),
                 new SetPropertyCommand<List<PointMm>>("Edit shape dots", () => shape.CustomPoints, v => shape.CustomPoints = v, points),
+                new SetPropertyCommand<List<bool>>("Edit shape dots", () => shape.CurvedPoints, v => shape.CurvedPoints = v, curvedNow),
             }));
         }
 
@@ -169,6 +180,7 @@ public sealed partial class DesignerCanvas
         (RectMm bounds, List<PointMm> points) = CustomShape.Refit(shape, _editDots);
         shape.Bounds = bounds;
         shape.CustomPoints = points;
+        shape.CurvedPoints = _editCurved.Any(c => c) ? new List<bool>(_editCurved) : new List<bool>();
     }
 
     // ---- input -------------------------------------------------------------------------
@@ -229,6 +241,7 @@ public sealed partial class DesignerCanvas
                 if (_newDots.Count == 0 || dot != _newDots[^1])
                 {
                     _newDots.Add(dot);
+                    _newCurved.Add(Keyboard.Modifiers.HasFlag(ModifierKeys.Alt));
                     PointToolChanged?.Invoke(this, EventArgs.Empty);
                 }
             }
@@ -241,7 +254,13 @@ public sealed partial class DesignerCanvas
         if (_editShape is { } shape)
         {
             int hit = DotNear(_editDots, screen);
-            if (hit >= 0)
+            if (hit >= 0 && e.ClickCount == 2)
+            {
+                // A double-click on a dot switches it between a sharp corner and a curve.
+                _activeDot = hit;
+                ToggleCurve(hit);
+            }
+            else if (hit >= 0)
             {
                 _dragDot = _activeDot = hit;
                 CaptureMouse();
@@ -318,6 +337,7 @@ public sealed partial class DesignerCanvas
                     if (_newDots.Count > 0)
                     {
                         _newDots.RemoveAt(_newDots.Count - 1);
+                        _newCurved.RemoveAt(_newCurved.Count - 1);
                         PointToolChanged?.Invoke(this, EventArgs.Empty);
                     }
 
@@ -341,8 +361,12 @@ public sealed partial class DesignerCanvas
                 case Key.Enter:
                     EndPointEdit(commit: true);
                     break;
+                case Key.C when _activeDot >= 0:
+                    ToggleCurve(_activeDot);
+                    break;
                 case Key.Back or Key.Delete when _activeDot >= 0 && _editDots.Count > 3:
                     _editDots.RemoveAt(_activeDot);
+                    _editCurved.RemoveAt(_activeDot);
                     _activeDot = Math.Min(_activeDot, _editDots.Count - 1);
                     ApplyEditDots();
                     break;
@@ -368,18 +392,38 @@ public sealed partial class DesignerCanvas
         int edges = _editShape!.ClosedPath ? count : count - 1;
         for (int i = 0; i < edges; i++)
         {
-            Point a = MmToScreen(_editDots[i].X, _editDots[i].Y);
-            Point b = MmToScreen(_editDots[(i + 1) % count].X, _editDots[(i + 1) % count].Y);
-            if (DistanceToSegment(screen, a, b) <= DotHitPx)
+            List<Point> edge = CustomShape.Edge(_editDots, _editCurved, _editShape.ClosedPath, i).Select(p => MmToScreen(p.X, p.Y)).ToList();
+            bool onEdge = false;
+            for (int s = 1; s < edge.Count && !onEdge; s++)
+            {
+                onEdge = DistanceToSegment(screen, edge[s - 1], edge[s]) <= DotHitPx;
+            }
+
+            if (onEdge)
             {
                 Point mm = ScreenToMm(screen);
+                bool curvedEdge = edge.Count > 2;
                 _editDots.Insert(i + 1, new PointMm(Math.Round(mm.X, 3), Math.Round(mm.Y, 3)));
+                _editCurved.Insert(i + 1, curvedEdge);
                 _activeDot = i + 1;
                 return true;
             }
         }
 
         return false;
+    }
+
+    /// <summary>Switches a dot between a sharp corner and a smooth curve.</summary>
+    private void ToggleCurve(int dot)
+    {
+        if (dot < 0 || dot >= _editCurved.Count)
+        {
+            return;
+        }
+
+        _editCurved[dot] = !_editCurved[dot];
+        ApplyEditDots();
+        InvalidateVisual();
     }
 
     private static double DistanceToSegment(Point p, Point a, Point b)
@@ -416,9 +460,10 @@ public sealed partial class DesignerCanvas
 
         if (_drawingShape)
         {
-            for (int i = 1; i < screenDots.Count; i++)
+            List<Point> drawn = CustomShape.Outline(_newDots, _newCurved, closed: false).Select(p => MmToScreen(p.X, p.Y)).ToList();
+            for (int i = 1; i < drawn.Count; i++)
             {
-                dc.DrawLine(line, screenDots[i - 1], screenDots[i]);
+                dc.DrawLine(line, drawn[i - 1], drawn[i]);
             }
 
             if (_hoverDot is { } hover && screenDots.Count > 0)
@@ -441,11 +486,20 @@ public sealed partial class DesignerCanvas
             bool first = _drawingShape && i == 0 && screenDots.Count >= 3;
             bool active = !_drawingShape && i == _activeDot;
             double r = first ? DotRadiusPx + 2 : DotRadiusPx;
-            dc.DrawEllipse(active || first ? accent : dotFill, new Pen(accent, 1.5), screenDots[i], r, r);
+            IReadOnlyList<bool> curvedDots = _drawingShape ? _newCurved : _editCurved;
+            Brush fill = active || first ? accent : dotFill;
+            if (i < curvedDots.Count && curvedDots[i])
+            {
+                dc.DrawEllipse(fill, new Pen(accent, 1.5), screenDots[i], r, r);
+            }
+            else
+            {
+                dc.DrawRectangle(fill, new Pen(accent, 1.5), new Rect(screenDots[i].X - r + 0.5, screenDots[i].Y - r + 0.5, (r * 2) - 1, (r * 2) - 1));
+            }
         }
 
         // What to do next, at the top of the canvas.
-        var text = new FormattedText(PointToolHint, CultureInfo.CurrentUICulture, FlowDirection.LeftToRight,
+        var text = new FormattedText(Localization.Localizer.T(PointToolHint), CultureInfo.CurrentUICulture, Localization.Localizer.FlowDirection,
             new Typeface("Segoe UI"), 12, Brushes.White, VisualTreeHelper.GetDpi(this).PixelsPerDip)
         {
             MaxTextWidth = Math.Max(200, RenderSize.Width - RulerPad - 60),

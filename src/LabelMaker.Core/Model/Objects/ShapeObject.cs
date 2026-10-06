@@ -69,6 +69,12 @@ public sealed class ShapeObject : LabelObject
     /// </summary>
     public List<PointMm> CustomPoints { get; set; } = new();
 
+    /// <summary>
+    /// For each dot of <see cref="CustomPoints"/>: true where the outline runs through it in a
+    /// smooth curve, false (or missing) for a sharp corner.
+    /// </summary>
+    public List<bool> CurvedPoints { get; set; } = new();
+
     /// <summary>Joins the last dot back to the first and fills the inside; off draws an open line.</summary>
     public bool ClosedPath { get; set; } = true;
 
@@ -93,6 +99,7 @@ public sealed class ShapeObject : LabelObject
             StarInnerRatio = StarInnerRatio,
             ArrowHeadSizeMm = ArrowHeadSizeMm,
             CustomPoints = new List<PointMm>(CustomPoints),
+            CurvedPoints = new List<bool>(CurvedPoints),
             ClosedPath = ClosedPath,
         };
         CopyBaseTo(copy);

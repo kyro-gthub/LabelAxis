@@ -68,7 +68,7 @@
               </Border>
               <StackPanel VerticalAlignment="Center">
                 <TextBlock Text="Start from a design…" FontFamily="{StaticResource Font.UiSemiBold}" FontSize="13" />
-                <TextBlock Text="Price tags, product, food, shipping and more" FontSize="11.5" Foreground="{DynamicResource Br.TextMuted}" />
+                <TextBlock Text="Price tags, food, shipping and more" FontSize="11.5" Foreground="{DynamicResource Br.TextMuted}" />
               </StackPanel>
             </DockPanel>
           </Button>
