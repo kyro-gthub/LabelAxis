@@ -64,7 +64,7 @@
           <Button Style="{StaticResource StartAction}" Click="OnNewFromDesign" AutomationProperties.AutomationId="Welcome.NewFromDesign">
             <DockPanel>
               <Border DockPanel.Dock="Left" Width="34" Height="34" CornerRadius="9" Background="{DynamicResource Br.AccentSoft}" Margin="0,0,12,0">
-                <Image Source="{StaticResource Icon.Sticker}" Width="17" Height="17" />
+                <Image Source="{DynamicResource Icon.Sticker}" Width="17" Height="17" />
               </Border>
               <StackPanel VerticalAlignment="Center">
                 <TextBlock Text="Start from a design…" FontFamily="{StaticResource Font.UiSemiBold}" FontSize="13" />
@@ -75,7 +75,7 @@
           <Button Style="{StaticResource StartAction}" Click="OnNewFromTemplate">
             <DockPanel>
               <Border DockPanel.Dock="Left" Width="34" Height="34" CornerRadius="9" Background="{DynamicResource Br.AccentSoft}" Margin="0,0,12,0">
-                <Image Source="{StaticResource Icon.Sheet}" Width="17" Height="17" />
+                <Image Source="{DynamicResource Icon.Sheet}" Width="17" Height="17" />
               </Border>
               <StackPanel VerticalAlignment="Center">
                 <TextBlock Text="New from a label sheet…" FontFamily="{StaticResource Font.UiSemiBold}" FontSize="13" />
@@ -86,7 +86,7 @@
           <Button Style="{StaticResource StartAction}" Click="OnNewThermal">
             <DockPanel>
               <Border DockPanel.Dock="Left" Width="34" Height="34" CornerRadius="9" Background="{DynamicResource Br.AccentSoft}" Margin="0,0,12,0">
-                <Image Source="{StaticResource Icon.Barcode}" Width="17" Height="17" />
+                <Image Source="{DynamicResource Icon.Barcode}" Width="17" Height="17" />
               </Border>
               <StackPanel VerticalAlignment="Center">
                 <TextBlock Text="New thermal label…" FontFamily="{StaticResource Font.UiSemiBold}" FontSize="13" />
@@ -97,7 +97,7 @@
           <Button Style="{StaticResource StartAction}" Click="OnOpen">
             <DockPanel>
               <Border DockPanel.Dock="Left" Width="34" Height="34" CornerRadius="9" Background="{DynamicResource Br.AccentSoft}" Margin="0,0,12,0">
-                <Image Source="{StaticResource Icon.Open}" Width="17" Height="17" />
+                <Image Source="{DynamicResource Icon.Open}" Width="17" Height="17" />
               </Border>
               <StackPanel VerticalAlignment="Center">
                 <TextBlock Text="Open a project…" FontFamily="{StaticResource Font.UiSemiBold}" FontSize="13" />
@@ -108,7 +108,7 @@
           <Button Style="{StaticResource StartAction}" Click="OnPublisher">
             <DockPanel>
               <Border DockPanel.Dock="Left" Width="34" Height="34" CornerRadius="9" Background="{DynamicResource Br.AccentSoft}" Margin="0,0,12,0">
-                <Image Source="{StaticResource Icon.FileDoc}" Width="17" Height="17" />
+                <Image Source="{DynamicResource Icon.FileDoc}" Width="17" Height="17" />
               </Border>
               <StackPanel VerticalAlignment="Center">
                 <TextBlock Text="Import from Publisher…" FontFamily="{StaticResource Font.UiSemiBold}" FontSize="13" />
@@ -119,7 +119,7 @@
           <Button Style="{StaticResource StartAction}" Click="OnLabelManager">
             <DockPanel>
               <Border DockPanel.Dock="Left" Width="34" Height="34" CornerRadius="9" Background="{DynamicResource Br.AccentSoft}" Margin="0,0,12,0">
-                <Image Source="{StaticResource Icon.Gallery}" Width="17" Height="17" />
+                <Image Source="{DynamicResource Icon.Gallery}" Width="17" Height="17" />
               </Border>
               <StackPanel VerticalAlignment="Center">
                 <TextBlock Text="Browse all templates…" FontFamily="{StaticResource Font.UiSemiBold}" FontSize="13" />
@@ -170,7 +170,7 @@
             <ListBox.ItemTemplate>
               <DataTemplate>
                 <DockPanel>
-                  <Image DockPanel.Dock="Left" Source="{StaticResource Icon.FileDoc}" Width="18" Height="18" Margin="0,0,12,0" VerticalAlignment="Center" />
+                  <Image DockPanel.Dock="Left" Source="{DynamicResource Icon.FileDoc}" Width="18" Height="18" Margin="0,0,12,0" VerticalAlignment="Center" />
                   <TextBlock DockPanel.Dock="Right" Text="{Binding When}" FontSize="12" Foreground="{DynamicResource Br.TextMuted}" VerticalAlignment="Center" Margin="12,0,0,0" />
                   <StackPanel>
                     <TextBlock Text="{Binding Title}" FontFamily="{StaticResource Font.UiSemiBold}" FontSize="13" TextTrimming="CharacterEllipsis" />

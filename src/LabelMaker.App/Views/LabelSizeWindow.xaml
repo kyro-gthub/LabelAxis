@@ -48,7 +48,7 @@
       <TextBlock Text="OR PICK A SIZE FROM A LABEL SHEET" Style="{StaticResource PanelSectionHeader}" />
       <Border Style="{StaticResource SearchField}" Margin="0,0,0,8">
         <DockPanel>
-          <Image DockPanel.Dock="Left" Source="{StaticResource Icon.Search}" Width="15" Height="15" Margin="2,0,8,0" />
+          <Image DockPanel.Dock="Left" Source="{DynamicResource Icon.Search}" Width="15" Height="15" Margin="2,0,8,0" />
           <TextBox x:Name="TemplateSearch" Style="{StaticResource PlainTextBox}" Tag="Search brand, code or size, e.g. 3100 or 38x21…"
                    TextChanged="OnTemplateSearch" />
         </DockPanel>

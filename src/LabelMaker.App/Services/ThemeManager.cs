@@ -158,17 +158,39 @@ public static class ThemeManager
         res["Br.AccentGradient"] = Gradient(accent, accent2);
         res["Br.TitleBarGradient"] = Brush(Colors.Transparent);
 
-        // The toolbar and list icons are drawings built once from these two resources; they
-        // hold on to the objects rather than the resource keys, so recolour them in place.
-        Color ink = Col(theme, "TextSecondary");
-        if (Application.Current.TryFindResource("IconPen") is Pen { IsFrozen: false } pen)
+        // The main window's panels: mostly solid, with only a hint of the glow behind. The
+        // theme files' own glass (4% in the dark themes) let the glow wash out the toolbar's
+        // icons and the panels' text.
+        Color shellBase = dark ? Over(WithAlpha(Colors.White, 0x0C), bg) : card;
+        res["LA.Brush.ShellFill"] = Brush(WithAlpha(shellBase, dark ? (byte)0xE0 : (byte)0xD6));
+
+        // Softer glows than the design files ask for, for the same reason.
+        if (theme["LA.OrbOpacity"] is double orb)
+        {
+            res["LA.OrbOpacity"] = orb * 0.6;
+        }
+
+        if (theme["LA.OrbOpacitySoft"] is double soft)
+        {
+            res["LA.OrbOpacitySoft"] = soft * 0.6;
+        }
+
+        // The icons in the theme's ink (see Icons.xaml for why they are made afresh).
+        var icons = new ResourceDictionary { Source = new Uri("pack://application:,,,/LabelAxis;component/Icons.xaml") };
+        Color ink = Col(theme, "TextPrimary");
+        if (icons["IconPen"] is Pen { IsFrozen: false } pen)
         {
             pen.Brush = Brush(ink);
         }
 
-        if (Application.Current.TryFindResource("IconFill") is SolidColorBrush { IsFrozen: false } fill)
+        if (icons["IconFill"] is SolidColorBrush { IsFrozen: false } fill)
         {
             fill.Color = ink;
+        }
+
+        foreach (object key in icons.Keys)
+        {
+            res[key] = icons[key];
         }
 
         _canvas = CanvasPalette.From(theme, dark);

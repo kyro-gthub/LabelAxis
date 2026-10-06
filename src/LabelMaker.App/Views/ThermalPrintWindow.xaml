@@ -13,7 +13,7 @@
       <DockPanel>
         <Border DockPanel.Dock="Left" Width="36" Height="36" CornerRadius="10" Margin="0,0,12,0"
                 Background="{DynamicResource Br.AccentSoft}">
-          <Image Source="{StaticResource Icon.Print}" Width="18" Height="18" />
+          <Image Source="{DynamicResource Icon.Print}" Width="18" Height="18" />
         </Border>
         <StackPanel VerticalAlignment="Center">
           <TextBlock Text="Thermal print" FontFamily="{StaticResource Font.UiSemiBold}" FontSize="15" />
@@ -29,7 +29,7 @@
           <Button Content="Cancel" Style="{StaticResource GhostButton}" IsCancel="True" Margin="0,0,8,0" />
           <Button x:Name="PrintButton" Style="{StaticResource PrimaryButton}" IsDefault="True" Click="OnPrint">
             <StackPanel Orientation="Horizontal">
-              <Image Source="{StaticResource Icon.PrintWhite}" Width="15" Height="15" Margin="0,0,7,0" />
+              <Image Source="{DynamicResource Icon.PrintWhite}" Width="15" Height="15" Margin="0,0,7,0" />
               <TextBlock x:Name="PrintButtonText" Text="Print" VerticalAlignment="Center" />
             </StackPanel>
           </Button>

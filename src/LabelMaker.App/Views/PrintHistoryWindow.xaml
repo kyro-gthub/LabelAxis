@@ -21,7 +21,7 @@
       <DockPanel>
         <Border DockPanel.Dock="Left" Width="36" Height="36" CornerRadius="10" Margin="0,0,12,0"
                 Background="{DynamicResource Br.AccentSoft}">
-          <Image Source="{StaticResource Icon.Clock}" Width="18" Height="18" />
+          <Image Source="{DynamicResource Icon.Clock}" Width="18" Height="18" />
         </Border>
         <Button DockPanel.Dock="Right" Content="Clear history…" Style="{StaticResource GhostButton}"
                 VerticalAlignment="Center" Click="OnClear" />
@@ -35,7 +35,7 @@
         <Border DockPanel.Dock="Right" Style="{StaticResource SearchField}" Width="240" Margin="0,0,10,0"
                 VerticalAlignment="Center">
           <DockPanel>
-            <Image DockPanel.Dock="Left" Source="{StaticResource Icon.Search}" Width="15" Height="15" Margin="2,0,8,0" />
+            <Image DockPanel.Dock="Left" Source="{DynamicResource Icon.Search}" Width="15" Height="15" Margin="2,0,8,0" />
             <TextBox x:Name="SearchBox" Style="{StaticResource PlainTextBox}" Tag="Project, printer, sheet…"
                      TextChanged="OnSearchChanged" />
           </DockPanel>
@@ -59,7 +59,7 @@
           <Button x:Name="ReprintButton" Style="{StaticResource PrimaryButton}" IsDefault="True" Click="OnReprint"
                   ToolTip="Opens the print dialog with this job's settings">
             <StackPanel Orientation="Horizontal">
-              <Image Source="{StaticResource Icon.PrintWhite}" Width="15" Height="15" Margin="0,0,7,0" />
+              <Image Source="{DynamicResource Icon.PrintWhite}" Width="15" Height="15" Margin="0,0,7,0" />
               <TextBlock Text="Reprint…" VerticalAlignment="Center" />
             </StackPanel>
           </Button>
@@ -156,7 +156,7 @@
         </ListBox.ItemTemplate>
       </ListBox>
       <StackPanel x:Name="EmptyState" VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="Collapsed">
-        <Image Source="{StaticResource Icon.Clock}" Width="34" Height="34" Opacity="0.5" />
+        <Image Source="{DynamicResource Icon.Clock}" Width="34" Height="34" Opacity="0.5" />
         <TextBlock x:Name="EmptyText" Margin="0,10,0,0" FontSize="13" TextAlignment="Center" TextWrapping="Wrap"
                    MaxWidth="320" Foreground="{DynamicResource Br.TextMuted}" />
       </StackPanel>
