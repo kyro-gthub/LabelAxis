@@ -99,6 +99,9 @@
               <Separator />
               <MenuItem Header="_Save" InputGestureText="Ctrl+S" Command="{Binding SaveCommand}" />
               <MenuItem Header="Save _As…" InputGestureText="Ctrl+Shift+S" Command="{Binding SaveAsCommand}" />
+              <MenuItem AutomationProperties.AutomationId="Menu.SaveAsDesign" Header="Save page as _my design…"
+                        Command="{Binding SaveAsDesignCommand}"
+                        ToolTip="Keep this page to start new labels from: it appears first in New Project, under My designs" />
               <Separator />
               <MenuItem Header="Open _Publisher file (all pages)…" Command="{Binding OpenPublisherPagesCommand}" />
               <MenuItem Header="_Import text and pictures from Publisher…" Command="{Binding ImportPublisherCommand}" />
@@ -152,6 +155,12 @@
               <Separator />
               <MenuItem Header="_Bulk Barcode Generator…" Command="{Binding BulkBarcodeCommand}" />
               <MenuItem Header="Barcode i_mage…" Command="{Binding BarcodeImageCommand}" />
+              <MenuItem AutomationProperties.AutomationId="Menu.BarcodeCheck" Header="Chec_k a printed barcode (camera or photo)…"
+                        Command="{Binding BarcodeCheckCommand}"
+                        ToolTip="Grade a printed barcode A to F from a webcam, a photo or a scan, and see what to change" />
+              <MenuItem AutomationProperties.AutomationId="Menu.Gs1" Header="_GS1 barcode builder (expiry, batch, UDI)…"
+                        Command="{Binding Gs1BuilderCommand}"
+                        ToolTip="GS1-128, GS1 DataMatrix and GS1 QR codes for food, medicines, medical devices and shipping, checked as you type" />
               <Separator />
               <MenuItem Header="Add _data field…" Command="{Binding AddDataFieldCommand}" />
               <MenuItem Header="Add date / time field" Command="{Binding AddDateFieldCommand}" />
@@ -162,6 +171,9 @@
               <MenuItem Header="_Advanced Print Settings…" Command="{Binding PrintSettingsCommand}" />
               <MenuItem Header="Print Pre_view…" Command="{Binding PrintPreviewCommand}" />
               <MenuItem Header="Print _History…" Command="{Binding PrintHistoryCommand}" />
+              <MenuItem AutomationProperties.AutomationId="Menu.Automation" Header="Print requests from other _programs…"
+                        Command="{Binding AutomationCommand}"
+                        ToolTip="Let a till, an online shop or a spreadsheet print labels: a watch folder and a web link on this PC" />
               <MenuItem Header="_Thermal print (ZPL / TSPL)…" Command="{Binding ThermalPrintCommand}" />
               <MenuItem Header="Printer _Calibration Wizard…" Command="{Binding CalibrationCommand}" />
               <Separator />
@@ -593,6 +605,7 @@
                     <MenuItem Header="_Rename" InputGestureText="Double-click, F2" Command="{Binding RenamePageCommand}" />
                     <MenuItem Header="Label _size…" Command="{Binding LabelSizeCommand}" />
                     <MenuItem Header="Apply this page's _format to other pages…" Command="{Binding ApplyLayoutCommand}" />
+                    <MenuItem Header="Save as _my design…" Command="{Binding SaveAsDesignCommand}" />
                     <Separator />
                     <MenuItem Header="Move page _up" InputGestureText="Ctrl+↑" Command="{Binding MovePageUpCommand}" />
                     <MenuItem Header="Move page do_wn" InputGestureText="Ctrl+↓" Command="{Binding MovePageDownCommand}" />
@@ -1137,7 +1150,11 @@
                             Visibility="{Binding CheckDigitIsOptional, Converter={StaticResource BoolToVis}}"
                             ToolTip="Code 39, Interleaved 2 of 5 and MSI make the check digit optional" />
                   <CheckBox Content="GS1 mode — treat (nn) groups as Application Identifiers" IsChecked="{Binding Gs1Mode}"
-                            Margin="0,4,0,3" Visibility="{Binding IsLinear, Converter={StaticResource BoolToVis}}" />
+                            Margin="0,4,0,3" Visibility="{Binding CanBeGs1, Converter={StaticResource BoolToVis}}" />
+                  <Button Content="GS1 barcode builder…" Style="{StaticResource GhostButton}" HorizontalAlignment="Left" Margin="0,4,0,3"
+                          Padding="10,3" Visibility="{Binding CanBeGs1, Converter={StaticResource BoolToVis}}"
+                          Command="{Binding DataContext.Gs1BuilderCommand, RelativeSource={RelativeSource AncestorType=ScrollViewer}}"
+                          ToolTip="Fill in GS1 data (product number, expiry, batch, serial…) with every check done for you" />
                   <DockPanel Margin="0,3" Visibility="{Binding IsQr, Converter={StaticResource BoolToVis}}">
                     <TextBlock Text="Error correction" Style="{StaticResource FieldLabel}" Width="86" TextWrapping="Wrap"
                                ToolTip="Higher levels survive more damage but make the code denser" />

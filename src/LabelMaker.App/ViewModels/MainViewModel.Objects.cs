@@ -180,6 +180,72 @@ public sealed partial class MainViewModel
         }
     }
 
+    /// <summary>
+    /// The GS1 barcode builder: changes the selected barcode, or adds a new one at its natural
+    /// size. For a square code the data can also go beside it as text, as medical devices need.
+    /// </summary>
+    private void ShowGs1Builder()
+    {
+        BarcodeObject? editing = _session.Selection is [BarcodeObject { Locked: false } b] ? b : null;
+        if (_shell.ShowGs1Builder(editing?.Spec) is not { } made)
+        {
+            return;
+        }
+
+        BarcodeSpec spec = made.Spec;
+        if (editing is not null)
+        {
+            // The look the user gave the barcode stays: only what it holds changes.
+            BarcodeSpec changed = editing.Spec.Clone();
+            changed.Symbology = spec.Symbology;
+            changed.Data = spec.Data;
+            changed.Gs1Mode = true;
+            if (spec.Symbology.Is2D() != editing.Spec.Symbology.Is2D())
+            {
+                changed.ModuleWidthMm = spec.ModuleWidthMm;
+                changed.HumanReadable = spec.HumanReadable;
+            }
+
+            _session.Execute(new SetPropertyCommand<BarcodeSpec>("GS1 barcode", () => editing.Spec, v => editing.Spec = v, changed));
+            RefreshCanvas();
+            return;
+        }
+
+        Core.Units.SizeMm natural = BarcodeEngine.TryEncode(spec, spec.Data, out BarcodeSymbol? symbol, out _) && symbol is not null
+            ? BarcodeLayout.NaturalSize(symbol, spec)
+            : new Core.Units.SizeMm(40, 16);
+        var barcode = new BarcodeObject { Name = "GS1 barcode", AutoSize = true, Spec = spec, Bounds = NewBounds(natural.Width, natural.Height) };
+        var added = new List<LabelObject> { barcode };
+        var commands = new List<IUndoableCommand> { new AddObjectCommand(_session.ActiveLabel, barcode) };
+        if (made.TextBeside is { } text)
+        {
+            int lines = text.Split('\n').Length;
+            var beside = new TextObject
+            {
+                Name = "GS1 text",
+                Content = RichTextContent.FromPlainText(text),
+                FontFamily = "Consolas",
+                FontSizePt = 6,
+                Bounds = new Core.Units.RectMm(barcode.Bounds.Right + 2, barcode.Bounds.Y, 34, Math.Max(barcode.Bounds.Height, lines * 2.6)),
+            };
+            added.Add(beside);
+            commands.Add(new AddObjectCommand(_session.ActiveLabel, beside));
+        }
+
+        _session.Execute(commands.Count == 1 ? commands[0] : new CompositeCommand("GS1 barcode", commands));
+        _session.SetSelection(added);
+        RebuildObjectList();
+    }
+
+    /// <summary>The barcodes on the page on screen, with their values for the record shown, to compare a scan with.</summary>
+    private IReadOnlyList<(string Name, string Value)> PageBarcodes()
+    {
+        var resolver = new Core.Variables.VariableResolver(_session.CurrentResolveContext());
+        return _session.ActiveLabel.Objects.OfType<BarcodeObject>()
+            .Select(b => (b.Name ?? string.Empty, resolver.Resolve(b.Spec.Data)))
+            .ToList();
+    }
+
     private void AddObject(LabelObject obj)
     {
         _session.Execute(new AddObjectCommand(_session.ActiveLabel, obj));

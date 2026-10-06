@@ -94,7 +94,10 @@ internal static class BarcodeRaster
         return result?.Text;
     }
 
-    public static string? DecodeMatrix(BarcodeSymbol symbol, BarcodeFormat format)
+    public static string? DecodeMatrix(BarcodeSymbol symbol, BarcodeFormat format) => DecodeMatrixResult(symbol, format)?.Text;
+
+    /// <summary>The whole decode result, with the symbology identifier (]d2 for GS1 DataMatrix…).</summary>
+    public static Result? DecodeMatrixResult(BarcodeSymbol symbol, BarcodeFormat format)
     {
         (byte[] rgb, int w, int h) = Render2D(symbol);
         var source = new RGBLuminanceSource(rgb, w, h);
@@ -104,8 +107,7 @@ internal static class BarcodeRaster
             [DecodeHintType.TRY_HARDER] = true,
             [DecodeHintType.POSSIBLE_FORMATS] = new List<BarcodeFormat> { format },
         };
-        Result? result = new MultiFormatReader().decode(bitmap, hints);
-        return result?.Text;
+        return new MultiFormatReader().decode(bitmap, hints);
     }
 
     private static byte[] NewWhite(int width, int height)

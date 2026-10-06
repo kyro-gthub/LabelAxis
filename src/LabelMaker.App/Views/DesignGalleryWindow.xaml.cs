@@ -7,10 +7,11 @@ namespace LabelMaker.App.Views;
 /// <summary>"Start from a design": the design gallery on its own, with Use this design.</summary>
 public partial class DesignGalleryWindow : Window
 {
-    public DesignGalleryWindow(TemplateStore store)
+    public DesignGalleryWindow(TemplateStore store, MyDesigns? mine = null)
     {
         InitializeComponent();
         Gallery.Store = store;
+        Gallery.Mine = mine;
         Gallery.SelectionChanged += (_, _) => UseButton.IsEnabled = Gallery.SelectedDesign is not null;
         Gallery.DesignActivated += (_, _) => OnUse(this, new RoutedEventArgs());
         UseButton.IsEnabled = Gallery.SelectedDesign is not null;

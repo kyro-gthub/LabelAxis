@@ -1,0 +1,81 @@
+<Window x:Class="LabelMaker.App.Views.Gs1BuilderWindow"
+        xmlns:helpsvc="clr-namespace:LabelMaker.App.Services"
+        helpsvc:HelpGuide.Topic="barcodes"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:loc="clr-namespace:LabelMaker.App.Localization"
+        Style="{StaticResource AppWindow}"
+        Background="{DynamicResource Br.Surface}" TextElement.Foreground="{DynamicResource Br.Text}"
+        Title="GS1 barcode builder" Height="700" Width="980" MinHeight="560" MinWidth="820"
+        WindowStartupLocation="CenterOwner">
+  <!-- GS1 barcodes made right: pick what the label is for, fill in the data, see every problem
+       in plain words, and put the barcode (and its text) on the label. -->
+  <DockPanel>
+    <Border DockPanel.Dock="Bottom" Background="{DynamicResource Br.Bg}" BorderBrush="{DynamicResource Br.Border}"
+            BorderThickness="0,1,0,0" Padding="18,12">
+      <DockPanel>
+        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+          <Button Content="Cancel" Style="{StaticResource GhostButton}" IsCancel="True" Margin="0,0,8,0" />
+          <Button x:Name="UseButton" Content="Put on the label" Style="{StaticResource PrimaryButton}" IsDefault="True" Click="OnUse"
+                  AutomationProperties.AutomationId="Gs1.Use" />
+        </StackPanel>
+        <TextBlock TextWrapping="Wrap" VerticalAlignment="Center" FontSize="12" Foreground="{DynamicResource Br.TextMuted}" Margin="0,0,16,0"
+                   Text="Any value can be a data field such as {Batch} or {Expiry}: it is filled in and checked for each label when printing." />
+      </DockPanel>
+    </Border>
+
+    <!-- Preview -->
+    <Border DockPanel.Dock="Right" Width="360" Background="{DynamicResource Br.Bg}" BorderBrush="{DynamicResource Br.Border}"
+            BorderThickness="1,0,0,0" Padding="18">
+      <DockPanel>
+        <TextBlock DockPanel.Dock="Top" Text="PREVIEW" Style="{StaticResource PanelSectionHeader}" />
+        <Border DockPanel.Dock="Top" Height="210" CornerRadius="8" Background="White" BorderBrush="{DynamicResource Br.Border}"
+                BorderThickness="1" Padding="12">
+          <Image x:Name="PreviewImage" Stretch="Uniform" RenderOptions.BitmapScalingMode="NearestNeighbor" />
+        </Border>
+        <TextBlock DockPanel.Dock="Top" Text="TEXT UNDER IT" Style="{StaticResource PanelSectionHeader}" Margin="0,14,0,4" />
+        <TextBlock DockPanel.Dock="Top" x:Name="ReadableText" loc:Localizer.Off="True" TextWrapping="Wrap" FontFamily="{StaticResource Font.Mono}"
+                   FontSize="12" />
+        <TextBlock DockPanel.Dock="Top" Text="STATUS" Style="{StaticResource PanelSectionHeader}" Margin="0,14,0,4" />
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+          <StackPanel x:Name="ProblemList" />
+        </ScrollViewer>
+      </DockPanel>
+    </Border>
+
+    <!-- What it is for, the barcode type, and the data -->
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="18,14,18,8">
+      <StackPanel>
+        <TextBlock Text="WHAT IS THE LABEL FOR?" Style="{StaticResource PanelSectionHeader}" />
+        <ComboBox x:Name="PresetBox" loc:Localizer.Off="True" SelectionChanged="OnPreset" Margin="0,0,0,4"
+                  AutomationProperties.AutomationId="Gs1.Preset" />
+        <TextBlock x:Name="PresetNote" TextWrapping="Wrap" FontSize="12" Foreground="{DynamicResource Br.TextMuted}" Margin="0,0,0,14" />
+
+        <TextBlock Text="BARCODE" Style="{StaticResource PanelSectionHeader}" />
+        <WrapPanel Margin="0,0,0,4">
+          <RadioButton x:Name="Gs1128Box" GroupName="kind" Content="GS1-128 (bars)" Style="{StaticResource ChipToggle}" IsChecked="True"
+                       Click="OnChanged" ToolTip="The long barcode for cartons, pallets and food: read by every scanner" />
+          <RadioButton x:Name="DataMatrixBox" GroupName="kind" Content="GS1 DataMatrix (square)" Style="{StaticResource ChipToggle}"
+                       Click="OnChanged" ToolTip="Small square code for medicines and medical devices; needs a camera scanner" />
+          <RadioButton x:Name="QrBox" GroupName="kind" Content="GS1 QR Code" Style="{StaticResource ChipToggle}" Click="OnChanged"
+                       ToolTip="QR code with GS1 data, for scanners that read GS1 QR" />
+        </WrapPanel>
+        <CheckBox x:Name="TextBox2d" Margin="0,6,0,0" IsChecked="True" Click="OnChanged">
+          <TextBlock TextWrapping="Wrap" Text="Write the data as text beside the square code, one line each (needed for medical devices and medicines)" />
+        </CheckBox>
+        <CheckBox x:Name="OrderBox" Margin="0,4,0,14" IsChecked="True" Click="OnChanged">
+          <TextBlock TextWrapping="Wrap" Text="Put the fixed-length data first, as GS1 recommends (a shorter barcode)" />
+        </CheckBox>
+
+        <DockPanel Margin="0,0,0,6">
+          <Button DockPanel.Dock="Right" Style="{StaticResource GhostButton}" Padding="10,3" Click="OnAddRow"
+                  AutomationProperties.AutomationId="Gs1.AddRow">
+            <TextBlock Text="+ Add data" />
+          </Button>
+          <TextBlock Text="DATA" Style="{StaticResource PanelSectionHeader}" VerticalAlignment="Bottom" Margin="0" />
+        </DockPanel>
+        <StackPanel x:Name="RowList" />
+      </StackPanel>
+    </ScrollViewer>
+  </DockPanel>
+</Window>

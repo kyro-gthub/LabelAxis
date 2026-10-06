@@ -40,7 +40,14 @@ public sealed class AppEnvironment
         {
             Interval = TimeSpan.FromSeconds(Math.Max(30, Settings.AutoSaveSeconds)),
         };
+        MyDesigns = new LabelMaker.Core.Designs.MyDesigns(Paths.DesignsDirectory);
     }
+
+    /// <summary>The user's own designs (Save page as my design…), listed first in the design gallery.</summary>
+    public LabelMaker.Core.Designs.MyDesigns MyDesigns { get; }
+
+    /// <summary>The watch folder and web link for print requests from other programs, while the main window is open.</summary>
+    public Automation.AutomationHost? Automation { get; set; }
 
     /// <summary>True when the app is keeping its data next to the executable.</summary>
     public bool IsPortable { get; }

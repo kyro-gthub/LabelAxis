@@ -1,0 +1,38 @@
+<Window x:Class="LabelMaker.App.Views.SaveDesignWindow"
+        xmlns:helpsvc="clr-namespace:LabelMaker.App.Services"
+        helpsvc:HelpGuide.Topic="getting-started"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:loc="clr-namespace:LabelMaker.App.Localization"
+        Style="{StaticResource AppWindow}"
+        Background="{DynamicResource Br.Surface}" TextElement.Foreground="{DynamicResource Br.Text}"
+        Title="Save as my design" Width="460" SizeToContent="Height" ResizeMode="NoResize"
+        WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
+  <!-- A page kept to reuse: it appears first in File › New Project, under My designs. -->
+  <DockPanel Margin="18">
+    <DockPanel DockPanel.Dock="Bottom" Margin="0,16,0,0">
+      <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+        <Button Content="Cancel" Style="{StaticResource GhostButton}" IsCancel="True" Margin="0,0,8,0" />
+        <Button x:Name="SaveButton" Content="Save design" Style="{StaticResource PrimaryButton}" IsDefault="True" Click="OnSave"
+                AutomationProperties.AutomationId="SaveDesign.Save" />
+      </StackPanel>
+      <TextBlock x:Name="NoteText" TextWrapping="Wrap" VerticalAlignment="Center" Margin="0,0,12,0" FontSize="12"
+                 Foreground="{DynamicResource Br.TextMuted}" />
+    </DockPanel>
+
+    <StackPanel>
+      <Border Height="150" CornerRadius="8" Background="{DynamicResource Br.Surface2}" Margin="0,0,0,14">
+        <Image x:Name="PreviewImage" Stretch="None" HorizontalAlignment="Center" VerticalAlignment="Center"
+               RenderOptions.BitmapScalingMode="HighQuality" />
+      </Border>
+      <TextBlock x:Name="IntroText" TextWrapping="Wrap" FontSize="12.5" Foreground="{DynamicResource Br.Text2}" Margin="0,0,0,12"
+                 Text="Keep this page to start new labels from. It is saved with its label sheet, fonts, pictures and data connection, and shown first in File › New Project under My designs." />
+      <TextBlock Text="Name" Style="{StaticResource FieldLabel}" Margin="0,0,0,4" />
+      <TextBox x:Name="NameBox" loc:Localizer.Off="True" TextChanged="OnNameChanged" Margin="0,0,0,10"
+               AutomationProperties.AutomationId="SaveDesign.Name" />
+      <TextBlock Text="Note (optional), for example: weekly price tags for the bakery" Style="{StaticResource FieldLabel}" Margin="0,0,0,4" />
+      <TextBox x:Name="DescriptionBox" loc:Localizer.Off="True" TextWrapping="Wrap" AcceptsReturn="False" MaxLength="200"
+ />
+    </StackPanel>
+  </DockPanel>
+</Window>

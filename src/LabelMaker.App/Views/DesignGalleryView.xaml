@@ -1,18 +1,22 @@
 <UserControl x:Class="LabelMaker.App.Views.DesignGalleryView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:loc="clr-namespace:LabelMaker.App.Localization">
   <!-- The ready-made designs: groups and search on one side, a card for each design, and how
        to fill the one chosen. Shown in the New Project window and in "Start from a design". -->
   <DockPanel>
     <Border DockPanel.Dock="Bottom" Background="{DynamicResource Br.Bg}" BorderBrush="{DynamicResource Br.Border}"
             BorderThickness="0,1,0,0" Padding="18,12,300,12">
       <DockPanel>
-        <StackPanel VerticalAlignment="Center">
+        <StackPanel x:Name="FillChoice" VerticalAlignment="Center">
         <RadioButton x:Name="SampleWordsBox" GroupName="fill" IsChecked="True" Margin="0,2"
                      Content="Sample words, ready to type over" />
         <RadioButton x:Name="DataFieldsBox" GroupName="fill" Margin="0,2"
                      Content="Data fields such as {Product} and {Price}, to print from a spreadsheet" />
         </StackPanel>
+        <TextBlock x:Name="MineNote" Visibility="Collapsed" VerticalAlignment="Center" TextWrapping="Wrap"
+                   Foreground="{DynamicResource Br.TextMuted}"
+                   Text="Your own design opens just as you saved it. Right-click it to rename or delete it." />
       </DockPanel>
     </Border>
 
@@ -51,7 +55,8 @@
                  Text="Each design opens as a new project on its own label sheet or roll. Change the words, put in your logo, and print." />
       <TextBlock x:Name="NothingText" DockPanel.Dock="Top" Visibility="Collapsed" Margin="2,20,0,0" Foreground="{DynamicResource Br.TextMuted}"
                  Text="No design matches. Try another word, or look in All designs." />
-      <ListBox x:Name="DesignList" BorderThickness="0" Background="Transparent"
+      <!-- Names are already in the interface language; the user's own are shown as written. -->
+      <ListBox x:Name="DesignList" BorderThickness="0" Background="Transparent" loc:Localizer.Off="True"
                ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="OnDesignSelected"
                AutomationProperties.AutomationId="Designs.List">
         <ListBox.ItemsPanel>
@@ -65,6 +70,7 @@
             <Setter Property="Padding" Value="0" />
             <Setter Property="AutomationProperties.Name" Value="{Binding Name}" />
             <EventSetter Event="MouseDoubleClick" Handler="OnDesignDoubleClick" />
+            <EventSetter Event="MouseRightButtonUp" Handler="OnCardRightClick" />
             <Setter Property="Template">
               <Setter.Value>
                 <ControlTemplate TargetType="ListBoxItem">

@@ -25,6 +25,16 @@ public partial class MainWindow : Window
         _env = env;
         InitializeComponent();
         MaximiseFix.Attach(this, Root);
+
+        // Print requests from other programs (watch folder, web link), when switched on in Settings.
+        env.Automation = new Automation.AutomationHost(env, Dispatcher);
+        Loaded += async (_, _) =>
+        {
+            if (env.Automation is { } automation)
+            {
+                await automation.ApplyAsync();
+            }
+        };
         StateChanged += (_, _) => UpdateMaximiseButton();
         AllowDrop = true;
 
@@ -902,6 +912,12 @@ public partial class MainWindow : Window
         }
 
         _env.SaveSettings();
+        if (_env.Automation is { } automation)
+        {
+            _env.Automation = null;
+            _ = automation.DisposeAsync().AsTask();
+        }
+
         base.OnClosing(e);
     }
 }

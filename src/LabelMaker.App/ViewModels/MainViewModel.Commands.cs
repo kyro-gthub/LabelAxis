@@ -34,6 +34,9 @@ public sealed partial class MainViewModel
     public RelayCommand NewCommand { get; private set; } = null!;
 
     public RelayCommand NewFromDesignCommand { get; private set; } = null!;
+    public RelayCommand SaveAsDesignCommand { get; private set; } = null!;
+    public RelayCommand Gs1BuilderCommand { get; private set; } = null!;
+    public RelayCommand BarcodeCheckCommand { get; private set; } = null!;
     public RelayCommand OpenCommand { get; private set; } = null!;
     public RelayCommand OpenRecentCommand { get; private set; } = null!;
     public RelayCommand SaveCommand { get; private set; } = null!;
@@ -85,6 +88,7 @@ public sealed partial class MainViewModel
     public RelayCommand PrintSettingsCommand { get; private set; } = null!;
     public RelayCommand PrintPreviewCommand { get; private set; } = null!;
     public RelayCommand PrintHistoryCommand { get; private set; } = null!;
+    public RelayCommand AutomationCommand { get; private set; } = null!;
     public RelayCommand WelcomeCommand { get; private set; } = null!;
     public RelayCommand NewThermalLabelCommand { get; private set; } = null!;
     public RelayCommand ThermalPrintCommand { get; private set; } = null!;
@@ -139,6 +143,9 @@ public sealed partial class MainViewModel
     {
         NewCommand = new RelayCommand(() => NewProject());
         NewFromDesignCommand = new RelayCommand(NewFromDesign);
+        SaveAsDesignCommand = new RelayCommand(SaveActivePageAsDesign);
+        Gs1BuilderCommand = new RelayCommand(ShowGs1Builder);
+        BarcodeCheckCommand = new RelayCommand(() => _shell.ShowBarcodeCheck(PageBarcodes));
         OpenCommand = new RelayCommand(OpenProject);
         OpenRecentCommand = new RelayCommand(p => { if (p is string s) OpenProjectPath(s); });
         SaveCommand = new RelayCommand(() => Save(false));
@@ -255,6 +262,7 @@ public sealed partial class MainViewModel
             _shell.ShowPrintPreview();
         });
         PrintHistoryCommand = new RelayCommand(ShowPrintHistory);
+        AutomationCommand = new RelayCommand(() => _shell.ShowAutomation());
         WelcomeCommand = new RelayCommand(ShowWelcome);
         NewThermalLabelCommand = new RelayCommand(NewThermalLabel);
         ThermalPrintCommand = new RelayCommand(() =>
