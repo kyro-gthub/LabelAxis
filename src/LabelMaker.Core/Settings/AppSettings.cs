@@ -84,6 +84,9 @@ public sealed class AppSettings
     /// <summary>Gradients chosen most recently, newest first, as "#start #end angle".</summary>
     public List<string> RecentGradients { get; set; } = new();
 
+    /// <summary>Print requests from other programs: the watch folder and the local web link.</summary>
+    public AutomationSettings Automation { get; set; } = new();
+
     /// <summary>Sheet templates starred in the Label manager, shown first under Favourites.</summary>
     public List<string> FavoriteTemplateIds { get; set; } = new();
 

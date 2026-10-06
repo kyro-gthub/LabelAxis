@@ -284,6 +284,13 @@ public static class BarcodeValidator
                 i++;
             }
         }
+
+        // Lengths, check digits, dates and AIs that belong together: warnings, as the barcode
+        // still prints and scans, but a GS1 check (or the receiving system) would reject it.
+        foreach (Gs1.Gs1Problem problem in Gs1.Gs1.Check(Gs1.Gs1.Parse(s)))
+        {
+            r.Warn(problem.Message);
+        }
     }
 
     private static void EstimateQrCapacity(BarcodeValidationResult r, BarcodeSpec spec, string value)

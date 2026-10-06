@@ -59,6 +59,12 @@ public sealed partial class MainViewModel
     /// </summary>
     public void NewProjectFromDesign(LabelMaker.Core.Designs.LabelDesign design, bool useDataFields)
     {
+        if (design.IsMine)
+        {
+            NewProjectFromMyDesign(design);
+            return;
+        }
+
         ProjectDocument document = LabelMaker.Core.Designs.DesignBuilder.Build(design, _env.Templates, new LabelMaker.Core.Designs.DesignBuildOptions
         {
             UseDataFields = useDataFields,
@@ -70,6 +76,57 @@ public sealed partial class MainViewModel
         _env.Settings.LastTemplateId = document.Project.Template?.Id;
         LoadSession(document);
         StatusText = Localization.Localizer.F("New project from the design “{0}”", name);
+    }
+
+    /// <summary>A new project from one of the user's own designs, exactly as it was saved.</summary>
+    private void NewProjectFromMyDesign(LabelMaker.Core.Designs.LabelDesign design)
+    {
+        try
+        {
+            ProjectDocument document = LabelMaker.Core.Designs.MyDesigns.Open(design);
+            Rendering.CustomFonts.InstallFrom(document, IsInstalledInWindows);
+            _env.Settings.LastTemplateId = document.Project.Template?.Id;
+            LoadSession(document);
+            StatusText = Localization.Localizer.F("New project from your design “{0}”", design.Name);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or InvalidDataException or
+                                       System.Text.Json.JsonException or InvalidOperationException)
+        {
+            _shell.Warn(Localization.Localizer.T("The design could not be opened:") + "\n\n" + ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// Saves the page on screen as one of the user's designs, to start new labels from: it is
+    /// listed first in File › New Project under My designs.
+    /// </summary>
+    private void SaveActivePageAsDesign()
+    {
+        LabelDocument page = _session.ActiveLabel;
+        string suggested = System.Text.RegularExpressions.Regex.IsMatch(page.Name ?? string.Empty, @"^(Page|Master label)\s*\d*$")
+            ? _session.Project.Metadata.Title
+            : page.Name!;
+        if (suggested is "Untitled" or "")
+        {
+            suggested = Localization.Localizer.T("My label");
+        }
+
+        _session.SyncDataCache();
+        Rendering.CustomFonts.EmbedInto(_session.Document);
+        if (_shell.AskSaveDesign(_session.Document, page, suggested, name => _env.MyDesigns.Find(name) is not null) is not { } answer)
+        {
+            return;
+        }
+
+        try
+        {
+            _env.MyDesigns.Save(_session.Document, page, answer.Name, answer.Description, answer.Picture);
+            StatusText = Localization.Localizer.F("Saved “{0}” to My designs: it is in File › New Project.", answer.Name);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException)
+        {
+            _shell.Warn(Localization.Localizer.T("The design could not be saved:") + "\n\n" + ex.Message);
+        }
     }
 
     /// <summary>A new project on a thermal roll defined in the thermal label window.</summary>

@@ -53,7 +53,12 @@ public static class BarcodeEngine
         if (spec.Symbology.IsCode128Family())
         {
             string prepared = PrepareCode128Value(spec, value);
-            return Code128Encoder.Encode(prepared, spec.Symbology, spec.QuietZoneModules, spec.Gs1Mode);
+            BarcodeSymbol symbol = Code128Encoder.Encode(prepared, spec.Symbology, spec.QuietZoneModules, spec.Gs1Mode);
+
+            // GS1 text under the bars keeps its AIs in brackets: (01)09506000134352(17)261231.
+            return (spec.Gs1Mode || spec.Symbology == BarcodeSymbology.GS1_128) && value.Contains('(')
+                ? WithText(symbol, Gs1.Gs1.Format(Gs1.Gs1.Parse(value)))
+                : symbol;
         }
 
         return ZXingEncoder.Encode(spec, value);
@@ -82,6 +87,18 @@ public static class BarcodeEngine
             return false;
         }
     }
+
+    private static BarcodeSymbol WithText(BarcodeSymbol s, string text) => new()
+    {
+        Symbology = s.Symbology,
+        Dimensionality = s.Dimensionality,
+        EncodedValue = s.EncodedValue,
+        HumanReadableText = text,
+        QuietZoneModules = s.QuietZoneModules,
+        Bars = s.Bars,
+        TotalWidthModules = s.TotalWidthModules,
+        Matrix = s.Matrix,
+    };
 
     private static string PrepareCode128Value(BarcodeSpec spec, string value)
     {

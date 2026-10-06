@@ -703,6 +703,9 @@ public sealed class SelectionProperties : ObservableObject
 
     public bool IsLinear => Spec is not null && !Is2D;
 
+    /// <summary>Barcodes that can carry GS1 data: GS1-128 (Code 128), GS1 DataMatrix and GS1 QR.</summary>
+    public bool CanBeGs1 => Spec?.Symbology is { } s && (s.IsCode128Family() || s is BarcodeSymbology.DataMatrix or BarcodeSymbology.QrCode);
+
     // ---- Table ----
 
     public bool IsTable => Obj is TableObject;

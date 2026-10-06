@@ -32,6 +32,18 @@ public sealed class LabelDesign
     [JsonIgnore]
     public string Description { get; set; } = string.Empty;
 
+    /// <summary>For one of the user's own designs (<see cref="MyDesigns"/>): the file it is kept in. Null for a built-in design.</summary>
+    [JsonIgnore]
+    public string? SavedPath { get; set; }
+
+    /// <summary>For one of the user's own designs: the picture saved with it.</summary>
+    [JsonIgnore]
+    public byte[]? ThumbnailPng { get; set; }
+
+    /// <summary>One of the user's own designs rather than a built-in one.</summary>
+    [JsonIgnore]
+    public bool IsMine => SavedPath is not null;
+
     /// <summary>The data fields its text and barcodes use ({Product}, {Price}…), in order.</summary>
     [JsonIgnore]
     public IReadOnlyList<string> Fields =>

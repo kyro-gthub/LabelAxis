@@ -1,0 +1,141 @@
+<Window x:Class="LabelMaker.App.Views.AutomationWindow"
+        xmlns:helpsvc="clr-namespace:LabelMaker.App.Services"
+        helpsvc:HelpGuide.Topic="printing"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:loc="clr-namespace:LabelMaker.App.Localization"
+        Style="{StaticResource AppWindow}"
+        Background="{DynamicResource Br.Surface}" TextElement.Foreground="{DynamicResource Br.Text}"
+        Title="Print requests from other programs" Height="760" Width="1000" MinHeight="560" MinWidth="820"
+        WindowStartupLocation="CenterOwner">
+  <!-- Other programs (a till, an online shop, a spreadsheet macro) print labels by dropping a
+       file into a folder or by sending it to a web link on this PC. -->
+  <DockPanel>
+    <Border DockPanel.Dock="Bottom" Background="{DynamicResource Br.Bg}" BorderBrush="{DynamicResource Br.Border}"
+            BorderThickness="0,1,0,0" Padding="18,12">
+      <DockPanel>
+        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+          <Button Content="Close" Style="{StaticResource GhostButton}" IsCancel="True" Margin="0,0,8,0" />
+          <Button Content="Save and switch on" Style="{StaticResource PrimaryButton}" IsDefault="True" Click="OnSave"
+                  AutomationProperties.AutomationId="Automation.Save" />
+        </StackPanel>
+        <Ellipse x:Name="StatusDot" Width="9" Height="9" VerticalAlignment="Center" Margin="0,0,8,0" Fill="{DynamicResource Br.TextMuted}" />
+        <TextBlock x:Name="StatusText" loc:Localizer.Off="True" TextWrapping="Wrap" VerticalAlignment="Center" FontSize="12.5" Margin="0,0,16,0" />
+      </DockPanel>
+    </Border>
+
+    <!-- Recent requests -->
+    <Border DockPanel.Dock="Right" Width="380" Background="{DynamicResource Br.Bg}" BorderBrush="{DynamicResource Br.Border}"
+            BorderThickness="1,0,0,0" Padding="18,14">
+      <DockPanel>
+        <TextBlock DockPanel.Dock="Top" Text="RECENT REQUESTS" Style="{StaticResource PanelSectionHeader}" />
+        <TextBlock DockPanel.Dock="Bottom" x:Name="LogPathText" loc:Localizer.Off="True" FontSize="11" TextWrapping="Wrap"
+                   Foreground="{DynamicResource Br.TextMuted}" Margin="0,8,0,0" />
+        <Grid>
+          <ListBox x:Name="LogList" loc:Localizer.Off="True" BorderThickness="0" Background="Transparent"
+                   ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch">
+            <ListBox.ItemTemplate>
+              <DataTemplate>
+                <DockPanel Margin="2,5">
+                  <TextBlock DockPanel.Dock="Left" Text="{Binding Time}" FontFamily="{StaticResource Font.Mono}" FontSize="11.5"
+                             Foreground="{DynamicResource Br.TextMuted}" Margin="0,1,8,0" />
+                  <StackPanel>
+                    <TextBlock Text="{Binding What}" FontFamily="{StaticResource Font.UiSemiBold}" FontSize="12.5" TextWrapping="Wrap" />
+                    <TextBlock Text="{Binding Source}" FontSize="11.5" Foreground="{DynamicResource Br.TextMuted}" TextWrapping="Wrap" />
+                    <TextBlock Text="{Binding Message}" FontSize="11.5" TextWrapping="Wrap">
+                      <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                          <Setter Property="Foreground" Value="{DynamicResource Br.Ok}" />
+                          <Style.Triggers>
+                            <DataTrigger Binding="{Binding Ok}" Value="False">
+                              <Setter Property="Foreground" Value="{DynamicResource Br.Danger}" />
+                            </DataTrigger>
+                          </Style.Triggers>
+                        </Style>
+                      </TextBlock.Style>
+                    </TextBlock>
+                  </StackPanel>
+                </DockPanel>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+          <TextBlock x:Name="EmptyLog" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center" Margin="12"
+                     Foreground="{DynamicResource Br.TextMuted}" FontSize="12.5"
+                     Text="Requests appear here as they arrive, with what was printed or why it was not." />
+        </Grid>
+      </DockPanel>
+    </Border>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="18,14,18,10">
+      <StackPanel>
+        <TextBlock TextWrapping="Wrap" FontSize="12.5" Foreground="{DynamicResource Br.Text2}" Margin="0,0,0,14"
+                   Text="A till, an online shop or a spreadsheet can print labels without anyone opening LabelAxis's windows: by dropping a file into a folder, or by sending it to a web link on this PC. They print one label per record with one of your designs (File › Save page as my design). LabelAxis has to be open." />
+
+        <TextBlock Text="WATCH FOLDER" Style="{StaticResource PanelSectionHeader}" />
+        <Border Style="{StaticResource InsetPanel}" Padding="12,10" Margin="0,0,0,14">
+          <StackPanel>
+            <CheckBox x:Name="FolderOnBox" Content="Print the request files dropped into this folder" Margin="0,2,0,8"
+                      AutomationProperties.AutomationId="Automation.FolderOn" />
+            <DockPanel>
+              <Button DockPanel.Dock="Right" Content="Open" Style="{StaticResource GhostButton}" Padding="10,3" Margin="6,0,0,0" Click="OnOpenFolder" />
+              <Button DockPanel.Dock="Right" Content="Choose…" Style="{StaticResource GhostButton}" Padding="10,3" Margin="6,0,0,0" Click="OnChooseFolder" />
+              <TextBox x:Name="FolderBox" loc:Localizer.Off="True" />
+            </DockPanel>
+            <TextBlock TextWrapping="Wrap" FontSize="11.5" Foreground="{DynamicResource Br.TextMuted}" Margin="0,8,0,0"
+                       Text="Drop a .json request (example below) or a .csv list whose first row names the fields. A printed file moves to the Done folder; one that could not print moves to Failed, with a note saying why." />
+          </StackPanel>
+        </Border>
+
+        <TextBlock Text="WEB LINK" Style="{StaticResource PanelSectionHeader}" />
+        <Border Style="{StaticResource InsetPanel}" Padding="12,10" Margin="0,0,0,14">
+          <StackPanel>
+            <CheckBox x:Name="WebOnBox" Content="Take print requests at a web link on this PC" Margin="0,2,0,8"
+                      AutomationProperties.AutomationId="Automation.WebOn" />
+            <DockPanel Margin="0,0,0,8">
+              <TextBlock Text="Port" Style="{StaticResource FieldLabel}" Width="70" />
+              <TextBox x:Name="PortBox" Width="80" HorizontalAlignment="Left" loc:Localizer.Off="True" TextChanged="OnPortChanged" />
+              <Button Content="Open in browser" Style="{StaticResource GhostButton}" Padding="10,3" Margin="10,0,0,0" Click="OnOpenLink"
+                      ToolTip="Shows the page that explains the link to programmers" />
+              <TextBlock x:Name="AddressText" loc:Localizer.Off="True" FontFamily="{StaticResource Font.Mono}" VerticalAlignment="Center" Margin="10,0,0,0" />
+            </DockPanel>
+            <CheckBox x:Name="NetworkBox" Content="Also from other computers on the network: they must send the access key" Margin="0,2,0,6"
+                      Click="OnNetworkChanged" />
+            <DockPanel x:Name="KeyRow" Margin="20,0,0,0">
+              <TextBlock Text="Access key" Style="{StaticResource FieldLabel}" Width="80" />
+              <Button DockPanel.Dock="Right" Content="New key" Style="{StaticResource GhostButton}" Padding="10,3" Margin="6,0,0,0" Click="OnNewKey" />
+              <Button DockPanel.Dock="Right" Content="Copy" Style="{StaticResource GhostButton}" Padding="10,3" Margin="6,0,0,0" Click="OnCopyKey" />
+              <TextBox x:Name="KeyBox" IsReadOnly="True" loc:Localizer.Off="True" FontFamily="{StaticResource Font.Mono}" />
+            </DockPanel>
+            <TextBlock TextWrapping="Wrap" FontSize="11.5" Foreground="{DynamicResource Br.TextMuted}" Margin="0,8,0,0"
+                       Text="Programs send POST /print with a request like the one below. Web pages open in a browser are refused, so a website cannot make your printer print. Windows may ask once whether LabelAxis can use the network when other computers are allowed." />
+          </StackPanel>
+        </Border>
+
+        <TextBlock Text="WHEN A REQUEST DOES NOT SAY" Style="{StaticResource PanelSectionHeader}" />
+        <Border Style="{StaticResource InsetPanel}" Padding="12,10" Margin="0,0,0,14">
+          <StackPanel>
+            <DockPanel Margin="0,0,0,8">
+              <TextBlock Text="Design" Style="{StaticResource FieldLabel}" Width="70" />
+              <ComboBox x:Name="DesignBox" loc:Localizer.Off="True" />
+            </DockPanel>
+            <DockPanel>
+              <TextBlock Text="Printer" Style="{StaticResource FieldLabel}" Width="70" />
+              <ComboBox x:Name="PrinterBox" loc:Localizer.Off="True" />
+            </DockPanel>
+            <TextBlock TextWrapping="Wrap" FontSize="11.5" Foreground="{DynamicResource Br.TextMuted}" Margin="0,8,0,0"
+                       Text="The design is used for .csv files and requests that name none. Without a printer, the one the design last printed on is used, then the Windows default; &quot;thermal&quot; uses the design's thermal printer settings." />
+          </StackPanel>
+        </Border>
+
+        <DockPanel Margin="0,0,0,4">
+          <Button DockPanel.Dock="Right" Content="Copy" Style="{StaticResource GhostButton}" Padding="10,3" Click="OnCopyExample" />
+          <Button DockPanel.Dock="Right" Content="Save as a file…" Style="{StaticResource GhostButton}" Padding="10,3" Margin="0,0,6,0"
+                  Click="OnSaveExample" />
+          <TextBlock Text="EXAMPLE REQUEST" Style="{StaticResource PanelSectionHeader}" VerticalAlignment="Bottom" Margin="0" />
+        </DockPanel>
+        <TextBox x:Name="ExampleBox" loc:Localizer.Off="True" IsReadOnly="True" TextWrapping="NoWrap" AcceptsReturn="True"
+                 FontFamily="{StaticResource Font.Mono}" FontSize="12" Padding="8" HorizontalScrollBarVisibility="Auto" />
+      </StackPanel>
+    </ScrollViewer>
+  </DockPanel>
+</Window>

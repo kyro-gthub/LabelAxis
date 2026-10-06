@@ -118,7 +118,7 @@ public sealed partial class MainViewModel
         return IsInstalledInWindows(family);
     }
 
-    private static bool IsInstalledInWindows(string family)
+    internal static bool IsInstalledInWindows(string family)
     {
         try
         {

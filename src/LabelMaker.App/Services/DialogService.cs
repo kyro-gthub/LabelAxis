@@ -125,7 +125,7 @@ public sealed class DialogService : IShellServices
 
     public void ShowNewProject(Action<LabelTemplate> onChosen, Action<LabelMaker.Core.Designs.LabelDesign, bool>? onDesign = null, bool designsFirst = true)
     {
-        var win = new NewProjectWindow(_env.Templates, _env.Settings.FavoriteTemplateIds, designsFirst && onDesign is not null) { Owner = _owner };
+        var win = new NewProjectWindow(_env.Templates, _env.Settings.FavoriteTemplateIds, designsFirst && onDesign is not null, _env.MyDesigns) { Owner = _owner };
         bool chosen = win.ShowDialog() == true;
         if (win.FavoritesChanged)
         {
@@ -144,7 +144,7 @@ public sealed class DialogService : IShellServices
 
     public (LabelMaker.Core.Designs.LabelDesign Design, bool UseDataFields)? ShowDesignGallery()
     {
-        var win = new DesignGalleryWindow(_env.Templates) { Owner = Front };
+        var win = new DesignGalleryWindow(_env.Templates, _env.MyDesigns) { Owner = Front };
         return win.ShowDialog() == true && win.ChosenDesign is { } design ? (design, win.UseDataFields) : null;
     }
 
@@ -359,6 +359,17 @@ public sealed class DialogService : IShellServices
         return win.ShowDialog() == true && win.Result is { } roll ? (roll, win.SaveAsTemplate) : null;
     }
 
+    public void ShowBarcodeCheck(Func<IReadOnlyList<(string Name, string Value)>> labelBarcodes) =>
+        new BarcodeCheckWindow(labelBarcodes) { Owner = _owner }.ShowDialog();
+
+    public void ShowAutomation()
+    {
+        if (_env.Automation is { } host)
+        {
+            new AutomationWindow(_env, host) { Owner = _owner }.ShowDialog();
+        }
+    }
+
     public LabelMaker.Core.Printing.ReprintRequest? ShowPrintHistory()
     {
         var win = new PrintHistoryWindow(_env.PrintHistory, _vm?.Session.Project.Metadata.Id ?? string.Empty)
@@ -434,6 +445,22 @@ public sealed class DialogService : IShellServices
 
         _env.SaveSettings();
         return win.Result;
+    }
+
+    public (string Name, string? Description, byte[] Picture)? AskSaveDesign(
+        LabelMaker.Core.Serialization.ProjectDocument document, LabelMaker.Core.Model.LabelDocument page, string suggestedName, Func<string, bool> exists)
+    {
+        LabelMaker.Core.Formtec.LabelTemplate? template = document.Project.Template;
+        System.Windows.Media.Imaging.BitmapSource picture = DesignGalleryView.Thumbnail(document, page,
+            round: template?.Grid.LabelShape == LabelMaker.Core.Formtec.LabelShape.Ellipse, thermal: template?.IsRoll == true);
+        var win = new SaveDesignWindow(suggestedName, null, picture, renaming: false, exists) { Owner = _owner };
+        return win.ShowDialog() == true ? (win.DesignName, win.DesignDescription, DesignGalleryView.Png(picture)) : null;
+    }
+
+    public (LabelMaker.Core.Barcodes.BarcodeSpec Spec, string? TextBeside)? ShowGs1Builder(LabelMaker.Core.Barcodes.BarcodeSpec? editing)
+    {
+        var win = new Gs1BuilderWindow(editing) { Owner = _owner };
+        return win.ShowDialog() == true && win.Result is { } spec ? (spec, win.TextBeside) : null;
     }
 
     public FillChoice? PickFill(LabelMaker.Core.Model.ColorRgba initial, LabelMaker.Core.Model.ColorRgba? gradientTo, double angleDegrees, string title)

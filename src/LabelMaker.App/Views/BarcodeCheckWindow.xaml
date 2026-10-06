@@ -1,0 +1,102 @@
+<Window x:Class="LabelMaker.App.Views.BarcodeCheckWindow"
+        xmlns:helpsvc="clr-namespace:LabelMaker.App.Services"
+        helpsvc:HelpGuide.Topic="barcodes"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:loc="clr-namespace:LabelMaker.App.Localization"
+        Style="{StaticResource AppWindow}"
+        Background="{DynamicResource Br.Surface}" TextElement.Foreground="{DynamicResource Br.Text}"
+        Title="Check a printed barcode" Height="740" Width="1120" MinHeight="560" MinWidth="900"
+        WindowStartupLocation="CenterOwner">
+  <!-- Point a webcam at a printed label, or open a photo or a scan: the barcode is read and graded
+       A to F the way a barcode verifier grades it, with what to change to make it better. -->
+  <DockPanel>
+    <!-- The result -->
+    <Border DockPanel.Dock="Right" Width="400" Background="{DynamicResource Br.Bg}" BorderBrush="{DynamicResource Br.Border}"
+            BorderThickness="1,0,0,0">
+      <DockPanel>
+        <Border DockPanel.Dock="Bottom" BorderBrush="{DynamicResource Br.Border}" BorderThickness="0,1,0,0" Padding="18,12">
+          <DockPanel>
+            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+              <Button Content="Copy report" Style="{StaticResource GhostButton}" Margin="0,0,8,0" Click="OnCopy" x:Name="CopyButton" IsEnabled="False" />
+              <Button Content="Close" Style="{StaticResource PrimaryButton}" IsCancel="True" />
+            </StackPanel>
+          </DockPanel>
+        </Border>
+        <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="18,16">
+          <StackPanel>
+            <DockPanel Margin="0,0,0,12">
+              <Border x:Name="GradeBadge" DockPanel.Dock="Left" Width="78" Height="78" CornerRadius="39" Margin="0,0,14,0"
+                      Background="{DynamicResource Br.Surface2}">
+                <TextBlock x:Name="GradeLetter" Text="–" FontSize="38" FontFamily="{StaticResource Font.UiSemiBold}"
+                           HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" loc:Localizer.Off="True" />
+              </Border>
+              <StackPanel VerticalAlignment="Center">
+                <TextBlock x:Name="GradeText" Text="Looking for a barcode…" FontSize="17" FontFamily="{StaticResource Font.UiSemiBold}"
+                           TextWrapping="Wrap" />
+                <TextBlock x:Name="KindText" FontSize="12.5" Foreground="{DynamicResource Br.TextMuted}" TextWrapping="Wrap" Margin="0,2,0,0" />
+              </StackPanel>
+            </DockPanel>
+            <TextBlock Text="IT SAYS" Style="{StaticResource PanelSectionHeader}" />
+            <TextBlock x:Name="ValueText" loc:Localizer.Off="True" FontFamily="{StaticResource Font.Mono}" FontSize="13" TextWrapping="Wrap" />
+            <TextBlock x:Name="MatchText" FontSize="12.5" TextWrapping="Wrap" Margin="0,4,0,14" />
+
+            <TextBlock Text="MEASURED" Style="{StaticResource PanelSectionHeader}" />
+            <ItemsControl x:Name="ParameterList" Margin="0,0,0,14">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                  <DockPanel Margin="0,0,0,8" ToolTip="{Binding Meaning}">
+                    <Border DockPanel.Dock="Right" Width="26" Height="22" CornerRadius="6" Background="{Binding Badge}" Margin="8,0,0,0"
+                            Visibility="{Binding HasGrade, Converter={StaticResource BoolToVis}}">
+                      <TextBlock Text="{Binding Letter}" Foreground="White" FontFamily="{StaticResource Font.UiSemiBold}" FontSize="12.5"
+                                 HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+                    <StackPanel>
+                      <TextBlock Text="{Binding Name}" FontSize="12.5" FontFamily="{StaticResource Font.UiSemiBold}" />
+                      <TextBlock Text="{Binding Value}" FontSize="12" Foreground="{DynamicResource Br.TextMuted}" TextWrapping="Wrap" />
+                    </StackPanel>
+                  </DockPanel>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <TextBlock Text="WHAT TO DO" Style="{StaticResource PanelSectionHeader}" />
+            <StackPanel x:Name="AdviceList" Margin="0,0,0,14" />
+
+            <TextBlock TextWrapping="Wrap" FontSize="11.5" Foreground="{DynamicResource Br.TextMuted}"
+                       Text="A check from a picture, done the way ISO/IEC 15416 and 15415 verifiers grade barcodes, but with a camera instead of a calibrated verifier: light and focus change the result. Check a few times, and use a verifier when a customer asks for a certificate." />
+          </StackPanel>
+        </ScrollViewer>
+      </DockPanel>
+    </Border>
+
+    <!-- The picture -->
+    <DockPanel Margin="18,14,18,14">
+      <WrapPanel DockPanel.Dock="Top" Margin="0,0,0,10">
+        <ComboBox x:Name="CameraBox" loc:Localizer.Off="True" MinWidth="220" Margin="0,0,8,4" />
+        <Button x:Name="CameraButton" Content="Start camera" Style="{StaticResource PrimaryButton}" Margin="0,0,8,4" Click="OnCamera"
+                AutomationProperties.AutomationId="Check.Camera" />
+        <Button Content="Open a photo or scan…" Style="{StaticResource GhostButton}" Margin="0,0,8,4" Click="OnOpen"
+                AutomationProperties.AutomationId="Check.Open" />
+        <Button Content="Paste a picture" Style="{StaticResource GhostButton}" Margin="0,0,8,4" Click="OnPaste" />
+        <ToggleButton x:Name="HoldBox" Content="Hold the result" Style="{StaticResource ChipToggle}" Margin="0,0,0,4"
+                      ToolTip="Keep this result while you move the label away" />
+      </WrapPanel>
+      <TextBlock DockPanel.Dock="Bottom" x:Name="HintText" TextWrapping="Wrap" FontSize="12" Foreground="{DynamicResource Br.TextMuted}" Margin="0,8,0,0"
+                 Text="Hold the label flat with the barcode filling most of the picture, in even light without glare. The camera picture is checked a few times a second." />
+      <Border CornerRadius="10" Background="#FF15181E" ClipToBounds="True">
+        <Grid>
+          <Viewbox Stretch="Uniform">
+            <Grid>
+              <Image x:Name="PreviewImage" Stretch="None" RenderOptions.BitmapScalingMode="HighQuality" />
+              <Canvas x:Name="Overlay" IsHitTestVisible="False" />
+            </Grid>
+          </Viewbox>
+          <TextBlock x:Name="EmptyText" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap"
+                     Margin="40" Foreground="#FFB8C0CC" FontSize="13.5"
+                     Text="Start the camera and hold a printed label in front of it, or open a photo or a scan of one." />
+        </Grid>
+      </Border>
+    </DockPanel>
+  </DockPanel>
+</Window>

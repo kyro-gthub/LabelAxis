@@ -15,7 +15,9 @@ public partial class NewProjectWindow : Window
     private readonly IList<string>? _savedFavorites;
 
     /// <param name="favorites">The starred sheets; a custom size starred here is added to it.</param>
-    public NewProjectWindow(TemplateStore store, IList<string>? favorites = null, bool showDesigns = true)
+    /// <param name="mine">The user's own designs, listed first among the designs.</param>
+    public NewProjectWindow(TemplateStore store, IList<string>? favorites = null, bool showDesigns = true,
+        LabelMaker.Core.Designs.MyDesigns? mine = null)
     {
         InitializeComponent();
         _store = store;
@@ -27,6 +29,7 @@ public partial class NewProjectWindow : Window
         // The first preview is drawn before layout has sized the canvas; draw it again at its real size.
         PreviewCanvas.SizeChanged += (_, _) => { if (TemplateList.SelectedItem is Row row) { DrawSheetPreview(row.Template); } };
         Gallery.Store = store;
+        Gallery.Mine = mine;
         Gallery.SelectionChanged += (_, _) => DesignCreateButton.IsEnabled = Gallery.SelectedDesign is not null;
         Gallery.DesignActivated += (_, _) => OnCreateFromDesign(this, new RoutedEventArgs());
         DesignCreateButton.IsEnabled = Gallery.SelectedDesign is not null;

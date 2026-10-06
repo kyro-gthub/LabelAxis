@@ -65,10 +65,21 @@ public static class ZXingEncoder
                 break;
         }
 
+        // GS1 data typed as "(01)â€¦(17)â€¦" goes into a 2D code as its element string, with
+        // separators after variable-length elements (the brackets are not part of the data).
+        string content = resolvedValue;
+        if (spec.Gs1Mode && is2d && content.Contains('('))
+        {
+            content = Gs1.Gs1.ElementString(Gs1.Gs1.Parse(content));
+        }
+
         BitMatrix matrix;
         try
         {
-            matrix = new MultiFormatWriter().encode(resolvedValue, format, 1, 1, hints);
+            // ZXing's DataMatrix writer ignores the GS1 setting, so GS1 DataMatrix is made here.
+            matrix = spec.Gs1Mode && spec.Symbology == BarcodeSymbology.DataMatrix
+                ? Gs1.Gs1DataMatrix.Encode(content)
+                : new MultiFormatWriter().encode(content, format, 1, 1, hints);
         }
         catch (Exception ex)
         {
