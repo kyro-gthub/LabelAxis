@@ -39,7 +39,7 @@
       <DockPanel>
         <Border DockPanel.Dock="Top" Style="{StaticResource SearchField}" Margin="14,14,14,10">
           <DockPanel>
-            <Image DockPanel.Dock="Left" Source="{StaticResource Icon.Search}" Width="15" Height="15" Margin="2,0,8,0" />
+            <Image DockPanel.Dock="Left" Source="{DynamicResource Icon.Search}" Width="15" Height="15" Margin="2,0,8,0" />
             <TextBox x:Name="SearchBox" Style="{StaticResource PlainTextBox}" Tag="Search brand, code, size…" />
           </DockPanel>
         </Border>
@@ -106,7 +106,7 @@
           <DockPanel Margin="4,6">
             <Border DockPanel.Dock="Left" Width="34" Height="34" CornerRadius="9" Margin="0,0,12,0"
                     Background="{DynamicResource Br.AccentSoft}">
-              <Image Width="17" Height="17" Source="{StaticResource Icon.Sheet}" />
+              <Image Width="17" Height="17" Source="{DynamicResource Icon.Sheet}" />
             </Border>
             <TextBlock DockPanel.Dock="Right" Text="{Binding SizeText}" VerticalAlignment="Center"
                        FontFamily="{StaticResource Font.Mono}" FontSize="12"

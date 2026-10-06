@@ -36,7 +36,7 @@
         <TextBlock Grid.Row="0" Grid.Column="0" Text="Find" Style="{StaticResource FieldLabel}" Width="92" />
         <Border Grid.Row="0" Grid.Column="1" Style="{StaticResource SearchField}">
           <DockPanel>
-            <Image DockPanel.Dock="Left" Source="{StaticResource Icon.Search}" Width="15" Height="15" Margin="2,0,8,0" />
+            <Image DockPanel.Dock="Left" Source="{DynamicResource Icon.Search}" Width="15" Height="15" Margin="2,0,8,0" />
             <TextBox x:Name="FindBox" Style="{StaticResource PlainTextBox}" Tag="Text, barcode value, cell or name…"
                      TextChanged="OnQueryChanged" KeyDown="OnFindKeyDown" />
           </DockPanel>

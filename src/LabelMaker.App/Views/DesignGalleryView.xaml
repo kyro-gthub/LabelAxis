@@ -22,7 +22,7 @@
       <DockPanel>
         <Border DockPanel.Dock="Top" Style="{StaticResource SearchField}" Margin="14,14,14,10">
           <DockPanel>
-            <Image DockPanel.Dock="Left" Source="{StaticResource Icon.Search}" Width="15" Height="15" Margin="2,0,8,0" />
+            <Image DockPanel.Dock="Left" Source="{DynamicResource Icon.Search}" Width="15" Height="15" Margin="2,0,8,0" />
             <TextBox x:Name="SearchBox" Style="{StaticResource PlainTextBox}" Tag="Search designs…"
                      TextChanged="OnSearch" AutomationProperties.AutomationId="Designs.Search" />
           </DockPanel>

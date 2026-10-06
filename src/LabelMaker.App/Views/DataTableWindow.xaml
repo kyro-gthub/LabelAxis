@@ -21,7 +21,7 @@
       <DockPanel>
         <Border DockPanel.Dock="Left" Width="36" Height="36" CornerRadius="10" Margin="0,0,12,0"
                 Background="{DynamicResource Br.AccentSoft}">
-          <Image Source="{StaticResource Icon.Table}" Width="18" Height="18" />
+          <Image Source="{DynamicResource Icon.Table}" Width="18" Height="18" />
         </Border>
         <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
           <Button Content="Import file…" Style="{StaticResource GhostButton}" Margin="0,0,6,0" Click="OnImport" />
@@ -51,7 +51,7 @@
         </StackPanel>
         <Border Style="{StaticResource SearchField}" Width="300" HorizontalAlignment="Left">
           <DockPanel>
-            <Image DockPanel.Dock="Left" Source="{StaticResource Icon.Search}" Width="15" Height="15" Margin="2,0,8,0" />
+            <Image DockPanel.Dock="Left" Source="{DynamicResource Icon.Search}" Width="15" Height="15" Margin="2,0,8,0" />
             <TextBox x:Name="FilterBox" Style="{StaticResource PlainTextBox}" Tag="Filter records…"
                      TextChanged="OnFilterChanged" />
           </DockPanel>

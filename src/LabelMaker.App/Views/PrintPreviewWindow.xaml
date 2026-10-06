@@ -17,7 +17,7 @@
           <Button Content="Print settings…" Style="{StaticResource GhostButton}" Margin="0,0,8,0" Click="OnSettings" />
           <Button Style="{StaticResource PrimaryButton}" Click="OnPrint">
             <StackPanel Orientation="Horizontal">
-              <Image Source="{StaticResource Icon.PrintWhite}" Width="15" Height="15" Margin="0,0,7,0" />
+              <Image Source="{DynamicResource Icon.PrintWhite}" Width="15" Height="15" Margin="0,0,7,0" />
               <TextBlock Text="Print" VerticalAlignment="Center" />
             </StackPanel>
           </Button>

@@ -13,7 +13,7 @@
       <DockPanel>
         <Border DockPanel.Dock="Left" Width="36" Height="36" CornerRadius="10" Margin="0,0,12,0"
                 Background="{DynamicResource Br.AccentSoft}">
-          <Image x:Name="Glyph" Source="{StaticResource Icon.Print}" Width="18" Height="18" />
+          <Image x:Name="Glyph" Source="{DynamicResource Icon.Print}" Width="18" Height="18" />
         </Border>
         <StackPanel VerticalAlignment="Center">
           <TextBlock x:Name="Heading" FontFamily="{StaticResource Font.UiSemiBold}" FontSize="14" TextTrimming="CharacterEllipsis" />

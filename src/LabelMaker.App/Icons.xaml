@@ -2,13 +2,14 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
   <!--
-    Shared line-icon pen: simple 24x24-grid stroke icons for the toolbar. The colour
-    tracks the palette (DynamicResource, so it follows a theme switch) rather than
-    the old hard-coded indigo, which no longer matched the blue accent.
+    Shared line-icon pen: simple 24x24-grid stroke icons for the toolbar. WPF freezes the
+    pen and the icons once they are drawn, so they cannot be recoloured in place: on every theme
+    switch ThemeManager loads this file afresh, sets the pen and fill to the theme's ink, and
+    puts the new icons in the app's resources (the windows use them through DynamicResource).
   -->
-  <Pen x:Key="IconPen" Brush="{DynamicResource Br.Accent}" Thickness="1.8"
+  <Pen x:Key="IconPen" Brush="#FF1C222D" Thickness="1.8"
        StartLineCap="Round" EndLineCap="Round" LineJoin="Round" />
-  <SolidColorBrush x:Key="IconFill" Color="{DynamicResource Clr.Accent}" />
+  <SolidColorBrush x:Key="IconFill" Color="#FF1C222D" />
 
   <DrawingImage x:Key="Icon.New">
     <DrawingImage.Drawing>
