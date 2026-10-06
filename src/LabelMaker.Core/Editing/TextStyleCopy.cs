@@ -133,6 +133,8 @@ public static class TextStyleCopy
         {
             target.Foreground = source.Foreground;
             target.Background = source.Background;
+            target.BackgroundTo = source.BackgroundTo;
+            target.BackgroundAngleDegrees = source.BackgroundAngleDegrees;
             foreach (TextRun r in runs)
             {
                 r.Foreground = r.Background = null;
@@ -168,12 +170,12 @@ public static class TextStyleCopy
     /// <summary>Everything about a text box this copy can change, so undo puts it all back.</summary>
     private sealed record TextStyleState(
         string FontFamily, double FontSizePt, double MinAutoFitPt, bool Bold, bool Italic, bool Underline, bool Strikethrough,
-        ColorRgba Foreground, ColorRgba Background, HorizontalAlignment HorizontalAlignment, VerticalAlignment VerticalAlignment,
+        ColorRgba Foreground, ColorRgba Background, ColorRgba? BackgroundTo, double BackgroundAngleDegrees, HorizontalAlignment HorizontalAlignment, VerticalAlignment VerticalAlignment,
         double LineSpacing, double LetterSpacingEm, RichTextContent Content, RectMm Bounds)
     {
         public static TextStyleState Capture(TextObject t) => new(
             t.FontFamily, t.FontSizePt, t.MinAutoFitPt, t.Bold, t.Italic, t.Underline, t.Strikethrough,
-            t.Foreground, t.Background, t.HorizontalAlignment, t.VerticalAlignment,
+            t.Foreground, t.Background, t.BackgroundTo, t.BackgroundAngleDegrees, t.HorizontalAlignment, t.VerticalAlignment,
             t.LineSpacing, t.LetterSpacingEm, t.Content.Clone(), t.Bounds);
 
         public void Restore(TextObject t)
@@ -187,6 +189,8 @@ public static class TextStyleCopy
             t.Strikethrough = Strikethrough;
             t.Foreground = Foreground;
             t.Background = Background;
+            t.BackgroundTo = BackgroundTo;
+            t.BackgroundAngleDegrees = BackgroundAngleDegrees;
             t.HorizontalAlignment = HorizontalAlignment;
             t.VerticalAlignment = VerticalAlignment;
             t.LineSpacing = LineSpacing;

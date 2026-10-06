@@ -94,6 +94,40 @@ public partial class BarcodeImageWindow : Window
         return v.IsValid ? spec : null;
     }
 
+    /// <summary>A PNG picture at the chosen resolution, the symbol at its real printed size.</summary>
+    private void OnSavePng(object sender, RoutedEventArgs e)
+    {
+        if (BuildSpec() is not { } spec)
+        {
+            return;
+        }
+
+        int dpi = DpiBox.SelectedItem is ComboBoxItem { Tag: string tag } && int.TryParse(tag, out int chosen) ? chosen : 300;
+        var dlg = new SaveFileDialog { Filter = "PNG picture|*.png", FileName = SafeFileName(spec.Data), DefaultExt = ".png" };
+        if (dlg.ShowDialog(this) != true)
+        {
+            return;
+        }
+
+        try
+        {
+            byte[] png = BarcodeRasterizer.RenderPng(_imageExporter, spec, spec.Data, dpi, transparent: TransparentBox.IsChecked == true);
+            File.WriteAllBytes(dlg.FileName, png);
+            StatusText.Text = $"Wrote {dlg.FileName}";
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or InvalidOperationException)
+        {
+            StatusText.Text = "Cannot save the picture: " + ex.Message;
+        }
+    }
+
+    /// <summary>The barcode's value as a file name, without the characters Windows does not allow.</summary>
+    private static string SafeFileName(string value)
+    {
+        string name = string.Concat(value.Select(c => Path.GetInvalidFileNameChars().Contains(c) ? '_' : c)).Trim();
+        return name.Length == 0 ? "barcode" : name.Length > 80 ? name[..80] : name;
+    }
+
     private void OnSaveSvg(object sender, RoutedEventArgs e)
     {
         if (BuildSpec() is not { } spec)
@@ -101,7 +135,7 @@ public partial class BarcodeImageWindow : Window
             return;
         }
 
-        var dlg = new SaveFileDialog { Filter = "SVG|*.svg", FileName = spec.Data };
+        var dlg = new SaveFileDialog { Filter = "SVG|*.svg", FileName = SafeFileName(spec.Data) };
         if (dlg.ShowDialog(this) == true)
         {
             string svg = new SvgExporter().ExportBarcode(spec, spec.Data, transparentBackground: TransparentBox.IsChecked == true);
@@ -117,7 +151,7 @@ public partial class BarcodeImageWindow : Window
             return;
         }
 
-        var dlg = new SaveFileDialog { Filter = "PDF|*.pdf", FileName = spec.Data };
+        var dlg = new SaveFileDialog { Filter = "PDF|*.pdf", FileName = SafeFileName(spec.Data) };
         if (dlg.ShowDialog(this) == true)
         {
             File.WriteAllBytes(dlg.FileName, BarcodePdf.Render(spec, spec.Data));

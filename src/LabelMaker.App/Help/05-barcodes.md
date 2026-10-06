@@ -30,4 +30,4 @@ If the data does not suit the type (for example letters in an EAN-13), the barco
 
 ## Many barcodes at once
 
-`Data > Bulk Barcode Generator…` saves a picture file of a barcode for each value (with prefix, suffix and padding) into a folder. `Data > Barcode image…` saves one barcode as a picture.
+`Data > Bulk Barcode Generator…` saves a picture file of a barcode for each value (with prefix, suffix and padding) into a folder. `Data > Barcode image…` saves one barcode as a PNG picture (150 to 1200 dpi), an SVG drawing or a PDF.

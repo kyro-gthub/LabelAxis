@@ -130,4 +130,13 @@ public interface IShellServices
 
     /// <summary>Colour chooser with palette, RGBA sliders and an eyedropper. Null on cancel.</summary>
     Core.Model.ColorRgba? PickColor(Core.Model.ColorRgba initial, string title);
+
+    /// <summary>
+    /// The colour chooser for a fill, which can also be a two-colour gradient. Null on cancel;
+    /// the choice's <see cref="FillChoice.GradientTo"/> is null for a single colour.
+    /// </summary>
+    FillChoice? PickFill(Core.Model.ColorRgba initial, Core.Model.ColorRgba? gradientTo, double angleDegrees, string title);
 }
+
+/// <summary>A fill chosen in the colour window: one colour, or a gradient from it to <see cref="GradientTo"/>.</summary>
+public sealed record FillChoice(Core.Model.ColorRgba Color, Core.Model.ColorRgba? GradientTo, double AngleDegrees);

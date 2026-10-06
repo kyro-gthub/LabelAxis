@@ -15,6 +15,7 @@ A project can hold several different label designs, called **pages**, listed und
 - Double-click a page (or press `F2`) to rename it in place.
 - `Ctrl+↑` / `Ctrl+↓`, or dragging, change the order.
 - The remove button deletes the page on screen. The first page can be removed too while other pages exist; the next page then becomes page 1.
+- To find a page by its name, press `Ctrl+F` and type part of it: page names are searched along with everything else (**Page names** under Look in). Pick a match to open that page; **Replace** renames it.
 
 > Tip: Make one label, then **duplicate** it for each product and change only the words. Duplicated pages keep their objects' names, which the tool below uses to find "the same" object on each page.
 

@@ -290,6 +290,13 @@ public sealed class SelectionProperties : ObservableObject
         {
             if (ColorRgba.TryParse(value, out ColorRgba c))
             {
+                if (Obj is TextObject { BackgroundTo: not null } withGradient)
+                {
+                    // A single colour typed or picked here replaces the gradient.
+                    ApplyFill("highlight", new FillChoice(c, null, withGradient.BackgroundAngleDegrees));
+                    return;
+                }
+
                 SetTextStyle(nameof(HighlightHex), t => t.Background, (t, v) => t.Background = v, c, r => r.Background = null);
             }
         }
@@ -297,7 +304,9 @@ public sealed class SelectionProperties : ObservableObject
 
     public Brush TextColorBrush => ToBrush((Obj as TextObject)?.Foreground ?? ColorRgba.Black);
 
-    public Brush HighlightBrush => ToBrush((Obj as TextObject)?.Background ?? ColorRgba.Transparent);
+    public Brush HighlightBrush => Obj is TextObject { BackgroundTo: { } to } text
+        ? ToBrush(text.Background, to, text.BackgroundAngleDegrees)
+        : ToBrush((Obj as TextObject)?.Background ?? ColorRgba.Transparent);
 
     public static IReadOnlyList<HorizontalAlignment> HorizontalAlignments { get; } = Enum.GetValues<HorizontalAlignment>();
 
@@ -1046,7 +1055,9 @@ public sealed class SelectionProperties : ObservableObject
     }
 
     /// <summary>Live preview swatches for the two colour buttons.</summary>
-    public Brush FillBrush => ToBrush((Obj as ShapeObject)?.Fill ?? ColorRgba.Transparent);
+    public Brush FillBrush => Obj is ShapeObject { GradientTo: { } to } shape
+        ? ToBrush(shape.Fill, to, shape.GradientAngleDegrees)
+        : ToBrush((Obj as ShapeObject)?.Fill ?? ColorRgba.Transparent);
 
     public Brush StrokeBrush => ToBrush((Obj as ShapeObject)?.Stroke ?? ColorRgba.Black);
 
@@ -1208,8 +1219,96 @@ public sealed class SelectionProperties : ObservableObject
         }
     }
 
+    /// <summary>
+    /// Sets a fill from the colour window, a single colour or a gradient, as one undo step:
+    /// a shape's fill (<c>"fill"</c>) or a text box's background (<c>"highlight"</c>).
+    /// </summary>
+    public void ApplyFill(string target, FillChoice choice)
+    {
+        ArgumentNullException.ThrowIfNull(choice);
+        double angle = Math.Round(((choice.AngleDegrees % 360) + 360) % 360);
+        var commands = new List<IUndoableCommand>();
+        if (target == "fill" && Obj is ShapeObject s)
+        {
+            Add(commands, "Fill", () => s.Fill, v => s.Fill = v, choice.Color);
+            Add(commands, "Fill", () => s.GradientTo, v => s.GradientTo = v, choice.GradientTo);
+            if (choice.GradientTo is not null)
+            {
+                Add(commands, "Fill", () => s.GradientAngleDegrees, v => s.GradientAngleDegrees = v, angle);
+            }
+        }
+        else if (target == "highlight" && Obj is TextObject t)
+        {
+            Add(commands, "Highlight", () => t.Background, v => t.Background = v, choice.Color);
+            Add(commands, "Highlight", () => t.BackgroundTo, v => t.BackgroundTo = v, choice.GradientTo);
+            if (choice.GradientTo is not null)
+            {
+                Add(commands, "Highlight", () => t.BackgroundAngleDegrees, v => t.BackgroundAngleDegrees = v, angle);
+            }
+
+            // Highlights set on single words would hide the new background, as with a plain colour.
+            RichTextContent content = t.Content.Clone();
+            bool hadOverrides = false;
+            foreach (TextRun run in content.Paragraphs.SelectMany(p => p.Runs))
+            {
+                hadOverrides |= run.Background is not null;
+                run.Background = null;
+            }
+
+            if (hadOverrides)
+            {
+                commands.Add(new SetPropertyCommand<RichTextContent>("Edit Highlight", () => t.Content, v => t.Content = v, content));
+            }
+        }
+        else
+        {
+            ApplySwatch(target, choice.Color.ToHex());
+            return;
+        }
+
+        Execute(choice.GradientTo is null ? "Edit colour" : "Edit gradient", commands);
+    }
+
+    private static void Add<T>(List<IUndoableCommand> commands, string name, Func<T> get, Action<T> set, T value)
+    {
+        if (!EqualityComparer<T>.Default.Equals(get(), value))
+        {
+            commands.Add(new SetPropertyCommand<T>($"Edit {name}", get, set, value));
+        }
+    }
+
+    /// <summary>
+    /// The little colour square beside a colour's name. A colour that is partly or fully see-through
+    /// is shown over a chequered square, so "no colour" never looks like a chosen colour.
+    /// </summary>
     private static Brush ToBrush(ColorRgba c) =>
-        new SolidColorBrush(Color.FromArgb(c.A, c.R, c.G, c.B));
+        c.A == 255 ? new SolidColorBrush(Color.FromRgb(c.R, c.G, c.B)) : OverChecks(new SolidColorBrush(Color.FromArgb(c.A, c.R, c.G, c.B)));
+
+    private static Brush ToBrush(ColorRgba from, ColorRgba to, double angleDegrees)
+    {
+        Brush gradient = Views.ColorPickerWindow.GradientBrush(from, to, angleDegrees);
+        return from.A == 255 && to.A == 255 ? gradient : OverChecks(gradient);
+    }
+
+    private static Brush OverChecks(Brush colour)
+    {
+        var group = new DrawingGroup();
+        var whole = new RectangleGeometry(new System.Windows.Rect(0, 0, 16, 16));
+        group.Children.Add(new GeometryDrawing(Brushes.White, null, whole));
+        var grey = new SolidColorBrush(Color.FromRgb(0xCC, 0xD2, 0xDC));
+        for (int y = 0; y < 4; y++)
+        {
+            for (int x = y % 2; x < 4; x += 2)
+            {
+                group.Children.Add(new GeometryDrawing(grey, null, new RectangleGeometry(new System.Windows.Rect(x * 4, y * 4, 4, 4))));
+            }
+        }
+
+        group.Children.Add(new GeometryDrawing(colour, null, whole));
+        var brush = new DrawingBrush(group) { Stretch = Stretch.Fill };
+        brush.Freeze();
+        return brush;
+    }
 
     // ---- Image ----
     public IReadOnlyList<ImageFitMode> ImageFitModes { get; } = Enum.GetValues<ImageFitMode>();
