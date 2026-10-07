@@ -65,7 +65,7 @@ public static class ZXingEncoder
                 break;
         }
 
-        // GS1 data typed as "(01)â€¦(17)â€¦" goes into a 2D code as its element string, with
+        // GS1 data typed as "(01)…(17)…" goes into a 2D code as its element string, with
         // separators after variable-length elements (the brackets are not part of the data).
         string content = resolvedValue;
         if (spec.Gs1Mode && is2d && content.Contains('('))

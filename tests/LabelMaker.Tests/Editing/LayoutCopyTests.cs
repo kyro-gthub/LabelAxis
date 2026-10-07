@@ -122,4 +122,27 @@ public sealed class LayoutCopyTests
         other.Objects[0].Bounds.Width.Should().Be(6);
         other.Objects[0].Bounds.Height.Should().BeGreaterThan(6);
     }
+
+    [Fact]
+    public void Remove_from_all_pages_takes_the_barcode_and_the_named_text_off_every_page_in_one_undo()
+    {
+        (ProjectModel p, LabelDocument current, LabelDocument other) = Project();
+        LabelDocument third = Page(9);
+        p.Pages.Add(new LabelPage { Name = "Page 2", Document = third });
+        third.Objects[2].Locked = true; // a locked barcode stays
+
+        LabelObject[] chosen = { current.Objects[2], current.Objects[0] }; // the barcode and "Title"
+        var matches = LayoutCopy.Pairs(p, current, chosen, new[] { 1, 2 }, Everything, LayoutMatch.NameThenOrder).Select(m => m.Target);
+        IUndoableCommand command = LayoutCopy.Remove(p, matches.Concat(chosen))!;
+
+        command.Do();
+        current.Objects.Select(o => o.Name).Should().Equal("Price");
+        other.Objects.Select(o => o.Name).Should().Equal("Price");
+        third.Objects.Select(o => o.Name).Should().Equal("Price", "Code");
+
+        command.Undo();
+        current.Objects.Select(o => o.Name).Should().Equal("Title", "Price", "Code");
+        other.Objects.Select(o => o.Name).Should().Equal("Title", "Price", "Code");
+        LayoutCopy.Remove(p, Array.Empty<LabelObject>()).Should().BeNull();
+    }
 }

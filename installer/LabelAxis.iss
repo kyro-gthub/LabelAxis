@@ -94,6 +94,10 @@ OutputBaseFilename={#SetupName}
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "arabic"; MessagesFile: "compiler:Languages\Arabic.isl"
+Name: "french"; MessagesFile: "compiler:Languages\French.isl"
+Name: "spanish"; MessagesFile: "compiler:Languages\Spanish.isl"
+Name: "dutch"; MessagesFile: "compiler:Languages\Dutch.isl"
+Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
@@ -108,6 +112,22 @@ arabic.RuntimeTitle=تنزيل ‎.NET‎ لبرنامج LabelAxis
 arabic.RuntimeDescription=يحتاج LabelAxis إلى Microsoft .NET 10 Desktop Runtime. يجري تنزيله من Microsoft وتثبيته؛ ويحدث ذلك مرة واحدة فقط على هذا الحاسوب.
 arabic.RuntimeDownloadFailed=تعذّر تنزيل Microsoft .NET 10 Desktop Runtime. تحقّق من الاتصال بالإنترنت وشغّل الإعداد مرة أخرى، أو استخدم المثبّت دون اتصال (LabelAxis-Setup-{#AppVersion}-Offline.exe) الذي لا يحتاج إلى تنزيل.
 arabic.RuntimeInstallFailed=تعذّر تثبيت Microsoft .NET 10 Desktop Runtime (الخطأ %1). شغّل الإعداد مرة أخرى، أو استخدم المثبّت دون اتصال (LabelAxis-Setup-{#AppVersion}-Offline.exe).
+french.RuntimeTitle=Obtention de .NET pour LabelAxis
+french.RuntimeDescription=LabelAxis a besoin de Microsoft .NET 10 Desktop Runtime. Il est téléchargé depuis Microsoft et installé ; cela n'arrive qu'une fois sur ce PC.
+french.RuntimeDownloadFailed=Microsoft .NET 10 Desktop Runtime n'a pas pu être téléchargé. Vérifiez la connexion Internet et relancez l'installation, ou utilisez le programme d'installation hors ligne (LabelAxis-Setup-{#AppVersion}-Offline.exe), qui ne nécessite aucun téléchargement.
+french.RuntimeInstallFailed=Microsoft .NET 10 Desktop Runtime n'a pas pu être installé (erreur %1). Relancez l'installation, ou utilisez le programme d'installation hors ligne (LabelAxis-Setup-{#AppVersion}-Offline.exe).
+spanish.RuntimeTitle=Obteniendo .NET para LabelAxis
+spanish.RuntimeDescription=LabelAxis necesita Microsoft .NET 10 Desktop Runtime. Se está descargando de Microsoft e instalando; esto solo ocurre una vez en este PC.
+spanish.RuntimeDownloadFailed=No se pudo descargar Microsoft .NET 10 Desktop Runtime. Compruebe la conexión a Internet y vuelva a ejecutar la instalación, o use el instalador sin conexión (LabelAxis-Setup-{#AppVersion}-Offline.exe), que no necesita descargas.
+spanish.RuntimeInstallFailed=No se pudo instalar Microsoft .NET 10 Desktop Runtime (error %1). Vuelva a ejecutar la instalación, o use el instalador sin conexión (LabelAxis-Setup-{#AppVersion}-Offline.exe).
+dutch.RuntimeTitle=.NET ophalen voor LabelAxis
+dutch.RuntimeDescription=LabelAxis heeft Microsoft .NET 10 Desktop Runtime nodig. Het wordt gedownload van Microsoft en geïnstalleerd; dit gebeurt maar één keer op deze pc.
+dutch.RuntimeDownloadFailed=Microsoft .NET 10 Desktop Runtime kon niet worden gedownload. Controleer de internetverbinding en start Setup opnieuw, of gebruik het offline installatieprogramma (LabelAxis-Setup-{#AppVersion}-Offline.exe), dat niets hoeft te downloaden.
+dutch.RuntimeInstallFailed=Microsoft .NET 10 Desktop Runtime kon niet worden geïnstalleerd (fout %1). Start Setup opnieuw, of gebruik het offline installatieprogramma (LabelAxis-Setup-{#AppVersion}-Offline.exe).
+russian.RuntimeTitle=Получение .NET для LabelAxis
+russian.RuntimeDescription=Для LabelAxis нужен Microsoft .NET 10 Desktop Runtime. Он загружается с сайта Microsoft и устанавливается; это происходит на этом ПК только один раз.
+russian.RuntimeDownloadFailed=Не удалось загрузить Microsoft .NET 10 Desktop Runtime. Проверьте подключение к Интернету и снова запустите установку или используйте автономный установщик (LabelAxis-Setup-{#AppVersion}-Offline.exe), которому ничего не нужно загружать.
+russian.RuntimeInstallFailed=Не удалось установить Microsoft .NET 10 Desktop Runtime (ошибка %1). Снова запустите установку или используйте автономный установщик (LabelAxis-Setup-{#AppVersion}-Offline.exe).
 
 #ifdef Shared
 [InstallDelete]

@@ -111,6 +111,9 @@ public interface IShellServices
     /// <summary>Moves objects on other pages to where they are on the page on screen. Returns true if applied.</summary>
     bool ShowApplyLayout();
 
+    /// <summary>Removes the selected objects and their matches from the pages chosen. Returns how many went.</summary>
+    int ShowRemoveFromPages();
+
     /// <summary>
     /// Interactive crop for <paramref name="image"/>. Returns the chosen normalised
     /// rectangle, or null on cancel; the caller applies it through the undo stack.

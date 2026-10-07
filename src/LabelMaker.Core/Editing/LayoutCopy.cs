@@ -164,6 +164,29 @@ public static class LayoutCopy
         return result;
     }
 
+    /// <summary>
+    /// One undo step that takes the given objects off whichever pages of the project hold them
+    /// (the master label too), or null when none of them is on a page. Locked objects stay.
+    /// </summary>
+    public static IUndoableCommand? Remove(ProjectModel project, IEnumerable<LabelObject> objects)
+    {
+        ArgumentNullException.ThrowIfNull(project);
+        ArgumentNullException.ThrowIfNull(objects);
+
+        var gone = new HashSet<LabelObject>(objects.Where(o => !o.Locked));
+        var commands = new List<IUndoableCommand>();
+        foreach (LabelDocument page in PrintablePages.All(project))
+        {
+            List<LabelObject> here = page.Objects.Where(gone.Contains).ToList();
+            if (here.Count > 0)
+            {
+                commands.Add(new RemoveObjectsCommand(page, here));
+            }
+        }
+
+        return commands.Count == 0 ? null : new CompositeCommand("Remove from all pages", commands);
+    }
+
     // A QR code and a line barcode are both barcodes, but never "the same" object.
     private static (ObjectKind Kind, bool TwoD) Family(LabelObject o) =>
         (o.Kind, o is BarcodeObject { Spec.Symbology: var s } && s.Is2D());

@@ -7,10 +7,24 @@ using Xunit;
 
 namespace LabelMaker.Tests.Localization;
 
-/// <summary>The Arabic and Central Kurdish language files that ship with the app.</summary>
+/// <summary>The language files that ship with the app.</summary>
 public sealed class LanguageFileTests
 {
-    private static readonly string[] Languages = { "ar", "ckb" };
+    // Each language with the script its translations are written in (null: Latin letters).
+    private static readonly Dictionary<string, string?> Languages = new()
+    {
+        ["ar"] = "[؀-ۿ]",
+        ["ckb"] = "[؀-ۿ]",
+        ["fa"] = "[؀-ۿ]",
+        ["fr"] = null,
+        ["es"] = null,
+        ["nl"] = null,
+        ["ru"] = "[Ѐ-ӿ]",
+        ["zh-Hans"] = "[一-鿿]",
+        ["hi"] = "[ऀ-ॿ]",
+    };
+
+    public static TheoryData<string> Translated => new(Languages.Keys);
 
     // Names that stay in English in every language: the product, technical names, units and samples.
     private static readonly HashSet<string> StaysEnglish = new(StringComparer.Ordinal)
@@ -37,15 +51,15 @@ public sealed class LanguageFileTests
         JsonSerializer.Deserialize<Dictionary<string, string>>(
             File.ReadAllText(Path.Combine(Repo, "src", "LabelMaker.App", "Languages", language + ".json")))!;
 
-    [Fact]
-    public void Both_languages_translate_the_same_texts()
+    [Theory]
+    [MemberData(nameof(Translated))]
+    public void Every_language_translates_the_same_texts(string language)
     {
-        Entries("ar").Keys.Should().BeEquivalentTo(Entries("ckb").Keys);
+        Entries(language).Keys.Should().BeEquivalentTo(Entries("ar").Keys);
     }
 
     [Theory]
-    [InlineData("ar")]
-    [InlineData("ckb")]
+    [MemberData(nameof(Translated))]
     public void Every_translation_keeps_the_numbered_holes_of_its_english(string language)
     {
         foreach ((string english, string translated) in Entries(language))
@@ -58,8 +72,7 @@ public sealed class LanguageFileTests
     }
 
     [Theory]
-    [InlineData("ar")]
-    [InlineData("ckb")]
+    [MemberData(nameof(Translated))]
     public void Every_text_written_in_the_windows_has_a_translation(string language)
     {
         Translator translator = Translator.FromJson(File.ReadAllText(
@@ -86,7 +99,7 @@ public sealed class LanguageFileTests
                         continue;
                     }
 
-                    if (translator.Translate(text) == text)
+                    if (translator.Translate(text) == text && !translator.Knows(text)) // "Port" is "Port" in French too
                     {
                         missing.Add($"{Path.GetFileName(file)}: {text}");
                     }
@@ -98,8 +111,7 @@ public sealed class LanguageFileTests
     }
 
     [Theory]
-    [InlineData("ar")]
-    [InlineData("ckb")]
+    [MemberData(nameof(Translated))]
     public void Technical_names_stay_in_english(string language)
     {
         Translator t = Translator.FromJson(File.ReadAllText(
@@ -116,8 +128,7 @@ public sealed class LanguageFileTests
     }
 
     [Theory]
-    [InlineData("ar")]
-    [InlineData("ckb")]
+    [MemberData(nameof(Translated))]
     public void Messages_made_while_the_program_runs_are_translated(string language)
     {
         Translator t = Translator.FromJson(File.ReadAllText(
@@ -134,7 +145,10 @@ public sealed class LanguageFileTests
                  })
         {
             t.Translate(message).Should().NotBe(message);
-            Regex.IsMatch(t.Translate(message), "[؀-ۿ]").Should().BeTrue(message);
+            if (Languages[language] is { } script)
+            {
+                Regex.IsMatch(t.Translate(message), script).Should().BeTrue(message);
+            }
         }
     }
 }

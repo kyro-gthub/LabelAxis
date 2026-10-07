@@ -289,7 +289,7 @@ public sealed class Camera : IDisposable
         }
     }
 
-    /// <summary>The row length a buffer of this size has: the frame's width, padded to 2, 4â€¦ 128 pixels.</summary>
+    /// <summary>The row length a buffer of this size has: the frame's width, padded to 2, 4… 128 pixels.</summary>
     private int GuessStride(int length)
     {
         for (int align = 1; align <= 128; align *= 2)

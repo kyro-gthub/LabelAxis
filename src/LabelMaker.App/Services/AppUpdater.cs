@@ -78,5 +78,15 @@ public sealed class AppUpdater
     /// </summary>
     public static string SilentInstallArguments(string languageCode) =>
         "/SILENT /SUPPRESSMSGBOXES /NORESTART /CLOSEAPPLICATIONS /RELAUNCH=1" +
-        (languageCode == "ar" ? " /LANG=arabic" : string.Empty);
+        (SetupLanguages.TryGetValue(languageCode, out string? setup) ? " /LANG=" + setup : string.Empty);
+
+    // The setup program's own languages (installer\LabelAxis.iss); the others get English.
+    private static readonly Dictionary<string, string> SetupLanguages = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["ar"] = "arabic",
+        ["fr"] = "french",
+        ["es"] = "spanish",
+        ["nl"] = "dutch",
+        ["ru"] = "russian",
+    };
 }

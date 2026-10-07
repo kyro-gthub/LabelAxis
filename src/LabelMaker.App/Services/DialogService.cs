@@ -407,6 +407,17 @@ public sealed class DialogService : IShellServices
         return new ApplyLayoutWindow(_vm.Session) { Owner = Front }.ShowDialog() == true;
     }
 
+    public int ShowRemoveFromPages()
+    {
+        if (_vm is null)
+        {
+            return 0;
+        }
+
+        var win = new RemoveFromPagesWindow(_vm.Session) { Owner = Front };
+        return win.ShowDialog() == true ? win.Removed : 0;
+    }
+
     public bool ShowLabelSize()
     {
         if (_vm is null)

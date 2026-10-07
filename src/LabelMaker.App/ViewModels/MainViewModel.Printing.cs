@@ -103,6 +103,29 @@ public sealed partial class MainViewModel
         }
     }
 
+    /// <summary>Takes the selected objects, and their matches on other pages, off every page.</summary>
+    private void RemoveFromAllPages()
+    {
+        if (_session.Selection.Count == 0)
+        {
+            return;
+        }
+
+        if (_session.Project.Pages.Count == 0)
+        {
+            DeleteSelection(); // one page: the same as Delete
+            return;
+        }
+
+        int removed = _shell.ShowRemoveFromPages();
+        if (removed > 0)
+        {
+            RebuildObjectList();
+            RefreshCanvas();
+            StatusText = $"Removed {removed} object(s) from the pages.";
+        }
+    }
+
     /// <summary>Gives the selected text box's formatting to text boxes on other pages.</summary>
     private void ApplyTextStyleToOtherPages()
     {
