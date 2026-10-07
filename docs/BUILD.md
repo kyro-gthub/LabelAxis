@@ -51,10 +51,11 @@ build\release.ps1   # all of the above in one folder, with update.json and SHA25
 ## Making a release
 
 ```powershell
-build\release.ps1 -OutputDir E:\
+build\release.ps1                   # into artifacts\out (git-ignored)
+build\release.ps1 -OutputDir E:\     # or any folder you choose
 ```
 
-This publishes once and writes `E:\LabelAxis-<version>-release\`:
+This publishes once and writes `<OutputDir>\LabelAxis-<version>-release\`:
 
 | File | What it is |
 |---|---|
@@ -83,7 +84,7 @@ without signing in), and its `…/releases/latest/download/` folder is the addre
    and write `build\release-notes\<v>.en.txt` (and `.ar.txt`, `.ckb.txt`).
 2. Run `build\release.ps1 -UpdateUrl https://github.com/<owner>/<repo>/releases/latest/download/`.
 3. On GitHub: *Releases › Draft a new release*, tag `v<version>`, and attach **every file**
-   from `E:\LabelAxis-<version>-release\` (both setups, the portable zip, `update.json`,
+   from `<OutputDir>\LabelAxis-<version>-release\` (both setups, the portable zip, `update.json`,
    `SHA256SUMS.txt`). Publish it; it becomes the "latest" release.
 
 **Elsewhere** (a website or a shared folder): copy the release folder's files there,

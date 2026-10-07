@@ -380,7 +380,9 @@ public sealed class DocumentSession
     public void Execute(IUndoableCommand command)
     {
         // Text boxes set to grow with their text are made tall enough in the same undo step.
-        History.Push(TextBoxFit.ExecuteWithFit(command, ActiveLabel, TextMeasurer));
+        // Natural-size barcodes and their boxes are kept the same size, with data fields filled in for the record on screen.
+        var resolver = new LabelMaker.Core.Variables.VariableResolver(CurrentResolveContext());
+        History.Push(TextBoxFit.ExecuteWithFit(command, ActiveLabel, TextMeasurer, resolver.Resolve));
         MarkDirty();
     }
 

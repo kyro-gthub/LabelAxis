@@ -179,6 +179,19 @@ public sealed class LocalPrintLink : IAsyncDisposable
             {
                 // A dropped or timed-out connection: nothing to answer.
             }
+            catch (Exception ex)
+            {
+                // Anything else still gets an answer, so the program that asked is not left waiting.
+                try
+                {
+                    await Response.Json(500, new { ok = false, message = "Something went wrong: " + ex.Message }).WriteAsync(client.GetStream(), CancellationToken.None)
+                        .ConfigureAwait(false);
+                }
+                catch (Exception writeError) when (writeError is IOException or ObjectDisposedException or SocketException or InvalidOperationException)
+                {
+                    // The caller has gone.
+                }
+            }
         }
     }
 
@@ -248,6 +261,10 @@ public sealed class LocalPrintLink : IAsyncDisposable
         catch (PrintRequestException ex)
         {
             return Response.Json(400, new { ok = false, message = ex.Message });
+        }
+        catch (Exception ex) when (ex is ArgumentException or FormatException or InvalidOperationException or NotSupportedException)
+        {
+            return Response.Json(400, new { ok = false, message = "The request could not be read: " + ex.Message });
         }
 
         PrintRequestResult result = await _handler.RunAsync(request, source, _stop.Token).ConfigureAwait(false);
@@ -421,7 +438,7 @@ public sealed class LocalPrintLink : IAsyncDisposable
             {
                 200 => "OK", 400 => "Bad Request", 401 => "Unauthorized", 403 => "Forbidden", 404 => "Not Found",
                 405 => "Method Not Allowed", 411 => "Length Required", 413 => "Payload Too Large", 422 => "Unprocessable Content",
-                431 => "Request Header Fields Too Large", _ => "Error",
+                431 => "Request Header Fields Too Large", 500 => "Internal Server Error", _ => "Error",
             };
             string head = $"HTTP/1.1 {Status} {reason}\r\nContent-Type: {Type}\r\nContent-Length: {Body.Length}\r\n" +
                           "Cache-Control: no-store\r\nX-Content-Type-Options: nosniff\r\nConnection: close\r\n\r\n";

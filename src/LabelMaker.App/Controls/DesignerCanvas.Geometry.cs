@@ -312,9 +312,35 @@ public sealed partial class DesignerCanvas
         _dragStartBounds = _session!.Selection.ToDictionary(o => o.Id, o => o.Bounds);
         _dragStartRotation = _session.Selection.ToDictionary(o => o.Id, o => o.RotationDegrees);
         _dragStartSkew = _session.Selection.ToDictionary(o => o.Id, o => (o.SkewXDegrees, o.SkewYDegrees));
+        _dragStartSpecs = _session.Selection.OfType<BarcodeObject>().Where(b => b.AutoSize).ToDictionary(b => b.Id, b => b.Spec);
         _dragStartTextRoom = _session.Selection.OfType<TextObject>()
             .Where(t => t.AutoFit == LabelMaker.Core.Model.Text.TextAutoFit.ResizeBox)
             .ToDictionary(t => t.Id, t => Math.Max(0, t.Bounds.Height - TextBoxFit.RequiredHeightMm(t, FitMeasurer)));
+    }
+
+    /// <summary>
+    /// While a box is being resized, a natural-size barcode is rescaled to fill it, so the bars
+    /// and the box change together under the mouse (the edit itself is made on release).
+    /// </summary>
+    private void FitBarcodesLive()
+    {
+        if (_session is null || _dragStartSpecs.Count == 0)
+        {
+            return;
+        }
+
+        var resolver = new LabelMaker.Core.Variables.VariableResolver(_session.CurrentResolveContext());
+        foreach (BarcodeObject barcode in _session.Selection.OfType<BarcodeObject>())
+        {
+            if (barcode.Locked || !_dragStartSpecs.TryGetValue(barcode.Id, out LabelMaker.Core.Barcodes.BarcodeSpec? start) ||
+                BarcodeFit.ToBox(start, barcode.Bounds, resolver.Resolve(start.Data)) is not { } fitted)
+            {
+                continue;
+            }
+
+            barcode.Spec = fitted.Spec;
+            barcode.Bounds = fitted.Bounds;
+        }
     }
 
     private LabelObject? HitObject(Point mm)

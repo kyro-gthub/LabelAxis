@@ -16,15 +16,17 @@
     Central Kurdish); the English text is used where a language has none.
 
     Usage:
-      powershell -ExecutionPolicy Bypass -File build\release.ps1 [-OutputDir E:\] [-UpdateUrl https://example.com/labelaxis/]
+      powershell -ExecutionPolicy Bypass -File build\release.ps1 [-OutputDir <folder>; default: artifacts\out] [-UpdateUrl https://example.com/labelaxis/]
 #>
 param(
-    [string]$OutputDir = 'E:\',
+    [string]$OutputDir = '',
     # Built into the app as its update address (for example a GitHub release folder). Empty: none built in; set it in Settings › Updates.
     [string]$UpdateUrl = ''
 )
 
 $ErrorActionPreference = 'Stop'
+if (-not $OutputDir) { $OutputDir = Join-Path (Split-Path -Parent $PSScriptRoot) 'artifacts\out' }
+New-Item -ItemType Directory -Path $OutputDir -Force | Out-Null
 $root = Split-Path -Parent $PSScriptRoot
 Set-Location $root
 

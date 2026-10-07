@@ -100,6 +100,11 @@ public sealed class PrintWatchFolder : IAsyncDisposable
                 {
                     await Process(path).ConfigureAwait(false);
                 }
+                catch (Exception ex) when (ex is not OperationCanceledException)
+                {
+                    // Whatever went wrong with this file, the folder keeps working for the next ones.
+                    Processed?.Invoke(this, (Path.GetFileName(path), new PrintRequestResult(false, "The file could not be handled: " + ex.Message)));
+                }
                 finally
                 {
                     lock (_pending)
@@ -117,7 +122,16 @@ public sealed class PrintWatchFolder : IAsyncDisposable
 
     private async Task Process(string path)
     {
-        string? text = await ReadWhenComplete(path).ConfigureAwait(false);
+        string? text;
+        try
+        {
+            text = await ReadWhenComplete(path).ConfigureAwait(false);
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return; // not readable yet (or ever): the next sweep tries again
+        }
+
         if (text is null)
         {
             return; // gone, or still being written: the next sweep finds it again
@@ -136,6 +150,10 @@ public sealed class PrintWatchFolder : IAsyncDisposable
         {
             result = new PrintRequestResult(false, ex.Message);
         }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            result = new PrintRequestResult(false, "The request could not be carried out: " + ex.Message);
+        }
 
         try
         {
@@ -143,12 +161,12 @@ public sealed class PrintWatchFolder : IAsyncDisposable
             File.Move(path, target);
             if (result.Pdf is { } pdf)
             {
-                await File.WriteAllBytesAsync(Path.ChangeExtension(target, ".pdf"), pdf).ConfigureAwait(false);
+                await WriteWhole(Path.ChangeExtension(target, ".pdf"), pdf).ConfigureAwait(false);
             }
 
             if (!result.Ok)
             {
-                await File.WriteAllTextAsync(target + ".error.txt", result.Message).ConfigureAwait(false);
+                await WriteWhole(target + ".error.txt", System.Text.Encoding.UTF8.GetBytes(result.Message)).ConfigureAwait(false);
             }
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
@@ -200,6 +218,15 @@ public sealed class PrintWatchFolder : IAsyncDisposable
         }
 
         return null;
+    }
+
+
+    /// <summary>Writes a file under a temporary name first, so whoever watches the folder never sees half of it.</summary>
+    private static async Task WriteWhole(string path, byte[] bytes)
+    {
+        string temporary = path + ".writing";
+        await File.WriteAllBytesAsync(temporary, bytes).ConfigureAwait(false);
+        File.Move(temporary, path, overwrite: true);
     }
 
     private static string Unique(string path)
