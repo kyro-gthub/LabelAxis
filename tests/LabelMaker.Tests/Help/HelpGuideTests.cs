@@ -84,10 +84,23 @@ public sealed class HelpGuideTests
         Enumerable.Range(0, 4).Select(list.LevelOf).Should().Equal(0, 1, 1, 0);
     }
 
+    // Each translated guide with the script its titles are written in (null: Latin letters).
+    public static TheoryData<string, string?> Translations => new()
+    {
+        { "ar", "[؀-ۿ]" },
+        { "ckb", "[؀-ۿ]" },
+        { "fa", "[؀-ۿ]" },
+        { "fr", null },
+        { "es", null },
+        { "nl", null },
+        { "ru", "[Ѐ-ӿ]" },
+        { "zh-Hans", "[一-鿿]" },
+        { "hi", "[ऀ-ॿ]" },
+    };
+
     [Theory]
-    [InlineData("ar")]
-    [InlineData("ckb")]
-    public void Every_page_is_translated_with_the_same_id_category_and_links(string language)
+    [MemberData(nameof(Translations))]
+    public void Every_page_is_translated_with_the_same_id_category_and_links(string language, string? script)
     {
         string folder = Path.Combine(Repo, "src", "LabelMaker.App", "Help");
         foreach (string english in Directory.EnumerateFiles(folder, "*.md"))
@@ -100,7 +113,10 @@ public sealed class HelpGuideTests
             translated.Id.Should().Be(original.Id);
             translated.Category.Should().Be(original.Category, "categories stay in English: they order the guide and are translated on screen");
             translated.Order.Should().Be(original.Order);
-            Regex.IsMatch(translated.Title, "[؀-ۿ]").Should().BeTrue($"the {language} title of {original.Id} is in {language}");
+            if (script is not null)
+            {
+                Regex.IsMatch(translated.Title, script).Should().BeTrue($"the {language} title of {original.Id} is in {language}");
+            }
 
             static IEnumerable<string> Links(HelpTopic t) =>
                 t.Blocks.SelectMany(Inlines).OfType<HelpLink>().Select(l => l.TopicId).Distinct().Order();

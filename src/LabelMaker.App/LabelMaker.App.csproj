@@ -47,6 +47,13 @@
     <EmbeddedResource Include="Help\*.md" LogicalName="LabelAxis.Help.%(Filename)%(Extension)" />
     <EmbeddedResource Include="Help\ar\*.md" LogicalName="LabelAxis.Help.ar.%(Filename)%(Extension)" />
     <EmbeddedResource Include="Help\ckb\*.md" LogicalName="LabelAxis.Help.ckb.%(Filename)%(Extension)" />
+    <EmbeddedResource Include="Help\fa\*.md" LogicalName="LabelAxis.Help.fa.%(Filename)%(Extension)" />
+    <EmbeddedResource Include="Help\fr\*.md" LogicalName="LabelAxis.Help.fr.%(Filename)%(Extension)" />
+    <EmbeddedResource Include="Help\es\*.md" LogicalName="LabelAxis.Help.es.%(Filename)%(Extension)" />
+    <EmbeddedResource Include="Help\nl\*.md" LogicalName="LabelAxis.Help.nl.%(Filename)%(Extension)" />
+    <EmbeddedResource Include="Help\ru\*.md" LogicalName="LabelAxis.Help.ru.%(Filename)%(Extension)" />
+    <EmbeddedResource Include="Help\zh-Hans\*.md" LogicalName="LabelAxis.Help.zh-Hans.%(Filename)%(Extension)" />
+    <EmbeddedResource Include="Help\hi\*.md" LogicalName="LabelAxis.Help.hi.%(Filename)%(Extension)" />
     <!-- Interface languages: English text → translation (Settings › Language). -->
     <EmbeddedResource Include="Languages\*.json" LogicalName="LabelAxis.Languages.%(Filename)%(Extension)" />
   </ItemGroup>

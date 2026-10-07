@@ -3,7 +3,7 @@ id: pages
 title: Pages: several labels in one project
 category: Pages
 order: 1
-keywords: page, pages, master label, duplicate, rename, reorder, remove, apply positions, apply format, page format, line up, same place, same size, apply formatting, other pages, add missing
+keywords: page, pages, master label, duplicate, rename, reorder, remove, remove from all pages, delete everywhere, scroll, apply positions, apply format, page format, line up, same place, same size, apply formatting, other pages, add missing
 ---
 # Pages: several labels in one project
 
@@ -14,6 +14,7 @@ A project can hold several different label designs, called **pages**, listed und
 - `+` adds an empty page; the duplicate button copies the page on screen.
 - Double-click a page (or press `F2`) to rename it in place.
 - `Ctrl+↑` / `Ctrl+↓`, or dragging, change the order.
+- A long list of pages scrolls with the mouse wheel or the up and down arrows at the ends of its scroll bar.
 - The remove button deletes the page on screen. The first page can be removed too while other pages exist; the next page then becomes page 1.
 - To find a page by its name, press `Ctrl+F` and type part of it: page names are searched along with everything else (**Page names** under Look in). Pick a match to open that page; **Replace** renames it.
 
@@ -34,11 +35,21 @@ A project can hold several different label designs, called **pages**, listed und
 
 A barcode type that cannot hold a page's value (EAN-13 for the letters "ABC") is not forced on that page; the barcode takes the rest of the look.
 
+## Remove an object from all pages
+
+To take something off every label at once, such as an old barcode, a logo or a text box called "Offer", select it on one page and choose `Edit > Remove from all pages…` (also when you right-click it on the label or in `Layers`).
+
+- **Also remove it from this page** removes the selected object itself too; untick it to keep it here.
+- **Match by** finds the same object on the other pages: its **name, or else its order** (recommended), its **name** only, or its **order** only.
+- **Which pages:** tick them; each says how many objects would go.
+
+Locked objects are never removed.
+
 ## Same text formatting on other pages
 
 `Edit > Apply text formatting to other pages…` copies the selected text box's font, size, style and colour to other pages. See [[text|Text]].
 
-Both tools are a single undo step: `Ctrl+Z` puts every page back.
+Each of these tools is a single undo step: `Ctrl+Z` puts every page back.
 
 ## Printing pages
 

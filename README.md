@@ -6,7 +6,7 @@ LabelAxis is a free desktop program for designing labels, stickers, price tags a
 barcodes and printing them on label sheets (Formtec, Avery or any size you measure),
 thermal label printers, and office printers on the network. It fills labels from
 spreadsheets and databases, handles Arabic and Kurdish text, and has its own help
-guide. The interface is in English, Arabic and Kurdish.
+guide. The interface and the help guide are in ten languages.
 
 ![LabelAxis main window](docs/images/main-window-frost.png)
 
@@ -29,7 +29,8 @@ guide. The interface is in English, Arabic and Kurdish.
 - **Built for real runs.** Thousands of records print from one design, never one page
   per record, so big jobs stay fast.
 - **Right-to-left done properly.** Arabic and Kurdish shape and order correctly on
-  screen, in PDF and on paper, and the whole program can be shown in Arabic or Kurdish.
+  screen, in PDF and on paper, and the whole program can be shown in Arabic, Kurdish or
+  Persian.
 
 ---
 
@@ -82,6 +83,8 @@ are ready for a spreadsheet. A **blank sheet** or a **custom size** is one tab a
 - Duplicate a page for each product and change only the words.
 - **Apply page format** copies the size, position and look of every barcode, text box,
   image and shape to the other pages, matched by name or by order.
+- **Remove from all pages** takes a barcode, a logo or a named text box off every page
+  in one undo step.
 - **Find and replace** (`Ctrl+F` / `Ctrl+H`) searches:
   - text, barcode values, table cells, object names and **page names**;
   - one page or all of them.
@@ -154,9 +157,10 @@ are ready for a spreadsheet. A **blank sheet** or a **custom size** is one tab a
 
 - **Eight themes**, light and dark: Frost, Aurora, Midnight, Graphite, Ember, Ocean,
   Sakura and Sage, plus **your own theme** in your colours, shown live as you choose them.
-- Interface in **English, العربية and کوردی (سۆرانی)**, laid out right to left for
-  Arabic and Kurdish.
-- Built-in, searchable help in all three languages.
+- Interface in **English, العربية, کوردی (سۆرانی), فارسی, Français, Español, Nederlands,
+  Русский, 简体中文 and हिन्दी**, laid out right to left for Arabic, Kurdish and Persian.
+  LabelAxis follows the language of Windows until you choose one.
+- Built-in, searchable help in all ten languages.
 - Several projects open in tabs. Autosave and crash recovery mean nothing is lost.
 - Projects are single `.labelproj` files: a ZIP holding the design, images and fonts.
   Saving is atomic, so a crash cannot corrupt a file.

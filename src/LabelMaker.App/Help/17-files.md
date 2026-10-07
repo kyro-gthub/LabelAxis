@@ -3,7 +3,7 @@ id: files
 title: Projects, saving and settings
 category: Reference
 order: 2
-keywords: save, open, file, labelproj, autosave, recovery, backup, settings, theme, dark, portable, usb, recent, language, arabic, kurdish, sorani, update, new version, upgrade, themes, frost, aurora, midnight, graphite, ember, ocean, sakura, sage, glass, custom theme, own colours, make your own theme
+keywords: save, open, file, labelproj, autosave, recovery, backup, settings, theme, dark, portable, usb, recent, language, arabic, kurdish, sorani, persian, farsi, french, spanish, dutch, russian, chinese, hindi, update, new version, upgrade, themes, frost, aurora, midnight, graphite, ember, ocean, sakura, sage, glass, custom theme, own colours, make your own theme
 ---
 # Projects, saving and settings
 
@@ -22,7 +22,7 @@ A project (.labelproj file) holds the label sheet, every page, the pictures it u
 
 ## Language
 
-`File > Settings… > Language` shows LabelAxis in English, Arabic or Central Kurdish (Sorani). Arabic and Kurdish lay the windows out right to left; technical names such as PDF, QR Code and Wi-Fi stay in English. The new language is used after LabelAxis restarts, which it offers to do. The first time it starts, LabelAxis uses the language of Windows when it is one of these.
+`File > Settings… > Language` shows LabelAxis in English, Arabic, Central Kurdish (Sorani), Persian, French, Spanish, Dutch, Russian, Simplified Chinese or Hindi. Arabic, Kurdish and Persian lay the windows out right to left; technical names such as PDF, QR Code and Wi-Fi stay in English. The new language is used after LabelAxis restarts, which it offers to do. The first time it starts, LabelAxis uses the language of Windows when it is one of these.
 
 ## Updates
 

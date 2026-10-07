@@ -1,0 +1,37 @@
+LabelAxis 1.0.0
+
+Nouveautés
+• LabelAxis en dix langues : anglais, arabe, kurde central (sorani), persan, français, espagnol, néerlandais, russe, chinois simplifié et hindi, pour les menus, fenêtres, messages et le guide d'aide ; l'arabe, le kurde et le persan s'affichent de droite à gauche. Choisissez-en une dans Fichier › Paramètres › Langue, ou LabelAxis suit la langue de Windows. Les noms techniques comme PDF, QR Code et Wi-Fi restent en anglais.
+• Mises à jour automatiques : LabelAxis cherche une version plus récente une fois par jour et l'installe pour vous quand vous choisissez Mettre à jour maintenant.
+• Les imprimantes Wi-Fi peuvent maintenant être calibrées comme toute autre imprimante.
+• Le texte arabe des PDF exportés peut être sélectionné, copié et recherché.
+• Vos propres polices : ajoutez un fichier .ttf ou .otf avec « Ajouter une police… » à côté de la liste des polices (ou dans Paramètres › Polices), sans l'installer dans Windows. Un projet qui l'utilise en garde une copie, pour avoir le même aspect sur un autre PC.
+• 66 modèles d'étiquettes prêts à l'emploi dans le premier onglet de Fichier › Nouveau projet : étiquettes de prix, produit et code-barres, alimentaire, expédition, stock, école, pharmacie, badges et étiquettes QR, chacun sur sa propre feuille ou son propre rouleau.
+• Un nouveau look : des panneaux de verre transparents sur de doux halos de couleur, avec huit thèmes (Frost, Aurora, Midnight, Graphite, Ember, Ocean, Sakura, Sage) dans les paramètres ou depuis le bouton de thème en haut de la fenêtre.
+• Des courbes dans les formes personnalisées : chaque point peut être une courbe douce au lieu d'un angle vif.
+• Nouveau projet propose aussi Format personnalisé… pour une étiquette de n'importe quelle taille.
+• Appliquer le format de page aux autres pages (menu Édition, ou clic droit sur une page) : chaque objet des autres pages prend la position, la taille, la rotation et l'apparence de son équivalent sur cette page — police, couleurs, type et taille de code-barres, bordures — tandis que chaque page garde ses propres textes, valeurs de code-barres et images. Il peut aussi ajouter les objets qui manquent à une page.
+• Les pages sont numérotées 1, 2, 3… dans la liste des pages, la première aussi.
+• Une barre d'état plus nette, qui ne se chevauche plus sur les petits écrans.
+• Des dégradés dans la fenêtre des couleurs : le remplissage d'une forme et le fond d'une zone de texte peuvent fondre deux couleurs selon n'importe quel angle. Choisissez parmi 16 dégradés tout faits ou ceux utilisés récemment.
+• Rechercher (Ctrl+F) cherche aussi dans les noms de pages : choisissez un résultat pour ouvrir la page, et Remplacer la renomme.
+• Le générateur d'images de codes-barres enregistre des images PNG (150 à 1200 dpi) en plus du SVG et du PDF.
+• Vos propres modèles : Fichier › Enregistrer la page comme mon modèle garde une page avec sa feuille, ses polices, ses images et sa connexion de données. Elle apparaît en premier dans Fichier › Nouveau projet, sous Mes modèles.
+• Générateur de codes-barres GS1 (menu Données) : codes GS1-128, GS1 DataMatrix et GS1 QR pour l'alimentaire, les médicaments, les dispositifs médicaux (UDI) et l'expédition, avec clés de contrôle, dates et toutes les règles GS1 vérifiées pendant la saisie. Les codes GS1 DataMatrix et GS1 QR contiennent maintenant de vraies données GS1.
+• Demandes d'impression d'autres programmes (menu Imprimer) : une caisse, une boutique en ligne ou un tableur imprime des étiquettes en déposant un fichier .json ou .csv dans un dossier surveillé, ou en l'envoyant à un lien web sur ce PC. Il peut imprimer ou renvoyer un PDF.
+• Votre propre thème : Paramètres › Créer votre propre thème (ou le bouton de thème) choisit vos couleurs, votre arrière-plan et votre halo, affichés en direct ; les couleurs du texte sont choisies pour rester lisibles.
+• Supprimer de toutes les pages (menu Édition, ou clic droit sur un objet) : retire les objets sélectionnés, comme un ancien code-barres ou une zone de texte nommée « Offre », de cette page et des autres pages en une fois, en les trouvant par nom ou par ordre. Annuler les rétablit ; les objets verrouillés restent.
+• La liste des pages a des flèches haut et bas sur sa barre de défilement.
+• Vérifier un code-barres imprimé (menu Données) : une webcam, une photo ou un scan note le code-barres de A à F comme un vérificateur, indique s'il correspond à l'étiquette, et quoi changer.
+
+Téléchargement plus léger
+• Le programme d'installation principal est beaucoup plus petit. Sur un PC sans Microsoft .NET 10 Desktop Runtime, il le télécharge une fois depuis Microsoft ; un programme d'installation hors ligne contenant tout est aussi disponible.
+
+Aussi
+• Une nouvelle étiquette commence avec son texte d'exemple dans la langue de l'interface.
+• Les lecteurs d'écran lisent les boutons et menus dans la langue de l'interface.
+• Agrandir la fenêtre l'ajuste exactement à l'écran, y compris sur les PC où elle couvrait la barre des tâches ou s'arrêtait avant un bord.
+• Choisir une couleur après « Aucune couleur » donne une couleur visible ; elle restait transparente auparavant.
+• Les dégradés des PDF exportés vont dans le même sens qu'à l'écran et peuvent se fondre vers le transparent.
+• Un long code-barres GS1 sur une petite étiquette est ajusté à l'étiquette, et le texte sous tout code-barres rapetisse à la largeur de ses barres.
+• À propos de LabelAxis se trouve désormais seulement dans le menu Aide.

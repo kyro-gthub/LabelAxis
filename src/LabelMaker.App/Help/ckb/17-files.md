@@ -3,7 +3,7 @@ id: files
 title: پڕۆژە، پاشەکەوتکردن و ڕێکخستنەکان
 category: Reference
 order: 2
-keywords: save, open, file, labelproj, autosave, recovery, backup, settings, theme, dark, portable, usb, recent, language, arabic, kurdish, sorani, update, new version, upgrade, پاشەکەوتکردن, کردنەوە, پەڕگە, پاشەکەوتی خۆکار, گەڕاندنەوە, یەدەگ, ڕێکخستنەکان, ڕووکار, تاریک, گوێزراوە, دواییەکان, زمان, عەرەبی, کوردی, سۆرانی, نوێکردنەوە, وەشانی نوێ, themes, frost, aurora, midnight, graphite, ember, ocean, sakura, sage, glass
+keywords: save, open, file, labelproj, autosave, recovery, backup, settings, theme, dark, portable, usb, recent, language, arabic, kurdish, sorani, update, new version, upgrade, پاشەکەوتکردن, کردنەوە, پەڕگە, پاشەکەوتی خۆکار, گەڕاندنەوە, یەدەگ, ڕێکخستنەکان, ڕووکار, تاریک, گوێزراوە, دواییەکان, زمان, عەرەبی, کوردی, فارسی, فەرەنسی, ئیسپانی, هۆڵەندی, ڕووسی, چینی, هیندی, سۆرانی, نوێکردنەوە, وەشانی نوێ, themes, frost, aurora, midnight, graphite, ember, ocean, sakura, sage, glass
 ---
 # پڕۆژە، پاشەکەوتکردن و ڕێکخستنەکان
 
@@ -22,7 +22,7 @@ keywords: save, open, file, labelproj, autosave, recovery, backup, settings, the
 
 ## زمان
 
-`پەڕگە › ڕێکخستنەکان… › زمان` LabelAxis بە ئینگلیزی، عەرەبی یان کوردیی ناوەندی (سۆرانی) پیشان دەدات. لە عەرەبی و کوردیدا پەنجەرەکان لە ڕاستەوە بۆ چەپ ڕیز دەکرێن؛ ناوە تەکنیکییەکانی وەک PDF، QR Code و Wi-Fi بە ئینگلیزی دەمێننەوە. زمانە نوێیەکە دوای دووبارە کردنەوەی LabelAxis بەکاردێت، کە بەرنامەکە خۆی پێشنیاری دەکات. یەکەم جار کە دەکرێتەوە، LabelAxis زمانی Windows بەکاردەهێنێت ئەگەر یەکێک لەمانە بێت.
+`پەڕگە › ڕێکخستنەکان… › زمان` LabelAxis بە ئینگلیزی، عەرەبی، کوردیی ناوەندی (سۆرانی)، فارسی، فەرەنسی، ئیسپانی، هۆڵەندی، ڕووسی، چینیی سادەکراو یان هیندی پیشان دەدات. لە عەرەبی، کوردی و فارسیدا پەنجەرەکان لە ڕاستەوە بۆ چەپ ڕیز دەکرێن؛ ناوە تەکنیکییەکانی وەک PDF، QR Code و Wi-Fi بە ئینگلیزی دەمێننەوە. زمانە نوێیەکە دوای دووبارە کردنەوەی LabelAxis بەکاردێت، کە بەرنامەکە خۆی پێشنیاری دەکات. یەکەم جار کە دەکرێتەوە، LabelAxis زمانی Windows بەکاردەهێنێت ئەگەر یەکێک لەمانە بێت.
 
 ## نوێکردنەوەکان
 

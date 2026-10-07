@@ -3,7 +3,7 @@ id: files
 title: المشاريع والحفظ والإعدادات
 category: Reference
 order: 2
-keywords: save, open, file, labelproj, autosave, recovery, backup, settings, theme, dark, portable, usb, recent, language, arabic, kurdish, sorani, update, new version, upgrade, حفظ, فتح, ملف, حفظ تلقائي, استرداد, نسخة احتياطية, إعدادات, سمة, داكن, محمولة, الأخيرة, لغة, عربي, كردي, تحديث, إصدار جديد, themes, frost, aurora, midnight, graphite, ember, ocean, sakura, sage, glass
+keywords: save, open, file, labelproj, autosave, recovery, backup, settings, theme, dark, portable, usb, recent, language, arabic, kurdish, sorani, update, new version, upgrade, حفظ, فتح, ملف, حفظ تلقائي, استرداد, نسخة احتياطية, إعدادات, سمة, داكن, محمولة, الأخيرة, لغة, عربي, كردي, فارسي, فرنسي, إسباني, هولندي, روسي, صيني, هندي, تحديث, إصدار جديد, themes, frost, aurora, midnight, graphite, ember, ocean, sakura, sage, glass
 ---
 # المشاريع والحفظ والإعدادات
 
@@ -22,7 +22,7 @@ keywords: save, open, file, labelproj, autosave, recovery, backup, settings, the
 
 ## اللغة
 
-يعرض `ملف › الإعدادات… › اللغة` برنامج LabelAxis بالإنجليزية أو العربية أو الكردية الوسطى (السورانية). في العربية والكردية تُعرض النوافذ من اليمين إلى اليسار؛ وتبقى الأسماء التقنية مثل PDF وQR Code وWi-Fi بالإنجليزية. تُستخدم اللغة الجديدة بعد إعادة تشغيل LabelAxis، وهو يعرض ذلك عليك. وفي أول تشغيل يستخدم LabelAxis لغة Windows إذا كانت إحدى هذه اللغات.
+يعرض `ملف › الإعدادات… › اللغة` برنامج LabelAxis بالإنجليزية أو العربية أو الكردية الوسطى (السورانية) أو الفارسية أو الفرنسية أو الإسبانية أو الهولندية أو الروسية أو الصينية المبسطة أو الهندية. في العربية والكردية والفارسية تُعرض النوافذ من اليمين إلى اليسار؛ وتبقى الأسماء التقنية مثل PDF وQR Code وWi-Fi بالإنجليزية. تُستخدم اللغة الجديدة بعد إعادة تشغيل LabelAxis، وهو يعرض ذلك عليك. وفي أول تشغيل يستخدم LabelAxis لغة Windows إذا كانت إحدى هذه اللغات.
 
 ## التحديثات
 

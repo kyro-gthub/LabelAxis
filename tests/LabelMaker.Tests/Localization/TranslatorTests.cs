@@ -100,4 +100,19 @@ public sealed class TranslatorTests
         t.Translate("Save").Should().Be("پاشەکەوت");
         t.Knows("Save").Should().BeTrue();
     }
+
+    [Fact]
+    public void A_long_sentence_with_a_full_stop_beats_a_short_template_inside_it()
+    {
+        var t = new Translator(new Dictionary<string, string>
+        {
+            ["Printable area {0} × {1} mm from ({2}, {3}) on {4}."] = "Zone imprimable {0} × {1} mm depuis ({2}, {3}) sur {4}.",
+            ["{0} {1} on {2}"] = "{0} {1} sur {2}",
+            ["Saved {0} file(s)."] = "已保存 {0} 个文件。",
+        });
+
+        t.Translate("Printable area 210 × 297 mm from (0, 0) on A4.").Should().Be("Zone imprimable 210 × 297 mm depuis (0, 0) sur A4.");
+        t.Translate("Saved 3 file(s).").Should().Be("已保存 3 个文件。", "the language's own full stop is kept, and not doubled");
+        t.Translate("3 labels on A4").Should().Be("3 labels sur A4", "the short template still works on its own");
+    }
 }

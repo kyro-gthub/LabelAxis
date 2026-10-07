@@ -279,9 +279,15 @@ public static class Localizer
     {
         if (d.GetValue(property) is string text && text.Length > 0 && !BindingOperations.IsDataBound(d, property))
         {
+            if (Produced(d, property, text))
+            {
+                return;
+            }
+
             string translated = T(text);
             if (!string.Equals(translated, text, StringComparison.Ordinal))
             {
+                Remember(d, property, translated);
                 d.SetCurrentValue(property, translated);
             }
         }
@@ -401,6 +407,21 @@ public static class Localizer
             return;
         }
 
+        DependencyProperty? target = d switch
+        {
+            TextBlock => TextBlock.TextProperty,
+            AccessText => AccessText.TextProperty,
+            Run => Run.TextProperty,
+            Window => Window.TitleProperty,
+            _ => null,
+        };
+
+        // The translation just put there comes back through here too.
+        if (target is null || Produced(d, target, text))
+        {
+            return;
+        }
+
         string translated = IsOff(d) ? text : T(text);
         if (d is not Window)
         {
@@ -412,22 +433,23 @@ public static class Localizer
             return;
         }
 
-        DependencyProperty? target = d switch
-        {
-            TextBlock => TextBlock.TextProperty,
-            AccessText => AccessText.TextProperty,
-            Run => Run.TextProperty,
-            Window => Window.TitleProperty,
-            _ => null,
-        };
-
         // SetCurrentValue keeps the binding or template that set the English text, so the next
         // change still comes through (and is translated in its turn).
-        if (target is not null)
-        {
-            d.SetCurrentValue(target, translated);
-        }
+        Remember(d, target, translated);
+        d.SetCurrentValue(target, translated);
     }
+
+    // What each element's text was last set to here. A translation is never translated again:
+    // in French "Pink" is "Rose", and "Rose" is also English, so without this a text could be
+    // translated over and over (and a pair of words that translate into each other never stops).
+    private static readonly System.Runtime.CompilerServices.ConditionalWeakTable<DependencyObject, Dictionary<DependencyProperty, string>> LastSet = new();
+
+    private static bool Produced(DependencyObject d, DependencyProperty property, string text) =>
+        LastSet.TryGetValue(d, out Dictionary<DependencyProperty, string>? set) &&
+        set.TryGetValue(property, out string? last) && string.Equals(last, text, StringComparison.Ordinal);
+
+    private static void Remember(DependencyObject d, DependencyProperty property, string text) =>
+        LastSet.GetOrCreateValue(d)[property] = text;
 
     // WPF ignores the embedding marks (U+202A…U+202E) but honours the left-to-right mark.
     private const char LeftToRightMark = (char)0x200E;
