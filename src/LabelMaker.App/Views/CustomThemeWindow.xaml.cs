@@ -113,7 +113,7 @@ public partial class CustomThemeWindow : Window
         line.Children.Add(hex);
         change.Click += (_, _) =>
         {
-            ColorRgba.TryParse(get() ?? ThemeBackground(), out ColorRgba now);
+            _ = ColorRgba.TryParse(get() ?? ThemeBackground(), out ColorRgba now);
             var picker = new ColorPickerWindow(now, Localizer.T(label), _recent) { Owner = this };
             if (picker.ShowDialog() == true)
             {
@@ -167,14 +167,14 @@ public partial class CustomThemeWindow : Window
         {
             string? value = get();
             string shown = value ?? ThemeBackground();
-            ColorRgba.TryParse(shown, out ColorRgba c);
+            _ = ColorRgba.TryParse(shown, out ColorRgba c);
             swatch.Background = new SolidColorBrush(Color.FromRgb(c.R, c.G, c.B));
             hex.Text = value is null && optional ? Localizer.F("{0} (the theme's own)", shown) : shown;
         }
 
         // The main colour has to stand out from the background for buttons and selections to show.
-        ColorRgba.TryParse(_theme.Accent, out ColorRgba accent);
-        ColorRgba.TryParse(_theme.Background ?? ThemeBackground(), out ColorRgba bg);
+        _ = ColorRgba.TryParse(_theme.Accent, out ColorRgba accent);
+        _ = ColorRgba.TryParse(_theme.Background ?? ThemeBackground(), out ColorRgba bg);
         double contrast = ThemeManager.Contrast(Color.FromRgb(accent.R, accent.G, accent.B), Color.FromRgb(bg.R, bg.G, bg.B));
         WarningText.Text = contrast < 2.2
             ? Localizer.T("The main colour is hard to see on this background: choose a darker or a lighter one.")

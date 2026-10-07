@@ -67,6 +67,7 @@ public sealed class PrintRequestTests
 }
 
 /// <summary>The web link, talked to over real connections on this PC (nothing leaves it).</summary>
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1001", Justification = "xUnit disposes them in DisposeAsync.")]
 public sealed class LocalPrintLinkTests : IAsyncLifetime
 {
     private sealed class FakeHandler : IPrintRequestHandler

@@ -195,8 +195,8 @@ public static class Gs1
         }
 
         int yy = int.Parse(yymmdd[..2], CultureInfo.InvariantCulture);
-        int mm = int.Parse(yymmdd.Substring(2, 2), CultureInfo.InvariantCulture);
-        int dd = int.Parse(yymmdd.Substring(4, 2), CultureInfo.InvariantCulture);
+        int mm = int.Parse(yymmdd.AsSpan(2, 2), CultureInfo.InvariantCulture);
+        int dd = int.Parse(yymmdd.AsSpan(4, 2), CultureInfo.InvariantCulture);
         int thisYear = (today ?? DateTime.Today).Year;
         int century = thisYear / 100 * 100;
         int year = century + yy;
