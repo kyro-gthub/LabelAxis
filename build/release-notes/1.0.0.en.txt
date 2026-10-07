@@ -19,6 +19,7 @@ New
 • Your own designs: File › Save page as my design keeps a page with its sheet, fonts, pictures and data connection. It is listed first in File › New Project under My designs.
 • GS1 barcode builder (Data menu): GS1-128, GS1 DataMatrix and GS1 QR codes for food, medicines, medical devices (UDI) and shipping, with check digits, dates and every GS1 rule checked as you type. GS1 DataMatrix and GS1 QR codes now hold true GS1 data.
 • Print requests from other programs (Print menu): a till, an online shop or a spreadsheet prints labels by dropping a .json or .csv file into a watch folder, or by sending it to a web link on this PC. It can print or return a PDF.
+• Your own theme: Settings › Make your own theme (or the theme button) picks your colours, background and glow, shown live; text colours are chosen so they always read.
 • Check a printed barcode (Data menu): a webcam, a photo or a scan grades the barcode A to F the way a barcode verifier does, says whether it matches the label, and what to change.
 
 Smaller download
@@ -30,3 +31,5 @@ Also
 • Maximising the window fits the screen exactly, also on PCs where it covered the taskbar or stopped short of an edge.
 • Choosing a colour after "No colour" gives a visible colour; it used to stay see-through.
 • Gradients in exported PDF files run the same way as on screen and can fade to clear.
+• A long GS1 barcode on a small label is made to fit the label, and the text under any barcode shrinks to the width of its bars.
+• About LabelAxis is only in the Help menu now.

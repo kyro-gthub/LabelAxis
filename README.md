@@ -153,7 +153,7 @@ are ready for a spreadsheet. A **blank sheet** or a **custom size** is one tab a
 ### The program itself
 
 - **Eight themes**, light and dark: Frost, Aurora, Midnight, Graphite, Ember, Ocean,
-  Sakura and Sage.
+  Sakura and Sage, plus **your own theme** in your colours, shown live as you choose them.
 - Interface in **English, العربية and کوردی (سۆرانی)**, laid out right to left for
   Arabic and Kurdish.
 - Built-in, searchable help in all three languages.

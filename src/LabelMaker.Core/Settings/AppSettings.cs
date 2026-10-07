@@ -46,6 +46,9 @@ public sealed class AppSettings
     /// <summary>The look: one of the glass themes (frost, aurora, midnight, graphite, ember, ocean, sakura, sage); null follows <see cref="DarkTheme"/>.</summary>
     public string? Theme { get; set; }
 
+    /// <summary>The user's own theme (id "custom"), or null when none was made.</summary>
+    public CustomThemeSettings? CustomTheme { get; set; }
+
     /// <summary>Interface language ("en", "ar", "ckb"); none follows the language of Windows.</summary>
     public string? Language { get; set; }
 

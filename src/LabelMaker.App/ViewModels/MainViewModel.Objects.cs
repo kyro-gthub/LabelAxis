@@ -206,15 +206,31 @@ public sealed partial class MainViewModel
                 changed.HumanReadable = spec.HumanReadable;
             }
 
-            _session.Execute(new SetPropertyCommand<BarcodeSpec>("GS1 barcode", () => editing.Spec, v => editing.Spec = v, changed));
+            var change = new List<IUndoableCommand>
+            {
+                new SetPropertyCommand<BarcodeSpec>("GS1 barcode", () => editing.Spec, v => editing.Spec = v, changed),
+            };
+            if (editing.AutoSize)
+            {
+                // A barcode at its natural size gets a box the size of the new bars, around the same centre.
+                Core.Units.SizeMm size = FitToLabel(changed);
+                Core.Units.RectMm box = Core.Units.RectMm.FromCenter(editing.Bounds.Center, size);
+                change.Add(new SetPropertyCommand<Core.Units.RectMm>("GS1 barcode", () => editing.Bounds, v => editing.Bounds = v, box));
+            }
+
+            _session.Execute(change.Count == 1 ? change[0] : new CompositeCommand("GS1 barcode", change));
             RefreshCanvas();
             return;
         }
 
-        Core.Units.SizeMm natural = BarcodeEngine.TryEncode(spec, spec.Data, out BarcodeSymbol? symbol, out _) && symbol is not null
-            ? BarcodeLayout.NaturalSize(symbol, spec)
-            : new Core.Units.SizeMm(40, 16);
+        Core.Units.SizeMm natural = FitToLabel(spec);
         var barcode = new BarcodeObject { Name = "GS1 barcode", AutoSize = true, Spec = spec, Bounds = NewBounds(natural.Width, natural.Height) };
+        if (!spec.Symbology.Is2D() && spec.ModuleWidthMm < 0.25)
+        {
+            StatusText = Localization.Localizer.F(
+                "The barcode was made smaller to fit the label: its narrowest bar is {0} mm. Use a wider label if it does not scan.",
+                spec.ModuleWidthMm.ToString("0.00", System.Globalization.CultureInfo.CurrentCulture));
+        }
         var added = new List<LabelObject> { barcode };
         var commands = new List<IUndoableCommand> { new AddObjectCommand(_session.ActiveLabel, barcode) };
         if (made.TextBeside is { } text)
@@ -244,6 +260,45 @@ public sealed partial class MainViewModel
         return _session.ActiveLabel.Objects.OfType<BarcodeObject>()
             .Select(b => (b.Name ?? string.Empty, resolver.Resolve(b.Spec.Data)))
             .ToList();
+    }
+
+    /// <summary>
+    /// Makes a barcode that keeps its natural size small enough for the label (narrower bars, a
+    /// lower height), so the bars never spill past their box; returns its size.
+    /// </summary>
+    private Core.Units.SizeMm FitToLabel(BarcodeSpec spec)
+    {
+        if (!BarcodeEngine.TryEncode(spec, spec.Data, out BarcodeSymbol? symbol, out _) || symbol is null)
+        {
+            return new Core.Units.SizeMm(40, 16);
+        }
+
+        Core.Units.SizeMm label = _session.ActiveLabel.SizeMm;
+        double maxW = Math.Max(1, label.Width * 0.84), maxH = Math.Max(1, label.Height * 0.72);
+        Core.Units.SizeMm natural = BarcodeLayout.NaturalSize(symbol, spec);
+        double text = natural.Height - (symbol.Is2D ? natural.Width : spec.BarHeightMm);
+        if (symbol.Is2D)
+        {
+            double side = Math.Min(maxW, maxH - text);
+            if (natural.Width > side && side > 0)
+            {
+                spec.ModuleWidthMm = Math.Round(spec.ModuleWidthMm * side / natural.Width, 3);
+            }
+        }
+        else
+        {
+            if (natural.Width > maxW)
+            {
+                spec.ModuleWidthMm = Math.Round(spec.ModuleWidthMm * maxW / natural.Width, 3);
+            }
+
+            if (natural.Height > maxH)
+            {
+                spec.BarHeightMm = Math.Max(3, Math.Round(maxH - text, 1));
+            }
+        }
+
+        return BarcodeLayout.NaturalSize(symbol, spec);
     }
 
     private void AddObject(LabelObject obj)

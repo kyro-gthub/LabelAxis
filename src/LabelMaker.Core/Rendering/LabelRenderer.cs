@@ -533,10 +533,18 @@ public sealed class LabelRenderer
 
         if (placed.HriRect is { } hri && placed.HriText.Length > 0)
         {
+            // Long text (GS1 data with its brackets) is made smaller until it is no wider than the bars.
+            double sizePt = barcode.Spec.HumanReadableFontSizePt;
+            double textWidth = surface.TextMeasurer.MeasureWidthMm(placed.HriText, barcode.Spec.HumanReadableFontFamily, sizePt, false, false);
+            if (textWidth > hri.Width && textWidth > 0)
+            {
+                sizePt = Math.Max(4, sizePt * hri.Width / textWidth);
+            }
+
             var hriStyle = new TextObject
             {
                 FontFamily = barcode.Spec.HumanReadableFontFamily,
-                FontSizePt = barcode.Spec.HumanReadableFontSizePt,
+                FontSizePt = sizePt,
                 Foreground = barcode.Spec.Foreground,
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Middle,

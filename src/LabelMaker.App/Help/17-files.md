@@ -3,7 +3,7 @@ id: files
 title: Projects, saving and settings
 category: Reference
 order: 2
-keywords: save, open, file, labelproj, autosave, recovery, backup, settings, theme, dark, portable, usb, recent, language, arabic, kurdish, sorani, update, new version, upgrade, themes, frost, aurora, midnight, graphite, ember, ocean, sakura, sage, glass
+keywords: save, open, file, labelproj, autosave, recovery, backup, settings, theme, dark, portable, usb, recent, language, arabic, kurdish, sorani, update, new version, upgrade, themes, frost, aurora, midnight, graphite, ember, ocean, sakura, sage, glass, custom theme, own colours, make your own theme
 ---
 # Projects, saving and settings
 
@@ -35,3 +35,7 @@ Under `File > Settings… > Updates` you can switch the daily check off, or ente
 The portable version runs from any folder or USB stick. While the file **portable.txt** is next to LabelAxis.exe, settings, your own templates and calibration are kept in the **Data** folder beside it instead of in Windows.
 
 A portable copy does not install updates by itself: when a new version is out, unzip it over the folder (the Data folder is kept).
+
+## Your own theme
+
+`File > Settings… > Make your own theme…` (or the theme button at the top right) makes a theme in your own colours: choose a theme to start from, a main colour, two glow colours, a background if you like, and how strong the glows are. LabelAxis changes as you choose, so you see the result at once; text colours are picked for you so they always read. Your theme is listed with the others; `Remove my theme` deletes it.
