@@ -3,7 +3,7 @@ id: printing
 title: الطباعة
 category: Printing
 order: 1
-keywords: print, printer, sheet, copies, preview, pages, current page, selected pages, copies per page, paper, margins, start position, skip, history, reprint, outlines, crop marks, طباعة, طابعة, ورقة, نسخ, معاينة, صفحات, الصفحة الحالية, الصفحات المحددة, ورق, هوامش, موضع البداية, سجل, إعادة الطباعة, حدود, علامات القص
+keywords: print, printer, sheet, copies, preview, pages, current page, selected pages, copies per page, paper, margins, start position, skip, history, reprint, outlines, crop marks, طباعة, طابعة, ورقة, نسخ, معاينة, صفحات, الصفحة الحالية, الصفحات المحددة, ورق, هوامش, موضع البداية, سجل, إعادة الطباعة, حدود, علامات القص, طباعة تلقائية, مجلد المراقبة, رابط ويب, برامج أخرى, json, csv
 ---
 # الطباعة
 
@@ -40,3 +40,13 @@ keywords: print, printer, sheet, copies, preview, pages, current page, selected 
 ## السجل
 
 يعرض `السجل…` (أو `طباعة › سجل الطباعة…`) المهام السابقة؛ أعِد طباعة إحداها، أو أكمل مهمة توقفت في منتصفها.
+
+## طلبات الطباعة من برامج أخرى
+
+يمكن لجهاز نقطة بيع أو متجر إلكتروني أو جدول بيانات أن يطبع ملصقات ما دام LabelAxis مفتوحًا: `طباعة › طلبات الطباعة من برامج أخرى…`.
+
+- **مجلد المراقبة:** تُطبع الملفات الموضوعة فيه: طلب ‎.json‎، أو قائمة ‎.csv‎ يسمّي صفها الأول الحقول (تُطبع بالتصميم المختار هناك). تنتقل الملفات المطبوعة إلى `Done`، والأخرى إلى `Failed` مع ملاحظة بالسبب.
+- **رابط الويب:** ترسل البرامج على هذا الحاسوب الطلب نفسه إلى `http://localhost:8765/print`. ويمكن السماح لأجهزة أخرى أيضًا؛ ويجب أن ترسل مفتاح الوصول. تُرفض صفحات الويب في المتصفح.
+- يحدد الطلب أحد تصاميمك (انظر [[getting-started|تصاميمك الخاصة]])، والطابعة، والنسخ، وسجلًا لكل ملصق. ومع `"output": "pdf"` يُنشئ PDF بدل الطباعة.
+
+يظهر كل طلب في القائمة في تلك النافذة، وفي سجل الطباعة.

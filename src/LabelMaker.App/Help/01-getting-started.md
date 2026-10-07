@@ -3,7 +3,7 @@ id: getting-started
 title: Your first label
 category: Getting started
 order: 1
-keywords: start, begin, new project, tutorial, first, quick start, welcome
+keywords: start, begin, new project, tutorial, first, quick start, welcome, my designs, save as design, reuse, own template
 ---
 # Your first label
 
@@ -39,3 +39,7 @@ LabelAxis designs labels and stickers and prints them on label sheets (A4 or Let
 - [[shortcuts|Keyboard shortcuts]]
 
 Press `F1` anywhere to come back to this guide. In a window such as Print, `F1` opens the page about that window.
+
+## Your own designs
+
+When a label is just right, keep it to start from next time: `File > Save page as my design…` (or right-click a page). Give it a name and, if you like, a note. It is saved with its label sheet, fonts, pictures and data connection, and appears first in `File > New Project` under **My designs**. Opening it makes a new project, so the design itself stays as it was. Right-click a design there to rename it, delete it or show its file.

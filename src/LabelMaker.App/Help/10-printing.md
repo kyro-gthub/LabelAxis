@@ -3,7 +3,7 @@ id: printing
 title: Printing
 category: Printing
 order: 1
-keywords: print, printer, sheet, copies, preview, pages, current page, selected pages, copies per page, paper, margins, start position, skip, history, reprint, outlines, crop marks
+keywords: print, printer, sheet, copies, preview, pages, current page, selected pages, copies per page, paper, margins, start position, skip, history, reprint, outlines, crop marks, automatic printing, watch folder, hot folder, web link, api, integration, other programs, json, csv
 ---
 # Printing
 
@@ -40,3 +40,13 @@ The list holds the printers installed in Windows and any [[wifi-printers|Wi-Fi p
 ## History
 
 `History…` (or `Print > Print History…`) lists earlier jobs; reprint one, or finish a job that stopped part-way.
+
+## Print requests from other programs
+
+A till, an online shop or a spreadsheet can print labels while LabelAxis is open: `Print > Print requests from other programs…`.
+
+- **Watch folder:** files dropped into it are printed: a `.json` request, or a `.csv` list whose first row names the fields (printed with the design chosen there). Printed files move to `Done`; others move to `Failed` with a note saying why.
+- **Web link:** programs on this PC send the same request to `http://localhost:8765/print`. Other computers can be allowed too; they must send the access key. Web pages in a browser are refused.
+- A request names one of your designs (see [[getting-started|Your own designs]]), the printer, the copies and one record per label. With `"output": "pdf"` it makes a PDF instead of printing.
+
+Every request appears in the list in that window, and in Print history.

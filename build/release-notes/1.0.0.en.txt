@@ -16,6 +16,10 @@ New
 • Gradients in the colour window: a shape's fill and a text box's background can blend two colours at any angle. Pick from 16 ready-made gradients or the ones you used recently.
 • Find (Ctrl+F) also searches page names: pick a result to open that page, and Replace renames it.
 • The barcode image generator saves PNG pictures (150 to 1200 dpi) as well as SVG and PDF.
+• Your own designs: File › Save page as my design keeps a page with its sheet, fonts, pictures and data connection. It is listed first in File › New Project under My designs.
+• GS1 barcode builder (Data menu): GS1-128, GS1 DataMatrix and GS1 QR codes for food, medicines, medical devices (UDI) and shipping, with check digits, dates and every GS1 rule checked as you type. GS1 DataMatrix and GS1 QR codes now hold true GS1 data.
+• Print requests from other programs (Print menu): a till, an online shop or a spreadsheet prints labels by dropping a .json or .csv file into a watch folder, or by sending it to a web link on this PC. It can print or return a PDF.
+• Check a printed barcode (Data menu): a webcam, a photo or a scan grades the barcode A to F the way a barcode verifier does, says whether it matches the label, and what to change.
 
 Smaller download
 • The main installer is now much smaller. On a PC without the Microsoft .NET 10 Desktop Runtime it downloads it once from Microsoft; an offline installer with everything inside is available too.
