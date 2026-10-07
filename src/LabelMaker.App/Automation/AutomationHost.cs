@@ -138,5 +138,9 @@ public sealed class AutomationHost : IAsyncDisposable
         Changed?.Invoke(this, EventArgs.Empty);
     }
 
-    public async ValueTask DisposeAsync() => await StopAsync().ConfigureAwait(false);
+    public async ValueTask DisposeAsync()
+    {
+        await StopAsync().ConfigureAwait(false);
+        Runner.Dispose();
+    }
 }

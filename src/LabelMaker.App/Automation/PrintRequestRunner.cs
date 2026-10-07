@@ -23,7 +23,7 @@ namespace LabelMaker.App.Automation;
 /// design's thermal printer settings) — or makes a PDF of it. Runs one request at a time, on
 /// the window thread (WPF printing needs it), and writes each job to Print history.
 /// </summary>
-public sealed class PrintRequestRunner : IPrintRequestHandler
+public sealed class PrintRequestRunner : IPrintRequestHandler, IDisposable
 {
     private readonly AppEnvironment _env;
     private readonly Dispatcher _dispatcher;
@@ -74,6 +74,8 @@ public sealed class PrintRequestRunner : IPrintRequestHandler
         Finished?.Invoke(this, new AutomationLogEntry(DateTime.Now, source, request.Describe(), result.Ok, result.Message));
         return result;
     }
+
+    public void Dispose() => _oneAtATime.Dispose();
 
     private WpfPrintServer Server() =>
         new(new SheetVisualRenderer(new WpfTextMeasurer(), new WpfImageSource(new AssetStore())), _env.Calibration);

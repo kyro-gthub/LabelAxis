@@ -53,7 +53,7 @@ public sealed class MyDesigns
 
     /// <summary>The design of that name (any case), or null.</summary>
     public LabelDesign? Find(string name) =>
-        List().FirstOrDefault(d => string.Equals(d.Name.Trim(), name.Trim(), StringComparison.CurrentCultureIgnoreCase));
+        List().FirstOrDefault(d => string.Equals(d.Name.Trim(), name.Trim(), StringComparison.OrdinalIgnoreCase));
 
     /// <summary>
     /// Saves <paramref name="page"/> of <paramref name="source"/> as a design named

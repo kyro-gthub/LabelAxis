@@ -19,6 +19,7 @@ namespace LabelMaker.App.Views;
 /// and graded A to F with each measurement, says whether it matches a barcode on the label
 /// being designed, and what to change when it prints poorly.
 /// </summary>
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1001", Justification = "The camera's stop signal is disposed in StopCamera, which closing the window calls.")]
 public partial class BarcodeCheckWindow : Window
 {
     /// <summary>A row of the measurements list.</summary>
@@ -116,7 +117,7 @@ public partial class BarcodeCheckWindow : Window
                         {
                             _checking = false;
                         }
-                    });
+                    }, CancellationToken.None);
                 }
             }
         }
@@ -138,6 +139,7 @@ public partial class BarcodeCheckWindow : Window
         }
 
         _cameraStop.Cancel();
+        _cameraStop.Dispose(); // the camera thread only reads the token's state, which stays readable
         _cameraStop = null;
         CameraButton.Content = Localizer.T("Start camera");
     }
