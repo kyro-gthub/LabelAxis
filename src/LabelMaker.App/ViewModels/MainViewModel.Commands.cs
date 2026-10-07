@@ -122,6 +122,7 @@ public sealed partial class MainViewModel
     public RelayCommand AddFontCommand { get; private set; } = null!;
     public RelayCommand DrawCustomShapeCommand { get; private set; } = null!;
     public RelayCommand ApplyLayoutCommand { get; private set; } = null!;
+    public RelayCommand RemoveFromAllPagesCommand { get; private set; } = null!;
     public RelayCommand HelpCommand { get; private set; } = null!;
     public RelayCommand EditShapeDotsCommand { get; private set; } = null!;
     public RelayCommand ApplySwatchCommand { get; private set; } = null!;
@@ -306,6 +307,7 @@ public sealed partial class MainViewModel
         // Parameter is "fill" or "stroke": which of the shape's two colours to edit.
         DrawCustomShapeCommand = new RelayCommand(() => _canvas?.BeginCustomShape());
         ApplyLayoutCommand = new RelayCommand(ApplyLayoutToOtherPages, () => _session.ActiveLabel.Objects.Count > 0);
+        RemoveFromAllPagesCommand = new RelayCommand(RemoveFromAllPages, () => _session.Selection.Count > 0);
         HelpCommand = new RelayCommand(p => HelpGuide.Show(System.Windows.Application.Current?.MainWindow,
             p as string is { Length: > 0 } topic ? topic : HelpTopicForSelection()));
         EditShapeDotsCommand = new RelayCommand(

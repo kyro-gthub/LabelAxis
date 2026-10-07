@@ -130,6 +130,8 @@
               <MenuItem Header="Apply text _formatting to other pages…" Command="{Binding ApplyTextStyleCommand}" />
               <MenuItem AutomationProperties.AutomationId="Menu.PageFormat" Header="Apply page f_ormat to other pages…" Command="{Binding ApplyLayoutCommand}"
                         ToolTip="Give the objects on other pages the place, size and look they have on this page" />
+              <MenuItem AutomationProperties.AutomationId="Menu.RemoveFromPages" Header="Remove from all _pages…" Command="{Binding RemoveFromAllPagesCommand}"
+                        ToolTip="Take the selected objects, such as a barcode or a named text box, off this page and the other pages" />
               <Separator />
               <MenuItem Header="_Group" InputGestureText="Ctrl+G" Command="{Binding GroupCommand}" />
               <MenuItem Header="U_ngroup" InputGestureText="Ctrl+Shift+G" Command="{Binding UngroupCommand}" />
@@ -578,7 +580,12 @@
             </Grid>
             <Border DockPanel.Dock="Top" Style="{StaticResource InsetPanel}" Height="170" Margin="0,0,0,14">
               <ListBox x:Name="PageList" ItemsSource="{Binding Pages}" SelectedItem="{Binding SelectedPage}"
-                       BorderThickness="0" Background="Transparent" PreviewKeyDown="OnPageListKeyDown">
+                       BorderThickness="0" Background="Transparent" PreviewKeyDown="OnPageListKeyDown"
+                       ScrollViewer.VerticalScrollBarVisibility="Auto">
+                <ListBox.Resources>
+                  <!-- Up and down arrows on the list's scroll bar, for scrolling a long list of pages. -->
+                  <Style TargetType="ScrollBar" BasedOn="{StaticResource ScrollBarWithArrows}" />
+                </ListBox.Resources>
                 <ListBox.ItemTemplate>
                   <DataTemplate>
                     <Grid>
@@ -648,6 +655,7 @@
                     <MenuItem Header="_Ungroup" Command="{Binding UngroupCommand}" />
                     <Separator />
                     <MenuItem Header="_Delete" InputGestureText="Del" Command="{Binding DeleteCommand}" />
+                    <MenuItem Header="Remove from all _pages…" Command="{Binding RemoveFromAllPagesCommand}" />
                   </ContextMenu>
                 </ListBox.ContextMenu>
                 <ListBox.ItemTemplate>

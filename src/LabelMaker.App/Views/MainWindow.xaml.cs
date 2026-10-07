@@ -179,6 +179,7 @@ public partial class MainWindow : Window
         menu.Items.Add(Item("_Paste here", _vm.PasteHereCommand, "Ctrl+V"));
         menu.Items.Add(Item("_Duplicate", _vm.DuplicateCommand, "Ctrl+D"));
         menu.Items.Add(Item("De_lete", _vm.DeleteCommand, "Del"));
+        menu.Items.Add(Item("Remove from all _pages…", _vm.RemoveFromAllPagesCommand));
         menu.Items.Add(new Separator());
         menu.Items.Add(Item("Bring to _front", _vm.BringToFrontCommand));
         menu.Items.Add(Item("Send to _back", _vm.SendToBackCommand));

@@ -11,7 +11,7 @@ using LabelMaker.Core.Localization;
 namespace LabelMaker.App.Localization;
 
 /// <summary>A language the interface can be shown in.</summary>
-/// <param name="Code">The language code kept in the settings ("en", "ar", "ckb").</param>
+/// <param name="Code">The language code kept in the settings ("en", "ar", "fr", "zh-Hans"…).</param>
 /// <param name="NativeName">The language's name in itself, as the language list shows it.</param>
 /// <param name="EnglishName">The language's name in English, shown beside it.</param>
 public sealed record AppLanguage(string Code, string NativeName, string EnglishName, bool RightToLeft)
@@ -36,6 +36,13 @@ public static class Localizer
         new AppLanguage("en", "English", "English", false),
         new AppLanguage("ar", "العربية", "Arabic", true),
         new AppLanguage("ckb", "کوردی (سۆرانی)", "Central Kurdish", true),
+        new AppLanguage("fa", "فارسی", "Persian", true),
+        new AppLanguage("fr", "Français", "French", false),
+        new AppLanguage("es", "Español", "Spanish", false),
+        new AppLanguage("nl", "Nederlands", "Dutch", false),
+        new AppLanguage("ru", "Русский", "Russian", false),
+        new AppLanguage("zh-Hans", "简体中文", "Chinese (Simplified)", false),
+        new AppLanguage("hi", "हिन्दी", "Hindi", false),
     };
 
     public static AppLanguage Current { get; private set; } = Languages[0];
@@ -63,13 +70,24 @@ public static class Localizer
             return Languages.FirstOrDefault(l => string.Equals(l.Code, code, StringComparison.OrdinalIgnoreCase)) ?? Languages[0];
         }
 
-        string windows = CultureInfo.CurrentUICulture.Name;
-        if (windows.StartsWith("ckb", StringComparison.OrdinalIgnoreCase) || windows.StartsWith("ku-Arab", StringComparison.OrdinalIgnoreCase))
-        {
-            return Languages[2];
-        }
+        return FromWindows(CultureInfo.CurrentUICulture.Name);
+    }
 
-        return windows.StartsWith("ar", StringComparison.OrdinalIgnoreCase) ? Languages[1] : Languages[0];
+    /// <summary>The language for a Windows display language such as "fr-CA" or "zh-CN" (English when none fits).</summary>
+    public static AppLanguage FromWindows(string culture)
+    {
+        static bool Is(string culture, string prefix) =>
+            culture.Equals(prefix, StringComparison.OrdinalIgnoreCase) || culture.StartsWith(prefix + "-", StringComparison.OrdinalIgnoreCase);
+
+        string? code = culture switch
+        {
+            _ when Is(culture, "ckb") || Is(culture, "ku-Arab") => "ckb",
+            // Chinese written with traditional characters is not offered: it would read as foreign.
+            _ when Is(culture, "zh") && !Is(culture, "zh-Hant") && !Is(culture, "zh-TW") && !Is(culture, "zh-HK") && !Is(culture, "zh-MO") => "zh-Hans",
+            _ => Languages.Select(l => l.Code).FirstOrDefault(c => c is not ("en" or "ckb" or "zh-Hans") && Is(culture, c)),
+        };
+
+        return Languages.FirstOrDefault(l => l.Code == code) ?? Languages[0];
     }
 
     /// <summary>Reads a language's translations from the program (an empty list for English).</summary>
