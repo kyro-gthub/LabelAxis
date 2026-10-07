@@ -1,0 +1,37 @@
+LabelAxis 1.0.0
+
+Nieuw
+• LabelAxis in tien talen: Engels, Arabisch, Centraal-Koerdisch (Sorani), Perzisch, Frans, Spaans, Nederlands, Russisch, Vereenvoudigd Chinees en Hindi, voor menu's, vensters, berichten en de helpgids; Arabisch, Koerdisch en Perzisch staan van rechts naar links. Kies er een in Bestand › Instellingen › Taal, of LabelAxis volgt de taal van Windows. Technische namen zoals PDF, QR Code en Wi-Fi blijven in het Engels.
+• Automatische updates: LabelAxis zoekt eens per dag naar een nieuwere versie en installeert die voor u wanneer u Nu bijwerken kiest.
+• Wi-Fi-printers kunnen nu net als elke andere printer worden gekalibreerd.
+• Arabische tekst in geëxporteerde PDF-bestanden kan worden geselecteerd, gekopieerd en doorzocht.
+• Eigen lettertypen: voeg een .ttf- of .otf-bestand toe met "Lettertype toevoegen…" naast de lettertypelijst (of in Instellingen › Lettertypen), zonder het in Windows te installeren. Een project dat het gebruikt, bewaart een kopie, zodat het er op een andere pc hetzelfde uitziet.
+• 66 kant-en-klare etiketontwerpen op het eerste tabblad van Bestand › Nieuw project: prijskaartjes, product- en barcode-etiketten, voedsel, verzending, voorraad, school, apotheek, badges en QR-etiketten, elk op een eigen vel of rol.
+• Een nieuw uiterlijk: doorzichtige glazen panelen boven zachte kleurgloed, met acht thema's (Frost, Aurora, Midnight, Graphite, Ember, Ocean, Sakura, Sage) in Instellingen of via de themaknop bovenaan het venster.
+• Bochten in aangepaste vormen: elk punt kan een vloeiende bocht zijn in plaats van een scherpe hoek.
+• Nieuw project heeft ook Aangepast formaat… voor een etiket van elk formaat.
+• Paginaopmaak op andere pagina's toepassen (menu Bewerken, of rechtsklikken op een pagina): elk object op de andere pagina's krijgt de positie, grootte, draaiing en het uiterlijk van zijn tegenhanger op deze pagina — lettertype, kleuren, barcodetype en -grootte, randen — terwijl elke pagina haar eigen tekst, barcodewaarden en afbeeldingen houdt. Het kan ook de objecten toevoegen die een pagina mist.
+• Pagina's zijn genummerd 1, 2, 3… in de paginalijst, ook de eerste.
+• Een nettere statusbalk die op kleinere schermen niet meer overlapt.
+• Kleurverlopen in het kleurvenster: de opvulling van een vorm en de achtergrond van een tekstvak kunnen twee kleuren onder elke hoek laten overlopen. Kies uit 16 kant-en-klare verlopen of de onlangs gebruikte.
+• Zoeken (Ctrl+F) doorzoekt ook paginanamen: kies een resultaat om die pagina te openen, en Vervangen hernoemt haar.
+• De barcode-afbeeldingsgenerator slaat PNG-afbeeldingen op (150 tot 1200 dpi), naast SVG en PDF.
+• Uw eigen ontwerpen: Bestand › Pagina opslaan als mijn ontwerp bewaart een pagina met haar vel, lettertypen, afbeeldingen en gegevensverbinding. Ze staat bovenaan in Bestand › Nieuw project onder Mijn ontwerpen.
+• GS1-barcodebouwer (menu Gegevens): GS1-128-, GS1 DataMatrix- en GS1 QR-codes voor voedsel, geneesmiddelen, medische hulpmiddelen (UDI) en verzending, met controlecijfers, data en elke GS1-regel gecontroleerd terwijl u typt. GS1 DataMatrix- en GS1 QR-codes bevatten nu echte GS1-gegevens.
+• Afdrukverzoeken van andere programma's (menu Afdrukken): een kassa, webwinkel of spreadsheet drukt etiketten af door een .json- of .csv-bestand in een bewaakte map te zetten, of het naar een weblink op deze pc te sturen. Het kan afdrukken of een PDF teruggeven.
+• Uw eigen thema: Instellingen › Uw eigen thema maken (of de themaknop) kiest uw kleuren, achtergrond en gloed, live getoond; tekstkleuren worden zo gekozen dat ze altijd leesbaar zijn.
+• Van alle pagina's verwijderen (menu Bewerken, of rechtsklikken op een object): haalt de geselecteerde objecten, zoals een oude barcode of een tekstvak met de naam "Aanbieding", in één stap van deze en de andere pagina's, en vindt ze op naam of op volgorde. Ongedaan maken zet ze terug; vergrendelde objecten blijven staan.
+• De paginalijst heeft pijlen omhoog en omlaag op de schuifbalk.
+• Een afgedrukte barcode controleren (menu Gegevens): een webcam, foto of scan beoordeelt de barcode van A tot F zoals een barcodeverificateur, zegt of hij bij het etiket past en wat u moet veranderen.
+
+Kleinere download
+• Het hoofdinstallatieprogramma is nu veel kleiner. Op een pc zonder Microsoft .NET 10 Desktop Runtime downloadt het die één keer van Microsoft; er is ook een offline installatieprogramma met alles erin.
+
+Verder
+• Een nieuw etiket begint met voorbeeldtekst in de taal van de interface.
+• Schermlezers lezen knoppen en menu's in de taal van de interface.
+• Maximaliseren past het venster precies op het scherm, ook op pc's waar het de taakbalk bedekte of een rand niet haalde.
+• Een kleur kiezen na "Geen kleur" geeft een zichtbare kleur; die bleef eerder doorzichtig.
+• Kleurverlopen in geëxporteerde PDF-bestanden lopen hetzelfde als op het scherm en kunnen vervagen naar transparant.
+• Een lange GS1-barcode op een klein etiket wordt passend gemaakt, en de tekst onder elke barcode krimpt tot de breedte van de strepen.
+• Over LabelAxis staat nu alleen in het menu Help.

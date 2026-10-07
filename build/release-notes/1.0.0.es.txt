@@ -1,0 +1,37 @@
+LabelAxis 1.0.0
+
+Novedades
+• LabelAxis en diez idiomas: inglés, árabe, kurdo central (sorani), persa, francés, español, neerlandés, ruso, chino simplificado e hindi, en menús, ventanas, mensajes y la guía de ayuda; el árabe, el kurdo y el persa se muestran de derecha a izquierda. Elija uno en Archivo › Configuración › Idioma, o LabelAxis sigue el idioma de Windows. Los nombres técnicos como PDF, QR Code y Wi-Fi se quedan en inglés.
+• Actualizaciones automáticas: LabelAxis busca una versión más reciente una vez al día y la instala por usted cuando elige Actualizar ahora.
+• Las impresoras Wi-Fi ya se pueden calibrar como cualquier otra impresora.
+• El texto árabe de los PDF exportados se puede seleccionar, copiar y buscar.
+• Sus propias fuentes: añada un archivo .ttf u .otf con «Añadir fuente…» junto a la lista de fuentes (o en Configuración › Fuentes), sin instalarlo en Windows. Un proyecto que la usa guarda una copia, para verse igual en otro PC.
+• 66 diseños de etiqueta listos para usar en la primera pestaña de Archivo › Nuevo proyecto: etiquetas de precio, de producto y de código de barras, alimentos, envíos, stock, escuela, farmacia, acreditaciones y etiquetas QR, cada uno en su propia hoja o rollo.
+• Un aspecto nuevo: paneles de cristal transparentes sobre suaves resplandores de color, con ocho temas (Frost, Aurora, Midnight, Graphite, Ember, Ocean, Sakura, Sage) en la configuración o desde el botón de tema en la parte superior de la ventana.
+• Curvas en las formas personalizadas: cualquier punto puede ser una curva suave en lugar de una esquina.
+• Nuevo proyecto también ofrece Tamaño personalizado… para una etiqueta de cualquier tamaño.
+• Aplicar formato de página a otras páginas (menú Edición, o clic derecho en una página): cada objeto de las otras páginas toma la posición, el tamaño, el giro y el aspecto de su equivalente en esta página — fuente, colores, tipo y tamaño de código de barras, bordes — mientras cada página conserva sus propios textos, valores de código de barras e imágenes. También puede añadir los objetos que le faltan a una página.
+• Las páginas se numeran 1, 2, 3… en la lista de páginas, también la primera.
+• Una barra de estado más ordenada que ya no se solapa en pantallas pequeñas.
+• Degradados en la ventana de color: el relleno de una forma y el fondo de un cuadro de texto pueden fundir dos colores en cualquier ángulo. Elija entre 16 degradados ya hechos o los usados recientemente.
+• Buscar (Ctrl+F) también busca en los nombres de página: elija un resultado para abrir esa página, y Reemplazar la renombra.
+• El generador de imágenes de códigos de barras guarda imágenes PNG (150 a 1200 ppp) además de SVG y PDF.
+• Sus propios diseños: Archivo › Guardar página como mi diseño conserva una página con su hoja, fuentes, imágenes y conexión de datos. Aparece primero en Archivo › Nuevo proyecto, en Mis diseños.
+• Generador de códigos GS1 (menú Datos): códigos GS1-128, GS1 DataMatrix y GS1 QR para alimentos, medicamentos, productos sanitarios (UDI) y envíos, con dígitos de control, fechas y todas las reglas GS1 comprobadas mientras escribe. Los códigos GS1 DataMatrix y GS1 QR ahora contienen datos GS1 auténticos.
+• Solicitudes de impresión de otros programas (menú Imprimir): una caja registradora, una tienda en línea o una hoja de cálculo imprime etiquetas dejando un archivo .json o .csv en una carpeta vigilada, o enviándolo a un enlace web de este PC. Puede imprimir o devolver un PDF.
+• Su propio tema: Configuración › Crear su propio tema (o el botón de tema) elige sus colores, fondo y resplandor, mostrados al momento; los colores del texto se eligen para que siempre se lean.
+• Quitar de todas las páginas (menú Edición, o clic derecho en un objeto): quita los objetos seleccionados, como un código de barras antiguo o un cuadro de texto llamado «Oferta», de esta página y de las demás en un solo paso, encontrándolos por nombre o por orden. Deshacer los restaura; los objetos bloqueados se quedan.
+• La lista de páginas tiene flechas arriba y abajo en su barra de desplazamiento.
+• Comprobar un código de barras impreso (menú Datos): una webcam, una foto o un escaneo califica el código de A a F como un verificador, dice si coincide con la etiqueta y qué cambiar.
+
+Descarga más pequeña
+• El instalador principal es ahora mucho más pequeño. En un PC sin Microsoft .NET 10 Desktop Runtime lo descarga una vez de Microsoft; también hay un instalador sin conexión con todo incluido.
+
+Además
+• Una etiqueta nueva empieza con su texto de ejemplo en el idioma de la interfaz.
+• Los lectores de pantalla leen los botones y menús en el idioma de la interfaz.
+• Maximizar la ventana la ajusta exactamente a la pantalla, también en PC donde tapaba la barra de tareas o no llegaba a un borde.
+• Elegir un color después de «Sin color» da un color visible; antes seguía transparente.
+• Los degradados de los PDF exportados van igual que en pantalla y pueden fundirse a transparente.
+• Un código GS1 largo en una etiqueta pequeña se ajusta a la etiqueta, y el texto bajo cualquier código de barras se reduce al ancho de sus barras.
+• Acerca de LabelAxis está ahora solo en el menú Ayuda.

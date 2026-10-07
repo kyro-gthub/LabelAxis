@@ -29,6 +29,7 @@ public sealed partial class Translator
 
     public Translator(IEnumerable<KeyValuePair<string, string>> entries)
     {
+        var withStop = new List<(string Key, string Translated)>();
         foreach ((string english, string translated) in entries)
         {
             if (string.IsNullOrWhiteSpace(english) || string.IsNullOrWhiteSpace(translated))
@@ -42,6 +43,19 @@ public sealed partial class Translator
             if (HoleRegex().IsMatch(key) && Template.TryCreate(key, translated) is { } template)
             {
                 _templates.Add(template);
+                withStop.Add((key, translated));
+            }
+        }
+
+        // A sentence is first matched without its full stop (see Whole), so each template that
+        // ends in one is also known without it; otherwise a short one such as "{0} on {1}" would
+        // win over "Printable area {0} × {1} mm from ({2}, {3}) on {4}.".
+        foreach ((string key, string translated) in withStop)
+        {
+            if (key.Length > 1 && key[^1] == '.' && key[^2] != '.' && !_exact.ContainsKey(key[..^1]) &&
+                Template.TryCreate(key[..^1], translated) is { } bare)
+            {
+                _templates.Add(bare);
             }
         }
 
@@ -139,7 +153,14 @@ public sealed partial class Translator
         // Without its full stop first, so "… from x.csv." does not take the stop into the file name.
         if (core.Length > 0 && core.Length != text.Length && FromTemplate(core, depth) is { } inner)
         {
-            return frame.Groups["lead"].Value + inner + Punctuation(frame.Groups["tail"].Value);
+            // A sentence's translation that already ends in its own full stop ("。", "।") keeps it.
+            string tail = frame.Groups["tail"].Value;
+            if (tail.StartsWith('.') && inner.Length > 0 && inner[^1] is '.' or '。' or '।')
+            {
+                tail = tail[1..];
+            }
+
+            return frame.Groups["lead"].Value + inner + Punctuation(tail);
         }
 
         return FromTemplate(text, depth);

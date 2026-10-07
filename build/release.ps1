@@ -12,8 +12,9 @@
     https://, or a shared network folder). Copies of LabelAxis that look there find the new
     version within a day, or at once with Help › Check for updates.
 
-    What's new goes in build\release-notes\<v>.en.txt (and .ar.txt / .ckb.txt for Arabic and
-    Central Kurdish); the English text is used where a language has none.
+    What's new goes in build\release-notes\<v>.en.txt (and .ar.txt, .ckb.txt, .fa.txt, .fr.txt,
+    .es.txt, .nl.txt, .ru.txt, .zh-Hans.txt and .hi.txt for the other interface languages); the
+    English text is used where a language has none.
 
     Usage:
       powershell -ExecutionPolicy Bypass -File build\release.ps1 [-OutputDir <folder>; default: artifacts\out] [-UpdateUrl https://example.com/labelaxis/]
@@ -64,7 +65,7 @@ $feed = [ordered]@{
     offlineInstaller = Package "LabelAxis-Setup-$version-Offline.exe"
     portable         = Package "LabelAxis-$version-portable.zip"
 }
-foreach ($language in 'ar', 'ckb') {
+foreach ($language in 'ar', 'ckb', 'fa', 'fr', 'es', 'nl', 'ru', 'zh-Hans', 'hi') {
     $text = Notes $language
     if ($text) { $feed.notesByLanguage[$language] = $text }
 }
