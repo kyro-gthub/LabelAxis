@@ -26,7 +26,7 @@ param(
 
 $ErrorActionPreference = 'Stop'
 if (-not $OutputDir) { $OutputDir = Join-Path (Split-Path -Parent $PSScriptRoot) 'artifacts\out' }
-New-Item -ItemType Directory -Path $OutputDir -Force | Out-Null
+if (-not (Test-Path -LiteralPath $OutputDir)) { New-Item -ItemType Directory -Path $OutputDir -Force | Out-Null }
 $root = Split-Path -Parent $PSScriptRoot
 Set-Location $root
 
