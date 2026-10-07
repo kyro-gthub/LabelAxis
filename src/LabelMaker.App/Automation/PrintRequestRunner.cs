@@ -232,4 +232,9 @@ public sealed class PrintRequestRunner : IPrintRequestHandler
 public sealed record AutomationLogEntry(DateTime When, string Source, string What, bool Ok, string Message)
 {
     public string Time => When.ToString("HH:mm:ss", System.Globalization.CultureInfo.CurrentCulture);
+
+    // Shown in the interface language; the programs that sent the request get the English.
+    public string ShownSource => Localization.Localizer.T(Source);
+
+    public string ShownMessage => Localization.Localizer.T(Message);
 }

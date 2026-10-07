@@ -41,8 +41,8 @@
                              Foreground="{DynamicResource Br.TextMuted}" Margin="0,1,8,0" />
                   <StackPanel>
                     <TextBlock Text="{Binding What}" FontFamily="{StaticResource Font.UiSemiBold}" FontSize="12.5" TextWrapping="Wrap" />
-                    <TextBlock Text="{Binding Source}" FontSize="11.5" Foreground="{DynamicResource Br.TextMuted}" TextWrapping="Wrap" />
-                    <TextBlock Text="{Binding Message}" FontSize="11.5" TextWrapping="Wrap">
+                    <TextBlock Text="{Binding ShownSource}" FontSize="11.5" Foreground="{DynamicResource Br.TextMuted}" TextWrapping="Wrap" />
+                    <TextBlock Text="{Binding ShownMessage}" FontSize="11.5" TextWrapping="Wrap">
                       <TextBlock.Style>
                         <Style TargetType="TextBlock">
                           <Setter Property="Foreground" Value="{DynamicResource Br.Ok}" />

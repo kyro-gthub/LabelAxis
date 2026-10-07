@@ -57,6 +57,12 @@ guide. The interface is in English, Arabic and Kurdish.
 ![Colour window with gradients](docs/images/colour-window-gradient.png)
 ![A label with gradient fills](docs/images/gradient-label.png)
 
+### Your own designs
+
+Save any page as one of **your own designs** (File › Save page as my design). It keeps its label
+sheet, fonts, pictures and data connection, and is listed first in File › New Project, ready to
+start next month's labels in two clicks.
+
 ### Ready-made designs
 
 66 ready-made designs to start from, grouped by use:
@@ -92,6 +98,16 @@ are ready for a spreadsheet. A **blank sheet** or a **custom size** is one tab a
 - The **barcode image generator** saves one barcode as **PNG** (150–1200 dpi), **SVG** or
   **PDF**.
 - The **bulk generator** writes a whole numbered series to a folder.
+- The **GS1 barcode builder** makes GS1-128, GS1 DataMatrix and GS1 QR codes for food,
+  medicines, medical devices (UDI) and shipping (SSCC):
+  - pick what the label is for, then fill in each piece of data;
+  - check digits, real dates, lengths and the GS1 rules about which data belong together are
+    checked as you type, in plain words.
+- **Check a printed barcode:** a webcam, a photo or a scan grades the barcode **A to F** the way a
+  barcode verifier does (ISO/IEC 15416 and 15415):
+  - contrast, modulation, defects, decodability, quiet zones and bar width, each graded;
+  - what to change, for example lower the printer's darkness when bars print too wide;
+  - whether it matches the barcode on your label.
 
 ### Data and variable labels
 
@@ -116,6 +132,12 @@ are ready for a spreadsheet. A **blank sheet** or a **custom size** is one tab a
 - **Wi-Fi and network printers:** prints directly over IPP. Printers are found on the
   network for you.
 - A print history so a jammed run can be reprinted from where it stopped.
+- **Print requests from other programs:** a till, an online shop or a spreadsheet prints labels
+  without anyone opening a window:
+  - drop a `.json` request or a `.csv` list into a **watch folder**;
+  - or send it to a **web link** on the PC (`POST http://localhost:8765/print`);
+  - one label per record with one of your designs, printed or returned as a PDF;
+  - web pages in a browser are refused, and other computers need an access key.
 
 ### Export
 
@@ -164,7 +186,7 @@ with no UI dependency.
 
 **Libraries:** ZXing.Net, PdfSharp, CsvHelper and ClosedXML.
 
-**Tests:** 568 headless unit tests, including round-trip decoding of generated barcodes,
+**Tests:** 617 headless unit tests, including round-trip decoding of generated barcodes,
 plus a click-through UI test suite.
 
 ```bash
