@@ -194,7 +194,7 @@ internal static class Scenarios
     public static void About(string exe)
     {
         using AppDriver app = AppDriver.Start(exe);
-        app.Menu("Menu.File", "Menu.About");
+        app.Menu("Menu.Help", "Menu.About");
         AutomationElement about = WindowWith(app, "VersionText", "the About window");
         string version = app.Find("VersionText", about).Current.Name;
         Check(version.Any(char.IsDigit), $"The version reads \"{version}\".");

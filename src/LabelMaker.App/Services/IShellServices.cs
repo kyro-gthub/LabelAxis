@@ -90,6 +90,9 @@ public interface IShellServices
     /// <summary>Checks a printed barcode with a camera, a photo or a scan; <paramref name="labelBarcodes"/> gives the page's barcodes to compare.</summary>
     void ShowBarcodeCheck(Func<IReadOnlyList<(string Name, string Value)>> labelBarcodes);
 
+    /// <summary>Makes or changes the user's own theme (shown live). Null on cancel.</summary>
+    (Core.Settings.CustomThemeSettings? Theme, bool Removed)? ShowCustomTheme();
+
     /// <summary>The settings for print requests from other programs (watch folder, web link) and their log.</summary>
     void ShowAutomation();
 

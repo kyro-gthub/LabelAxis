@@ -46,10 +46,27 @@ public static class ThemeManager
 
     public const string DefaultTheme = "frost";
 
-    private static IReadOnlyList<ThemeInfo>? _themes;
+    /// <summary>The id of the user's own theme.</summary>
+    public const string CustomId = "custom";
 
-    /// <summary>Every theme with its name and colours (for the picker's swatches).</summary>
-    public static IReadOnlyList<ThemeInfo> Themes => _themes ??= ThemeIds.Select(id => Describe(id, Load(id))).ToList();
+    private static IReadOnlyList<ThemeInfo>? _themes;
+    private static LabelMaker.Core.Settings.CustomThemeSettings? _custom;
+
+    /// <summary>Every theme with its name and colours (for the picker's swatches): the built-in ones, then the user's own.</summary>
+    public static IReadOnlyList<ThemeInfo> Themes => _themes ??= AllIds.Select(id => Describe(id, Load(id))).ToList();
+
+    private static IEnumerable<string> AllIds => _custom is null ? ThemeIds : ThemeIds.Append(CustomId);
+
+    /// <summary>The user's own theme, or null when there is none.</summary>
+    public static LabelMaker.Core.Settings.CustomThemeSettings? Custom => _custom;
+
+    /// <summary>Sets (or with null removes) the user's own theme. Apply <see cref="CustomId"/> to show it.</summary>
+    public static void SetCustom(LabelMaker.Core.Settings.CustomThemeSettings? custom)
+    {
+        _custom = custom?.Clone();
+        Loaded.Remove(CustomId);
+        _themes = null;
+    }
 
     public static string CurrentId { get; private set; } = DefaultTheme;
 
@@ -95,7 +112,8 @@ public static class ThemeManager
 
     /// <summary>The theme for a setting: the one named, or Midnight / Frost from the old dark-mode switch.</summary>
     public static string Resolve(string? id, bool legacyDark) =>
-        id is not null && ThemeIds.Contains(id, StringComparer.OrdinalIgnoreCase) ? id.ToLowerInvariant()
+        id is not null && AllIds.Contains(id, StringComparer.OrdinalIgnoreCase) ? id.ToLowerInvariant()
+        : string.Equals(id, CustomId, StringComparison.OrdinalIgnoreCase) && _custom is null ? (legacyDark ? "midnight" : DefaultTheme)
         : legacyDark ? "midnight" : DefaultTheme;
 
     public static void Apply(AppTheme theme) => Apply(theme == AppTheme.Dark ? "midnight" : DefaultTheme);
@@ -244,6 +262,17 @@ public static class ThemeManager
 
     private static ResourceDictionary Load(string id)
     {
+        if (string.Equals(id, CustomId, StringComparison.OrdinalIgnoreCase) && _custom is { } custom)
+        {
+            if (!Loaded.TryGetValue(CustomId, out ResourceDictionary? own))
+            {
+                own = BuildCustom(custom);
+                Loaded[CustomId] = own;
+            }
+
+            return own;
+        }
+
         if (!Loaded.TryGetValue(id, out ResourceDictionary? dict))
         {
             string name = char.ToUpperInvariant(id[0]) + id[1..];
@@ -252,6 +281,84 @@ public static class ThemeManager
         }
 
         return dict;
+    }
+
+    /// <summary>
+    /// The user's own theme: the theme it starts from with its colours replaced. Text and glass
+    /// colours come from a light or a dark theme to suit the background, so text always reads;
+    /// the text on accent-coloured buttons is black or white, whichever stands out more.
+    /// </summary>
+    private static ResourceDictionary BuildCustom(LabelMaker.Core.Settings.CustomThemeSettings custom)
+    {
+        string baseId = ThemeIds.Contains(custom.BasedOn, StringComparer.OrdinalIgnoreCase) ? custom.BasedOn.ToLowerInvariant() : DefaultTheme;
+        ResourceDictionary start = Load(baseId);
+        Color? background = Parse(custom.Background);
+        if (background is { } bgColour && (Luminance(bgColour) < 0.4) != (start["LA.IsDark"] is true))
+        {
+            start = Load(Luminance(bgColour) < 0.4 ? "midnight" : DefaultTheme); // text that reads on this background
+        }
+
+        var d = new ResourceDictionary();
+        foreach (object key in start.Keys)
+        {
+            d[key] = start[key];
+        }
+
+        Color bg = background ?? Col(start, "Background");
+        Color accent = Parse(custom.Accent) ?? Col(start, "Accent");
+        Color accent2 = Parse(custom.AccentSecondary) ?? Col(start, "AccentSecondary");
+        Color accent3 = Parse(custom.AccentTertiary) ?? Col(start, "AccentTertiary");
+        Color onAccent = Contrast(Colors.White, accent) >= Contrast(Color.FromRgb(0x14, 0x18, 0x20), accent) ? Colors.White : Color.FromRgb(0x14, 0x18, 0x20);
+
+        d["LA.ThemeId"] = CustomId;
+        d["LA.ThemeName"] = string.IsNullOrWhiteSpace(custom.Name) ? "My theme" : custom.Name.Trim();
+        double glow = Math.Clamp(custom.Glow, 0, 1.5);
+        d["LA.OrbOpacity"] = (start["LA.OrbOpacity"] is double o ? o : 0.38) * glow;
+        d["LA.OrbOpacitySoft"] = (start["LA.OrbOpacitySoft"] is double s ? s : 0.18) * glow;
+
+        void Set(string token, Color colour)
+        {
+            d["LA.Color." + token] = colour;
+            d["LA.Brush." + token] = new SolidColorBrush(colour);
+        }
+
+        Set("Background", bg);
+        Set("Accent", accent);
+        Set("AccentSecondary", accent2);
+        Set("AccentTertiary", accent3);
+        Set("OnAccent", onAccent);
+        Set("AccentSubtle", WithAlpha(accent, 0x24));
+        Set("AccentBorder", WithAlpha(accent, 0x59));
+        d["LA.Brush.AccentGradient"] = Gradient(accent, accent2);
+        d["LA.Brush.Orb1"] = Orb(accent);
+        d["LA.Brush.Orb2"] = Orb(accent2);
+        d["LA.Brush.Orb3"] = Orb(accent3);
+        return d;
+    }
+
+    private static RadialGradientBrush Orb(Color c) =>
+        new(new GradientStopCollection { new(c, 0), new(WithAlpha(c, 0), 0.66) });
+
+    private static Color? Parse(string? hex) =>
+        LabelMaker.Core.Model.ColorRgba.TryParse(hex, out LabelMaker.Core.Model.ColorRgba c) ? Color.FromRgb(c.R, c.G, c.B) : null;
+
+    /// <summary>Relative luminance (WCAG), 0 for black to 1 for white.</summary>
+    public static double Luminance(Color c)
+    {
+        static double Channel(byte v)
+        {
+            double s = v / 255.0;
+            return s <= 0.03928 ? s / 12.92 : Math.Pow((s + 0.055) / 1.055, 2.4);
+        }
+
+        return (0.2126 * Channel(c.R)) + (0.7152 * Channel(c.G)) + (0.0722 * Channel(c.B));
+    }
+
+    /// <summary>The WCAG contrast ratio of two colours (1 to 21).</summary>
+    public static double Contrast(Color a, Color b)
+    {
+        double la = Luminance(a), lb = Luminance(b);
+        return (Math.Max(la, lb) + 0.05) / (Math.Min(la, lb) + 0.05);
     }
 
     private static ThemeInfo Describe(string id, ResourceDictionary d) => new(

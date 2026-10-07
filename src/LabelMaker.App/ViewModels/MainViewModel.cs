@@ -409,6 +409,31 @@ public sealed partial class MainViewModel : ObservableObject
         OnPropertyChanged(nameof(ThemeName));
     }
 
+    /// <summary>Makes or changes the user's own theme, keeps it in the settings and shows it (or removes it).</summary>
+    public void EditCustomTheme()
+    {
+        if (_shell.ShowCustomTheme() is not { } outcome)
+        {
+            return;
+        }
+
+        if (outcome.Removed)
+        {
+            string back = Services.ThemeManager.Custom?.BasedOn ?? Services.ThemeManager.DefaultTheme;
+            _env.Settings.CustomTheme = null;
+            Services.ThemeManager.SetCustom(null);
+            ApplyTheme(back);
+        }
+        else if (outcome.Theme is { } theme)
+        {
+            _env.Settings.CustomTheme = theme;
+            Services.ThemeManager.SetCustom(theme);
+            ApplyTheme(Services.ThemeManager.CustomId);
+        }
+
+        OnPropertyChanged(nameof(AllThemes));
+    }
+
     /// <summary>The theme in use, for the theme button in the title bar.</summary>
     public string ThemeName => Services.ThemeManager.Themes.FirstOrDefault(t => t.Id == Services.ThemeManager.CurrentId)?.Name ?? string.Empty;
 

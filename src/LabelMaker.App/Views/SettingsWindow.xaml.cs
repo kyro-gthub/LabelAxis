@@ -22,8 +22,7 @@ public partial class SettingsWindow : Window
         AppSettings s = env.Settings;
         LanguageBox.ItemsSource = Localization.Localizer.Languages;
         LanguageBox.SelectedItem = Localization.Localizer.Resolve(s.Language);
-        ThemeList.ItemsSource = Services.ThemeManager.Themes;
-        ThemeList.SelectedItem = Services.ThemeManager.Themes.FirstOrDefault(t => t.Id == Services.ThemeManager.CurrentId);
+        ShowThemes();
         ReduceMotionBox.IsChecked = s.ReduceMotion;
         SnapPixelsBox.Text = s.SnapPixels.ToString("0.#", CultureInfo.InvariantCulture);
         GridSizeBox.Text = s.GridSizeMm.ToString("0.##", CultureInfo.InvariantCulture);
@@ -67,6 +66,19 @@ public partial class SettingsWindow : Window
         RemoveFontButton.IsEnabled = FontList.SelectedItem is not null;
 
     // Fonts are added and removed at once, not on Save: the font lists show them straight away.
+    private void ShowThemes()
+    {
+        ThemeList.ItemsSource = Services.ThemeManager.Themes;
+        ThemeList.SelectedItem = Services.ThemeManager.Themes.FirstOrDefault(t => t.Id == Services.ThemeManager.CurrentId);
+    }
+
+    /// <summary>The user's own theme: made in its own window, shown at once, then listed here.</summary>
+    private void OnCustomTheme(object sender, RoutedEventArgs e)
+    {
+        _vm.EditCustomTheme();
+        ShowThemes();
+    }
+
     private void OnAddFont(object sender, RoutedEventArgs e)
     {
         if (_vm.AddFontFromFile() is { } family)

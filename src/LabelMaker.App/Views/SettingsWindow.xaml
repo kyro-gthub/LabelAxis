@@ -28,6 +28,9 @@
               </ItemsPanelTemplate>
             </ListBox.ItemsPanel>
           </ListBox>
+          <Button Content="Make your own theme…" Style="{StaticResource GhostButton}" HorizontalAlignment="Left" Padding="12,4" Margin="0,0,0,6"
+                  Click="OnCustomTheme" AutomationProperties.AutomationId="Settings.CustomTheme"
+                  ToolTip="Your own colours and glow, starting from one of these themes" />
           <TextBlock Text="Changes as soon as you save." TextWrapping="Wrap"
                      Foreground="{DynamicResource Br.TextMuted}" FontSize="11.5" Margin="0,0,0,4" />
           <Separator Margin="0,6" />

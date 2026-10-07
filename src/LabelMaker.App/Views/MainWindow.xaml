@@ -110,7 +110,6 @@
               <MenuItem Header="Label si_ze…" Command="{Binding LabelSizeCommand}" />
               <Separator />
               <MenuItem AutomationProperties.AutomationId="Menu.Settings" Header="Se_ttings…" Command="{Binding SettingsCommand}" />
-              <MenuItem AutomationProperties.AutomationId="Menu.About" Header="_About LabelAxis" Command="{Binding AboutCommand}" />
               <Separator />
               <MenuItem Header="E_xit" Command="{Binding ExitCommand}" />
             </MenuItem>
@@ -210,7 +209,7 @@
               <MenuItem Header="T_roubleshooting" Command="{Binding HelpCommand}" CommandParameter="troubleshooting" />
               <Separator />
               <MenuItem AutomationProperties.AutomationId="Menu.CheckForUpdates" Header="Check for _updates…" Command="{Binding CheckForUpdatesCommand}" />
-              <MenuItem Header="_About LabelAxis" Command="{Binding AboutCommand}" />
+              <MenuItem AutomationProperties.AutomationId="Menu.About" Header="_About LabelAxis" Command="{Binding AboutCommand}" />
             </MenuItem>
           </Menu>
         </StackPanel>

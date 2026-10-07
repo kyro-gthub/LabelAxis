@@ -230,6 +230,11 @@ public partial class MainWindow : Window
             menu.Items.Add(item);
         }
 
+        menu.Items.Add(new Separator());
+        var own = new MenuItem { Header = Services.ThemeManager.Custom is null ? "Make your own theme…" : "Change your own theme…" };
+        own.Click += (_, _) => _vm.EditCustomTheme();
+        menu.Items.Add(own);
+
         menu.IsOpen = true;
     }
 

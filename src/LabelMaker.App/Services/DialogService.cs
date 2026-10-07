@@ -362,6 +362,12 @@ public sealed class DialogService : IShellServices
     public void ShowBarcodeCheck(Func<IReadOnlyList<(string Name, string Value)>> labelBarcodes) =>
         new BarcodeCheckWindow(labelBarcodes) { Owner = _owner }.ShowDialog();
 
+    public (LabelMaker.Core.Settings.CustomThemeSettings? Theme, bool Removed)? ShowCustomTheme()
+    {
+        var win = new CustomThemeWindow(_env.Settings.RecentColors) { Owner = Front };
+        return win.ShowDialog() == true ? (win.Result, win.Removed) : null;
+    }
+
     public void ShowAutomation()
     {
         if (_env.Automation is { } host)

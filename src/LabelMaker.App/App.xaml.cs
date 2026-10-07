@@ -41,6 +41,7 @@ public partial class App : Application
         _dataDirectory = DataDirectoryArgument(e.Args);
         Environment = new AppEnvironment(_dataDirectory);
         Localization.Localizer.Start(Localization.Localizer.Resolve(Environment.Settings.Language));
+        ThemeManager.SetCustom(Environment.Settings.CustomTheme);
         ThemeManager.Apply(ThemeManager.Resolve(Environment.Settings.Theme, Environment.Settings.DarkTheme));
         Rendering.CustomFonts.Load(Environment.Paths.FontsDirectory);
         RegisterFontsForExport();
