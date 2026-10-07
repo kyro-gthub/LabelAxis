@@ -228,6 +228,9 @@ internal static class Scenarios
     [Scenario("In Central Kurdish the menus, windows and messages are in Kurdish")]
     public static void Kurdish(string exe) => InLanguage(exe, "ckb", file: "پەڕگە", settingsTitle: "ڕێکخستنەکان", ok: "باشە");
 
+    [Scenario("In French the menus, windows and messages are in French")]
+    public static void French(string exe) => InLanguage(exe, "fr", file: "Fichier", settingsTitle: "Paramètres", ok: "OK");
+
     private static void InLanguage(string exe, string language, string file, string settingsTitle, string ok)
     {
         using AppDriver app = AppDriver.Start(exe, language);

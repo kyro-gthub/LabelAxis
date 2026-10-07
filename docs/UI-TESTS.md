@@ -24,7 +24,7 @@ would land in the wrong place. The program refuses to start without `--test-pc`.
 | Help guide | Opens; searching "calibration" finds pages. |
 | About | Shows the version. |
 | Choose Arabic | Settings › Language › Arabic is saved, and LabelAxis offers to restart. |
-| Arabic, Central Kurdish | Menus, window titles and message-box buttons are in that language. |
+| Arabic, Central Kurdish, French | Menus, window titles and message-box buttons are in that language. |
 | Update offered | A newer version at the update address brings up the update bar; Later puts it away. |
 
 Every test starts its own LabelAxis with a fresh, separate settings folder
