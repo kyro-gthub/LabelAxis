@@ -120,6 +120,18 @@ public partial class BarcodeCheckWindow : Window
                     }, CancellationToken.None);
                 }
             }
+
+            // The camera stopped sending pictures (unplugged, or taken by another program): back to the start state.
+            if (!stop.IsCancellationRequested)
+            {
+                Dispatcher.BeginInvoke(() =>
+                {
+                    if (_cameraStop is { } current && current.Token == stop)
+                    {
+                        StopCamera();
+                    }
+                });
+            }
         }
         catch (InvalidOperationException ex)
         {

@@ -113,57 +113,28 @@ public static class BarcodeEngine
             return value; // already raw; encoder prepends FNC1
         }
 
+        // Split the way the GS1 builder and the text under the bars do: brackets inside a
+        // value (GS1 allows them) stay in the value; only "(digits)" starts an AI.
+        List<Gs1.Gs1Element> elements = Gs1.Gs1.Parse(value);
+        if (elements.Count == 0)
+        {
+            return value;
+        }
+
         var sb = new System.Text.StringBuilder();
         sb.Append(Code128Encoder.Fnc1);
-        int i = 0;
-        while (i < value.Length)
+        for (int e = 0; e < elements.Count; e++)
         {
-            if (value[i] == '(')
+            sb.Append(elements[e].Ai).Append(elements[e].Value);
+
+            // Variable-length AIs need a trailing FNC1 unless at the very end.
+            if (e < elements.Count - 1 && !Gs1.Gs1.IsPredefinedLength(elements[e].Ai))
             {
-                int close = value.IndexOf(')', i);
-                if (close < 0)
-                {
-                    sb.Append(value[i..]);
-                    break;
-                }
-
-                string ai = value.Substring(i + 1, close - i - 1);
-                sb.Append(ai);
-                i = close + 1;
-
-                // Copy the AI's data up to the next '('.
-                int next = value.IndexOf('(', i);
-                int end = next < 0 ? value.Length : next;
-                string data = value[i..end];
-                sb.Append(data);
-                i = end;
-
-                // Variable-length AIs need a trailing FNC1 unless at the very end.
-                if (i < value.Length && IsVariableLengthAi(ai))
-                {
-                    sb.Append(Code128Encoder.Fnc1);
-                }
-            }
-            else
-            {
-                sb.Append(value[i]);
-                i++;
+                sb.Append(Code128Encoder.Fnc1);
             }
         }
 
         return sb.ToString();
-    }
-
-    private static bool IsVariableLengthAi(string ai)
-    {
-        // Fixed-length AIs per the GS1 General Specifications (common subset).
-        string[] fixedAis =
-        {
-            "00", "01", "02", "03", "04", "11", "12", "13", "14", "15", "16", "17", "18", "19",
-            "20", "31", "32", "33", "34", "35", "36", "41",
-        };
-        string prefix = ai.Length >= 2 ? ai[..2] : ai;
-        return !fixedAis.Contains(prefix);
     }
 
     private static bool RunSelfTest(BarcodeSymbology symbology)

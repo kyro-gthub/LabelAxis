@@ -305,6 +305,7 @@ public sealed partial class DesignerCanvas
 
             ResizeGroup(groupStart, to);
             KeepTextInsideBoxes();
+            FitBarcodesLive();
             _activeSnapLines = groupLines;
             InvalidateVisual();
             return;
@@ -332,6 +333,7 @@ public sealed partial class DesignerCanvas
         if (_resizing)
         {
             KeepTextInsideBoxes();
+            FitBarcodesLive();
         }
 
         InvalidateVisual();
@@ -572,6 +574,11 @@ public sealed partial class DesignerCanvas
                 double finalAngle = obj.RotationDegrees;
                 double finalSkewX = obj.SkewXDegrees, finalSkewY = obj.SkewYDegrees;
                 obj.Bounds = start;
+                if (obj is BarcodeObject barcode && _dragStartSpecs.TryGetValue(obj.Id, out LabelMaker.Core.Barcodes.BarcodeSpec? startSpec))
+                {
+                    barcode.Spec = startSpec; // the edit rescales it again, as one undo step
+                }
+
                 obj.RotationDegrees = startAngle;
                 obj.SkewXDegrees = startSkew.X;
                 obj.SkewYDegrees = startSkew.Y;
@@ -598,6 +605,7 @@ public sealed partial class DesignerCanvas
         _dragging = _resizing = _rotating = _skewing = false;
         _activeHandle = Handle.None;
         _dragStartBounds.Clear();
+        _dragStartSpecs.Clear();
         _dragStartRotation.Clear();
         _dragStartSkew.Clear();
         _dragStartTextRoom.Clear();

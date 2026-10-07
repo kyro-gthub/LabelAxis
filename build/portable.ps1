@@ -6,16 +6,18 @@
     copy started from this folder keeps its settings, user templates, calibration
     and recovery snapshots in .\Data instead of %APPDATA%.
 
-    Usage:  powershell -ExecutionPolicy Bypass -File build\portable.ps1 [-Version 1.0.0] [-OutputDir E:\] [-SkipPublish]
+    Usage:  powershell -ExecutionPolicy Bypass -File build\portable.ps1 [-Version 1.0.0] [-OutputDir <folder>; default: artifacts\out] [-SkipPublish]
 #>
 param(
     [string]$Version = '',
-    [string]$OutputDir = 'E:\',
+    [string]$OutputDir = '',
     [switch]$SkipPublish,
     [string]$UpdateUrl = ''
 )
 
 $ErrorActionPreference = 'Stop'
+if (-not $OutputDir) { $OutputDir = Join-Path (Split-Path -Parent $PSScriptRoot) 'artifacts\out' }
+New-Item -ItemType Directory -Path $OutputDir -Force | Out-Null
 $root = Split-Path -Parent $PSScriptRoot
 Set-Location $root
 

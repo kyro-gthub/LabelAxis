@@ -62,6 +62,9 @@ public sealed partial class DesignerCanvas : FrameworkElement
     private Handle _activeHandle = Handle.None;
     private Point _dragStartMm;
     private Dictionary<string, RectMm> _dragStartBounds = new();
+
+    // Natural-size barcodes' settings when a drag began: a resize rescales the bars from these.
+    private Dictionary<string, LabelMaker.Core.Barcodes.BarcodeSpec> _dragStartSpecs = new();
     private Dictionary<string, double> _dragStartRotation = new();
     private Dictionary<string, (double X, double Y)> _dragStartSkew = new();
 

@@ -7,15 +7,17 @@
       LabelAxis-Setup-<version>-Offline.exe  everything inside, no download during setup
 
     Requires Inno Setup 6 (ISCC.exe on PATH, or in its usual install folders).
-    Usage:  powershell -ExecutionPolicy Bypass -File build\installer.ps1 [-OutputDir E:\] [-SkipPublish] [-UpdateUrl https://…]
+    Usage:  powershell -ExecutionPolicy Bypass -File build\installer.ps1 [-OutputDir <folder>; default: artifacts\out] [-SkipPublish] [-UpdateUrl https://…]
 #>
 param(
-    [string]$OutputDir = 'E:\',
+    [string]$OutputDir = '',
     [switch]$SkipPublish,
     [string]$UpdateUrl = ''
 )
 
 $ErrorActionPreference = 'Stop'
+if (-not $OutputDir) { $OutputDir = Join-Path (Split-Path -Parent $PSScriptRoot) 'artifacts\out' }
+New-Item -ItemType Directory -Path $OutputDir -Force | Out-Null
 $root = Split-Path -Parent $PSScriptRoot
 Set-Location $root
 

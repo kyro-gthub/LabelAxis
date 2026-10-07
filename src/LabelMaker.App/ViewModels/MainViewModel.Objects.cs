@@ -235,14 +235,32 @@ public sealed partial class MainViewModel
         var commands = new List<IUndoableCommand> { new AddObjectCommand(_session.ActiveLabel, barcode) };
         if (made.TextBeside is { } text)
         {
-            int lines = text.Split('\n').Length;
+            // Beside the code when there is room, otherwise under it; always inside the label, with
+            // the text made smaller to fit the space (6 pt at most).
+            string[] lines = text.Split('\n');
+            Core.Units.SizeMm label = _session.ActiveLabel.SizeMm;
+            Core.Units.RectMm code = barcode.Bounds;
+            double wanted = (lines.Max(l => l.Length) * 1.25) + 1, tall = lines.Length * 2.6;
+            var right = new Core.Units.RectMm(code.Right + 1.5, code.Y, Math.Max(0, label.Width - code.Right - 2), Math.Max(code.Height, Math.Min(tall, label.Height - code.Y - 0.5)));
+            var below = new Core.Units.RectMm(Math.Max(0.5, code.X), code.Bottom + 1, Math.Max(0, label.Width - Math.Max(0.5, code.X) - 0.5), Math.Max(0, label.Height - code.Bottom - 1.5));
+            double Scale(Core.Units.RectMm r) => Math.Min(r.Width / wanted, r.Height / tall);
+            Core.Units.RectMm box = Scale(right) >= Scale(below) ? right : below;
+            if (box.Width < 3 || box.Height < 2)
+            {
+                box = new Core.Units.RectMm(0.5, Math.Max(0.5, label.Height - tall - 0.5), label.Width - 1, Math.Min(tall, label.Height - 1));
+            }
+
             var beside = new TextObject
             {
                 Name = "GS1 text",
                 Content = RichTextContent.FromPlainText(text),
                 FontFamily = "Consolas",
                 FontSizePt = 6,
-                Bounds = new Core.Units.RectMm(barcode.Bounds.Right + 2, barcode.Bounds.Y, 34, Math.Max(barcode.Bounds.Height, lines * 2.6)),
+                MinAutoFitPt = 3,
+                AutoFit = TextAutoFit.ShrinkToFit,
+                WordWrap = false,
+                PaddingMm = Core.Model.Objects.Thickness.Zero,
+                Bounds = new Core.Units.RectMm(box.X, box.Y, Math.Min(box.Width, wanted), Math.Min(box.Height, tall)),
             };
             added.Add(beside);
             commands.Add(new AddObjectCommand(_session.ActiveLabel, beside));

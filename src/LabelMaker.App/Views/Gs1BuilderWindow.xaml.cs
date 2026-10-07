@@ -149,7 +149,9 @@ public partial class Gs1BuilderWindow : Window
 
         foreach (string ai in preset.Ais)
         {
-            AddRow(ai.Replace("n", "3", StringComparison.Ordinal), typed.GetValueOrDefault(ai, string.Empty));
+            // Weights to 3 decimals (kg to the gram), prices to 2 (cents).
+            string decimals = ai.StartsWith("39", StringComparison.Ordinal) ? "2" : "3";
+            AddRow(ai.Replace("n", decimals, StringComparison.Ordinal), typed.GetValueOrDefault(ai, string.Empty));
         }
 
         SetKind(preset.Kind);
@@ -168,7 +170,7 @@ public partial class Gs1BuilderWindow : Window
         var aiBox = new ComboBox { ItemsSource = _options, Width = 270, Margin = new Thickness(0, 0, 8, 0) };
         Localizer.SetOff(aiBox, true);
         var decimals = new ComboBox { Width = 64, Margin = new Thickness(0, 0, 8, 0), ToolTip = Localizer.T("Digits after the decimal point") };
-        for (int i = 0; i <= 5; i++)
+        for (int i = 0; i <= 9; i++) // prices (39n) allow up to 9 decimals; weights up to 5, which the check says
         {
             decimals.Items.Add(i.ToString(CultureInfo.CurrentCulture));
         }

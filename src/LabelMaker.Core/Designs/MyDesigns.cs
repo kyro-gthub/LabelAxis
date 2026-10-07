@@ -33,23 +33,44 @@ public sealed class MyDesigns
             return Array.Empty<LabelDesign>();
         }
 
+        // A file is read again only when it changed: typing a name, the gallery and every print
+        // request ask for the list, and reading each design (pictures and fonts) every time is slow.
         var designs = new List<(LabelDesign Design, DateTime Saved)>();
-        foreach (string path in Directory.EnumerateFiles(Folder, "*" + Extension))
+        lock (_cache)
         {
-            try
+            var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (string path in Directory.EnumerateFiles(Folder, "*" + Extension))
             {
-                ProjectDocument document = ProjectFile.Load(path);
-                designs.Add((Describe(document, path), File.GetLastWriteTimeUtc(path)));
+                seen.Add(path);
+                try
+                {
+                    var file = new FileInfo(path);
+                    if (!_cache.TryGetValue(path, out var known) || known.Saved != file.LastWriteTimeUtc || known.Length != file.Length)
+                    {
+                        known = (Describe(ProjectFile.Load(path), path), file.LastWriteTimeUtc, file.Length);
+                        _cache[path] = known;
+                    }
+
+                    designs.Add((known.Design, known.Saved));
+                }
+                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or InvalidDataException or
+                                               System.Text.Json.JsonException or InvalidOperationException or NotSupportedException)
+                {
+                    // A damaged or half-copied file is skipped rather than breaking the gallery.
+                    _cache.Remove(path);
+                }
             }
-            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or InvalidDataException or
-                                           System.Text.Json.JsonException or InvalidOperationException or NotSupportedException)
+
+            foreach (string gone in _cache.Keys.Where(k => !seen.Contains(k)).ToList())
             {
-                // A damaged or half-copied file is skipped rather than breaking the gallery.
+                _cache.Remove(gone);
             }
         }
 
         return designs.OrderByDescending(d => d.Saved).Select(d => d.Design).ToList();
     }
+
+    private readonly Dictionary<string, (LabelDesign Design, DateTime Saved, long Length)> _cache = new(StringComparer.OrdinalIgnoreCase);
 
     /// <summary>The design of that name (any case), or null.</summary>
     public LabelDesign? Find(string name) =>

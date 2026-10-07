@@ -5,11 +5,13 @@
     The package uses the .NET 10 Desktop Runtime, which the small LabelAxis installer puts on
     the test PC anyway. Never run the tests on a PC someone is working on.
 
-    Usage:  powershell -ExecutionPolicy Bypass -File build\ui-tests.ps1 [-OutputDir E:\]
+    Usage:  powershell -ExecutionPolicy Bypass -File build\ui-tests.ps1 [-OutputDir <folder>; default: artifacts\out]
 #>
-param([string]$OutputDir = 'E:\')
+param([string]$OutputDir = '')
 
 $ErrorActionPreference = 'Stop'
+if (-not $OutputDir) { $OutputDir = Join-Path (Split-Path -Parent $PSScriptRoot) 'artifacts\out' }
+New-Item -ItemType Directory -Path $OutputDir -Force | Out-Null
 $root = Split-Path -Parent $PSScriptRoot
 Set-Location $root
 

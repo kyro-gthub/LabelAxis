@@ -121,6 +121,7 @@ public sealed class PrintRequest
 
     private PrintRequest Checked(string? defaultDesign)
     {
+        Records ??= new List<Dictionary<string, string>>(); // "records": null is the same as none
         if (string.IsNullOrWhiteSpace(Design) && string.IsNullOrWhiteSpace(Project))
         {
             Design = defaultDesign;
@@ -146,7 +147,17 @@ public sealed class PrintRequest
             throw new PrintRequestException("\"startPosition\" starts at 1, the top-left label.");
         }
 
-        Records = Records.Select(r => new Dictionary<string, string>(r, StringComparer.OrdinalIgnoreCase)).ToList();
+        // Field names match in any case; if a record names one twice ("Price" and "price"), the last wins.
+        Records = Records.Where(r => r is not null).Select(r =>
+        {
+            var record = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            foreach ((string key, string value) in r)
+            {
+                record[key] = value ?? string.Empty;
+            }
+
+            return record;
+        }).ToList();
         return this;
     }
 
