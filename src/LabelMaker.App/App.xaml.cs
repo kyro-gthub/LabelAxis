@@ -40,6 +40,8 @@ public partial class App : Application
         base.OnStartup(e);
         _dataDirectory = DataDirectoryArgument(e.Args);
         Environment = new AppEnvironment(_dataDirectory);
+        CrashLog.Directory = Environment.Paths.LogDirectory;
+        LabelMaker.Core.Diagnostics.Faults.Log = CrashLog.Write;
         Localization.Localizer.Start(Localization.Localizer.Resolve(Environment.Settings.Language));
         ThemeManager.SetCustom(Environment.Settings.CustomTheme);
         ThemeManager.Apply(ThemeManager.Resolve(Environment.Settings.Theme, Environment.Settings.DarkTheme));
@@ -178,18 +180,7 @@ public partial class App : Application
 
     private void OnUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
     {
-        try
-        {
-            string logDir = Environment.Paths.LogDirectory;
-            Directory.CreateDirectory(logDir);
-            File.AppendAllText(
-                Path.Combine(logDir, "crash.log"),
-                $"{DateTimeOffset.Now:u}\n{e.Exception}\n\n");
-        }
-        catch
-        {
-            // ignore
-        }
+        CrashLog.Write(e.Exception);
 
         MessageBox.Show(
             "An unexpected error occurred and was logged. Your work-in-progress auto-save is intact.\n\n" + e.Exception.Message,

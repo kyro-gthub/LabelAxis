@@ -189,13 +189,15 @@ with no UI dependency.
 
 **Libraries:** ZXing.Net, PdfSharp, CsvHelper and ClosedXML.
 
-**Tests:** 617 headless unit tests, including round-trip decoding of generated barcodes,
-plus a click-through UI test suite.
+**Tests:** 857 headless unit tests (691 for the engine, 166 for the app's own code),
+including round-trip decoding of generated barcodes, plus a click-through UI test suite.
+The build treats every compiler warning as an error.
 
 ```bash
 # Prerequisites: .NET 10 SDK on Windows 10/11
 dotnet build LabelMaker.slnx -c Release
 dotnet test  tests/LabelMaker.Tests
+dotnet test  tests/LabelMaker.App.Tests
 dotnet run   --project src/LabelMaker.App        # start the designer
 ```
 

@@ -2,6 +2,7 @@ using System.IO;
 using System.Windows;
 using LabelMaker.App.ViewModels;
 using LabelMaker.App.Views;
+using LabelMaker.Core.Diagnostics;
 using LabelMaker.Core.Formtec;
 using Microsoft.Win32;
 
@@ -295,7 +296,7 @@ public sealed class DialogService : IShellServices
         {
             new PrintPreviewWindow(_vm.Session, _vm.PrintServer, this) { Owner = Front }.ShowDialog();
         }
-        catch (Exception ex)
+        catch (Exception ex) when (Faults.IsReportable(ex))
         {
             Warn("Could not build the preview:\n\n" + ex.Message);
         }

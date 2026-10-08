@@ -1,4 +1,5 @@
 <Window x:Class="LabelMaker.App.Views.ApplyTextStyleWindow"
+        xmlns:controls="clr-namespace:LabelMaker.App.Controls"
         xmlns:helpsvc="clr-namespace:LabelMaker.App.Services"
         helpsvc:HelpGuide.Topic="text"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -47,13 +48,7 @@
 
         <TextBlock Text="WHICH PAGES" Style="{StaticResource PanelSectionHeader}" />
         <Border Style="{StaticResource InsetPanel}" Padding="12,10">
-          <StackPanel>
-            <StackPanel x:Name="PageList" />
-            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-              <Button Content="Tick all" Style="{StaticResource GhostButton}" Padding="10,3" Margin="0,0,6,0" Click="OnTickAll" />
-              <Button Content="Untick all" Style="{StaticResource GhostButton}" Padding="10,3" Click="OnUntickAll" />
-            </StackPanel>
-          </StackPanel>
+          <controls:PageChecklist x:Name="Pages" Changed="OnChanged" />
         </Border>
       </StackPanel>
     </ScrollViewer>

@@ -9,6 +9,7 @@ using LabelMaker.Core.Barcodes;
 using LabelMaker.Core.Bulk;
 using LabelMaker.Core.Data;
 using LabelMaker.Core.Data.Import;
+using LabelMaker.Core.Diagnostics;
 using LabelMaker.Core.Editing;
 using LabelMaker.Core.Formtec;
 using LabelMaker.Core.Model;
@@ -56,7 +57,7 @@ public sealed partial class MainViewModel
             UseRecords(data, connection);
             StatusText = $"Imported {data.RowCount} records, {data.Columns.Count} columns from {Path.GetFileName(path)}";
         }
-        catch (Exception ex)
+        catch (Exception ex) when (Faults.IsReportable(ex))
         {
             _shell.Warn("Import failed:\n\n" + ex.Message);
         }
@@ -126,8 +127,9 @@ public sealed partial class MainViewModel
                 .Any(f => f.Source.Equals(family, StringComparison.OrdinalIgnoreCase) ||
                           f.FamilyNames.Values.Any(n => n.Equals(family, StringComparison.OrdinalIgnoreCase)));
         }
-        catch (Exception)
+        catch (Exception fault)
         {
+            Faults.Survived(fault);
             return true;
         }
     }

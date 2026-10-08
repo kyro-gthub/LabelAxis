@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using LabelMaker.Core.Barcodes.Code128;
+using LabelMaker.Core.Diagnostics;
 
 namespace LabelMaker.Core.Barcodes;
 
@@ -82,6 +83,7 @@ public static class BarcodeEngine
         }
         catch (Exception ex)
         {
+            Faults.Survived(ex);
             validation.Issues.Add(new BarcodeIssue(BarcodeIssueSeverity.Error, ex.Message));
             symbol = null;
             return false;
@@ -150,8 +152,10 @@ public static class BarcodeEngine
             BarcodeSymbol symbol = Encode(spec, sample);
             return symbol.Is2D ? symbol.MatrixRows > 0 : symbol.TotalWidthModules > 0;
         }
-        catch
+        catch (Exception ex)
         {
+            // A symbology that cannot encode its own sample is left off the list rather than offered broken.
+            Faults.Survived(ex);
             return false;
         }
     }

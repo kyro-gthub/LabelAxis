@@ -1,6 +1,6 @@
 using System.Globalization;
 using System.Windows;
-using System.Windows.Controls;
+using LabelMaker.App.Controls;
 using LabelMaker.App.Services;
 using LabelMaker.Core.Editing;
 using LabelMaker.Core.Model;
@@ -17,7 +17,6 @@ public partial class ApplyTextStyleWindow : Window
 {
     private readonly DocumentSession _session;
     private readonly TextObject _source;
-    private readonly List<(CheckBox Box, int Position, string Caption)> _pages = new();
 
     public ApplyTextStyleWindow(DocumentSession session, TextObject source)
     {
@@ -38,29 +37,10 @@ public partial class ApplyTextStyleWindow : Window
             SameNameBox.Content = $"Only the text box called “{source.Name.Trim()}” on each page";
         }
 
-        int current = CurrentPosition();
-        ProjectModel project = session.Project;
-        for (int i = 0; i <= project.Pages.Count; i++)
-        {
-            string caption = $"{i + 1}.  {(i == 0 ? project.MasterLabel.Name : project.Pages[i - 1].Name)}";
-            if (i == current)
-            {
-                caption += "  (this page)";
-            }
-
-            // Other pages are ticked to start with; this page only matters for "every text box".
-            var box = new CheckBox { IsChecked = i != current, Margin = new System.Windows.Thickness(0, 3, 0, 3) };
-            box.Click += OnChanged;
-            PageList.Children.Add(box);
-            _pages.Add((box, i, caption));
-        }
-
+        // Other pages are ticked to start with; this page only matters for "every text box".
+        Pages.Fill(session.Project, session.ActivePagePosition, CurrentPageRow.Optional, caption => caption + "  (this page)");
         Refresh();
     }
-
-    private int CurrentPosition() => _session.IsEditingMaster
-        ? 0
-        : _session.Project.Pages.FindIndex(p => p.Id == _session.ActivePageId) + 1;
 
     private TextStyleParts Parts =>
         (FontBox.IsChecked == true ? TextStyleParts.Font : 0) |
@@ -77,30 +57,16 @@ public partial class ApplyTextStyleWindow : Window
 
     private void OnChanged(object sender, RoutedEventArgs e) => Refresh();
 
-    private void OnTickAll(object sender, RoutedEventArgs e) => TickAll(true);
-
-    private void OnUntickAll(object sender, RoutedEventArgs e) => TickAll(false);
-
-    private void TickAll(bool ticked)
-    {
-        foreach ((CheckBox box, _, _) in _pages)
-        {
-            box.IsChecked = ticked;
-        }
-
-        Refresh();
-    }
-
     private void Refresh()
     {
         // Each page row says how many text boxes on it would change.
-        foreach ((CheckBox box, int position, string caption) in _pages)
+        Pages.Describe((position, caption) =>
         {
             int count = Targets(new[] { position }).Count;
-            box.Content = $"{caption}  ·  {(count == 1 ? "1 text box" : $"{count} text boxes")}";
-        }
+            return $"{caption}  ·  {(count == 1 ? "1 text box" : $"{count} text boxes")}";
+        });
 
-        int[] ticked = _pages.Where(p => p.Box.IsChecked == true).Select(p => p.Position).ToArray();
+        int[] ticked = Pages.Ticked;
         int targets = Targets(ticked).Count;
         int pages = ticked.Count(p => Targets(new[] { p }).Count > 0);
 
@@ -125,7 +91,7 @@ public partial class ApplyTextStyleWindow : Window
 
     private void OnApply(object sender, RoutedEventArgs e)
     {
-        int[] ticked = _pages.Where(p => p.Box.IsChecked == true).Select(p => p.Position).ToArray();
+        int[] ticked = Pages.Ticked;
         IUndoableCommand? command = TextStyleCopy.Build(_source, Targets(ticked), Parts, _session.TextMeasurer);
         if (command is not null)
         {

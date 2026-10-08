@@ -5,6 +5,7 @@ using LabelMaker.App.Rendering;
 using LabelMaker.App.Services;
 using LabelMaker.Core.Barcodes;
 using LabelMaker.Core.Bulk;
+using LabelMaker.Core.Diagnostics;
 using LabelMaker.Core.Sequences;
 using LabelMaker.Core.Serialization;
 using LabelMaker.Export.Pdf;
@@ -141,7 +142,7 @@ public partial class BulkBarcodeWindow : Window
 
             StatusText.Text = $"Wrote {written:N0} files to {folder.FolderName}";
         }
-        catch (Exception ex)
+        catch (Exception ex) when (Faults.IsReportable(ex))
         {
             MessageBox.Show(this, ex.Message, "Bulk barcodes", MessageBoxButton.OK, MessageBoxImage.Error);
         }

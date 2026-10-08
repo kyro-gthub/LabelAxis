@@ -9,6 +9,7 @@ using LabelMaker.Core.Barcodes;
 using LabelMaker.Core.Bulk;
 using LabelMaker.Core.Data;
 using LabelMaker.Core.Data.Import;
+using LabelMaker.Core.Diagnostics;
 using LabelMaker.Core.Editing;
 using LabelMaker.Core.Formtec;
 using LabelMaker.Core.Model;
@@ -64,7 +65,7 @@ public sealed partial class MainViewModel
                 _env.SaveSettings();
             }
         }
-        catch (Exception ex)
+        catch (Exception ex) when (Faults.IsReportable(ex))
         {
             _shell.Warn("Printing failed:\n\n" + ex.Message);
         }
@@ -150,10 +151,8 @@ public sealed partial class MainViewModel
     private void AimPrintAtActivePage()
     {
         PrintSettings settings = _session.Project.PrintSettings;
-        int position = _session.IsEditingMaster
-            ? 0
-            : _session.Project.Pages.FindIndex(p => p.Id == _session.ActivePageId) + 1;
-        settings.CurrentPage = Math.Max(0, position);
+        int position = _session.ActivePagePosition;
+        settings.CurrentPage = position;
 
         if (position > 0)
         {
@@ -229,7 +228,7 @@ public sealed partial class MainViewModel
                 return true;
             }
         }
-        catch (Exception ex)
+        catch (Exception ex) when (Faults.IsReportable(ex))
         {
             _shell.Warn("Printing failed:\n\n" + ex.Message);
         }
@@ -313,7 +312,7 @@ public sealed partial class MainViewModel
             log?.Cancelled(counter?.Max ?? 0);
             StatusText = "PDF export cancelled";
         }
-        catch (Exception ex)
+        catch (Exception ex) when (Faults.IsReportable(ex))
         {
             log?.Failed(counter?.Max ?? 0, ex);
             _shell.Warn("PDF export failed:\n\n" + ex.Message);
@@ -335,7 +334,7 @@ public sealed partial class MainViewModel
             File.WriteAllBytes(path, png);
             StatusText = $"Exported {Path.GetFileName(path)} (300 DPI)";
         }
-        catch (Exception ex)
+        catch (Exception ex) when (Faults.IsReportable(ex))
         {
             _shell.Warn("PNG export failed:\n\n" + ex.Message);
         }
@@ -358,7 +357,7 @@ public sealed partial class MainViewModel
             File.WriteAllText(path, svg);
             StatusText = $"Exported {Path.GetFileName(path)}";
         }
-        catch (Exception ex)
+        catch (Exception ex) when (Faults.IsReportable(ex))
         {
             _shell.Warn("SVG export failed:\n\n" + ex.Message);
         }

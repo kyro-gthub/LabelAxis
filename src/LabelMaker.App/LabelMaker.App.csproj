@@ -18,6 +18,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <InternalsVisibleTo Include="LabelMaker.App.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
     <!-- Where this build looks for updates: build\installer.ps1 -UpdateUrl https://… -->
     <AssemblyMetadata Include="UpdateFeed" Value="$(UpdateFeedUrl)" Condition="'$(UpdateFeedUrl)' != ''" />
   </ItemGroup>

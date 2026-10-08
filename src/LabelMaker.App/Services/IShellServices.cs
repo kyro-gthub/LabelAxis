@@ -144,10 +144,6 @@ public interface IShellServices
     Core.Model.ColorRgba? PickColor(Core.Model.ColorRgba initial, string title);
 
     /// <summary>
-    /// The colour chooser for a fill, which can also be a two-colour gradient. Null on cancel;
-    /// the choice's <see cref="FillChoice.GradientTo"/> is null for a single colour.
-    /// </summary>
-    /// <summary>
     /// Asks what to call a page saved as one of the user's designs, showing a picture of it.
     /// Null on cancel; otherwise the name, an optional note and the picture as PNG.
     /// </summary>
@@ -157,6 +153,10 @@ public interface IShellServices
     /// <summary>The GS1 barcode builder, for a new barcode or the one given. Null on cancel.</summary>
     (Core.Barcodes.BarcodeSpec Spec, string? TextBeside)? ShowGs1Builder(Core.Barcodes.BarcodeSpec? editing);
 
+    /// <summary>
+    /// The colour chooser for a fill, which can also be a two-colour gradient. Null on cancel;
+    /// the choice's <see cref="FillChoice.GradientTo"/> is null for a single colour.
+    /// </summary>
     FillChoice? PickFill(Core.Model.ColorRgba initial, Core.Model.ColorRgba? gradientTo, double angleDegrees, string title);
 }
 

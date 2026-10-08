@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using LabelMaker.App.Services;
 using LabelMaker.Core.Bulk;
+using LabelMaker.Core.Diagnostics;
 using LabelMaker.Core.Formtec;
 using LabelMaker.Core.Model;
 
@@ -168,7 +169,7 @@ public partial class PrintSettingsWindow : Window
                 }
             }
         }
-        catch (Exception ex)
+        catch (Exception ex) when (Faults.IsReportable(ex))
         {
             SummaryText.Text = "Could not compute a preview: " + ex.Message;
         }

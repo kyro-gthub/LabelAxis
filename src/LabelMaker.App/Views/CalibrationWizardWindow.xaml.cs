@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using LabelMaker.App.Services;
+using LabelMaker.Core.Diagnostics;
 using LabelMaker.Core.Formtec;
 using LabelMaker.Core.Model;
 using LabelMaker.Core.Printing;
@@ -141,7 +142,7 @@ public partial class CalibrationWizardWindow : Window
             _env.Calibration.Save(_env.Paths.CalibrationFilePath);
             StatusText.Text = $"Saved calibration for {printer}.";
         }
-        catch (Exception ex)
+        catch (Exception ex) when (Faults.IsReportable(ex))
         {
             StatusText.Text = "Could not save: " + ex.Message;
         }

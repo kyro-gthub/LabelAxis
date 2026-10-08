@@ -3,6 +3,7 @@ using System.Data.Common;
 using System.Globalization;
 using LabelMaker.Core.Data;
 using LabelMaker.Core.Data.Import;
+using LabelMaker.Core.Diagnostics;
 using LabelMaker.Core.Model;
 using DataSet = LabelMaker.Core.Data.DataSet;
 
@@ -195,8 +196,9 @@ public static class DatabaseReader
             {
                 return reader.GetString(ordinal);
             }
-            catch (Exception)
+            catch (Exception fault)
             {
+                Faults.Survived(fault);
                 return string.Empty;
             }
         }

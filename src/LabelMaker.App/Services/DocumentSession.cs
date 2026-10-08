@@ -40,6 +40,12 @@ public sealed class DocumentSession
 
     public bool IsEditingMaster => ActivePageId is null;
 
+    /// <summary>
+    /// The page on screen as the Pages panel counts it: 0 for the master label, 1 for the first
+    /// page after it, and so on (the positions <see cref="LayoutCopy"/> and the print settings use).
+    /// </summary>
+    public int ActivePagePosition => IsEditingMaster ? 0 : Math.Max(0, Project.Pages.FindIndex(p => p.Id == ActivePageId) + 1);
+
     public LabelDocument ActiveLabel =>
         ActivePageId is { } id && Project.Pages.FirstOrDefault(p => p.Id == id) is { } page
             ? page.Document

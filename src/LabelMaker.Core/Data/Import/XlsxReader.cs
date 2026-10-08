@@ -1,4 +1,5 @@
 using ClosedXML.Excel;
+using LabelMaker.Core.Diagnostics;
 
 namespace LabelMaker.Core.Data.Import;
 
@@ -66,8 +67,9 @@ public sealed class XlsxReader : ITabularReader
 
             return cell.GetFormattedString();
         }
-        catch (Exception)
+        catch (Exception fault)
         {
+            Faults.Survived(fault);
             return cell.Value.ToString() ?? string.Empty;
         }
     }

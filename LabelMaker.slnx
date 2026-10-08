@@ -7,6 +7,7 @@
     <Project Path="src/LabelMaker.Export/LabelMaker.Export.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/LabelMaker.App.Tests/LabelMaker.App.Tests.csproj" />
     <Project Path="tests/LabelMaker.Tests/LabelMaker.Tests.csproj" />
     <Project Path="tests/LabelMaker.UiTests/LabelMaker.UiTests.csproj" />
   </Folder>

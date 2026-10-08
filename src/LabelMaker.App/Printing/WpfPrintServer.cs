@@ -6,6 +6,7 @@ using System.Windows.Documents;
 using LabelMaker.App.Rendering;
 using LabelMaker.Core.Bulk;
 using LabelMaker.Core.Data;
+using LabelMaker.Core.Diagnostics;
 using LabelMaker.Core.Formtec;
 using LabelMaker.Core.Model;
 using LabelMaker.Core.Printing;
@@ -36,8 +37,9 @@ public sealed class WpfPrintServer
                 .OrderBy(n => n)
                 .ToList();
         }
-        catch (Exception)
+        catch (Exception fault)
         {
+            Faults.Survived(fault);
             return Array.Empty<string>();
         }
     }
@@ -48,8 +50,9 @@ public sealed class WpfPrintServer
         {
             return LocalPrintServer.GetDefaultPrintQueue()?.FullName;
         }
-        catch (Exception)
+        catch (Exception fault)
         {
+            Faults.Survived(fault);
             return null;
         }
     }
@@ -102,8 +105,9 @@ public sealed class WpfPrintServer
         {
             return queue.MergeAndValidatePrintTicket(queue.DefaultPrintTicket, ticket).ValidatedPrintTicket;
         }
-        catch (Exception)
+        catch (Exception fault)
         {
+            Faults.Survived(fault);
             return ticket;               // some drivers refuse validation; the request still stands
         }
 
@@ -135,8 +139,9 @@ public sealed class WpfPrintServer
                 };
             }
         }
-        catch (Exception)
+        catch (Exception fault)
         {
+            Faults.Survived(fault);
             // fall through to full-bleed assumption
         }
 
