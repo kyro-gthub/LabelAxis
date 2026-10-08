@@ -1,5 +1,5 @@
 using System.Windows;
-using System.Windows.Controls;
+using LabelMaker.App.Controls;
 using LabelMaker.App.Localization;
 using LabelMaker.App.Services;
 using LabelMaker.Core.Editing;
@@ -18,7 +18,6 @@ public partial class ApplyLayoutWindow : Window
     private readonly DocumentSession _session;
     private readonly LabelDocument _sourcePage;
     private readonly List<LabelObject> _selected;
-    private readonly List<(CheckBox Box, int Position, string Caption)> _pages = new();
 
     public ApplyLayoutWindow(DocumentSession session)
     {
@@ -27,29 +26,13 @@ public partial class ApplyLayoutWindow : Window
         _selected = session.Selection.ToList();
         InitializeComponent();
 
-        SelectedObjectsBox.Content = _selected.Count == 1
-            ? Localizer.F("The selected object ({0})", Describe(_selected[0]))
-            : Localizer.F("The {0} selected objects", _selected.Count);
+        SelectedObjectsBox.Content = AcrossPages.SelectionCaption(_selected);
         SelectedObjectsBox.IsEnabled = _selected.Count > 0;
         AllObjectsBox.Content = Localizer.F("Every object on this page ({0})", _sourcePage.Objects.Count);
         AllObjectsBox.IsChecked = true;
 
-        int current = _session.IsEditingMaster ? 0 : _session.Project.Pages.FindIndex(p => p.Id == _session.ActivePageId) + 1;
-        ProjectModel project = session.Project;
-        for (int i = 0; i <= project.Pages.Count; i++)
-        {
-            string caption = $"{i + 1}.  {(i == 0 ? project.MasterLabel.Name : project.Pages[i - 1].Name)}";
-            var box = new CheckBox { IsChecked = i != current, IsEnabled = i != current, Margin = new Thickness(0, 3, 0, 3) };
-            if (i == current)
-            {
-                caption = Localizer.F("{0}  (this page — the one copied from)", caption);
-            }
-
-            box.Click += OnChanged;
-            PageList.Children.Add(box);
-            _pages.Add((box, i, caption));
-        }
-
+        Pages.Fill(session.Project, session.ActivePagePosition, CurrentPageRow.Fixed,
+            caption => Localizer.F("{0}  (this page — the one copied from)", caption));
         Refresh();
     }
 
@@ -104,10 +87,7 @@ public partial class ApplyLayoutWindow : Window
         }
     }
 
-    private LayoutMatch Match =>
-        SameOrderBox.IsChecked == true ? LayoutMatch.SameOrder
-        : SameNameBox.IsChecked == true ? LayoutMatch.SameName
-        : LayoutMatch.NameThenOrder;
+    private LayoutMatch Match => AcrossPages.Match(SameOrderBox, SameNameBox);
 
     private IReadOnlyList<(LabelObject Source, LabelObject Target)> Pairs(IEnumerable<int> positions) =>
         LayoutCopy.Pairs(_session.Project, _sourcePage, Sources, positions, Kinds, Match);
@@ -119,39 +99,17 @@ public partial class ApplyLayoutWindow : Window
 
     private void OnChanged(object sender, RoutedEventArgs e) => Refresh();
 
-    private void OnTickAll(object sender, RoutedEventArgs e) => TickAll(true);
-
-    private void OnUntickAll(object sender, RoutedEventArgs e) => TickAll(false);
-
-    private void TickAll(bool ticked)
-    {
-        foreach ((CheckBox box, _, _) in _pages.Where(p => p.Box.IsEnabled))
-        {
-            box.IsChecked = ticked;
-        }
-
-        Refresh();
-    }
-
     private void Refresh()
     {
         TextPartsPanel.IsEnabled = LookBox.IsChecked == true;
-        foreach ((CheckBox box, int position, string caption) in _pages)
+        Pages.Describe((position, caption) =>
         {
-            if (!box.IsEnabled)
-            {
-                box.Content = caption;
-                continue;
-            }
-
             int count = Pairs(new[] { position }).Count;
             int add = Missing(new[] { position }).Count;
-            box.Content = add > 0 ? Localizer.F("{0}  ·  {1} objects  ·  {2} to add", caption, count, add)
-                : count == 1 ? Localizer.F("{0}  ·  1 object", caption)
-                : Localizer.F("{0}  ·  {1} objects", caption, count);
-        }
+            return add > 0 ? Localizer.F("{0}  ·  {1} objects  ·  {2} to add", caption, count, add) : AcrossPages.ObjectCount(caption, count);
+        });
 
-        int[] ticked = _pages.Where(p => p.Box.IsChecked == true && p.Box.IsEnabled).Select(p => p.Position).ToArray();
+        int[] ticked = Pages.Ticked;
         int matched = Pairs(ticked).Count;
         int missing = Missing(ticked).Count;
         int pages = ticked.Count(p => Pairs(new[] { p }).Count + Missing(new[] { p }).Count > 0);
@@ -163,9 +121,7 @@ public partial class ApplyLayoutWindow : Window
         }
         else if (matched + missing == 0)
         {
-            SummaryText.Text = Localizer.T(Match == LayoutMatch.SameName
-                ? "Nothing on the ticked pages has the same name. Try matching by order."
-                : "Nothing to match on the ticked pages.");
+            SummaryText.Text = AcrossPages.NothingMatches(Match);
             ApplyButton.IsEnabled = false;
         }
         else
@@ -179,7 +135,7 @@ public partial class ApplyLayoutWindow : Window
 
     private void OnApply(object sender, RoutedEventArgs e)
     {
-        int[] ticked = _pages.Where(p => p.Box.IsChecked == true && p.Box.IsEnabled).Select(p => p.Position).ToArray();
+        int[] ticked = Pages.Ticked;
         if (PageFormatCopy.Build(Pairs(ticked), Missing(ticked), PrintablePages.All(_session.Project).ToList(), Parts, TextParts, _session.TextMeasurer) is { } command)
         {
             _session.Execute(command);
@@ -187,7 +143,4 @@ public partial class ApplyLayoutWindow : Window
 
         DialogResult = true;
     }
-
-    private static string Describe(LabelObject o) =>
-        string.IsNullOrWhiteSpace(o.Name) ? Localizer.T(o.Kind.ToString()) : $"“{o.Name.Trim()}”";
 }

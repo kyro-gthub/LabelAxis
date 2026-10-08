@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using LabelMaker.App.Rendering;
 using LabelMaker.Core.Barcodes;
+using LabelMaker.Core.Diagnostics;
 using LabelMaker.Core.Serialization;
 using LabelMaker.Export.Pdf;
 using LabelMaker.Export.Svg;
@@ -60,7 +61,7 @@ public partial class BarcodeImageWindow : Window
             bitmap.Freeze();
             PreviewImage.Source = bitmap;
         }
-        catch (Exception ex)
+        catch (Exception ex) when (Faults.IsReportable(ex))
         {
             StatusText.Text = "Cannot preview: " + ex.Message;
         }

@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Reflection;
 using System.Text;
+using LabelMaker.Core.Diagnostics;
 
 namespace LabelMaker.Core.Formtec;
 
@@ -69,7 +70,7 @@ public sealed class TemplateStore
                 LabelTemplate t = TemplateJson.FromStream(s, isUserDefined: false);
                 AddOrReplace(t, validate: true);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (Faults.IsReportable(ex))
             {
                 _errors.Add(new TemplateLoadError(resource, ex.Message));
             }
@@ -92,7 +93,7 @@ public sealed class TemplateStore
                 LabelTemplate t = TemplateJson.FromJson(File.ReadAllText(file), isUserDefined: true);
                 AddOrReplace(t, validate: true);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (Faults.IsReportable(ex))
             {
                 _errors.Add(new TemplateLoadError(file, ex.Message));
             }
@@ -354,7 +355,7 @@ public sealed class TemplateStore
                 AddOrReplace(t);
                 added.Add(t);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (Faults.IsReportable(ex))
             {
                 _errors.Add(new TemplateLoadError($"csv row {i + 1}", ex.Message));
             }

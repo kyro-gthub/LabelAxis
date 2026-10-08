@@ -88,7 +88,7 @@ public sealed class AppEnvironment
             File.Delete(probe);
             return data;
         }
-        catch (Exception)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or System.Security.SecurityException or NotSupportedException or ArgumentException)
         {
             return null;
         }

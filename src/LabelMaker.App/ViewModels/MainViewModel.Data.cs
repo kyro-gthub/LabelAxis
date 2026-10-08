@@ -3,6 +3,7 @@ using LabelMaker.App.Mvvm;
 using LabelMaker.App.Services;
 using LabelMaker.Core.Data;
 using LabelMaker.Core.Data.Import;
+using LabelMaker.Core.Diagnostics;
 using LabelMaker.Core.Model;
 using LabelMaker.Data;
 
@@ -79,7 +80,7 @@ public sealed partial class MainViewModel
         {
             _shell.Warn(ex.Message, "Data connection");
         }
-        catch (Exception ex)
+        catch (Exception ex) when (Faults.IsReportable(ex))
         {
             _shell.Warn("The data could not be read:\n\n" + ex.Message, "Data connection");
         }
@@ -166,7 +167,7 @@ public sealed partial class MainViewModel
         {
             StatusText = "Refresh cancelled";
         }
-        catch (Exception ex)
+        catch (Exception ex) when (Faults.IsReportable(ex))
         {
             _shell.Warn("The file could not be read:\n\n" + ex.Message);
         }

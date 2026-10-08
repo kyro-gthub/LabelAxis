@@ -428,7 +428,9 @@ LabelAxis/
 │   │   ├─ Printing/WpfPrintServer      Services/  Interop/HighDpi
 │   └─ LabelMaker.Cli/              net10.0 — headless: barcode/sequence/bulk export
 ├─ tests/
-│   └─ LabelMaker.Tests/            xUnit — Core + Export (headless)
+│   ├─ LabelMaker.Tests/            xUnit — Core, Export, Data (headless)
+│   ├─ LabelMaker.App.Tests/        xUnit — the app's view models and controls (headless)
+│   └─ LabelMaker.UiTests/          click-through tests for a separate test PC
 ├─ installer/
 │   ├─ LabelMaker.iss               Inno Setup: shortcuts, icon, .labelproj assoc, per-user
 │   └─ assets/ (icon.ico, banner)

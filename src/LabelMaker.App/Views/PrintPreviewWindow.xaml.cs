@@ -6,6 +6,7 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using LabelMaker.App.Printing;
 using LabelMaker.App.Services;
+using LabelMaker.Core.Diagnostics;
 using LabelMaker.Core.Formtec;
 using LabelMaker.Core.Model;
 using LabelMaker.Core.Printing;
@@ -125,7 +126,7 @@ public partial class PrintPreviewWindow : Window
             LeftStatus.ToolTip = LeftStatus.Text;
             RightStatus.Text = $"{printer ?? "No printer"} · {DescribeContent(settings)} · {settings.ScalePercent:0.#}% scale";
         }
-        catch (Exception ex)
+        catch (Exception ex) when (Faults.IsReportable(ex))
         {
             _count = 0;
             _pageCache.Clear();

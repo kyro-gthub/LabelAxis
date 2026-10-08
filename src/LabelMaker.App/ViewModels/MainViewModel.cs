@@ -9,6 +9,7 @@ using LabelMaker.Core.Barcodes;
 using LabelMaker.Core.Bulk;
 using LabelMaker.Core.Data;
 using LabelMaker.Core.Data.Import;
+using LabelMaker.Core.Diagnostics;
 using LabelMaker.Core.Editing;
 using LabelMaker.Core.Formtec;
 using LabelMaker.Core.Model;
@@ -144,7 +145,7 @@ public sealed partial class MainViewModel : ObservableObject
             session.SetData(service.BuildDataSet(raw, snapshot), null, markDirty: false);
             DescribeRestoredData(project.DataConnections.FirstOrDefault(c => c.Id == cache.ConnectionId));
         }
-        catch (Exception ex)
+        catch (Exception ex) when (Faults.IsReportable(ex))
         {
             StatusText = "Saved records could not be restored: " + ex.Message;
         }

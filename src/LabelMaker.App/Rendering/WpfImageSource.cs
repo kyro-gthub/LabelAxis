@@ -1,6 +1,7 @@
 using System.IO;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using LabelMaker.Core.Diagnostics;
 using LabelMaker.Core.Model.Objects;
 using LabelMaker.Core.Rendering;
 using LabelMaker.Core.Serialization;
@@ -100,6 +101,26 @@ public sealed class WpfImageSource : IImageSource
 
     public WpfImageSource(AssetStore assets) => _assets = assets;
 
+    /// <summary>
+    /// A picture's size in pixels as Windows' own decoders read it, for the kinds whose size
+    /// LabelAxis cannot read from the file's header itself (TIFF, WebP and the rest). Null when
+    /// the file is not a picture Windows can open.
+    /// </summary>
+    public static (int Width, int Height)? PixelSize(byte[] bytes)
+    {
+        ArgumentNullException.ThrowIfNull(bytes);
+        try
+        {
+            using var ms = new MemoryStream(bytes, writable: false);
+            BitmapFrame frame = BitmapDecoder.Create(ms, BitmapCreateOptions.DelayCreation, BitmapCacheOption.None).Frames[0];
+            return frame.PixelWidth > 0 && frame.PixelHeight > 0 ? (frame.PixelWidth, frame.PixelHeight) : null;
+        }
+        catch (Exception ex) when (Faults.IsReportable(ex))
+        {
+            return null;
+        }
+    }
+
     public void Invalidate() => _cache.Clear();
 
     public IDecodedImage? Get(string assetId)
@@ -130,8 +151,9 @@ public sealed class WpfImageSource : IImageSource
                 bmp.Freeze();
                 decoded = new WpfDecodedImage(bmp);
             }
-            catch (Exception)
+            catch (Exception fault)
             {
+                Faults.Survived(fault);
                 decoded = null;
             }
         }

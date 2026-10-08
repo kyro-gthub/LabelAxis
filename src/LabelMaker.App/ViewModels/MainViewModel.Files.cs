@@ -9,6 +9,7 @@ using LabelMaker.Core.Barcodes;
 using LabelMaker.Core.Bulk;
 using LabelMaker.Core.Data;
 using LabelMaker.Core.Data.Import;
+using LabelMaker.Core.Diagnostics;
 using LabelMaker.Core.Editing;
 using LabelMaker.Core.Formtec;
 using LabelMaker.Core.Model;
@@ -193,10 +194,42 @@ public sealed partial class MainViewModel
                 ? $"Opened {Path.GetFileName(path)}"
                 : Localization.Localizer.F("Opened {0} and added its fonts: {1}", Path.GetFileName(path), string.Join(", ", fonts));
         }
-        catch (Exception ex)
+        catch (Exception ex) when (Faults.IsReportable(ex))
         {
             _shell.Warn("Could not open the project:\n\n" + ex.Message);
         }
+    }
+
+    /// <summary>
+    /// The auto-save timer: a recovery snapshot of every open project with unsaved changes.
+    /// Returns how many were written. Recovery is a safety net, so a snapshot that cannot be
+    /// written never interrupts work; a mistake in LabelAxis still reaches the crash log.
+    /// </summary>
+    public int AutoSaveAll()
+    {
+        int saved = 0;
+        foreach (DocumentTab tab in Tabs.Where(t => t.HasUnsavedChanges))
+        {
+            try
+            {
+                tab.Session.SyncDataCache();
+                _env.AutoSave.Snapshot(tab.Session.Document);
+                saved++;
+            }
+            catch (Exception fault)
+            {
+                Faults.Survived(fault);
+            }
+        }
+
+        if (saved > 0)
+        {
+            StatusText = saved == 1
+                ? $"Auto-saved recovery snapshot at {DateTime.Now:T}"
+                : $"Auto-saved {saved} projects at {DateTime.Now:T}";
+        }
+
+        return saved;
     }
 
     public void RestoreRecovered(RecoveryInfo info)
@@ -208,7 +241,7 @@ public sealed partial class MainViewModel
             _session.Document.HasUnsavedChanges = true;
             StatusText = "Recovered unsaved project";
         }
-        catch (Exception ex)
+        catch (Exception ex) when (Faults.IsReportable(ex))
         {
             _shell.Warn("Recovery failed: " + ex.Message);
         }
@@ -244,7 +277,7 @@ public sealed partial class MainViewModel
             StatusText = $"Saved {Path.GetFileName(path)}";
             return true;
         }
-        catch (Exception ex)
+        catch (Exception ex) when (Faults.IsReportable(ex))
         {
             _shell.Warn("Save failed:\n\n" + ex.Message);
             return false;

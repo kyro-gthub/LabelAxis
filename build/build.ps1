@@ -11,11 +11,17 @@ Get-ChildItem -Recurse -Directory -Include bin, obj | Remove-Item -Recurse -Forc
 
 Write-Host "== Restore ==" -ForegroundColor Cyan
 dotnet restore LabelMaker.slnx
+if ($LASTEXITCODE -ne 0) { throw 'dotnet restore failed' }
 
 Write-Host "== Build (Release) ==" -ForegroundColor Cyan
 dotnet build LabelMaker.slnx -c Release --no-restore
+if ($LASTEXITCODE -ne 0) { throw 'dotnet build failed' }
 
-Write-Host "== Test ==" -ForegroundColor Cyan
-dotnet test tests/LabelMaker.Tests/LabelMaker.Tests.csproj -c Release --no-build
+# The engine's tests and the app's own; the click-through tests run on a test PC (docs\UI-TESTS.md).
+foreach ($project in 'tests/LabelMaker.Tests/LabelMaker.Tests.csproj', 'tests/LabelMaker.App.Tests/LabelMaker.App.Tests.csproj') {
+    Write-Host "== Test $([IO.Path]::GetFileNameWithoutExtension($project)) ==" -ForegroundColor Cyan
+    dotnet test $project -c Release --no-build
+    if ($LASTEXITCODE -ne 0) { throw "Tests failed: $project" }
+}
 
 Write-Host "OK" -ForegroundColor Green

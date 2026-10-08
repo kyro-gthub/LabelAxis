@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Unit tests for the Windows program's own code: the main view model, the Properties panel,
+    the colour window's lists, the page list, languages. They run headless like the engine's
+    tests: nothing here starts LabelAxis (App is never created), no window is shown, and the
+    Windows clipboard is never used.
+  -->
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <RootNamespace>LabelMaker.App.Tests</RootNamespace>
+    <UseWPF>true</UseWPF>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <!-- Lets the coverage tool find the WPF assemblies when it measures LabelAxis.dll. -->
+    <PreserveCompilationContext>true</PreserveCompilationContext>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="coverlet.collector" />
+    <PackageReference Include="FluentAssertions" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- The engine tests' picture maker, shared rather than copied. -->
+    <Compile Include="..\LabelMaker.Tests\Support\TestImages.cs" Link="Support\TestImages.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\LabelMaker.App\LabelMaker.App.csproj" />
+  </ItemGroup>
+
+</Project>

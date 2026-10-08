@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
+using LabelMaker.Core.Diagnostics;
 
 namespace LabelMaker.Core.Automation;
 
@@ -181,6 +182,7 @@ public sealed class LocalPrintLink : IAsyncDisposable
             }
             catch (Exception ex)
             {
+                Faults.Survived(ex);
                 // Anything else still gets an answer, so the program that asked is not left waiting.
                 try
                 {

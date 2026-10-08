@@ -23,8 +23,9 @@ dotnet build LabelMaker.slnx
 # Release build
 dotnet build LabelMaker.slnx -c Release
 
-# Run the unit tests
+# Run the unit tests (the engine, then the app)
 dotnet test tests/LabelMaker.Tests -c Release
+dotnet test tests/LabelMaker.App.Tests -c Release
 
 # Launch the designer
 dotnet run --project src/LabelMaker.App -c Release
@@ -40,7 +41,7 @@ directly. Older tooling can open the individual `.csproj` files.
 
 ```powershell
 build\build.ps1     # clean + restore + Release build + test
-build\test.ps1      # test only, with coverage (coverlet) into ./coverage
+build\test.ps1      # both test suites with coverage into ./coverage; fails below each part's minimum
 build\publish.ps1   # release builds into ./artifacts: app (runtime inside), app-shared, cli
 build\portable.ps1  # the portable zip
 build\installer.ps1 # both installers (small and offline)

@@ -1,3 +1,4 @@
+using LabelMaker.Core.Diagnostics;
 using LabelMaker.Core.Model;
 using LabelMaker.Core.Model.Objects;
 using LabelMaker.Core.Model.Text;
@@ -364,8 +365,9 @@ public sealed class PdfDrawingSurface : IDrawingSurface
             using XImage ximage = XImage.FromStream(ms);
             _gfx.DrawImage(ximage, Pt(destRectMm));
         }
-        catch (Exception)
+        catch (Exception fault)
         {
+            Faults.Survived(fault);
             _gfx.DrawRectangle(Pen(new ColorRgba(200, 60, 60), 0.2, DashStyle.Dash), Pt(destRectMm));
         }
     }
@@ -541,8 +543,9 @@ public sealed class PdfDrawingSurface : IDrawingSurface
         {
             return new XFont(span.FontFamily, span.FontSizePt, style);
         }
-        catch (Exception)
+        catch (Exception fault)
         {
+            Faults.Survived(fault);
             return new XFont("Arial", span.FontSizePt, style);
         }
     }
@@ -606,8 +609,9 @@ public sealed class PdfDrawingSurface : IDrawingSurface
                 double widthPt = _gfx.MeasureString(text, font).Width;
                 return widthPt / MmToPt;
             }
-            catch (Exception)
+            catch (Exception fault)
             {
+                Faults.Survived(fault);
                 return _fallback.MeasureWidthMm(text, fontFamily, fontSizePt, bold, italic);
             }
         }
@@ -619,8 +623,9 @@ public sealed class PdfDrawingSurface : IDrawingSurface
                 var font = new XFont(fontFamily, fontSizePt);
                 return font.GetHeight() / MmToPt;
             }
-            catch (Exception)
+            catch (Exception fault)
             {
+                Faults.Survived(fault);
                 return _fallback.LineHeightMm(fontFamily, fontSizePt);
             }
         }

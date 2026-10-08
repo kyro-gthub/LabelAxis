@@ -8,7 +8,8 @@
 | `LabelMaker.Export` | `net10.0` | `IDrawingSurface` implementations for PdfSharp (`XGraphics`) and SVG; PDF/SVG exporters. |
 | `LabelMaker.App` | `net10.0-windows` | WPF UI, the WPF `IDrawingSurface`, PNG/JPEG raster export, `System.Printing` server. |
 | `LabelMaker.Cli` | `net10.0` | `labelaxis` headless tool. |
-| `LabelMaker.Tests` | `net10.0` | xUnit over Core + Export. |
+| `LabelMaker.Tests` | `net10.0` | xUnit over Core, Export and Data. |
+| `LabelMaker.App.Tests` | `net10.0-windows` | xUnit over the app's own code: view models, the Properties panel, the page list, languages. Headless: never creates `App`, shows no window, never touches the clipboard. |
 
 **Rule:** logic goes in `Core`. If you're about to reference a UI type in `Core`,
 add an interface in `Core` and implement it in `App`/`Export` instead (see
@@ -103,7 +104,9 @@ never partially parsed.
 
 ## Tests
 
-`dotnet test tests/LabelMaker.Tests`. Notable suites:
+`dotnet test tests/LabelMaker.Tests` (the engine) and `dotnet test tests/LabelMaker.App.Tests`
+(the app). `build\test.ps1` runs both with coverage and fails when a part falls below its
+minimum. Notable suites:
 
 * `Code128RoundTripTests` — encodes a corpus, rasterises, **decodes with ZXing**,
   asserts equality. Guards the pattern table and A/B/C algorithm.
@@ -116,6 +119,21 @@ never partially parsed.
   laziness.
 * `ExpressionEngineTests` — documented examples + sandbox limits (recursion,
   size, division by zero, unknown function).
+* `ExportDrawingTests` — every kind of object drawn into PDF and SVG; the PDF is read back
+  and its drawing operators and resources checked.
+* App: `MainViewModelTests`, `FilesAndDataTests`, `PropertyBoxTests` (every Properties box
+  keeps what is typed and undoes in one step) run the main view model against `FakeShell`,
+  a stand-in for the dialogs, with settings in a temporary folder (`AppHarness`).
 
 Style: `.editorconfig` at the repo root; tests allow `Method_Name_With_Underscores`
-via `tests/.editorconfig`.
+via `tests/.editorconfig`. The build treats every warning as an error.
+
+## Errors
+
+A `catch` that tells the user what went wrong filters with `Faults.IsReportable(ex)`
+(`LabelMaker.Core.Diagnostics`): a failure outside the program (a locked file, a refusing
+printer) becomes a message, while a mistake in LabelAxis (null reference, bad cast, index
+out of range) reaches the crash log through the app's unhandled-exception handler. Code
+that must carry on whatever happens, such as drawing a page or falling back to another
+font, catches everything and calls `Faults.Survived(ex)`, which writes a mistake to the
+crash log once for each place it happens.

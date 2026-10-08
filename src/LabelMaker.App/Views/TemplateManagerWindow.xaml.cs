@@ -5,6 +5,7 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using LabelMaker.App.Mvvm;
 using LabelMaker.App.Services;
+using LabelMaker.Core.Diagnostics;
 using LabelMaker.Core.Formtec;
 using Microsoft.Win32;
 
@@ -266,7 +267,7 @@ public partial class TemplateManagerWindow : Window
                 _env.Templates.SaveUserTemplate(t, _env.Paths.UserTemplatesDirectory);
                 ok++;
             }
-            catch (Exception ex)
+            catch (Exception ex) when (Faults.IsReportable(ex))
             {
                 MessageBox.Show(this, $"{System.IO.Path.GetFileName(file)}: {ex.Message}", "Import", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
@@ -295,7 +296,7 @@ public partial class TemplateManagerWindow : Window
             Refresh();
             MessageBox.Show(this, $"Imported {added.Count} template(s) from CSV.", "Import", MessageBoxButton.OK, MessageBoxImage.Information);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (Faults.IsReportable(ex))
         {
             MessageBox.Show(this, ex.Message, "Import", MessageBoxButton.OK, MessageBoxImage.Error);
         }
