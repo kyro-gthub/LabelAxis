@@ -1,0 +1,16 @@
+# Text files are kept with LF line ends in the repository and checked out with the line ends
+# of the computer, whatever each person's Git settings are.
+* text=auto
+
+# Windows-only scripts and installer sources are always CRLF, as their tools expect.
+*.ps1 text eol=crlf
+*.iss text eol=crlf
+
+# Pictures, fonts and icons are never changed.
+*.png binary
+*.bmp binary
+*.ico binary
+*.ttf binary
+*.otf binary
+*.pdf binary
+*.labelproj binary

@@ -1,0 +1,21 @@
+name: Suggest a feature
+description: An idea that would make LabelAxis better for your labels.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: need
+    attributes:
+      label: What are you trying to do?
+      description: The job you want to get done, more than the button you imagine.
+      placeholder: "We print 500 shelf labels every Monday from our till's export."
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: How could LabelAxis help?
+  - type: textarea
+    id: today
+    attributes:
+      label: How do you do it today?
+      description: Another program, a workaround, or not at all.

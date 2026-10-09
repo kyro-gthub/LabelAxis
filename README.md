@@ -163,8 +163,8 @@ are ready for a spreadsheet. A **blank sheet** or a **custom size** is one tab a
 - Several projects open in tabs. Autosave and crash recovery mean nothing is lost.
 - Projects are single `.labelproj` files: a ZIP holding the design, images and fonts.
   Saving is atomic, so a crash cannot corrupt a file.
-- Checks GitHub Releases for new versions and updates itself (once the build is pointed at
-  the repository; see `docs/BUILD.md`).
+- Checks GitHub Releases for new versions once a day and updates itself when you choose
+  Update now.
 
 ![Midnight theme](docs/images/main-window-midnight.png)
 
@@ -179,6 +179,11 @@ are ready for a spreadsheet. A **blank sheet** or a **custom size** is one tab a
 | `LabelAxis-<version>-portable.zip` | Run it from any folder or a USB stick. Settings stay beside it. |
 
 `SHA256SUMS.txt` beside the downloads lets you check the files.
+
+The installers are not code-signed yet, so Windows may show **"Windows protected your PC"**
+the first time. Choose **More info › Run anyway**. If you want to be sure the file is the one
+published here, compare its fingerprint (`Get-FileHash <file>` in PowerShell) with
+`SHA256SUMS.txt`.
 
 ---
 
@@ -248,6 +253,9 @@ Further reading:
 - [`docs/UI-DESIGN.md`](docs/UI-DESIGN.md): the look of the app.
 - [`docs/TEMPLATE-SCHEMA.md`](docs/TEMPLATE-SCHEMA.md): the sheet file format.
 - [`docs/OMISSIONS.md`](docs/OMISSIONS.md): what was left out on purpose.
+- [`CONTRIBUTING.md`](CONTRIBUTING.md): how to report a bug or send a change.
+- [`SECURITY.md`](SECURITY.md): how to report a security problem privately.
+- [`CHANGELOG.md`](CHANGELOG.md): what changed in each version.
 
 ### Priorities
 

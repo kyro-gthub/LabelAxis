@@ -1,0 +1,46 @@
+# Builds LabelAxis and runs the engine's and the app's unit tests, with the coverage minimums
+# of build/test.ps1, on every push to main and every pull request. The click-through UI tests
+# are not run here: they drive a real desktop and belong on a separate test PC (docs/UI-TESTS.md).
+name: Build and test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Restore
+        run: dotnet restore LabelMaker.slnx
+
+      - name: Build (Release; warnings are errors)
+        run: dotnet build LabelMaker.slnx -c Release --no-restore
+
+      - name: Unit tests with coverage minimums
+        shell: pwsh
+        run: ./build/test.ps1
+
+      - name: Keep the coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage/
+          retention-days: 14

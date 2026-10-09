@@ -1,0 +1,24 @@
+# Tells the maintainer when a library LabelAxis uses, or a step of the build workflow, has a
+# newer version, security fixes first. Updates come once a month, grouped, as pull requests
+# that the build-and-test workflow checks before anything is merged.
+version: 2
+updates:
+  - package-ecosystem: nuget
+    directory: /
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 5
+    ignore:
+      # Version 8 and later are not free for commercial use; stay on 7.
+      - dependency-name: FluentAssertions
+        update-types: ["version-update:semver-major"]
+    groups:
+      test-libraries:
+        patterns: ["xunit*", "Microsoft.NET.Test.Sdk", "coverlet*", "FluentAssertions"]
+      everything-else:
+        patterns: ["*"]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
