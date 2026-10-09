@@ -15,6 +15,11 @@
     <Version>1.0.0</Version>
     <!-- Show a clean "1.0.0" in file properties and Apps, not "1.0.0+<git commit>". -->
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+    <!-- What is published (dotnet publish: the app, installers, portable zip, CLI, UI tests)
+         records neutral paths (/_/…) instead of the folder it was built in, so it carries
+         nothing about the PC it was made on. Not for test builds: the coverage tool needs the
+         real paths to find the source. -->
+    <PathMap Condition="'$(_IsPublishing)' == 'true'">$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)'))=/_/</PathMap>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <FileVersion>1.0.0.0</FileVersion>
     <Copyright>Copyright © LabelAxis</Copyright>
