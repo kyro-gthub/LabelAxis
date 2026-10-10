@@ -49,4 +49,13 @@ public sealed class SheetMeasurementsTests
         m.MarginRightMm.Should().BeApproximately(8.5, 1e-6);
         m.MarginTopMm.Should().BeApproximately(10.5, 1e-6);
     }
+
+    [Theory]
+    [InlineData(-0.0001, "0")]
+    [InlineData(-0.004, "0")]
+    [InlineData(0.004, "0")]
+    [InlineData(2.5, "2.5")]
+    [InlineData(-1.25, "-1.25")]
+    public void A_length_that_rounds_to_nothing_reads_0_not_minus_0(double mm, string shown) =>
+        SheetMeasurements.Mm(mm).Should().Be(shown);
 }

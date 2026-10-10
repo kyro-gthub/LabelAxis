@@ -88,8 +88,15 @@ public sealed record SheetMeasurements
         };
     }
 
-    /// <summary>"38 × 21.15 mm", "0.5 mm": two decimals at most, no trailing zeros.</summary>
-    public static string Mm(double value) => Math.Round(value, 2).ToString("0.##", CultureInfo.CurrentCulture);
+    /// <summary>
+    /// "38 × 21.15 mm", "0.5 mm": two decimals at most, no trailing zeros. A value that rounds to
+    /// nothing is "0", never "-0" (labels that touch measure a hair below zero apart).
+    /// </summary>
+    public static string Mm(double value)
+    {
+        double rounded = Math.Round(value, 2);
+        return (rounded == 0 ? 0 : rounded).ToString("0.##", CultureInfo.CurrentCulture);
+    }
 
     /// <summary>One line for status bars and dialogs.</summary>
     public string Describe() =>
