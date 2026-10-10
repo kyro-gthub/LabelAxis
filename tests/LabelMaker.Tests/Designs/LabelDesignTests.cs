@@ -90,6 +90,16 @@ public sealed class LabelDesignTests
     }
 
     [Fact]
+    public void The_old_price_on_the_sale_tag_is_struck_through_whatever_its_length()
+    {
+        // A separate line drawn across it stayed one length and sat below the middle of the digits.
+        ProjectModel project = DesignBuilder.Build(Design("retail-02"), Store, new DesignBuildOptions { UseDataFields = true }).Project;
+
+        project.MasterLabel.Objects.OfType<TextObject>().Single(t => t.Name == "OldPrice").Strikethrough.Should().BeTrue();
+        project.MasterLabel.Objects.Should().NotContain(o => o.Name == "Strike");
+    }
+
+    [Fact]
     public void A_field_inside_words_takes_only_its_own_part_of_the_sample()
     {
         ProjectModel project = DesignBuilder.Build(Design("product-05"), Store, new DesignBuildOptions { UseDataFields = true }).Project;

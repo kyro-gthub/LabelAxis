@@ -326,14 +326,21 @@ public sealed class SvgDrawingSurface : IDrawingSurface
                     _body.Append(" font-style=\"italic\"");
                 }
 
-                if (span.Underline || span.Strikethrough)
+                if (span.Underline)
                 {
-                    _body.Append(" text-decoration=\"")
-                        .Append(span.Underline ? "underline " : string.Empty)
-                        .Append(span.Strikethrough ? "line-through" : string.Empty).Append('"');
+                    _body.Append(" text-decoration=\"underline\"");
                 }
 
                 _body.Append(">").Append(Escape(Bidi.ForDisplay(span))).Append("</text>");
+                if (span.Strikethrough && spanWidth > 0)
+                {
+                    // Drawn as a line, not "line-through", so it sits where the screen and PDF put it.
+                    double em = UnitConverter.PointsToMm(span.FontSizePt);
+                    double strikeY = baseline - (em * StrikeLine.HeightEm(span.Text));
+                    _body.Append("<line x1=\"").Append(F(x)).Append("\" y1=\"").Append(F(strikeY)).Append("\" x2=\"").Append(F(x + spanWidth))
+                        .Append("\" y2=\"").Append(F(strikeY)).Append("\" stroke=\"").Append(Rgb(span.Foreground))
+                        .Append("\" stroke-width=\"").Append(F(em * StrikeLine.ThicknessEm)).Append("\"/>");
+                }
                 x += spanWidth + (span.Text.EndsWith(' ') ? line.WordGapMm : 0);
             }
         }

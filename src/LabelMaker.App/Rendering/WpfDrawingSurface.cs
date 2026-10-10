@@ -291,11 +291,13 @@ public sealed class WpfDrawingSurface : IDrawingSurface
                 {
                     FormattedText ft = BuildFormattedText(span);
                     _dc.DrawText(ft, new Point(x * K, (baseline * K) - ft.Baseline));
+                    DrawStrike(span, x, x + (ft.WidthIncludingTrailingWhitespace / K), baseline);
                     x += (ft.WidthIncludingTrailingWhitespace / K) + (span.Text.EndsWith(' ') ? line.WordGapMm : 0);
                     continue;
                 }
 
                 // Letter spacing: each character is placed with the extra gap after it.
+                double spanStart = x;
                 TextElementEnumerator characters = StringInfo.GetTextElementEnumerator(span.Text);
                 while (characters.MoveNext())
                 {
@@ -303,6 +305,8 @@ public sealed class WpfDrawingSurface : IDrawingSurface
                     _dc.DrawText(ft, new Point(x * K, (baseline * K) - ft.Baseline));
                     x += (ft.WidthIncludingTrailingWhitespace / K) + trackingMm;
                 }
+
+                DrawStrike(span, spanStart, x, baseline);
 
                 if (span.Text.EndsWith(' '))
                 {
@@ -336,6 +340,24 @@ public sealed class WpfDrawingSurface : IDrawingSurface
         _dc.DrawGeometry(brush, null, geo);
     }
 
+    /// <summary>
+    /// The line through struck-through text: one straight line for the whole run, at the height
+    /// <see cref="StrikeLine"/> gives.
+    /// </summary>
+    private void DrawStrike(TextSpan span, double fromMm, double toMm, double baselineMm)
+    {
+        if (!span.Strikethrough || toMm <= fromMm)
+        {
+            return;
+        }
+
+        double em = UnitConverter.PointsToMm(span.FontSizePt);
+        double y = (baselineMm - (em * StrikeLine.HeightEm(span.Text))) * K;
+        var pen = new Pen(WpfFontCache.Brush(span.Foreground), Math.Max(0.1, em * StrikeLine.ThicknessEm * K));
+        pen.Freeze();
+        _dc.DrawLine(pen, new Point(fromMm * K, y), new Point(toMm * K, y));
+    }
+
     private FormattedText BuildFormattedText(TextSpan span)
     {
         Typeface typeface = WpfFontCache.Typeface(span.FontFamily, span.Bold, span.Italic);
@@ -353,20 +375,10 @@ public sealed class WpfDrawingSurface : IDrawingSurface
             TextAlignment = TextAlignment.Left,
         };
 
-        if (span.Underline || span.Strikethrough)
+        // The strikethrough is drawn by DrawStrike, at the height PDF and SVG use too.
+        if (span.Underline)
         {
-            var decorations = new TextDecorationCollection();
-            if (span.Underline)
-            {
-                decorations.Add(TextDecorations.Underline);
-            }
-
-            if (span.Strikethrough)
-            {
-                decorations.Add(TextDecorations.Strikethrough);
-            }
-
-            ft.SetTextDecorations(decorations);
+            ft.SetTextDecorations(TextDecorations.Underline);
         }
 
         return ft;

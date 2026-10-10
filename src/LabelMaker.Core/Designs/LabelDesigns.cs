@@ -84,6 +84,12 @@ public sealed class DesignObject
     public double SizePt { get; set; } = 10;
     public bool Bold { get; set; }
     public bool Italic { get; set; }
+
+    /// <summary>
+    /// A line through the words, such as an old price. It runs through the middle of the text,
+    /// however long the value from a spreadsheet is.
+    /// </summary>
+    public bool Strikethrough { get; set; }
     public string? Color { get; set; }
     public string? Align { get; set; }
     public string? Valign { get; set; }
@@ -343,6 +349,7 @@ public static partial class DesignBuilder
             FontSizePt = size,
             Bold = o.Bold,
             Italic = o.Italic,
+            Strikethrough = o.Strikethrough,
             Foreground = Colour(o.Color) ?? ColorRgba.Black,
             HorizontalAlignment = o.Align?.ToLowerInvariant() switch
             {

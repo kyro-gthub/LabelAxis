@@ -434,14 +434,15 @@ public sealed class PdfDrawingSurface : IDrawingSurface
 
                 if (span.Underline)
                 {
-                    _gfx.DrawLine(Pen(span.Foreground, span.FontSizePt * 0.06, DashStyle.Solid),
+                    // Pen widths are in millimetres: a share of the font size, as on screen.
+                    _gfx.DrawLine(Pen(span.Foreground, UnitConverter.PointsToMm(span.FontSizePt) * StrikeLine.ThicknessEm, DashStyle.Solid),
                         x * MmToPt, (baseline + 0.6) * MmToPt, (x + advance) * MmToPt, (baseline + 0.6) * MmToPt);
                 }
 
                 if (span.Strikethrough)
                 {
-                    double strike = baseline - (UnitConverter.PointsToMm(span.FontSizePt) * 0.3);
-                    _gfx.DrawLine(Pen(span.Foreground, span.FontSizePt * 0.06, DashStyle.Solid),
+                    double strike = baseline - (UnitConverter.PointsToMm(span.FontSizePt) * StrikeLine.HeightEm(span.Text));
+                    _gfx.DrawLine(Pen(span.Foreground, UnitConverter.PointsToMm(span.FontSizePt) * StrikeLine.ThicknessEm, DashStyle.Solid),
                         x * MmToPt, strike * MmToPt, (x + advance) * MmToPt, strike * MmToPt);
                 }
 

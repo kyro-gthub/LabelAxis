@@ -218,6 +218,7 @@
         "font": "Segoe UI",
         "sizePt": 14,
         "bold": false,
+        "strikethrough": true,
         "color": "#5E5E5E",
         "align": "left",
         "valign": "top",
@@ -272,19 +273,6 @@
         "align": "left",
         "valign": "top",
         "rightToLeft": false
-      },
-      {
-        "type": "shape",
-        "name": "Strike",
-        "shape": "line",
-        "x": 3.5,
-        "y": 27.6,
-        "w": 17,
-        "h": 0,
-        "fill": null,
-        "stroke": "#D7262E",
-        "strokeMm": 0.5,
-        "dash": "solid"
       }
     ]
   },
