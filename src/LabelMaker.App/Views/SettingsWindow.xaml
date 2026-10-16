@@ -77,6 +77,9 @@
             <TextBlock Text="Interval (seconds, min. 30)" Style="{StaticResource FieldLabel}" Width="190" />
             <TextBox x:Name="AutoSaveSecondsBox" Width="70" HorizontalAlignment="Left" HorizontalContentAlignment="Right" />
           </DockPanel>
+          <CheckBox x:Name="BackupOnSaveBox" Content="Keep a backup of the previous version when saving (.bak)" Margin="0,8,0,4"
+                    AutomationProperties.AutomationId="Settings.BackupOnSave"
+                    ToolTip="Saving a project keeps the version it replaces beside it as name.labelproj.bak" />
         </StackPanel>
       </GroupBox>
 

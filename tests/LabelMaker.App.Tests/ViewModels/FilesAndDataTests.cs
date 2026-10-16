@@ -38,6 +38,23 @@ public sealed class FilesAndDataTests
         h.Session.Project.MasterLabel.Objects.Should().Contain(o => o.Name == "Price");
     });
 
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void Saving_again_keeps_a_backup_of_the_previous_version_only_when_the_setting_is_on(bool backupOnSave) => AppHarness.Run(h =>
+    {
+        h.Environment.Settings.BackupOnSave = backupOnSave;
+        string path = h.FileIn("stock.labelproj");
+        h.Shell.SaveFileAnswer = path;
+
+        h.ViewModel.SaveAsCommand.Execute(null);
+        h.ViewModel.AddTextCommand.Execute(null);
+        h.ViewModel.SaveAsCommand.Execute(null);
+
+        File.Exists(path).Should().BeTrue();
+        File.Exists(path + ".bak").Should().Be(backupOnSave);
+    });
+
     [Fact]
     public void Opening_a_project_that_is_already_open_brings_its_tab_forward() => AppHarness.Run(h =>
     {

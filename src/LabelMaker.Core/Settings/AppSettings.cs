@@ -38,6 +38,9 @@ public sealed class AppSettings
     public int AutoSaveSeconds { get; set; } = 120;
     public int BackupCount { get; set; } = 3;
 
+    /// <summary>Saving keeps the previous version beside the project as "name.labelproj.bak".</summary>
+    public bool BackupOnSave { get; set; } = true;
+
     /// <summary>Disable hover/transition highlighting (e.g. the top menu's underline) for users sensitive to motion.</summary>
     public bool ReduceMotion { get; set; }
 

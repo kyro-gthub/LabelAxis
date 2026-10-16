@@ -31,6 +31,7 @@ public partial class SettingsWindow : Window
         ShowWelcomeBox.IsChecked = s.ShowWelcomeOnStart;
         AutoSaveEnabledBox.IsChecked = s.AutoSaveEnabled;
         AutoSaveSecondsBox.Text = s.AutoSaveSeconds.ToString(CultureInfo.InvariantCulture);
+        BackupOnSaveBox.IsChecked = s.BackupOnSave;
         MaxRecentBox.Text = s.MaxRecentProjects.ToString(CultureInfo.InvariantCulture);
 
         CheckForUpdatesBox.IsChecked = s.CheckForUpdates;
@@ -137,6 +138,7 @@ public partial class SettingsWindow : Window
         s.ShowWelcomeOnStart = ShowWelcomeBox.IsChecked == true;
         s.AutoSaveEnabled = AutoSaveEnabledBox.IsChecked == true;
         s.AutoSaveSeconds = Math.Max(30, ParseInt(AutoSaveSecondsBox.Text, s.AutoSaveSeconds));
+        s.BackupOnSave = BackupOnSaveBox.IsChecked == true;
         s.MaxRecentProjects = Math.Clamp(ParseInt(MaxRecentBox.Text, s.MaxRecentProjects), 1, 50);
 
         s.CheckForUpdates = CheckForUpdatesBox.IsChecked == true;

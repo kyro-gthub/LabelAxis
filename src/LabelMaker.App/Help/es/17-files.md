@@ -14,7 +14,7 @@ Un proyecto (archivo .labelproj) contiene la hoja de etiquetas, todas las págin
 ## No perder nunca el trabajo
 
 - LabelAxis guarda una **copia de recuperación** cada par de minutos. Si el PC o el programa se detienen de repente, ofrece restaurar el trabajo la próxima vez que se inicie.
-- Al guardar se conserva la versión anterior como copia de seguridad junto al archivo.
+- Al guardar se conserva la versión anterior como copia de seguridad junto al archivo (name.labelproj.bak). Puede desactivarlo en `Archivo › Configuración…`, en Guardado automático y recuperación.
 
 ## Configuración
 

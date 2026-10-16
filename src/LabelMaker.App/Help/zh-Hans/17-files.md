@@ -14,7 +14,7 @@ keywords: save, open, file, labelproj, autosave, recovery, backup, settings, the
 ## 永不丢失工作
 
 - LabelAxis 每隔几分钟会保存一份 **恢复快照**。如果电脑或程序意外停止，下次启动时会提示恢复您的工作。
-- 保存时会把上一个版本作为备份保留在文件旁边。
+- 保存时会把上一个版本作为备份保留在文件旁边（name.labelproj.bak）。可在 `文件 › 设置…` 的“自动保存与恢复”中关闭。
 
 ## 设置
 

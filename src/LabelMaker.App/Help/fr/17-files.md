@@ -14,7 +14,7 @@ Un projet (fichier .labelproj) contient la feuille d'étiquettes, toutes les pag
 ## Ne jamais perdre votre travail
 
 - LabelAxis enregistre une **copie de récupération** toutes les deux minutes environ. Si le PC ou le programme s'arrête brusquement, il propose de restaurer le travail au démarrage suivant.
-- L'enregistrement garde la version précédente comme sauvegarde à côté du fichier.
+- L'enregistrement garde la version précédente comme sauvegarde à côté du fichier (name.labelproj.bak). Vous pouvez le désactiver dans `Fichier › Paramètres…`, sous Enregistrement automatique et récupération.
 
 ## Paramètres
 

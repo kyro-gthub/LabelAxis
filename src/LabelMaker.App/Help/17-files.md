@@ -14,7 +14,7 @@ A project (.labelproj file) holds the label sheet, every page, the pictures it u
 ## Never lose work
 
 - LabelAxis saves a **recovery snapshot** every couple of minutes. If the PC or the program stops unexpectedly, it offers to restore the work the next time it starts.
-- Saving keeps the previous version as a backup next to the file.
+- Saving keeps the previous version as a backup next to the file (name.labelproj.bak). Turn this off in `File > Settings…` under Auto-save & recovery.
 
 ## Settings
 

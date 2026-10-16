@@ -14,7 +14,7 @@ Een project (.labelproj-bestand) bevat het etiketvel, elke pagina, de afbeelding
 ## Nooit werk verliezen
 
 - LabelAxis slaat om de paar minuten een **herstelkopie** op. Stopt de pc of het programma onverwacht, dan biedt het bij de volgende start aan het werk te herstellen.
-- Bij het opslaan blijft de vorige versie als reservekopie naast het bestand bewaard.
+- Bij het opslaan blijft de vorige versie als reservekopie naast het bestand bewaard (name.labelproj.bak). Uitzetten kan in `Bestand › Instellingen…`, onder Automatisch opslaan en herstel.
 
 ## Instellingen
 

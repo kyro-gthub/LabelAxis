@@ -263,7 +263,7 @@ public sealed partial class MainViewModel
         {
             _session.SyncDataCache();
             Rendering.CustomFonts.EmbedInto(_session.Document);
-            ProjectFile.Save(_session.Document, path);
+            ProjectFile.Save(_session.Document, path, new ProjectSaveOptions { KeepBackup = _env.Settings.BackupOnSave });
             _env.Settings.AddRecent(path, _session.Project.Metadata.Title);
             _env.Settings.LastTemplateId = _session.Project.Template?.Id;
             _env.SaveSettings();
