@@ -28,7 +28,10 @@ Set-Location $root
 
 $rid = 'win-x64'
 $out = Join-Path $root 'artifacts'
-Remove-Item $out -Recurse -Force -ErrorAction SilentlyContinue
+# Only the folders this script fills: other files kept in artifacts (notes, launch material) stay.
+foreach ($folder in 'app', 'app-shared', 'cli') {
+    Remove-Item (Join-Path $out $folder) -Recurse -Force -ErrorAction SilentlyContinue
+}
 
 $common = @(
     '-c', 'Release', '-r', $rid,
