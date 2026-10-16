@@ -29,6 +29,9 @@
     <!-- Vector PDF export -->
     <PackageVersion Include="PdfSharp" Version="6.2.4" />
 
+    <!-- Pinned past CVE-2026-84008 / CVE-2026-70162; PdfSharp and SqlClient bring in older ones -->
+    <PackageVersion Include="System.Security.Cryptography.Pkcs" Version="10.0.13" />
+
     <!-- Logging abstraction only (no sinks pulled into Core) -->
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.12" />
 
