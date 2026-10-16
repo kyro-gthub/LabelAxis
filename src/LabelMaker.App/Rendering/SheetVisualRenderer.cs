@@ -33,6 +33,9 @@ public sealed class SheetVisualRenderer
     /// <summary>Swapped when a new project (with a new asset store) is loaded.</summary>
     public IImageSource Images { get; set; }
 
+    /// <summary>Measures text the way the labels are drawn (thermal printing breaks printer-font lines with it).</summary>
+    public ITextMeasurer Measurer => _measurer;
+
     public LabelRenderOptions OptionsFor(LabelTemplate template, LabelOutlineStyle outline = LabelOutlineStyle.None) => new()
     {
         LabelShape = template.Grid.LabelShape switch

@@ -36,3 +36,16 @@ Thermische printers (Zebra, TSC, Xprinter en andere) drukken etiketten af van ee
 - **Grijstinten worden:** scherp voor tekst en barcodes, of met tinten voor foto's.
 
 Het voorbeeld rechts toont precies de punten die de printer ontvangt.
+
+## Afbeelding of printerlettertypen
+
+**Labels verzenden als** (onder Printertaal) bepaalt hoe elk label de printer bereikt:
+
+- **Een afbeelding (precies zoals op het scherm):** elk label gaat als één afbeelding van punten, precies zoals het voorbeeld. Elk lettertype, Arabische tekst, foto's en kleurverlopen worden afgedrukt zoals ontworpen. Het beste voor dagelijks gebruik.
+- **Printerlettertypen en barcodes (snelst):** voor lange series. De delen die nooit veranderen (kaders, logo's, vaste tekst) worden aan het begin van de taak één keer in de printer opgeslagen; daarna stuurt elk label alleen zijn wisselende tekst en barcodes, die de printer zelf tekent.
+  - Barcodes die de printer kent (Code 128, GS1-128, EAN-13, EAN-8, UPC-A, Code 39, Code 93, Interleaved 2 of 5, Codabar, QR en Data Matrix) tekent de printer, met dezelfde streepjes als LabelAxis.
+  - Wisselende tekst gebruikt het eigen lettertype van de printer en ziet er dus iets anders uit dan op het scherm. Regels breken waar ze op het scherm breken.
+  - Wat de printer niet kan tekenen (Arabische en andere tekst van rechts naar links, letters buiten de West-Europese, lichte tekst op een donker vlak, schuine tekst, wisselende tabellen) gaat als een kleine afbeelding van alleen dat gebied.
+  - Het venster toont hoeveel onderdelen de printer zelf tekent. Het voorbeeld toont het label zoals ontworpen.
+
+> Tip: druk eerst een paar labels af. Loopt tekst in het printerlettertype buiten zijn vak, maak het vak dan breder of de tekst kleiner.

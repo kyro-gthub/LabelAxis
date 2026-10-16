@@ -36,3 +36,16 @@ Las impresoras térmicas (Zebra, TSC, Xprinter y otras) imprimen etiquetas de un
 - **Los grises se convierten en:** nítido para texto y códigos de barras, o sombreado para fotos.
 
 La vista previa de la derecha muestra exactamente los puntos que recibirá la impresora.
+
+## Imagen o fuentes de la impresora
+
+**Enviar etiquetas como** (bajo Lenguaje de impresora) elige cómo llega cada etiqueta a la impresora:
+
+- **Una imagen (exactamente como en pantalla):** cada etiqueta se envía como una sola imagen de puntos, exactamente como muestra la vista previa. Cualquier fuente, texto árabe, fotos y degradados se imprimen tal como se diseñaron. Lo mejor para el día a día.
+- **Fuentes y códigos de barras de la impresora (más rápido):** para tiradas largas. Las partes que nunca cambian (marcos, logotipos, texto fijo) se guardan una sola vez en la impresora al empezar el trabajo; después cada etiqueta envía solo su texto y códigos de barras variables, que dibuja la propia impresora.
+  - Los códigos de barras que conoce la impresora (Code 128, GS1-128, EAN-13, EAN-8, UPC-A, Code 39, Code 93, Interleaved 2 of 5, Codabar, QR y Data Matrix) los dibuja la impresora, con las mismas barras que LabelAxis.
+  - El texto variable usa la fuente de la impresora, así que se ve un poco distinto que en pantalla. Las líneas se cortan donde se cortan en pantalla.
+  - Lo que la impresora no puede dibujar (texto árabe y otros de derecha a izquierda, letras fuera de las de Europa occidental, texto claro sobre fondo oscuro, texto inclinado, tablas variables) se envía como una pequeña imagen solo de esa zona.
+  - La ventana indica cuántos elementos dibuja la propia impresora. La vista previa muestra la etiqueta tal como se diseñó.
+
+> Consejo: imprima primero unas pocas etiquetas. Si el texto en la fuente de la impresora se sale de su cuadro, ensanche el cuadro o reduzca el texto.

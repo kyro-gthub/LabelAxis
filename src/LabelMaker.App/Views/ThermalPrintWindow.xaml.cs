@@ -18,9 +18,11 @@ using Microsoft.Win32;
 namespace LabelMaker.App.Views;
 
 /// <summary>
-/// Prints to a thermal label printer by sending its own command language (ZPL or TSPL)
-/// with each label as a 1-bit picture at the print head's resolution, so what prints is
-/// exactly what the preview shows, dot for dot, whatever driver is (or isn't) installed.
+/// Prints to a thermal label printer by sending its own command language (ZPL or TSPL),
+/// whatever driver is (or isn't) installed. Each label goes either as a 1-bit picture at the
+/// print head's resolution, so what prints is exactly what the preview shows, dot for dot, or
+/// in printer-native mode as the printer's own text and barcode commands over a background
+/// stored on the printer once (see <see cref="NativeDesign"/>).
 /// </summary>
 public partial class ThermalPrintWindow : Window
 {
@@ -84,6 +86,7 @@ public partial class ThermalPrintWindow : Window
     {
         ThermalPrintSettings t = Thermal;
         LanguageBox.SelectedIndex = (int)t.Language;
+        ModeBox.SelectedIndex = (int)t.Mode;
         DestinationBox.SelectedIndex = (int)t.Destination;
         string? printer = t.PrinterName ?? PrinterBox.Items.OfType<string>().FirstOrDefault(IsLikelyLabelPrinter) ?? _printServer.DefaultPrinter();
         PrinterBox.SelectedItem = PrinterBox.Items.OfType<string>().FirstOrDefault(p => p == printer) ?? PrinterBox.Items.OfType<object>().FirstOrDefault();
@@ -117,6 +120,7 @@ public partial class ThermalPrintWindow : Window
     {
         ThermalPrintSettings t = Thermal;
         t.Language = (ThermalLanguage)Math.Max(0, LanguageBox.SelectedIndex);
+        t.Mode = (ThermalSendMode)Math.Max(0, ModeBox.SelectedIndex);
         t.Destination = (ThermalDestination)Math.Max(0, DestinationBox.SelectedIndex);
         t.PrinterName = PrinterBox.SelectedItem as string;
         t.NetworkAddress = AddressBox.Text.Trim();
@@ -221,6 +225,20 @@ public partial class ThermalPrintWindow : Window
             PrintContent.Pages => "The project's standalone pages.",
             _ => "The master label.",
         };
+
+        if (Thermal.Mode == ThermalSendMode.PrinterNative)
+        {
+            (int drawn, int pictures) = _plan.NativeSummary();
+            // Sentence by sentence: joined, they could match a shorter translated pattern.
+            ModeHint.Text = Localization.Localizer.T(
+                                "The fixed parts are stored on the printer once; each label then sends only its changing text and barcodes, " +
+                                "which the printer draws with its own fonts, so text looks a little different from the screen.") + " " +
+                            Localization.Localizer.F("Here the printer draws {0} item(s) itself and {1} go as small pictures.", drawn, pictures);
+        }
+        else
+        {
+            ModeHint.Text = Localization.Localizer.T("Each label goes to the printer as one picture, so it prints exactly as on screen.");
+        }
 
         int copies = Math.Max(1, Print.Copies);
         SummaryText.Text = $"{_plan.Count:N0} row(s) · {_plan.Summary.Labels:N0} label(s)" +

@@ -31,6 +31,20 @@ public enum ThermalDestination
     SerialPort = 3,
 }
 
+/// <summary>How each label reaches the printer.</summary>
+public enum ThermalSendMode
+{
+    /// <summary>The whole label as one picture: exactly what the screen shows, dot for dot.</summary>
+    Picture = 0,
+
+    /// <summary>
+    /// The printer draws changing text and barcodes itself with its own fonts and barcode
+    /// commands; the parts that never change are stored on the printer once as a picture, so
+    /// each further label is only its changing values. Fastest for long runs.
+    /// </summary>
+    PrinterNative = 1,
+}
+
 public enum ThermalAfterPrint
 {
     TearOff = 0,
@@ -52,6 +66,8 @@ public enum DitherMode
 public sealed class ThermalPrintSettings
 {
     public ThermalLanguage Language { get; set; } = ThermalLanguage.Zpl;
+
+    public ThermalSendMode Mode { get; set; } = ThermalSendMode.Picture;
 
     public ThermalDestination Destination { get; set; } = ThermalDestination.WindowsPrinter;
 

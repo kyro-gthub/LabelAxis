@@ -107,6 +107,61 @@ public sealed class MonochromeImage
         return image;
     }
 
+    /// <summary>Blanks the dots inside the rectangle (clipped to the picture).</summary>
+    public void Clear(int x, int y, int width, int height)
+    {
+        int x0 = Math.Max(0, x), y0 = Math.Max(0, y);
+        int x1 = Math.Min(Width, x + width), y1 = Math.Min(Height, y + height);
+        for (int row = y0; row < y1; row++)
+        {
+            for (int col = x0; col < x1; col++)
+            {
+                this[col, row] = false;
+            }
+        }
+    }
+
+    /// <summary>A copy of the rectangle (clipped to the picture); null when nothing of it is inside.</summary>
+    public MonochromeImage? Crop(int x, int y, int width, int height)
+    {
+        int x0 = Math.Max(0, x), y0 = Math.Max(0, y);
+        int x1 = Math.Min(Width, x + width), y1 = Math.Min(Height, y + height);
+        if (x1 <= x0 || y1 <= y0)
+        {
+            return null;
+        }
+
+        var part = new MonochromeImage(x1 - x0, y1 - y0);
+        for (int row = y0; row < y1; row++)
+        {
+            for (int col = x0; col < x1; col++)
+            {
+                if (this[col, row])
+                {
+                    part[col - x0, row - y0] = true;
+                }
+            }
+        }
+
+        return part;
+    }
+
+    /// <summary>Prints <paramref name="other"/>'s dots onto this picture with its top-left at (x, y).</summary>
+    public void Overlay(MonochromeImage other, int x, int y)
+    {
+        ArgumentNullException.ThrowIfNull(other);
+        for (int row = Math.Max(0, -y); row < other.Height && y + row < Height; row++)
+        {
+            for (int col = Math.Max(0, -x); col < other.Width && x + col < Width; col++)
+            {
+                if (other[col, row])
+                {
+                    this[x + col, y + row] = true;
+                }
+            }
+        }
+    }
+
     /// <summary>The same picture turned half a turn, for printers that feed the roll the other way.</summary>
     public MonochromeImage Rotated180()
     {

@@ -34,20 +34,7 @@ public static class Code128Encoder
     {
         ArgumentNullException.ThrowIfNull(data);
 
-        bool forceGs1 = gs1 || symbology == BarcodeSymbology.GS1_128;
-        string input = data;
-        if (forceGs1 && (input.Length == 0 || input[0] != Fnc1))
-        {
-            input = Fnc1 + input;
-        }
-
-        List<int> codes = symbology switch
-        {
-            BarcodeSymbology.Code128A => EncodeFixed(input, Set.A),
-            BarcodeSymbology.Code128B => EncodeFixed(input, Set.B),
-            BarcodeSymbology.Code128C => EncodeFixed(input, Set.C),
-            _ => EncodeAuto(input),
-        };
+        List<int> codes = Codewords(data, symbology, gs1);
 
         // Checksum: start value + sum(position * value), position from 1, mod 103.
         long sum = codes[0];
@@ -60,6 +47,30 @@ public static class Code128Encoder
         codes.Add(Code128Patterns.Stop);
 
         return BuildSymbol(symbology, codes, HumanReadable(data), Math.Max(quietZoneModules, 10));
+    }
+
+    /// <summary>
+    /// The symbol's code values: start code, data, set switches and FNC codes, without the
+    /// check value and stop code. Thermal printers are given these, so the bars they draw
+    /// are the ones LabelAxis draws.
+    /// </summary>
+    public static List<int> Codewords(string data, BarcodeSymbology symbology = BarcodeSymbology.Code128, bool gs1 = false)
+    {
+        ArgumentNullException.ThrowIfNull(data);
+
+        string input = data;
+        if ((gs1 || symbology == BarcodeSymbology.GS1_128) && (input.Length == 0 || input[0] != Fnc1))
+        {
+            input = Fnc1 + input;
+        }
+
+        return symbology switch
+        {
+            BarcodeSymbology.Code128A => EncodeFixed(input, Set.A),
+            BarcodeSymbology.Code128B => EncodeFixed(input, Set.B),
+            BarcodeSymbology.Code128C => EncodeFixed(input, Set.C),
+            _ => EncodeAuto(input),
+        };
     }
 
     // ---- fixed-set encoders ----

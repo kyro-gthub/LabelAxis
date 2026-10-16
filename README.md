@@ -129,8 +129,14 @@ are ready for a spreadsheet. A **blank sheet** or a **custom size** is one tab a
 - Full print preview, copies per page, and a start position on part-used sheets with
   skipped labels.
 - A **calibration wizard** stores the offset and scale for each printer.
-- **Thermal printers:** prints in ZPL or TSPL through Windows, a network port, a COM
-  port or Bluetooth.
+- **Thermal printers:** ZPL or TSPL through Windows, a network port, a COM port or
+  Bluetooth, in one of two ways:
+  - **as a picture:** each label is sent as dots, exactly as the screen shows it (any font,
+    Arabic, photos);
+  - **with printer fonts and barcodes,** for long runs: the fixed parts of the label are
+    stored on the printer once, and each label then sends only its changing text and
+    barcodes, which the printer draws itself. Anything the printer cannot draw goes as a
+    small picture of just that area.
 - **Wi-Fi and network printers:** prints directly over IPP. Printers are found on the
   network for you.
 - A print history so a jammed run can be reprinted from where it stopped.

@@ -65,6 +65,14 @@ public static class BarcodeEngine
         return ZXingEncoder.Encode(spec, value);
     }
 
+    /// <summary>Code 128 code values for <paramref name="resolvedValue"/>, prepared exactly as <see cref="Encode"/> prepares them.</summary>
+    public static List<int> Code128Codewords(BarcodeSpec spec, string resolvedValue)
+    {
+        ArgumentNullException.ThrowIfNull(spec);
+        string value = (resolvedValue ?? string.Empty).Trim();
+        return Code128Encoder.Codewords(PrepareCode128Value(spec, value), spec.Symbology, spec.Gs1Mode);
+    }
+
     public static bool TryEncode(
         BarcodeSpec spec, string resolvedValue,
         out BarcodeSymbol? symbol, out BarcodeValidationResult validation)

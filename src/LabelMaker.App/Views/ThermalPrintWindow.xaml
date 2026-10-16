@@ -61,6 +61,15 @@
                   <ComboBoxItem Content="TSPL (TSC, Xprinter)" />
                 </ComboBox>
               </DockPanel>
+              <!-- A row of its own: the choices are long, and longer still in other languages. -->
+              <StackPanel Margin="0,6,0,3">
+                <TextBlock Text="Send labels as" Style="{StaticResource FieldLabel}" Margin="0,0,0,4" />
+                <ComboBox x:Name="ModeBox" SelectionChanged="OnChanged" AutomationProperties.AutomationId="Thermal.Mode">
+                  <ComboBoxItem Content="A picture (exactly like the screen)" />
+                  <ComboBoxItem Content="Printer fonts and barcodes (fastest)" />
+                </ComboBox>
+                <TextBlock x:Name="ModeHint" Margin="0,5,0,6" TextWrapping="Wrap" FontSize="11.5" Foreground="{DynamicResource Br.TextMuted}" />
+              </StackPanel>
               <DockPanel Margin="0,3">
                 <TextBlock Text="Send to" Style="{StaticResource FieldLabel}" Width="130" />
                 <ComboBox x:Name="DestinationBox" SelectionChanged="OnDestinationChanged">

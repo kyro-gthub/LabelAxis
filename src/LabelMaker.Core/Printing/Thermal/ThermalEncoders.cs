@@ -279,25 +279,29 @@ public sealed class TsplEncoder : IThermalEncoder
 
         byte[] headBytes = Encoding.ASCII.GetBytes(head.ToString());
         byte[] tailBytes = Encoding.ASCII.GetBytes(Invariant($"\r\nPRINT 1,{Math.Max(1, copies)}\r\n"));
-        var output = new byte[headBytes.Length + image.Bits.Length + tailBytes.Length];
-        headBytes.CopyTo(output, 0);
+        return [.. headBytes, .. Inverted(image), .. tailBytes];
+    }
+
+    /// <summary>The picture's rows as a TSPL BITMAP takes them: 0 bits print, and the padding past the right edge stays blank.</summary>
+    public static byte[] Inverted(MonochromeImage image)
+    {
+        ArgumentNullException.ThrowIfNull(image);
+        var output = new byte[image.Bits.Length];
         for (int i = 0; i < image.Bits.Length; i++)
         {
-            output[headBytes.Length + i] = (byte)~image.Bits[i];
+            output[i] = (byte)~image.Bits[i];
         }
 
-        // Padding bits past the right edge must not print either.
         int spare = (image.BytesPerRow * 8) - image.Width;
         if (spare > 0)
         {
             byte keepWhite = (byte)((1 << spare) - 1);
             for (int y = 0; y < image.Height; y++)
             {
-                output[headBytes.Length + (y * image.BytesPerRow) + image.BytesPerRow - 1] |= keepWhite;
+                output[(y * image.BytesPerRow) + image.BytesPerRow - 1] |= keepWhite;
             }
         }
 
-        tailBytes.CopyTo(output, headBytes.Length + image.Bits.Length);
         return output;
     }
 
