@@ -71,8 +71,10 @@ public partial class MainWindow : Window
         PreviewMouseLeftButtonDown += OnWindowPreviewMouseDown;
         _canvas.MouseEnter += (_, _) =>
         {
-            // Passing over the canvas must not pull focus out of a rename box and cancel it.
-            if (!_canvas.IsKeyboardFocusWithin && !IsRenaming)
+            // Passing over the canvas must not pull focus out of a rename box and cancel it, nor
+            // out of another window: focusing an element brings its window to the front, so a
+            // maximised main window would cover the Help guide or any other open window.
+            if (IsActive && !_canvas.IsKeyboardFocusWithin && !IsRenaming)
             {
                 _canvas.Focus();
             }
