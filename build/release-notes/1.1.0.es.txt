@@ -1,0 +1,15 @@
+LabelAxis 1.1.0
+
+Novedades
+• Las impresoras térmicas ya pueden imprimir con sus propias fuentes y códigos de barras: en la ventana de impresión térmica elija Enviar etiquetas como › Fuentes y códigos de barras de la impresora (más rápido). Las partes de la etiqueta que nunca cambian se guardan una sola vez en la impresora; después cada etiqueta envía solo su texto y códigos de barras variables, que dibuja la propia impresora. Ideal para tiradas largas. El envío como imagen, exactamente como en pantalla, sigue disponible para el día a día.
+• Configuración › Guardado automático y recuperación permite desactivar la copia de seguridad (.bak) que se guarda junto a un proyecto cada vez que se guarda.
+
+Correcciones
+• La guía de ayuda y otras ventanas, como la tabla de datos, ya no desaparecen detrás de una ventana de LabelAxis maximizada al pasar el ratón sobre la etiqueta.
+• El tachado pasa ahora por el centro del texto, como el precio anterior en una etiqueta de rebajas, y queda en el mismo lugar en pantalla, en papel, en PDF y en SVG.
+• El subrayado y el tachado de los archivos PDF exportados tienen el grosor correcto; antes eran tres veces más gruesos.
+• El diseño «Etiqueta de rebajas – precio anterior / nuevo» tacha el precio anterior con un tachado real, así que la línea crece con un precio más largo.
+• Las etiquetas que se tocan muestran una separación de 0 en lugar de «-0» en la Vista previa de impresión y en Nuevo proyecto.
+
+Seguridad
+• Se ha actualizado una biblioteca de cifrado de Microsoft que usa LabelAxis para corregir dos problemas de seguridad (CVE-2026-84008 y CVE-2026-70162).

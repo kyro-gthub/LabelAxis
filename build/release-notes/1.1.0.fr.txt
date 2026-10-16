@@ -1,0 +1,15 @@
+LabelAxis 1.1.0
+
+Nouveautés
+• Les imprimantes thermiques peuvent désormais imprimer avec leurs propres polices et codes-barres : dans la fenêtre d'impression thermique, choisissez Envoyer les étiquettes › Polices et codes-barres de l'imprimante (le plus rapide). Les parties de l'étiquette qui ne changent jamais sont enregistrées une seule fois dans l'imprimante ; chaque étiquette n'envoie ensuite que son texte et ses codes-barres variables, que l'imprimante dessine elle-même. Idéal pour les longues séries. L'envoi en image, exactement comme à l'écran, reste disponible au quotidien.
+• Paramètres › Enregistrement automatique et récupération permet de désactiver la copie de sauvegarde (.bak) gardée à côté d'un projet à chaque enregistrement.
+
+Corrections
+• L'aide, et d'autres fenêtres comme le tableau de données, ne disparaissent plus derrière une fenêtre LabelAxis agrandie quand la souris passe sur l'étiquette.
+• Le barré passe désormais par le milieu du texte, par exemple l'ancien prix d'une étiquette soldes, et se trouve au même endroit à l'écran, sur papier, en PDF et en SVG.
+• Le souligné et le barré des fichiers PDF exportés ont la bonne épaisseur ; ils étaient trois fois trop épais.
+• Le modèle « Étiquette soldes – ancien / nouveau prix » barre l'ancien prix avec un vrai barré, si bien que le trait s'allonge avec un prix plus long.
+• Les étiquettes qui se touchent affichent un écart de 0 au lieu de « -0 » dans l'Aperçu avant impression et dans Nouveau projet.
+
+Sécurité
+• Une bibliothèque de chiffrement de Microsoft utilisée par LabelAxis est mise à jour pour corriger deux failles de sécurité (CVE-2026-84008 et CVE-2026-70162).

@@ -1,0 +1,15 @@
+LabelAxis 1.1.0
+
+Nieuw
+• Thermische printers kunnen nu afdrukken met hun eigen lettertypen en barcodes: kies in het venster voor thermisch afdrukken Labels verzenden als › Printerlettertypen en barcodes (snelst). De delen van het label die nooit veranderen, worden één keer in de printer opgeslagen; daarna stuurt elk label alleen zijn wisselende tekst en barcodes, die de printer zelf tekent. Het beste voor lange series. Verzenden als afbeelding, precies zoals op het scherm, blijft beschikbaar voor dagelijks gebruik.
+• Instellingen › Automatisch opslaan en herstel kan de reservekopie (.bak) uitzetten die bij elk opslaan naast een project wordt bewaard.
+
+Oplossingen
+• De Help en andere vensters, zoals de gegevenstabel, verdwijnen niet meer achter een gemaximaliseerd LabelAxis-venster als de muis over het label beweegt.
+• Doorhalen loopt nu door het midden van de tekst, zoals een oude prijs op een uitverkooplabel, en staat op dezelfde plek op het scherm, op papier, in PDF en in SVG.
+• Onderstrepen en doorhalen in geëxporteerde PDF-bestanden hebben de juiste dikte; ze waren drie keer te dik.
+• Het ontwerp "Uitverkooplabel – oude / nieuwe prijs" haalt de oude prijs echt door, zodat de lijn meegroeit met een langere prijs.
+• Labels die elkaar raken tonen een tussenruimte van 0 in plaats van "-0" in Afdrukvoorbeeld en Nieuw project.
+
+Beveiliging
+• Een versleutelingsbibliotheek van Microsoft die LabelAxis gebruikt is bijgewerkt om twee beveiligingsproblemen op te lossen (CVE-2026-84008 en CVE-2026-70162).

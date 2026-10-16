@@ -1,0 +1,15 @@
+LabelAxis 1.1.0
+
+New
+• Thermal printers can now print with their own fonts and barcodes: in the thermal print window choose Send labels as › Printer fonts and barcodes (fastest). The parts of the label that never change are stored on the printer once; each label then sends only its changing text and barcodes, which the printer draws itself. Best for long runs. A picture, exactly like the screen, is still there for everyday printing.
+• Settings › Auto-save & recovery can switch off the backup copy (.bak) kept beside a project each time it is saved.
+
+Fixes
+• The Help guide, and other windows such as the data table, no longer disappear behind a maximised LabelAxis window when the mouse moves over the label.
+• Strikethrough now runs through the middle of the text, such as an old price on a sale tag, and sits in the same place on screen, on paper, in PDF and in SVG.
+• Underline and strikethrough in exported PDF files have the right thickness; they were three times too thick.
+• The "Sale tag – old / new price" design crosses out the old price with real strikethrough, so the line grows with a longer price.
+• Labels that touch show a gap of 0 instead of "-0" in Print preview and New Project.
+
+Security
+• A Microsoft encryption library that LabelAxis uses is updated to fix two security problems (CVE-2026-84008 and CVE-2026-70162).
