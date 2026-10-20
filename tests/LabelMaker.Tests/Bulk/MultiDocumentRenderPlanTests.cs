@@ -54,4 +54,14 @@ public sealed class MultiDocumentRenderPlanTests
         plan.Enumerate().Should().BeEmpty();
         MultiDocumentSheetLayout.PlanSheets(plan).Should().BeEmpty();
     }
+
+    [Fact]
+    public void A_start_position_beyond_the_sheet_starts_at_the_first_label_instead_of_a_blank_sheet()
+    {
+        var plan = new MultiDocumentRenderPlan { Template = Grid3x8, Documents = MakePages(5), StartPosition = 40 };
+
+        var sheets = MultiDocumentSheetLayout.PlanSheets(plan).ToList();
+        sheets.Should().ContainSingle();
+        sheets[0].Documents[0].Slot.Index.Should().Be(0);
+    }
 }

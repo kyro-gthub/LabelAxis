@@ -146,4 +146,41 @@ public sealed class BulkRenderPlanTests
         seen.Should().Be(100);
         plan.TotalLabels.Should().Be(10_000);
     }
+
+    [Theory]
+    [InlineData(25)] // one past the last label of a 24-up sheet
+    [InlineData(65)] // kept from a 65-up sheet after switching to this one
+    public void A_start_position_beyond_the_sheet_starts_at_the_first_label_instead_of_a_blank_sheet(int start)
+    {
+        var plan = new BulkRenderPlan { Template = Grid3x8, MasterLabel = new LabelDocument(), Data = MakeData(5), StartPosition = start };
+
+        var labels = plan.Enumerate().ToList();
+        labels.Should().OnlyContain(l => l.SheetIndex == 0);
+        labels[0].Slot.Index.Should().Be(0);
+        plan.TotalSheets.Should().Be(1);
+    }
+
+    [Fact]
+    public void Skipped_labels_before_the_start_are_not_counted_twice_when_filling_a_sheet_without_data()
+    {
+        var plan = new BulkRenderPlan
+        {
+            Template = Grid3x8, MasterLabel = new LabelDocument(), Data = MakeData(0), FillSheetWhenNoData = true,
+            StartPosition = 7, SkipPositions = new HashSet<int> { 3, 10 },
+        };
+
+        // Labels 7-24 less label 10; label 3 is before the start anyway.
+        plan.TotalLabels.Should().Be(17);
+    }
+
+    [Fact]
+    public void Filling_a_used_sheet_without_data_fills_only_its_free_labels_and_no_second_sheet()
+    {
+        var plan = new BulkRenderPlan { Template = Grid3x8, MasterLabel = new LabelDocument(), Data = MakeData(0), StartPosition = 7 };
+
+        var labels = plan.Enumerate().ToList();
+        labels.Should().HaveCount(18).And.OnlyContain(l => l.SheetIndex == 0);
+        labels.Select(l => l.Slot.Index).Should().Equal(Enumerable.Range(6, 18));
+        LabelMaker.Core.Printing.SheetLayoutEngine.PlanSheets(plan).Should().ContainSingle();
+    }
 }

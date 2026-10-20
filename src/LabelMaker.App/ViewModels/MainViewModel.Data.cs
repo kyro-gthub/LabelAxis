@@ -265,11 +265,9 @@ public sealed partial class MainViewModel
             return;
         }
 
+        // The records chosen for printing follow their rows (RecordEditCommand), so they stay chosen.
         _session.Execute(new RemoveRecordsCommand(_session, data, records));
         _activeTab.RecordsEditedSinceLoad = true;
-
-        // Row numbers chosen for printing may now point at other rows.
-        _session.Project.PrintSettings.SelectedRecords.Clear();
         StatusText = records.Count == 1 ? "Deleted 1 record" : $"Deleted {records.Count:N0} records";
     }
 

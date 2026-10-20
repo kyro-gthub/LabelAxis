@@ -66,7 +66,52 @@ public sealed class FilesAndDataTests
         {
             template.Grid.Count.Should().Be(1);
             template.Brand.Should().Be("Publisher");
+
+            // Said no once: opening the same file again does not ask again.
+            h.ViewModel.CloseTab(h.ViewModel.ActiveTab);
+            h.Shell.Messages.Clear();
+            h.ViewModel.OpenProjectPath(path);
+            h.Shell.Messages.Should().NotContain(m => m.Contains("came from Microsoft Publisher"));
+            h.Environment.Settings.PublisherPagesKept.Should().ContainSingle().Which.Should().BeEquivalentTo(path);
         }
+    });
+
+    private static void UseFiveRecords(AppHarness h) => h.Session.SetData(
+        LabelMaker.Core.Data.DataSet.FromRows(new[] { "Product" }, Enumerable.Range(1, 5).Select(i => new[] { $"Item {i}" }).ToList()),
+        new DataConnectionModel { Name = "stock.csv", Kind = DataSourceKind.Csv });
+
+    private static IEnumerable<string> Chosen(AppHarness h) =>
+        h.Session.Project.PrintSettings.SelectedRecords.Select(i => h.Session.Data!.Rows[i]["Product"]);
+
+    [Fact]
+    public void Records_chosen_for_printing_stay_the_same_records_when_rows_are_added_or_taken_out() => AppHarness.Run(h =>
+    {
+        UseFiveRecords(h);
+        h.Session.Project.PrintSettings.SelectedRecords = new List<int> { 2, 3 };
+
+        h.ViewModel.AddRecord(0);
+        Chosen(h).Should().Equal("Item 3", "Item 4");
+
+        h.Session.Undo();
+        h.Session.Project.PrintSettings.SelectedRecords.Should().Equal(2, 3);
+
+        h.ViewModel.DeleteRecords(new[] { h.Session.Data!.Rows[2] });
+        Chosen(h).Should().Equal(new[] { "Item 4" }, "the deleted record is no longer chosen; the others still are");
+    });
+
+    [Fact]
+    public void A_first_to_last_record_range_moves_with_its_records() => AppHarness.Run(h =>
+    {
+        UseFiveRecords(h);
+        PrintSettings print = h.Session.Project.PrintSettings;
+        print.FirstRecord = 1;
+        print.LastRecord = 3;
+
+        h.ViewModel.AddRecord(0);
+        (print.FirstRecord, print.LastRecord).Should().Be((2, 4));
+
+        h.ViewModel.DeleteRecords(new[] { h.Session.Data!.Rows[2] });
+        (print.FirstRecord, print.LastRecord).Should().Be((2, 3), "Item 2 went, so Item 3 is the first; Item 4 is still the last");
     });
 
     [Theory]

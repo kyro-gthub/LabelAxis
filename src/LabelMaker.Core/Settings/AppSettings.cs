@@ -41,6 +41,12 @@ public sealed class AppSettings
     /// <summary>Saving keeps the previous version beside the project as "name.labelproj.bak".</summary>
     public bool BackupOnSave { get; set; } = true;
 
+    /// <summary>
+    /// Projects from Microsoft Publisher whose owner chose to keep one label per page: LabelAxis
+    /// does not offer them a label sheet again when they open (the most recent 200).
+    /// </summary>
+    public List<string> PublisherPagesKept { get; set; } = new();
+
     /// <summary>Disable hover/transition highlighting (e.g. the top menu's underline) for users sensitive to motion.</summary>
     public bool ReduceMotion { get; set; }
 

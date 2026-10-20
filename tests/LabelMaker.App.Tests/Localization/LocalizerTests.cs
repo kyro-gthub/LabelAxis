@@ -50,7 +50,8 @@ public sealed class LocalizerTests
     {
         const string offer = "This project came from Microsoft Publisher with one 38 × 21.2 mm label on each page, so every label would print on a sheet of its own.\n\n" +
                              "Print it on the Formtec 3100 sheet (65 labels on A4) instead, several labels to a sheet as in Publisher?\n\n" +
-                             "You can choose a different sheet later in Label manager.";
+                             "You can choose a different sheet later in Label manager.\n\n" +
+                             "Cancel keeps one label per page, and you won't be asked again for this file.";
         const string done = "Printing on the Formtec 3100 sheet (65 labels on A4). Save to keep it.";
         foreach (AppLanguage language in Localizer.Languages.Where(l => l.Code != "en"))
         {

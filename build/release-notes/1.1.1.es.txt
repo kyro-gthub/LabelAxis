@@ -2,4 +2,8 @@ LabelAxis 1.1.1
 
 Correcciones
 • Los archivos de etiquetas de Microsoft Publisher vuelven a imprimir varias etiquetas por hoja, como en Publisher. Cuando un archivo de Publisher tiene una etiqueta en cada página, LabelAxis coloca ahora las páginas en la hoja de etiquetas con etiquetas de ese tamaño (la que indica Publisher, si indica alguna), en lugar de imprimir cada etiqueta sola en una pequeña página propia.
-• A los proyectos que ya se trajeron así de Publisher se les ofrece su hoja de etiquetas al abrirlos. Un clic los cambia y Deshacer lo revierte.
+• A los proyectos que ya se trajeron así de Publisher se les ofrece su hoja de etiquetas al abrirlos. Un clic los cambia y Deshacer lo revierte. Si prefiere mantener una etiqueta por página, LabelAxis lo recuerda y no vuelve a preguntar por ese archivo.
+• Elegir otra hoja en el Administrador de etiquetas ahora también cambia el tamaño de las páginas separadas del proyecto, para que cada página quepa en una etiqueta de la nueva hoja en lugar de invadir la siguiente.
+• Una etiqueta inicial mayor que las que tiene la hoja (por ejemplo, 70 en una hoja de 65 etiquetas) ya no imprime una primera hoja en blanco: la impresión empieza en la primera etiqueta, y la configuración de impresión ya no acepta ese número.
+• Rellenar el resto de una hoja usada en parte sin datos (empezando en una etiqueta posterior) ya no imprime una segunda hoja de más.
+• Los registros elegidos para imprimir siguen siendo los mismos registros cuando se añaden o eliminan filas en la tabla de datos. Antes, añadir una fila por encima hacía que se imprimieran otros registros.

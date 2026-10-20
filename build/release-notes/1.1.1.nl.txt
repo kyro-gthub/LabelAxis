@@ -2,4 +2,8 @@ LabelAxis 1.1.1
 
 Oplossingen
 • Etiketbestanden van Microsoft Publisher drukken weer meerdere etiketten per vel af, zoals in Publisher. Als een Publisher-bestand één etiket per pagina heeft, zet LabelAxis de pagina's nu op het etiketvel met etiketten van die maat (het vel dat Publisher noemt, als het er een noemt), in plaats van elk etiket los op een eigen kleine pagina af te drukken.
-• Projecten die al zo uit Publisher zijn binnengehaald, krijgen bij het openen hun etiketvel aangeboden. Eén klik zet ze om, en Ongedaan maken draait het terug.
+• Projecten die al zo uit Publisher zijn binnengehaald, krijgen bij het openen hun etiketvel aangeboden. Eén klik zet ze om, en Ongedaan maken draait het terug. Houdt u liever één etiket per pagina, dan onthoudt LabelAxis dat en vraagt het voor dat bestand niet opnieuw.
+• Een ander vel kiezen in Etiketbeheer past nu ook de maat van de losse pagina's van een project aan, zodat elke pagina in één etiket van het nieuwe vel past in plaats van over het volgende heen te lopen.
+• Een startetiket hoger dan het vel heeft (bijvoorbeeld 70 op een vel van 65 etiketten) drukt geen leeg eerste vel meer af: het afdrukken begint bij het eerste etiket, en Afdrukinstellingen accepteert zo'n getal niet meer.
+• Het restant van een deels gebruikt vel vullen zonder gegevens (vanaf een later etiket) drukt geen extra tweede vel meer af.
+• Records die zijn gekozen om af te drukken blijven dezelfde records wanneer er rijen aan de gegevenstabel worden toegevoegd of uit worden verwijderd. Eerder zorgde een rij erboven toevoegen ervoor dat andere records werden afgedrukt.

@@ -2,4 +2,8 @@ LabelAxis 1.1.1
 
 Corrections
 • Les fichiers d'étiquettes Microsoft Publisher impriment de nouveau plusieurs étiquettes par feuille, comme dans Publisher. Quand un fichier Publisher a une étiquette par page, LabelAxis place désormais les pages sur la feuille d'étiquettes de cette taille (celle que Publisher indique, s'il en indique une), au lieu d'imprimer chaque étiquette seule sur sa propre petite page.
-• Les projets déjà importés ainsi depuis Publisher se voient proposer leur feuille d'étiquettes à l'ouverture. Un clic suffit pour changer, et Annuler revient en arrière.
+• Les projets déjà importés ainsi depuis Publisher se voient proposer leur feuille d'étiquettes à l'ouverture. Un clic suffit pour changer, et Annuler revient en arrière. Si vous gardez une étiquette par page, LabelAxis s'en souvient et ne pose plus la question pour ce fichier.
+• Choisir une autre feuille dans le Gestionnaire d'étiquettes redimensionne désormais aussi les pages séparées du projet : chaque page tient dans une étiquette de la nouvelle feuille au lieu de déborder sur la suivante.
+• Une étiquette de départ plus grande que le nombre d'étiquettes de la feuille (par exemple 70 sur une feuille de 65) n'imprime plus de première feuille vide : l'impression commence à la première étiquette, et les paramètres d'impression n'acceptent plus un tel nombre.
+• Remplir le reste d'une feuille en partie utilisée sans données (en commençant à une étiquette plus loin) n'imprime plus de deuxième feuille en trop.
+• Les enregistrements choisis pour l'impression restent les mêmes quand on ajoute ou supprime des lignes dans le tableau de données. Avant, ajouter une ligne au-dessus faisait imprimer d'autres enregistrements.

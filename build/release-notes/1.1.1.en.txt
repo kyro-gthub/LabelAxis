@@ -2,4 +2,8 @@ LabelAxis 1.1.1
 
 Fixes
 • Microsoft Publisher label files print several labels to a sheet again, as they did in Publisher. When a Publisher file has one label on each page, LabelAxis now puts the pages on the label sheet with labels that size (the one Publisher names, when it names one), instead of printing each label alone on a small page of its own.
-• Projects already brought in from Publisher that way are offered their label sheet when they open. One click switches them, and Undo takes it back.
+• Projects already brought in from Publisher that way are offered their label sheet when they open. One click switches them, and Undo takes it back. If you keep one label per page instead, LabelAxis remembers and does not ask again for that file.
+• Choosing another sheet in Label manager now resizes a project's separate pages too, so each page fits one label of the new sheet instead of spilling into the next one.
+• A start label higher than the sheet has (say 70 on a 65-label sheet) no longer prints a blank first sheet: printing starts at the first label, and Print settings no longer accepts such a number.
+• Filling the rest of a partly used sheet without data (starting at a later label) no longer prints an extra second sheet.
+• Records chosen for printing stay the same records when rows are added to or deleted from the data table. Before, adding a row above them made other records print.

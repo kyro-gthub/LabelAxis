@@ -40,6 +40,13 @@ public sealed class BulkRenderPlan
     /// <summary>1-based slot to begin at on the first sheet (skip used labels — spec §15).</summary>
     public int StartPosition { get; init; } = 1;
 
+    /// <summary>
+    /// The slot printing really begins at: <see cref="StartPosition"/>, or the first slot when that
+    /// is not on the sheet (a typing slip, or a number kept from a sheet with more labels), which
+    /// would otherwise leave the whole first sheet blank.
+    /// </summary>
+    private int FirstPosition => StartPosition >= 1 && StartPosition <= LabelsPerSheet ? StartPosition : 1;
+
     /// <summary>1-based slot positions to skip on the first sheet.</summary>
     public IReadOnlySet<int> SkipPositions { get; init; } = new HashSet<int>();
 
@@ -61,7 +68,7 @@ public sealed class BulkRenderPlan
             int records = ResolveRecordIndexes().Count;
             if (records == 0)
             {
-                return FillSheetWhenNoData ? Math.Max(0, LabelsPerSheet - (StartPosition - 1) - SkipPositions.Count) : 0;
+                return FillSheetWhenNoData ? Math.Max(0, LabelsPerSheet - (FirstPosition - 1) - SkipPositions.Count(p => p >= FirstPosition && p <= LabelsPerSheet)) : 0;
             }
 
             return records;
@@ -78,7 +85,7 @@ public sealed class BulkRenderPlan
                 return 0;
             }
 
-            int firstSheetCapacity = Math.Max(0, LabelsPerSheet - (StartPosition - 1) - SkipPositions.Count(p => p >= StartPosition));
+            int firstSheetCapacity = Math.Max(0, LabelsPerSheet - (FirstPosition - 1) - SkipPositions.Count(p => p >= FirstPosition && p <= LabelsPerSheet));
             if (total <= firstSheetCapacity)
             {
                 return 1;
@@ -96,9 +103,11 @@ public sealed class BulkRenderPlan
         // Pre-compute per-record sequence values (advanced once per emitted label).
         var sequenceCursors = Sequences.ToDictionary(s => s.Id, s => (IEnumerator<string>)SequenceGenerator.Enumerate(s).GetEnumerator());
 
+        // Without records, the rest of the one sheet from the start label (TotalLabels): a whole
+        // sheet's worth from label 7 would spill onto a second sheet that then printed too.
         IEnumerable<int> emitOrder = recordIndexes.Count > 0
             ? recordIndexes
-            : (FillSheetWhenNoData ? Enumerable.Repeat(-1, allSlots.Count) : Enumerable.Empty<int>());
+            : (FillSheetWhenNoData ? Enumerable.Repeat(-1, TotalLabels) : Enumerable.Empty<int>());
 
         int labelOrdinal = 0;
         foreach (int recordIndex in emitOrder)
@@ -176,7 +185,7 @@ public sealed class BulkRenderPlan
         int count = 0;
         for (int pos = 1; pos <= slotsPerSheet; pos++)
         {
-            if (pos >= StartPosition && !SkipPositions.Contains(pos))
+            if (pos >= FirstPosition && !SkipPositions.Contains(pos))
             {
                 count++;
             }
@@ -190,7 +199,7 @@ public sealed class BulkRenderPlan
         int seen = 0;
         for (int pos = 1; pos <= slotsPerSheet; pos++)
         {
-            if (pos >= StartPosition && !SkipPositions.Contains(pos))
+            if (pos >= FirstPosition && !SkipPositions.Contains(pos))
             {
                 if (seen == n)
                 {

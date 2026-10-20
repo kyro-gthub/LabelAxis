@@ -312,13 +312,22 @@ public sealed partial class MainViewModel : ObservableObject
         var size = new SizeMm(template.Grid.LabelWidthMm, template.Grid.LabelHeightMm);
 
         // Undoable like any other edit: sheet and label size change together, and
-        // the canvas refits whichever way the step is taken.
-        _session.Execute(new CompositeCommand("Change label sheet", new IUndoableCommand[]
+        // the canvas refits whichever way the step is taken. The project's separate pages
+        // take the new size too: each prints into one of the sheet's labels, and a page
+        // left at the old size would spill into the next label or leave a gap.
+        var steps = new List<IUndoableCommand>
         {
             new SetPropertyCommand<LabelTemplate?>("Change sheet", () => project.Template, v => project.Template = v, template),
-            new SetPropertyCommand<SizeMm>("Label size", () => project.MasterLabel.SizeMm,
-                v => { project.MasterLabel.SizeMm = v; OnSheetChanged(); }, size),
-        }));
+        };
+        foreach (LabelPage page in project.Pages)
+        {
+            LabelDocument document = page.Document;
+            steps.Add(new SetPropertyCommand<SizeMm>("Label size", () => document.SizeMm, v => document.SizeMm = v, size));
+        }
+
+        steps.Add(new SetPropertyCommand<SizeMm>("Label size", () => project.MasterLabel.SizeMm,
+            v => { project.MasterLabel.SizeMm = v; OnSheetChanged(); }, size));
+        _session.Execute(new CompositeCommand("Change label sheet", steps));
 
         _env.Settings.LastTemplateId = template.Id;
         StatusText = $"Template: {template.Brand} {template.ProductCode} — {template.Name}";

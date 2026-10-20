@@ -98,13 +98,17 @@ public sealed partial class MainViewModel
     /// <summary>
     /// Projects imported from Publisher before 1.1.1 kept Publisher's page as their sheet: one
     /// label alone on a label-sized page, so each label printed on a sheet of its own. When such a
-    /// project opens, offers to put it on the label sheet with labels that size.
+    /// project opens, offers to put it on the label sheet with labels that size. A file whose owner
+    /// said no (they want one label per page) is remembered and not asked about again.
     /// </summary>
     private void OfferPublisherSheet()
     {
         ProjectModel project = _session.Project;
+        string? file = _session.Document.FilePath;
+        List<string> kept = _env.Settings.PublisherPagesKept;
         if (project.Template is not { Brand: "Publisher", Grid.Count: 1 } page
             || !page.Id.StartsWith("publisher-page-", StringComparison.Ordinal)
+            || (file is not null && kept.Contains(file, StringComparer.OrdinalIgnoreCase))
             || PublisherSheet.Find(_env.Templates, page.Grid.LabelWidthMm, page.Grid.LabelHeightMm, null, _env.Settings.LastTemplateId) is not { } sheet)
         {
             return;
@@ -114,9 +118,22 @@ public sealed partial class MainViewModel
         if (!_shell.Confirm(
                 $"This project came from Microsoft Publisher with one {pageSize} label on each page, so every label would print on a sheet of its own.\n\n" +
                 $"Print it on the {SheetName(sheet)} instead, several labels to a sheet as in Publisher?\n\n" +
-                "You can choose a different sheet later in Label manager.",
+                "You can choose a different sheet later in Label manager.\n\n" +
+                "Cancel keeps one label per page, and you won't be asked again for this file.",
                 "Label sheet"))
         {
+            if (file is not null)
+            {
+                kept.RemoveAll(p => string.Equals(p, file, StringComparison.OrdinalIgnoreCase));
+                kept.Add(file);
+                if (kept.Count > 200)
+                {
+                    kept.RemoveRange(0, kept.Count - 200);
+                }
+
+                _env.SaveSettings();
+            }
+
             return;
         }
 

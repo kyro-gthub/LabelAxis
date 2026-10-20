@@ -96,7 +96,9 @@ public partial class PrintSettingsWindow : Window
     private void ApplyTo(PrintSettings s)
     {
         s.Content = SelectedContent;
-        s.StartPosition = Math.Max(1, ParseInt(StartPositionBox.Text, 1));
+        // No further than the sheet's last label: a higher number would leave the first sheet blank.
+        int labels = _session.Project.Template?.Grid.Count ?? int.MaxValue;
+        s.StartPosition = Math.Clamp(ParseInt(StartPositionBox.Text, 1), 1, Math.Max(1, labels));
         s.SkipPositions = ParseIntList(SkipPositionsBox.Text);
         s.ScalePercent = Math.Clamp(ParseDouble(ScaleBox.Text, 100), 10, 400);
         s.Copies = Math.Max(1, ParseInt(CopiesBox.Text, 1));

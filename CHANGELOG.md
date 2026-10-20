@@ -14,7 +14,17 @@ The full notes of each release, in all ten interface languages, are in
   last used, otherwise the closest in size. Before, each label became a one-up "Custom" page
   the size of the label, so every label printed on a sheet of its own.
 - Projects already imported that way are offered their label sheet when they open; the
-  switch is one step that Undo takes back.
+  switch is one step that Undo takes back. Declining is remembered per file
+  (`AppSettings.PublisherPagesKept`), so the question is not asked again.
+- Label manager's "Use this sheet" resizes the project's standalone pages with the master
+  label. They kept the old size, so in page printing each page spilled into the next label.
+- A start position beyond the sheet's last label printed a blank first sheet; it now starts at
+  the first label, and Print settings caps the number at the sheet's label count.
+- Filling the rest of a partly used sheet without data laid out a whole sheet's worth of labels
+  from the start position, so the rest printed on an extra second sheet.
+- Records chosen for printing (the list and the first-to-last range) follow their records
+  when rows are added to or deleted from the data table (and on Undo); adding a row above
+  them used to make other records print.
 
 ## [1.1.0] - 2026-10-17
 

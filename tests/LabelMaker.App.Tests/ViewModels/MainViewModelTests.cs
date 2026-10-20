@@ -66,6 +66,25 @@ public sealed class MainViewModelTests
     });
 
     [Fact]
+    public void Choosing_another_sheet_resizes_the_pages_with_the_label_and_undo_puts_them_back() => AppHarness.Run(h =>
+    {
+        h.ViewModel.DuplicatePageCommand.Execute(null);
+        h.ViewModel.DuplicatePageCommand.Execute(null);
+        var before = h.Session.Project.Pages.Select(p => p.Document.SizeMm).ToList();
+        LabelMaker.Core.Formtec.LabelTemplate other = h.Environment.Templates.All
+            .First(t => !t.IsRoll && t.Grid.Count > 1 && Math.Abs(t.Grid.LabelWidthMm - before[0].Width) > 5);
+
+        h.ViewModel.ApplyTemplate(other);
+
+        h.Session.Project.Pages.Should().HaveCountGreaterThan(1)
+            .And.OnlyContain(p => p.Document.SizeMm == other.LabelSizeMm, "each page prints into one of the new sheet's labels");
+        h.Session.Project.MasterLabel.SizeMm.Should().Be(other.LabelSizeMm);
+
+        h.Session.Undo();
+        h.Session.Project.Pages.Select(p => p.Document.SizeMm).Should().Equal(before);
+    });
+
+    [Fact]
     public void Remove_from_all_pages_asks_which_pages_when_there_are_several() => AppHarness.Run(h =>
     {
         h.ViewModel.AddTextCommand.Execute(null);

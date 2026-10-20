@@ -28,6 +28,9 @@ public sealed class MultiDocumentRenderPlan
     /// <summary>1-based slot to begin at on the first sheet (skip already-used labels — spec §15).</summary>
     public int StartPosition { get; init; } = 1;
 
+    /// <summary>The slot printing really begins at: <see cref="StartPosition"/>, or the first slot when that is not on the sheet.</summary>
+    private int FirstPosition => StartPosition >= 1 && StartPosition <= LabelsPerSheet ? StartPosition : 1;
+
     public IReadOnlySet<int> SkipPositions { get; init; } = new HashSet<int>();
 
     public DateTime Now { get; init; } = DateTime.Now;
@@ -45,7 +48,7 @@ public sealed class MultiDocumentRenderPlan
         int firstSheetSlots = 0;
         for (int pos = 1; pos <= allSlots.Count; pos++)
         {
-            if (pos >= StartPosition && !SkipPositions.Contains(pos))
+            if (pos >= FirstPosition && !SkipPositions.Contains(pos))
             {
                 firstSheetSlots++;
             }
@@ -94,7 +97,7 @@ public sealed class MultiDocumentRenderPlan
         int seen = 0;
         for (int pos = 1; pos <= slotsPerSheet; pos++)
         {
-            if (pos >= StartPosition && !SkipPositions.Contains(pos))
+            if (pos >= FirstPosition && !SkipPositions.Contains(pos))
             {
                 if (seen == n)
                 {
