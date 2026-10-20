@@ -2419,5 +2419,9 @@
   "★ Add to favourites": "★ افزودن به برگزیده‌ها",
   "★ Favourites": "★ برگزیده‌ها",
   "☆  Add to favourites": "☆  افزودن به برگزیده‌ها",
-  "＋ New custom size…": "＋ اندازه سفارشی جدید…"
+  "＋ New custom size…": "＋ اندازه سفارشی جدید…",
+  "Opened {0} page(s) with {1} item(s) from {2}, printing on the {3} sheet ({4} labels on {5}); change it in Label manager if you use another sheet. Save it as a LabelAxis project to keep it.": "{0} صفحه با {1} مورد از {2} باز شد و روی برگه {3} ({4} برچسب روی {5}) چاپ می‌شود؛ اگر برگه دیگری به کار می‌برید، آن را در مدیر برچسب تغییر دهید. برای نگه داشتن، آن را به‌صورت پروژه LabelAxis ذخیره کنید.",
+  "This project came from Microsoft Publisher with one {0} label on each page, so every label would print on a sheet of its own.\n\nPrint it on the {1} sheet ({2} labels on {3}) instead, several labels to a sheet as in Publisher?\n\nYou can choose a different sheet later in Label manager.": "این پروژه از Microsoft Publisher آمده و در هر صفحه یک برچسب {0} دارد، پس هر برچسب روی برگه‌ای جداگانه چاپ می‌شود.\n\nبه‌جای آن روی برگه {1} ({2} برچسب روی {3}) چاپ شود، چند برچسب در هر برگه مثل Publisher؟\n\nبعداً می‌توانید برگه دیگری را در مدیر برچسب انتخاب کنید.",
+  "Label sheet": "برگه برچسب",
+  "Printing on the {0} sheet ({1} labels on {2}). Save to keep it.": "روی برگه {0} ({1} برچسب روی {2}) چاپ می‌شود. برای نگه داشتن، ذخیره کنید."
 }

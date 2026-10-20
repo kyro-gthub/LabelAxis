@@ -2419,5 +2419,9 @@
   "★ Add to favourites": "★ В избранное",
   "★ Favourites": "★ Избранное",
   "☆  Add to favourites": "☆  В избранное",
-  "＋ New custom size…": "＋ Новый свой размер…"
+  "＋ New custom size…": "＋ Новый свой размер…",
+  "Opened {0} page(s) with {1} item(s) from {2}, printing on the {3} sheet ({4} labels on {5}); change it in Label manager if you use another sheet. Save it as a LabelAxis project to keep it.": "Открыто страниц: {0}, элементов: {1}, из {2}; печать на листе {3} ({4} этикеток на {5}). Если вы используете другой лист, смените его в Диспетчере этикеток. Сохраните как проект LabelAxis, чтобы не потерять.",
+  "This project came from Microsoft Publisher with one {0} label on each page, so every label would print on a sheet of its own.\n\nPrint it on the {1} sheet ({2} labels on {3}) instead, several labels to a sheet as in Publisher?\n\nYou can choose a different sheet later in Label manager.": "Этот проект пришёл из Microsoft Publisher: на каждой странице одна этикетка {0}, поэтому каждая этикетка печаталась бы на отдельном листе.\n\nПечатать его на листе {1} ({2} этикеток на {3}), по нескольку этикеток на листе, как в Publisher?\n\nДругой лист можно выбрать позже в Диспетчере этикеток.",
+  "Label sheet": "Лист этикеток",
+  "Printing on the {0} sheet ({1} labels on {2}). Save to keep it.": "Печать на листе {0} ({1} этикеток на {2}). Сохраните, чтобы не потерять."
 }

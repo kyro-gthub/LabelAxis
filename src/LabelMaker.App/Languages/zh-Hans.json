@@ -2419,5 +2419,9 @@
   "★ Add to favourites": "★ 添加到收藏",
   "★ Favourites": "★ 收藏",
   "☆  Add to favourites": "☆  添加到收藏",
-  "＋ New custom size…": "＋ 新建自定义尺寸…"
+  "＋ New custom size…": "＋ 新建自定义尺寸…",
+  "Opened {0} page(s) with {1} item(s) from {2}, printing on the {3} sheet ({4} labels on {5}); change it in Label manager if you use another sheet. Save it as a LabelAxis project to keep it.": "已从 {2} 打开 {0} 页，含 {1} 项内容，将打印在 {3} 纸张上（{5} 上 {4} 个标签）；如使用其他纸张，请在标签管理器中更改。请将其保存为 LabelAxis 项目以保留。",
+  "This project came from Microsoft Publisher with one {0} label on each page, so every label would print on a sheet of its own.\n\nPrint it on the {1} sheet ({2} labels on {3}) instead, several labels to a sheet as in Publisher?\n\nYou can choose a different sheet later in Label manager.": "此项目来自 Microsoft Publisher，每页一个 {0} 的标签，因此每个标签都会单独打印在一张纸上。\n\n改为打印在 {1} 纸张上（{3} 上 {2} 个标签），像在 Publisher 中一样每张纸多个标签吗？\n\n之后可以在标签管理器中选择其他纸张。",
+  "Label sheet": "标签纸",
+  "Printing on the {0} sheet ({1} labels on {2}). Save to keep it.": "将打印在 {0} 纸张上（{2} 上 {1} 个标签）。请保存以保留。"
 }

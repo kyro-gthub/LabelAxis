@@ -1,4 +1,5 @@
 using FluentAssertions;
+using LabelMaker.Core.Formtec;
 using LabelMaker.Core.Model;
 using LabelMaker.Core.Model.Objects;
 using LabelMaker.Core.Model.Text;
@@ -119,4 +120,51 @@ public sealed class PublisherLayoutConverterTests
         project.Template.Grid.LabelWidthMm.Should().BeApproximately(88.9, 0.01);
         project.Pages[0].Name.Should().Be("Page 1");
     }
+
+    /// <summary>A Publisher label publication: one 38 × 21.2 mm label per page, five pages.</summary>
+    private static PubLayout MiniLabels(string? labelName = null) => new("Prices", 38 * 72 / 25.4, 21.2 * 72 / 25.4,
+        Enumerable.Range(1, 5).Select(i => new PubPage($"Page {i}", Array.Empty<PubShape>())).ToList())
+    {
+        LabelName = labelName,
+    };
+
+    [Fact]
+    public void Label_pages_go_on_a_label_sheet_with_labels_that_size()
+    {
+        TemplateStore store = TemplateStore.CreateWithBuiltIns();
+        PubLayout layout = MiniLabels();
+        (double w, double h) = PublisherLayoutConverter.PageSizeMm(layout);
+
+        LabelTemplate sheet = PublisherSheet.Find(store, w, h)!;
+        ProjectModel project = PublisherLayoutConverter.ToProject(layout, sheet).Project;
+
+        sheet.Should().NotBeNull();
+        sheet.IsRoll.Should().BeFalse();
+        sheet.Grid.Count.Should().BeGreaterThan(1, "Publisher printed several of these pages on each sheet");
+        sheet.Grid.LabelWidthMm.Should().BeApproximately(38, PublisherSheet.ToleranceMm);
+        sheet.Grid.LabelHeightMm.Should().BeApproximately(21.2, PublisherSheet.ToleranceMm);
+        project.Template.Should().Be(sheet);
+        project.PrintSettings.Content.Should().Be(PrintContent.Pages);
+        project.Pages.Should().HaveCount(5).And.OnlyContain(p => p.Document.SizeMm == sheet.LabelSizeMm);
+    }
+
+    [Fact]
+    public void The_sheet_Publisher_names_wins_then_the_last_one_used()
+    {
+        TemplateStore store = TemplateStore.CreateWithBuiltIns();
+        IReadOnlyList<LabelTemplate> sheets = PublisherSheet.Candidates(store, 38, 21.2);
+        sheets.Should().HaveCountGreaterThan(1, "several brands make 38 × 21.2 mm labels");
+        LabelTemplate other = sheets[^1];
+
+        PublisherSheet.Find(store, 38, 21.2, $"{other.Brand} {other.ProductCode} Mini Address Labels").Should().Be(other);
+        PublisherSheet.Find(store, 38, 21.2, null, other.Id).Should().Be(other);
+        PublisherSheet.Find(store, 38, 21.2, "Some other label", null).Should().Be(sheets[0]);
+    }
+
+    [Theory]
+    [InlineData(210, 297)] // an A4 flyer prints alone
+    [InlineData(180, 250)] // so does a page too big to fit twice on A4
+    [InlineData(500, 30)] // and a size no label sheet has
+    public void Full_pages_and_unknown_sizes_keep_their_own_page(double w, double h) =>
+        PublisherSheet.Find(TemplateStore.CreateWithBuiltIns(), w, h).Should().BeNull();
 }

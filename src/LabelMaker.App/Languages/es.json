@@ -2419,5 +2419,9 @@
   "★ Add to favourites": "★ Añadir a favoritos",
   "★ Favourites": "★ Favoritos",
   "☆  Add to favourites": "☆  Añadir a favoritos",
-  "＋ New custom size…": "＋ Nuevo tamaño personalizado…"
+  "＋ New custom size…": "＋ Nuevo tamaño personalizado…",
+  "Opened {0} page(s) with {1} item(s) from {2}, printing on the {3} sheet ({4} labels on {5}); change it in Label manager if you use another sheet. Save it as a LabelAxis project to keep it.": "Se abrieron {0} página(s) con {1} elemento(s) de {2}, que se imprimirán en la hoja {3} ({4} etiquetas en {5}); cámbiela en el Administrador de etiquetas si usa otra hoja. Guárdelo como proyecto de LabelAxis para conservarlo.",
+  "This project came from Microsoft Publisher with one {0} label on each page, so every label would print on a sheet of its own.\n\nPrint it on the {1} sheet ({2} labels on {3}) instead, several labels to a sheet as in Publisher?\n\nYou can choose a different sheet later in Label manager.": "Este proyecto viene de Microsoft Publisher con una etiqueta de {0} en cada página, así que cada etiqueta se imprimiría en una hoja aparte.\n\n¿Imprimirlo en la hoja {1} ({2} etiquetas en {3}), con varias etiquetas por hoja como en Publisher?\n\nPuede elegir otra hoja más tarde en el Administrador de etiquetas.",
+  "Label sheet": "Hoja de etiquetas",
+  "Printing on the {0} sheet ({1} labels on {2}). Save to keep it.": "Se imprimirá en la hoja {0} ({1} etiquetas en {2}). Guarde para conservarlo."
 }

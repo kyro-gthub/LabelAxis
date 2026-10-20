@@ -2419,5 +2419,9 @@
   "★ Add to favourites": "★ Aan favorieten toevoegen",
   "★ Favourites": "★ Favorieten",
   "☆  Add to favourites": "☆  Aan favorieten toevoegen",
-  "＋ New custom size…": "＋ Nieuw aangepast formaat…"
+  "＋ New custom size…": "＋ Nieuw aangepast formaat…",
+  "Opened {0} page(s) with {1} item(s) from {2}, printing on the {3} sheet ({4} labels on {5}); change it in Label manager if you use another sheet. Save it as a LabelAxis project to keep it.": "{0} pagina('s) met {1} item(s) uit {2} geopend, af te drukken op het {3}-vel ({4} etiketten op {5}); wijzig dit in Etiketbeheer als u een ander vel gebruikt. Sla het op als LabelAxis-project om het te bewaren.",
+  "This project came from Microsoft Publisher with one {0} label on each page, so every label would print on a sheet of its own.\n\nPrint it on the {1} sheet ({2} labels on {3}) instead, several labels to a sheet as in Publisher?\n\nYou can choose a different sheet later in Label manager.": "Dit project komt uit Microsoft Publisher met één etiket van {0} per pagina, dus elk etiket zou op een eigen vel worden afgedrukt.\n\nIn plaats daarvan afdrukken op het {1}-vel ({2} etiketten op {3}), met meerdere etiketten per vel zoals in Publisher?\n\nU kunt later in Etiketbeheer een ander vel kiezen.",
+  "Label sheet": "Etiketvel",
+  "Printing on the {0} sheet ({1} labels on {2}). Save to keep it.": "Wordt afgedrukt op het {0}-vel ({1} etiketten op {2}). Sla op om het te bewaren."
 }

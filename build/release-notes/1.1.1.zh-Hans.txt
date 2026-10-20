@@ -1,0 +1,5 @@
+LabelAxis 1.1.1
+
+修复
+• Microsoft Publisher 标签文件重新像在 Publisher 中一样，每张纸打印多个标签。当 Publisher 文件每页只有一个标签时，LabelAxis 现在会把这些页面放到同样尺寸标签的标签纸上（如果 Publisher 指明了所用的标签纸，就用它），而不是把每个标签单独打印在一张小页面上。
+• 以前以这种方式从 Publisher 导入的项目，打开时会建议使用对应的标签纸。点一下即可切换，撤销可以恢复原样。

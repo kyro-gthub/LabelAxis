@@ -1,0 +1,5 @@
+LabelAxis 1.1.1
+
+Oplossingen
+• Etiketbestanden van Microsoft Publisher drukken weer meerdere etiketten per vel af, zoals in Publisher. Als een Publisher-bestand één etiket per pagina heeft, zet LabelAxis de pagina's nu op het etiketvel met etiketten van die maat (het vel dat Publisher noemt, als het er een noemt), in plaats van elk etiket los op een eigen kleine pagina af te drukken.
+• Projecten die al zo uit Publisher zijn binnengehaald, krijgen bij het openen hun etiketvel aangeboden. Eén klik zet ze om, en Ongedaan maken draait het terug.

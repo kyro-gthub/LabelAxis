@@ -1,0 +1,5 @@
+LabelAxis 1.1.1
+
+Fixes
+• Microsoft Publisher label files print several labels to a sheet again, as they did in Publisher. When a Publisher file has one label on each page, LabelAxis now puts the pages on the label sheet with labels that size (the one Publisher names, when it names one), instead of printing each label alone on a small page of its own.
+• Projects already brought in from Publisher that way are offered their label sheet when they open. One click switches them, and Undo takes it back.

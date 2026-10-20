@@ -41,6 +41,37 @@ public sealed class FilesAndDataTests
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
+    public void A_project_imported_from_Publisher_one_label_per_page_is_offered_its_label_sheet(bool accept) => AppHarness.Run(h =>
+    {
+        // As 1.1.0 and earlier saved it: each 38 × 21.2 mm label alone on a page that size.
+        var layout = new LabelMaker.Data.Publisher.PubLayout("Prices", 38 * 72 / 25.4, 21.2 * 72 / 25.4,
+            Enumerable.Range(1, 5).Select(i => new LabelMaker.Data.Publisher.PubPage($"Page {i}", Array.Empty<LabelMaker.Data.Publisher.PubShape>())).ToList());
+        string path = h.FileIn("prices.labelproj");
+        LabelMaker.Core.Serialization.ProjectFile.Save(LabelMaker.Data.Publisher.PublisherLayoutConverter.ToProject(layout), path);
+        h.Shell.ConfirmAnswer = accept;
+
+        h.ViewModel.OpenProjectPath(path);
+
+        h.Shell.Messages.Should().Contain(m => m.Contains("came from Microsoft Publisher"));
+        LabelMaker.Core.Formtec.LabelTemplate template = h.Session.Project.Template!;
+        if (accept)
+        {
+            template.Grid.Count.Should().BeGreaterThan(1, "the labels print several to a sheet again");
+            h.Session.Project.Pages.Should().OnlyContain(p => p.Document.SizeMm == template.LabelSizeMm);
+
+            h.Session.Undo();
+            h.Session.Project.Template!.Grid.Count.Should().Be(1, "the switch is one step that undo takes back");
+        }
+        else
+        {
+            template.Grid.Count.Should().Be(1);
+            template.Brand.Should().Be("Publisher");
+        }
+    });
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
     public void Saving_again_keeps_a_backup_of_the_previous_version_only_when_the_setting_is_on(bool backupOnSave) => AppHarness.Run(h =>
     {
         h.Environment.Settings.BackupOnSave = backupOnSave;

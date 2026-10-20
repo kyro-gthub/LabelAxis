@@ -4,6 +4,18 @@ Notable changes to LabelAxis. Versions follow [Semantic Versioning](https://semv
 The full notes of each release, in all ten interface languages, are in
 [`build/release-notes`](build/release-notes) and on the Releases page.
 
+## [1.1.1] - 2026-10-20
+
+### Fixed
+
+- Microsoft Publisher label files (one label per page, printed "multiple pages per sheet")
+  print several labels to a sheet again. Opening one now puts its pages on the label sheet
+  with labels that size: the label product Publisher's page setup names, otherwise the sheet
+  last used, otherwise the closest in size. Before, each label became a one-up "Custom" page
+  the size of the label, so every label printed on a sheet of its own.
+- Projects already imported that way are offered their label sheet when they open; the
+  switch is one step that Undo takes back.
+
 ## [1.1.0] - 2026-10-17
 
 ### Added

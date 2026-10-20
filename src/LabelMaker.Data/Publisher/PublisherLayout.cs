@@ -74,22 +74,35 @@ public sealed record PubLayout(string Title, double PageWidthPt, double PageHeig
 {
     /// <summary>Shapes that could not be read, with the reason, to tell the user.</summary>
     public IReadOnlyList<string> Notes { get; init; } = Array.Empty<string>();
+
+    /// <summary>The label product Publisher's page setup names ("Avery L7651 …"), when it has one.</summary>
+    public string? LabelName { get; init; }
 }
 
 /// <summary>
-/// Turns a <see cref="PubLayout"/> into a LabelAxis project: one page per Publisher page,
-/// on a sheet the size of the Publisher page, every shape where it was.
+/// Turns a <see cref="PubLayout"/> into a LabelAxis project: one page per Publisher page, every
+/// shape where it was. A label-sized page goes on <paramref name="sheet"/> when one is given (the
+/// label sheet Publisher printed it on, several to a sheet); otherwise on a sheet the size of the page.
 /// </summary>
 public static class PublisherLayoutConverter
 {
     private const double PtToMm = 25.4 / 72.0;
 
-    public static ProjectDocument ToProject(PubLayout layout)
+    public static (double WidthMm, double HeightMm) PageSizeMm(PubLayout layout) =>
+        (Math.Round(layout.PageWidthPt * PtToMm, 2), Math.Round(layout.PageHeightPt * PtToMm, 2));
+
+    public static ProjectDocument ToProject(PubLayout layout, LabelTemplate? sheet = null)
     {
         ArgumentNullException.ThrowIfNull(layout);
-        double widthMm = Math.Round(layout.PageWidthPt * PtToMm, 2);
-        double heightMm = Math.Round(layout.PageHeightPt * PtToMm, 2);
+        (double widthMm, double heightMm) = PageSizeMm(layout);
         LabelTemplate template = PageTemplate(widthMm, heightMm);
+        if (sheet is not null)
+        {
+            // Every page becomes one label of the sheet, at the sheet's exact label size.
+            template = sheet;
+            widthMm = sheet.Grid.LabelWidthMm;
+            heightMm = sheet.Grid.LabelHeightMm;
+        }
 
         ProjectModel project = ProjectModel.CreateNew(template, string.IsNullOrWhiteSpace(layout.Title) ? "Publisher import" : layout.Title);
         project.PrintSettings.Content = PrintContent.Pages;

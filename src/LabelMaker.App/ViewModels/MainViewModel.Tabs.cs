@@ -91,6 +91,7 @@ public sealed partial class MainViewModel
         }
 
         RaiseAllCanExecute();
+        OfferPublisherSheet();
     }
 
     private DocumentTab CreateTab(ProjectDocument document)

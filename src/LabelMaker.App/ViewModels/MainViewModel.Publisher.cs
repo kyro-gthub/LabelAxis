@@ -58,12 +58,17 @@ public sealed partial class MainViewModel
                 return;
             }
 
-            Core.Serialization.ProjectDocument document = PublisherLayoutConverter.ToProject(layout);
+            // A label publication (one label per page) goes on its label sheet, several to a sheet.
+            (double widthMm, double heightMm) = PublisherLayoutConverter.PageSizeMm(layout);
+            Core.Formtec.LabelTemplate? sheet = PublisherSheet.Find(_env.Templates, widthMm, heightMm, layout.LabelName, _env.Settings.LastTemplateId);
+            Core.Serialization.ProjectDocument document = PublisherLayoutConverter.ToProject(layout, sheet);
             LoadSession(document);
             _session.SelectPage(document.Project.Pages[0].Id);
 
             int shapes = layout.Pages.Sum(p => p.Shapes.Count);
-            StatusText = $"Opened {layout.Pages.Count} page(s) with {shapes} item(s) from {Path.GetFileName(path)}. Save it as a LabelAxis project to keep it.";
+            StatusText = $"Opened {layout.Pages.Count} page(s) with {shapes} item(s) from {Path.GetFileName(path)}" +
+                         (sheet is null ? string.Empty : $", printing on the {SheetName(sheet)}; change it in Label manager if you use another sheet") +
+                         ". Save it as a LabelAxis project to keep it.";
             if (layout.Notes.Count > 0)
             {
                 _shell.ShowTextReport("Publisher import notes",
@@ -81,6 +86,57 @@ public sealed partial class MainViewModel
                 ImportPublisher(path);
             }
         }
+    }
+
+    /// <summary>
+    /// "Formtec 3100 sheet (65 labels on A4)", for "printing on the …". The bracket sits inside the
+    /// sentence, so each language file can translate the whole sentence with the numbers filled in.
+    /// </summary>
+    private static string SheetName(Core.Formtec.LabelTemplate sheet) =>
+        $"{sheet.Brand} {sheet.ProductCode} sheet ({sheet.Grid.Count} labels on {sheet.EffectivePage.Name})";
+
+    /// <summary>
+    /// Projects imported from Publisher before 1.1.1 kept Publisher's page as their sheet: one
+    /// label alone on a label-sized page, so each label printed on a sheet of its own. When such a
+    /// project opens, offers to put it on the label sheet with labels that size.
+    /// </summary>
+    private void OfferPublisherSheet()
+    {
+        ProjectModel project = _session.Project;
+        if (project.Template is not { Brand: "Publisher", Grid.Count: 1 } page
+            || !page.Id.StartsWith("publisher-page-", StringComparison.Ordinal)
+            || PublisherSheet.Find(_env.Templates, page.Grid.LabelWidthMm, page.Grid.LabelHeightMm, null, _env.Settings.LastTemplateId) is not { } sheet)
+        {
+            return;
+        }
+
+        string pageSize = $"{page.Grid.LabelWidthMm:0.##} × {page.Grid.LabelHeightMm:0.##} mm";
+        if (!_shell.Confirm(
+                $"This project came from Microsoft Publisher with one {pageSize} label on each page, so every label would print on a sheet of its own.\n\n" +
+                $"Print it on the {SheetName(sheet)} instead, several labels to a sheet as in Publisher?\n\n" +
+                "You can choose a different sheet later in Label manager.",
+                "Label sheet"))
+        {
+            return;
+        }
+
+        // One undoable step: the sheet, and every label resized to it (a fraction of a millimetre);
+        // the canvas refits whichever way the step is taken, as in ApplyTemplate.
+        var labelSize = new SizeMm(sheet.Grid.LabelWidthMm, sheet.Grid.LabelHeightMm);
+        var steps = new List<IUndoableCommand>
+        {
+            new SetPropertyCommand<Core.Formtec.LabelTemplate?>("Change sheet", () => project.Template, v => project.Template = v, sheet),
+        };
+        foreach (LabelPage labelPage in project.Pages)
+        {
+            LabelDocument document = labelPage.Document;
+            steps.Add(new SetPropertyCommand<SizeMm>("Label size", () => document.SizeMm, v => document.SizeMm = v, labelSize));
+        }
+
+        steps.Add(new SetPropertyCommand<SizeMm>("Label size", () => project.MasterLabel.SizeMm,
+            v => { project.MasterLabel.SizeMm = v; OnSheetChanged(); }, labelSize));
+        _session.Execute(new CompositeCommand("Use label sheet", steps));
+        StatusText = $"Printing on the {SheetName(sheet)}. Save to keep it.";
     }
 
     private void ImportPublisher(string? chosenPath)

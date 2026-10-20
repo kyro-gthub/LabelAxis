@@ -111,7 +111,9 @@ public static class PublisherAutomation
             }
 
             string title = Path.GetFileNameWithoutExtension(path);
-            return new PubLayout(title, pageWidth, pageHeight, pages) { Notes = notes };
+            // A label publication names its label product ("Avery L7651 …"); others have none.
+            string? labelName = TryGet(() => (string)doc.PageSetup.Label.Name);
+            return new PubLayout(title, pageWidth, pageHeight, pages) { Notes = notes, LabelName = labelName };
         }
         catch (COMException ex)
         {

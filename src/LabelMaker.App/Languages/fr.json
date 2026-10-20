@@ -2419,5 +2419,9 @@
   "★ Add to favourites": "★ Ajouter aux favoris",
   "★ Favourites": "★ Favoris",
   "☆  Add to favourites": "☆  Ajouter aux favoris",
-  "＋ New custom size…": "＋ Nouveau format personnalisé…"
+  "＋ New custom size…": "＋ Nouveau format personnalisé…",
+  "Opened {0} page(s) with {1} item(s) from {2}, printing on the {3} sheet ({4} labels on {5}); change it in Label manager if you use another sheet. Save it as a LabelAxis project to keep it.": "{0} page(s) avec {1} élément(s) ouverte(s) depuis {2}, imprimée(s) sur la feuille {3} ({4} étiquettes sur {5}) ; changez-la dans le Gestionnaire d'étiquettes si vous utilisez une autre feuille. Enregistrez-le comme projet LabelAxis pour le garder.",
+  "This project came from Microsoft Publisher with one {0} label on each page, so every label would print on a sheet of its own.\n\nPrint it on the {1} sheet ({2} labels on {3}) instead, several labels to a sheet as in Publisher?\n\nYou can choose a different sheet later in Label manager.": "Ce projet vient de Microsoft Publisher avec une étiquette de {0} par page : chaque étiquette s'imprimerait donc sur sa propre feuille.\n\nL'imprimer plutôt sur la feuille {1} ({2} étiquettes sur {3}), avec plusieurs étiquettes par feuille comme dans Publisher ?\n\nVous pourrez choisir une autre feuille plus tard dans le Gestionnaire d'étiquettes.",
+  "Label sheet": "Feuille d'étiquettes",
+  "Printing on the {0} sheet ({1} labels on {2}). Save to keep it.": "Impression sur la feuille {0} ({1} étiquettes sur {2}). Enregistrez pour le garder."
 }
