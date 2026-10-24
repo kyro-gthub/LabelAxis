@@ -161,6 +161,40 @@ public sealed class PublisherLayoutConverterTests
         PublisherSheet.Find(store, 38, 21.2, "Some other label", null).Should().Be(sheets[0]);
     }
 
+    private static double Pt(double mm) => mm * 72 / 25.4;
+
+    [Fact]
+    public void Publishers_own_layout_picks_the_built_in_sheet_when_it_matches_and_is_kept_when_it_does_not()
+    {
+        LabelTemplate gs1065 = TemplateStore.CreateWithBuiltIns().Get("formtec-gs-1065")!;
+        LabelGrid g = gs1065.Grid;
+
+        // The same margins and gaps as the built-in sheet: that sheet, exactly.
+        var same = new PubSheetLayout(Pt(g.MarginLeftMm), Pt(g.MarginTopMm), Pt(g.HGapMm), Pt(g.VGapMm));
+        PublisherSheet.FromPublisher(same, g.LabelWidthMm, g.LabelHeightMm, gs1065).Should().BeSameAs(gs1065);
+
+        // The user moved everything 3 mm in Publisher: the sheet keeps Publisher's numbers.
+        var moved = new PubSheetLayout(Pt(g.MarginLeftMm + 3), Pt(g.MarginTopMm + 3), Pt(g.HGapMm), Pt(g.VGapMm));
+        LabelTemplate made = PublisherSheet.FromPublisher(moved, g.LabelWidthMm, g.LabelHeightMm, gs1065)!;
+        made.Should().NotBeSameAs(gs1065);
+        made.Grid.MarginLeftMm.Should().BeApproximately(g.MarginLeftMm + 3, 0.01);
+        made.Grid.MarginTopMm.Should().BeApproximately(g.MarginTopMm + 3, 0.01);
+        made.Grid.Columns.Should().Be(g.Columns);
+        made.Grid.Rows.Should().BeLessThanOrEqualTo(g.Rows);
+        made.EffectivePage.Should().Be(gs1065.EffectivePage);
+    }
+
+    [Fact]
+    public void Publishers_layout_without_a_built_in_sheet_goes_on_a4()
+    {
+        // 50 × 30 mm labels, 10 mm in, 5 mm apart: 3 across and 8 down on A4.
+        LabelTemplate made = PublisherSheet.FromPublisher(new PubSheetLayout(Pt(10), Pt(10), Pt(5), Pt(5)), 50, 30, null)!;
+
+        made.EffectivePage.Name.Should().Be("A4");
+        (made.Grid.Columns, made.Grid.Rows).Should().Be((3, 8));
+        made.Grid.HGapMm.Should().BeApproximately(5, 0.01);
+    }
+
     [Theory]
     [InlineData(210, 297)] // an A4 flyer prints alone
     [InlineData(180, 250)] // so does a page too big to fit twice on A4

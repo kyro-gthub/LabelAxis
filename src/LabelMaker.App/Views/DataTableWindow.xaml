@@ -64,6 +64,8 @@
             BorderBrush="{DynamicResource Br.Border}" BorderThickness="0,1,0,0" Padding="16,10">
       <DockPanel>
         <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+          <Button x:Name="MakePagesButton" Content="Make pages" Style="{StaticResource GhostButton}" Margin="0,0,6,0" Click="OnMakePages"
+                  ToolTip="One page for each selected record (each record the filter shows when none is selected), made from the label on screen with the record's values written in" />
           <Button x:Name="PrintSelectedButton" Style="{StaticResource GhostButton}" Margin="0,0,6,0" Click="OnPrintSelected"
                   ToolTip="One label for each selected record" />
           <Button x:Name="PrintShownButton" Style="{StaticResource GhostButton}" Margin="0,0,12,0" Click="OnPrintShown"

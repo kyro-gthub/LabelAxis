@@ -17,6 +17,21 @@ namespace LabelMaker.App.Views;
 /// </summary>
 public partial class MainWindow
 {
+    /// <summary>
+    /// Brings the selected page into view in the page list. A duplicated or added page is
+    /// selected but could sit below the list's short window, or (pages are swapped in place
+    /// when the list is rebuilt) not be drawn until the list was scrolled. Done once the list
+    /// has laid out its new items.
+    /// </summary>
+    private void ShowSelectedPage() => Dispatcher.BeginInvoke(DispatcherPriority.Loaded, () =>
+    {
+        if (_vm.SelectedPage is { } page && PageList.Items.Contains(page))
+        {
+            PageList.UpdateLayout();
+            PageList.ScrollIntoView(page);
+        }
+    });
+
     private void OnPageDoubleClick(object sender, MouseButtonEventArgs e)
     {
         if (sender is ListBoxItem { IsSelected: true } && !IsInsideControl(e.OriginalSource as DependencyObject) && _vm.RenamePageCommand.CanExecute(null))

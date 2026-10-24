@@ -77,7 +77,16 @@ public sealed record PubLayout(string Title, double PageWidthPt, double PageHeig
 
     /// <summary>The label product Publisher's page setup names ("Avery L7651 …"), when it has one.</summary>
     public string? LabelName { get; init; }
+
+    /// <summary>Where Publisher prints its pages on the sheet ("multiple pages per sheet"), when it says.</summary>
+    public PubSheetLayout? Sheet { get; init; }
 }
+
+/// <summary>
+/// Publisher's layout of several pages on one sheet of paper, in points: the first page's
+/// distance from the paper's left and top edges, and the gaps between pages across and down.
+/// </summary>
+public sealed record PubSheetLayout(double LeftMarginPt, double TopMarginPt, double HorizontalGapPt, double VerticalGapPt);
 
 /// <summary>
 /// Turns a <see cref="PubLayout"/> into a LabelAxis project: one page per Publisher page, every

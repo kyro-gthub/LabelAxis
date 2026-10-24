@@ -64,6 +64,20 @@ public sealed class LocalizerTests
         }
     }
 
+    [Theory]
+    [InlineData("Pages from records…")]
+    [InlineData("Barcode scanner")]
+    [InlineData("Make 24 pages from the label on screen, one for each record?")]
+    [InlineData("Made 10 numbered copies, up to BOX-0017. Printing is set to print the pages.")]
+    [InlineData("Scanned 12: 11 match")]
+    public void Making_pages_and_scanning_are_translated_in_every_language(string english)
+    {
+        foreach (AppLanguage language in Localizer.Languages.Where(l => l.Code != "en"))
+        {
+            Localizer.Load(language).Translate(english).Should().NotBe(english, language.EnglishName);
+        }
+    }
+
     [Fact]
     public void Every_language_but_english_comes_with_its_translations_inside_the_program()
     {

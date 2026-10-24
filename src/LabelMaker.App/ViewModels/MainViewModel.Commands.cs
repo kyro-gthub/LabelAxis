@@ -277,6 +277,7 @@ public sealed partial class MainViewModel
         BuildDataCommands();
         BuildTabCommands();
         BuildPublisherCommands();
+        BuildMakePagesCommands();
         BuildPanelCommands();
         DataTableCommand = new RelayCommand(() => _shell.ShowDataTable());
         SelectAllCommand = new RelayCommand(

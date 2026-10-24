@@ -103,24 +103,31 @@ public sealed partial class MainViewModel
         {
             if (!wanted.SequenceEqual(Pages))
             {
-                for (int i = 0; i < wanted.Count; i++)
+                // Only the part that changed: keep the pages that are the same at the start and at
+                // the end, and remove and insert in between. A page duplicated in the middle is then
+                // one insert, not every page below it swapped one by one, which the list did not
+                // always draw until it was scrolled.
+                int start = 0;
+                while (start < Pages.Count && start < wanted.Count && Pages[start] == wanted[start])
                 {
-                    if (i < Pages.Count)
-                    {
-                        if (Pages[i] != wanted[i])
-                        {
-                            Pages[i] = wanted[i];
-                        }
-                    }
-                    else
-                    {
-                        Pages.Add(wanted[i]);
-                    }
+                    start++;
                 }
 
-                while (Pages.Count > wanted.Count)
+                int endOld = Pages.Count, endNew = wanted.Count;
+                while (endOld > start && endNew > start && Pages[endOld - 1] == wanted[endNew - 1])
                 {
-                    Pages.RemoveAt(Pages.Count - 1);
+                    endOld--;
+                    endNew--;
+                }
+
+                for (int i = endOld - 1; i >= start; i--)
+                {
+                    Pages.RemoveAt(i);
+                }
+
+                for (int i = start; i < endNew; i++)
+                {
+                    Pages.Insert(i, wanted[i]);
                 }
             }
 

@@ -113,7 +113,18 @@ public static class PublisherAutomation
             string title = Path.GetFileNameWithoutExtension(path);
             // A label publication names its label product ("Avery L7651 …"); others have none.
             string? labelName = TryGet(() => (string)doc.PageSetup.Label.Name);
-            return new PubLayout(title, pageWidth, pageHeight, pages) { Notes = notes, LabelName = labelName };
+
+            // Where Publisher puts its pages on the sheet; all four are zero for a publication
+            // printed one page per sheet.
+            PubSheetLayout? sheet = TryGet(() => new PubSheetLayout(
+                (double)doc.PageSetup.LeftMargin, (double)doc.PageSetup.TopMargin,
+                (double)doc.PageSetup.HorizontalGap, (double)doc.PageSetup.VerticalGap));
+            if (sheet is { LeftMarginPt: <= 0, TopMarginPt: <= 0, HorizontalGapPt: <= 0, VerticalGapPt: <= 0 })
+            {
+                sheet = null;
+            }
+
+            return new PubLayout(title, pageWidth, pageHeight, pages) { Notes = notes, LabelName = labelName, Sheet = sheet };
         }
         catch (COMException ex)
         {

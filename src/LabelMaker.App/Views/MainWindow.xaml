@@ -608,6 +608,10 @@
                   <ContextMenu>
                     <MenuItem Header="_Add page" Command="{Binding AddPageCommand}" />
                     <MenuItem Header="_Duplicate page" Command="{Binding DuplicatePageCommand}" />
+                    <MenuItem Header="Numbered _copies…" Command="{Binding NumberedPagesCommand}"
+                              ToolTip="Copies of this page whose barcode numbers count up, one page after another" />
+                    <MenuItem Header="Pages from _records…" Command="{Binding PagesFromRecordsCommand}"
+                              ToolTip="One page for each record, with the record's values written in" />
                     <Separator />
                     <MenuItem Header="_Rename" InputGestureText="Double-click, F2" Command="{Binding RenamePageCommand}" />
                     <MenuItem Header="Label _size…" Command="{Binding LabelSizeCommand}" />
@@ -709,6 +713,8 @@
                           ToolTip="Read records from SQLite, SQL Server, MySQL, PostgreSQL, Access or ODBC" />
                   <Button Content="Records…" Command="{Binding DataTableCommand}" Style="{StaticResource GhostButton}" Margin="0,0,6,6"
                           ToolTip="See, edit, filter and print chosen records (Ctrl+T)" />
+                  <Button Content="Make pages…" Command="{Binding PagesFromRecordsCommand}" Style="{StaticResource GhostButton}" Margin="0,0,6,6"
+                          ToolTip="One page for each record, made from the label on screen with the record's values written in. Choose records in Records… to make pages for just those." />
                   <Button Content="Refresh" Command="{Binding RefreshDataCommand}" Style="{StaticResource GhostButton}" Margin="0,0,6,6"
                           ToolTip="Read the file or database again (F5)" />
                   <Button Content="Clear" Command="{Binding ClearDataCommand}" Style="{StaticResource GhostButton}" Margin="0,0,6,6" />

@@ -86,6 +86,10 @@ public partial class MainWindow : Window
             {
                 Title = _vm.Title;
             }
+            else if (e.PropertyName == nameof(MainViewModel.SelectedPage))
+            {
+                ShowSelectedPage();
+            }
         };
         Title = _vm.Title;
 

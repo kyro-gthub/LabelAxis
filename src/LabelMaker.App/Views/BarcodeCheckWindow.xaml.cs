@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
@@ -56,6 +57,73 @@ public partial class BarcodeCheckWindow : Window
         }
 
         Closed += (_, _) => StopCamera();
+
+        // A barcode scanner types into whatever has the keyboard: the scanner box, from the start.
+        Loaded += (_, _) => ScannerBox.Focus();
+    }
+
+    // ---- barcode scanner ----------------------------------------------------------------------
+
+    private int _scans, _scansMatching;
+
+    /// <summary>A scanner ends what it read with Enter: check it, empty the box for the next one.</summary>
+    private void OnScannerKeyDown(object sender, KeyEventArgs e)
+    {
+        if (e.Key is not (Key.Enter or Key.Return))
+        {
+            return;
+        }
+
+        e.Handled = true;
+        string read = CleanScan(ScannerBox.Text);
+        ScannerBox.Clear();
+        if (read.Length > 0)
+        {
+            ShowScan(read);
+        }
+    }
+
+    /// <summary>
+    /// What a scanner typed, without what some add before or after it: a symbology code such as
+    /// "]C1" or "]E0" (AIM identifiers), and spaces or line ends.
+    /// </summary>
+    internal static string CleanScan(string? typed)
+    {
+        string v = (typed ?? string.Empty).Trim();
+        return v.Length >= 3 && v[0] == ']' && char.IsAsciiLetter(v[1]) && char.IsAsciiLetterOrDigit(v[2]) ? v[3..].Trim() : v;
+    }
+
+    /// <summary>
+    /// A scanned barcode: what it says and whether it is one on this page. Scanners tell what a
+    /// barcode says but not how well it is printed, so there is no grade; a running count shows
+    /// how many of the labels scanned so far matched.
+    /// </summary>
+    private void ShowScan(string read)
+    {
+        HoldBox.IsChecked = true;
+        _shown = null;
+        CopyButton.IsEnabled = false;
+        Overlay.Children.Clear();
+        ParameterList.ItemsSource = null;
+
+        bool onPage = ShowMatch(read);
+        IReadOnlyList<(string Name, string Value)> barcodes = _labelBarcodes();
+        _scans++;
+        _scansMatching += onPage ? 1 : 0;
+
+        GradeBadge.SetResourceReference(Border.BackgroundProperty, onPage ? "Br.Ok" : barcodes.Count == 0 ? "Br.Surface2" : "Br.Danger");
+        GradeLetter.Text = onPage ? "✓" : barcodes.Count == 0 ? "?" : "✗";
+        GradeText.Text = Localizer.T(onPage ? "The scanner reads the barcode on this page"
+            : barcodes.Count == 0 ? "Read by the barcode scanner" : "The scanner reads a different barcode");
+        KindText.Text = Localizer.T("Read by a barcode scanner, which tells what a barcode says but not how well it is printed. For a grade, use the camera or a photo.");
+        ValueText.Text = read.Replace(Gs1.GroupSeparator, '·');
+        ShowAdvice(new[]
+        {
+            onPage ? "This printed barcode scans and says what the label says."
+            : barcodes.Count == 0 ? "This page has no barcode to compare it with."
+            : "The scanner read something other than the barcodes on this page. Check the barcode's data on the label, or that the right label was printed.",
+        });
+        ScanTally.Text = Localizer.F("Scanned {0}: {1} match", _scans, _scansMatching);
     }
 
     // ---- camera ---------------------------------------------------------------------------
@@ -284,7 +352,7 @@ public partial class BarcodeCheckWindow : Window
                          });
         KindText.Text = report.Symbology;
         ValueText.Text = report.Text.Replace(Gs1.GroupSeparator, '·');
-        ShowMatch(report);
+        ShowMatch(report.Text);
         ParameterList.ItemsSource = report.Parameters.Select(p => new ParameterRow(
             Localizer.T(p.Name), Localizer.T(p.Value), Localizer.T(p.Meaning), p.Grade?.ToString() ?? string.Empty,
             p.Grade is { } g ? GradeBrush(g) : Brushes.Transparent, p.Grade is not null)).ToList();
@@ -302,9 +370,10 @@ public partial class BarcodeCheckWindow : Window
         }
     }
 
-    private void ShowMatch(BarcodeQualityReport report)
+    /// <summary>Says whether <paramref name="text"/> (read from the picture or a scanner) is a barcode on this page; true when it is.</summary>
+    private bool ShowMatch(string text)
     {
-        string scanned = Plain(report.Text);
+        string scanned = Plain(text);
         IReadOnlyList<(string Name, string Value)> barcodes = _labelBarcodes();
         (string Name, string Value)? match = barcodes.Cast<(string Name, string Value)?>()
             .FirstOrDefault(b => Same(Plain(b!.Value.Value), scanned));
@@ -312,12 +381,12 @@ public partial class BarcodeCheckWindow : Window
         {
             MatchText.Text = "✓  " + Localizer.F("The same as “{0}” on this page.", string.IsNullOrWhiteSpace(m.Name) ? Localizer.T("the barcode") : m.Name);
             MatchText.SetResourceReference(TextBlock.ForegroundProperty, "Br.Ok");
+            return true;
         }
-        else
-        {
-            MatchText.Text = barcodes.Count == 0 ? string.Empty : Localizer.T("Not the same as any barcode on this page.");
-            MatchText.SetResourceReference(TextBlock.ForegroundProperty, "Br.TextMuted");
-        }
+
+        MatchText.Text = barcodes.Count == 0 ? string.Empty : Localizer.T("Not the same as any barcode on this page.");
+        MatchText.SetResourceReference(TextBlock.ForegroundProperty, "Br.TextMuted");
+        return false;
     }
 
     /// <summary>A value without GS1 brackets and separators, for comparing.</summary>

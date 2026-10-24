@@ -82,6 +82,15 @@
         <ToggleButton x:Name="HoldBox" Content="Hold the result" Style="{StaticResource ChipToggle}" Margin="0,0,0,4"
                       ToolTip="Keep this result while you move the label away" />
       </WrapPanel>
+      <!-- USB and Bluetooth barcode scanners type what they read and press Enter: scanning lands here. -->
+      <DockPanel DockPanel.Dock="Top" Margin="0,0,0,10">
+        <TextBlock DockPanel.Dock="Left" Text="Barcode scanner" Style="{StaticResource FieldLabel}" VerticalAlignment="Center" Margin="0,0,10,0" />
+        <TextBlock DockPanel.Dock="Right" x:Name="ScanTally" VerticalAlignment="Center" Margin="10,0,0,0" FontSize="12"
+                   Foreground="{DynamicResource Br.TextMuted}" />
+        <TextBox x:Name="ScannerBox" Tag="Scan a printed label here" KeyDown="OnScannerKeyDown" FontFamily="{StaticResource Font.Mono}"
+                 AutomationProperties.AutomationId="Check.Scanner"
+                 ToolTip="Scan with a USB or Bluetooth barcode scanner: it types the barcode here and LabelAxis checks it against the barcodes on this page. A scanner tells what a barcode says, not how well it is printed; for a grade, use the camera or a photo." />
+      </DockPanel>
       <TextBlock DockPanel.Dock="Bottom" x:Name="HintText" TextWrapping="Wrap" FontSize="12" Foreground="{DynamicResource Br.TextMuted}" Margin="0,8,0,0"
                  Text="Hold the label flat with the barcode filling most of the picture, in even light without glare. The camera picture is checked a few times a second." />
       <Border CornerRadius="10" Background="#FF15181E" ClipToBounds="True">

@@ -90,6 +90,40 @@ public sealed class DataImportTests
     }
 
     [Fact]
+    public void A_workbook_with_a_picture_named_too_long_for_closedxml_still_imports_its_records()
+    {
+        // A 1 × 1 PNG, put in with a short name, then renamed as Excel allows but ClosedXML does not.
+        byte[] png = Convert.FromBase64String("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==");
+        var ms = new MemoryStream();
+        using (var wb = new XLWorkbook())
+        {
+            IXLWorksheet ws = wb.AddWorksheet("Stock");
+            ws.Cell(1, 1).Value = "Product";
+            ws.Cell(2, 1).Value = "Wildflower honey";
+            ws.AddPicture(new MemoryStream(png)).MoveTo(ws.Cell(1, 3)).Name = "Logo";
+            wb.SaveAs(ms);
+        }
+
+        using (var document = DocumentFormat.OpenXml.Packaging.SpreadsheetDocument.Open(ms, isEditable: true))
+        {
+            foreach (var name in document.WorkbookPart!.WorksheetParts.Single().DrawingsPart!.WorksheetDrawing
+                         .Descendants<DocumentFormat.OpenXml.Drawing.Spreadsheet.NonVisualDrawingProperties>())
+            {
+                name.Name = "Company logo for the spring catalogue 2026";
+            }
+        }
+
+        ms.Position = 0;
+        Action closedXmlAlone = () => new XLWorkbook(new MemoryStream(ms.ToArray())).Dispose();
+        closedXmlAlone.Should().Throw<Exception>("this is the file that failed to import");
+
+        var service = new DataImportService();
+        DataSet data = service.BuildDataSet(service.ReadRaw(ms, DataSourceKind.Xlsx), new DataConnectionModel { Kind = DataSourceKind.Xlsx });
+
+        data.Rows.Should().ContainSingle().Which["Product"].Should().Be("Wildflower honey");
+    }
+
+    [Fact]
     public void Xlsx_import_round_trips_a_generated_workbook()
     {
         using var ms = new MemoryStream();

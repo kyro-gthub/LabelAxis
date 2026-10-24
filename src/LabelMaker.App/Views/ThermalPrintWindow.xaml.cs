@@ -68,10 +68,20 @@ public partial class ThermalPrintWindow : Window
         {
             _refresh.Stop();
             _stopFinding?.Invoke();
+
+            // Printer, darkness, speed, offsets…: saved with the project, so the project needs saving.
+            PrintSettingsWatch.MarkIfChanged(_session, _settingsBefore);
         };
         _loading = false;
-        Loaded += (_, _) => Refresh();
+        Loaded += (_, _) =>
+        {
+            Refresh();
+            _settingsBefore = PrintSettingsWatch.Snapshot(Print);
+        };
     }
+
+    /// <summary>The project's saved print settings once the window had loaded, to tell whether this window changed them.</summary>
+    private string? _settingsBefore;
 
     /// <summary>True when the user asked to print through the Windows driver instead.</summary>
     public bool UseDriverInstead { get; private set; }

@@ -262,6 +262,27 @@ public partial class DataTableWindow : Window
         }
     }
 
+    /// <summary>Pages for the selected records, or for every record the filter shows when none is selected.</summary>
+    private void OnMakePages(object sender, RoutedEventArgs e)
+    {
+        List<DataRecord> records = SelectedRecords();
+        if (records.Count == 0)
+        {
+            records = _view?.Cast<DataRecord>().ToList() ?? new List<DataRecord>();
+        }
+
+        if (_data is null || records.Count == 0)
+        {
+            return;
+        }
+
+        List<int> rows = records.Select(_data.IndexOf).Where(i => i >= 0).Order().ToList();
+        if (_vm.MakePagesFromRecords(rows) > 0)
+        {
+            UpdateSummary();
+        }
+    }
+
     private void OnPrintSelected(object sender, RoutedEventArgs e) => PrintRecords(SelectedRecords());
 
     private void OnPrintShown(object sender, RoutedEventArgs e) =>

@@ -68,6 +68,61 @@ public static class PublisherSheet
         return sheets.FirstOrDefault(t => t.Id == lastUsedId) ?? sheets[0];
     }
 
+    /// <summary>
+    /// The sheet from Publisher's own layout of its pages on the paper (margins and gaps), so the
+    /// labels print exactly where Publisher printed them. When <paramref name="match"/>, a built-in
+    /// sheet with labels this size, has the same layout (to half a millimetre), it is used as it is;
+    /// otherwise a sheet is made from Publisher's numbers, on <paramref name="match"/>'s paper (A4
+    /// when there is none; Publisher does not say). Null when the layout gives fewer than two labels.
+    /// </summary>
+    public static LabelTemplate? FromPublisher(PubSheetLayout layout, double widthMm, double heightMm, LabelTemplate? match)
+    {
+        ArgumentNullException.ThrowIfNull(layout);
+        const double PtToMm = 25.4 / 72.0;
+        double left = Math.Round(layout.LeftMarginPt * PtToMm, 2), top = Math.Round(layout.TopMarginPt * PtToMm, 2);
+        double across = Math.Round(Math.Max(0, layout.HorizontalGapPt) * PtToMm, 2), down = Math.Round(Math.Max(0, layout.VerticalGapPt) * PtToMm, 2);
+        PageSize paper = match?.EffectivePage ?? PageSize.A4;
+
+        int columns = (int)Math.Floor((paper.WidthMm - left + across + 0.05) / (widthMm + across));
+        int rows = (int)Math.Floor((paper.HeightMm - top + down + 0.05) / (heightMm + down));
+        if (columns < 1 || rows < 1 || columns * rows < 2)
+        {
+            return null;
+        }
+
+        if (match is not null && match.Grid.Columns == columns && match.Grid.Rows == rows
+            && Math.Abs(match.Grid.MarginLeftMm - left) <= 0.5 && Math.Abs(match.Grid.MarginTopMm - top) <= 0.5
+            && Math.Abs(match.Grid.HGapMm - across) <= 0.5 && Math.Abs(match.Grid.VGapMm - down) <= 0.5)
+        {
+            return match;
+        }
+
+        return new LabelTemplate
+        {
+            Id = FormattableString.Invariant($"publisher-sheet-{widthMm:0.##}x{heightMm:0.##}-{columns}x{rows}-{left:0.##}-{top:0.##}"),
+            Brand = "Publisher",
+            ProductCode = $"{columns} × {rows}",
+            Name = FormattableString.Invariant($"Publisher label sheet, {columns} × {rows} labels of {widthMm:0.##} × {heightMm:0.##} mm"),
+            Categories = new List<string> { "Imported" },
+            Page = paper,
+            Orientation = PageOrientation.Portrait,
+            PrintableMarginMm = match?.PrintableMarginMm ?? new MarginsMm(4.0),
+            Grid = new LabelGrid
+            {
+                Columns = columns,
+                Rows = rows,
+                LabelWidthMm = widthMm,
+                LabelHeightMm = heightMm,
+                MarginLeftMm = left,
+                MarginTopMm = top,
+                HGapMm = across,
+                VGapMm = down,
+                CornerRadiusMm = match?.Grid.CornerRadiusMm ?? 0,
+            },
+            Source = "Label layout of an imported Microsoft Publisher document (its margins and gaps)",
+        };
+    }
+
     /// <summary>"Avery L7651 Mini Address" names the Avery L7651 sheet: its brand and its code as a whole word.</summary>
     private static bool Names(string label, LabelTemplate sheet)
     {

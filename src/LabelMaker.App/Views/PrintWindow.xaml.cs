@@ -69,16 +69,40 @@ public partial class PrintWindow : Window
         {
             _refreshDelay.Stop();
 
-            // Copies set per page are kept with the pages, so the project needs saving.
+            // "Fill the sheet" stood in for printing from data only while no records were loaded;
+            // the project keeps what it asked for, so the records print once they are back.
+            if (_contentBeforeFallback is { } content && _session.Project.PrintSettings.Content == PrintContent.SheetFill)
+            {
+                _session.Project.PrintSettings.Content = content;
+            }
+
+            // Copies set per page are kept with the pages, so the project needs saving; so does
+            // any printer, paper, margin, copies or scale choice made here.
             if (_pageCopiesEdited)
             {
                 _session.MarkDirty();
             }
+
+            PrintSettingsWatch.MarkIfChanged(_session, _settingsBefore);
         };
 
         _loading = false;
         Refresh();
+
+        // Taken after the first refresh (which fills in the printer chosen in the list), with
+        // what the project asked to print rather than the stand-in, as it is put back on closing.
+        PrintSettings loaded = _session.Project.PrintSettings;
+        PrintContent shown = loaded.Content;
+        loaded.Content = _contentBeforeFallback ?? shown;
+        _settingsBefore = PrintSettingsWatch.Snapshot(loaded);
+        loaded.Content = shown;
     }
+
+    /// <summary>The project's saved print settings once the window had loaded, to tell whether this window changed them.</summary>
+    private string? _settingsBefore;
+
+    /// <summary>What the project asked to print, when "fill the sheet" stood in for it because no records were loaded.</summary>
+    private PrintContent? _contentBeforeFallback;
 
     // ---- live summary -----------------------------------------------------
 
@@ -104,6 +128,7 @@ public partial class PrintWindow : Window
         // filling the sheet, which is what the preview does too.
         if (s.Content == PrintContent.VariableData && (_session.Data?.RowCount ?? 0) == 0)
         {
+            _contentBeforeFallback ??= s.Content;
             s.Content = PrintContent.SheetFill;
         }
     }

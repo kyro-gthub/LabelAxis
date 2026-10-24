@@ -181,6 +181,34 @@ public sealed class DocumentSession
         return page;
     }
 
+    /// <summary>
+    /// Puts <paramref name="documents"/> in as new pages after the page on screen (after the
+    /// last page when the master label is on screen), named by <paramref name="names"/>, in one
+    /// step that undo takes back; the first new page is then the one on screen.
+    /// </summary>
+    public IReadOnlyList<LabelPage> InsertPages(IReadOnlyList<LabelDocument> documents, IReadOnlyList<string> names, string undoLabel)
+    {
+        ArgumentNullException.ThrowIfNull(documents);
+        ArgumentNullException.ThrowIfNull(names);
+        var pages = documents.Select((doc, i) =>
+        {
+            doc.Name = names[i];
+            return new LabelPage { Id = Guid.NewGuid().ToString("N"), Name = names[i], Document = doc };
+        }).ToList();
+        if (pages.Count == 0)
+        {
+            return pages;
+        }
+
+        Execute(new PageStructureCommand(this, undoLabel, () =>
+        {
+            int index = ActivePageId is null ? Project.Pages.Count : Project.Pages.FindIndex(p => p.Id == ActivePageId) + 1;
+            Project.Pages.InsertRange(Math.Clamp(index, 0, Project.Pages.Count), pages);
+            ActivePageId = pages[0].Id;
+        }));
+        return pages;
+    }
+
     public LabelPage? DuplicateActivePage()
     {
         LabelPage source;
