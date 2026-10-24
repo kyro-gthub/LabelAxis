@@ -151,6 +151,11 @@ public sealed class FakeShell : IShellServices
         return RemoveFromPages?.Invoke() ?? 0;
     }
 
+    /// <summary>What the Add pages window answers; one blank page unless a test says otherwise.</summary>
+    public LabelMaker.App.Services.AddPagesChoice? AddPagesAnswer { get; set; } = new(1, Blank: true, SourcePageId: null, CountUp: false);
+
+    public LabelMaker.App.Services.AddPagesChoice? ShowAddPages(IReadOnlyList<LabelMaker.App.ViewModels.PageListItem> pages, int current) => AddPagesAnswer;
+
     public (double X, double Y, double Width, double Height)? ShowImageCrop(ImageObject image) => null;
 
     public T RunJob<T>(string heading, string unit, int total, Func<IProgress<int>, CancellationToken, Task<T>> job) =>

@@ -3,13 +3,13 @@ id: files
 title: प्रोजेक्ट, सहेजना और सेटिंग्स
 category: Reference
 order: 2
-keywords: save, open, file, labelproj, autosave, recovery, backup, settings, theme, dark, portable, usb, recent, language, arabic, kurdish, sorani, persian, farsi, french, spanish, dutch, russian, chinese, hindi, update, new version, upgrade, themes, frost, aurora, midnight, graphite, ember, ocean, sakura, sage, glass, custom theme, own colours, make your own theme, सहेजें, खोलें, फ़ाइल, ऑटो-सेव, रिकवरी, बैकअप, सेटिंग्स, थीम, डार्क, पोर्टेबल, भाषा, हिन्दी, अपडेट, नया संस्करण, अपनी थीम
+keywords: save, open, file, labelproj, autosave, recovery, backup, settings, theme, dark, portable, usb, recent, language, arabic, kurdish, sorani, persian, farsi, french, spanish, dutch, russian, chinese, hindi, update, new version, upgrade, themes, frost, aurora, midnight, graphite, ember, ocean, sakura, sage, glass, custom theme, own colours, make your own theme, सहेजें, खोलें, फ़ाइल, ऑटो-सेव, रिकवरी, बैकअप, सेटिंग्स, थीम, डार्क, पोर्टेबल, भाषा, हिन्दी, अपडेट, नया संस्करण, अपनी थीम, close others, tabs, offline update, update without internet, बाकी बंद करें, टैब, बिना इंटरनेट अपडेट
 ---
 # प्रोजेक्ट, सहेजना और सेटिंग्स
 
 ## प्रोजेक्ट
 
-एक प्रोजेक्ट (.labelproj फ़ाइल) में लेबल शीट, हर पेज, उसके इस्तेमाल किए चित्र और उसका डेटा कनेक्शन होता है। एक साथ कई प्रोजेक्ट खुले रह सकते हैं, हर एक लेबल के ऊपर अपने टैब में। `फ़ाइल › हाल की फ़ाइलें खोलें` नवीनतम दिखाता है।
+एक प्रोजेक्ट (.labelproj फ़ाइल) में लेबल शीट, हर पेज, उसके इस्तेमाल किए चित्र, उसका डेटा कनेक्शन और उसकी प्रिंट सेटिंग्स होती हैं। एक साथ कई प्रोजेक्ट खुले रह सकते हैं, हर एक लेबल के ऊपर अपने टैब में; **बंद करें** और **बाकी बंद करें** के लिए किसी टैब पर राइट-क्लिक करें। `फ़ाइल › हाल की फ़ाइलें खोलें` नवीनतम दिखाता है।
 
 ## काम कभी न खोएँ
 
@@ -29,6 +29,8 @@ keywords: save, open, file, labelproj, autosave, recovery, backup, settings, the
 LabelAxis लगभग दिन में एक बार, और जब भी आप `सहायता › अपडेट जाँचें…` चुनें, नए संस्करण की तलाश करता है। अगर कोई है, तो लेबल के ऊपर एक पट्टी `अभी अपडेट करें`, `नया क्या है`, `बाद में` और `यह संस्करण छोड़ें` देती है। **अभी अपडेट करें** नया संस्करण डाउनलोड करता है, जाँचता है कि यह ठीक वही प्रकाशित फ़ाइल है, LabelAxis बंद करता है (आपका काम सहेजने के लिए पूछते हुए), उसे इंस्टॉल करता है और LabelAxis फिर से शुरू करता है। आपकी सेटिंग्स, टेम्पलेट और कैलिब्रेशन रहते हैं।
 
 `फ़ाइल › सेटिंग्स… › अपडेट` में आप दैनिक जाँच बंद कर सकते हैं, या **अपडेट पता** डाल सकते हैं: वह वेब पता (https://, जैसे GitHub रिलीज़ फ़ोल्डर) या साझा फ़ोल्डर जहाँ LabelAxis अपडेट प्रकाशित होते हैं। पते के साथ बना संस्करण बॉक्स खाली होने पर उसी का उपयोग करता है।
+
+**बिना इंटरनेट वाले PC को अपडेट करना:** किसी रिलीज़ फ़ोल्डर (उसकी update.json और दोनों सेटअप प्रोग्राम, नाम बदले बिना) को USB स्टिक या साझा फ़ोल्डर में कॉपी करें। उस PC पर, फ़ोल्डर का पाथ अपडेट पते के रूप में लिखें, `सहायता › अपडेट जाँचें…` चुनें, और LabelAxis हर फ़ाइल का फ़िंगरप्रिंट जाँचकर उसे इंस्टॉल करता है। बाद में सामान्य पते पर लौटने के लिए पता मिटा दें।
 
 ## पोर्टेबल प्रति
 

@@ -114,6 +114,9 @@ public interface IShellServices
     /// <summary>Removes the selected objects and their matches from the pages chosen. Returns how many went.</summary>
     int ShowRemoveFromPages();
 
+    /// <summary>Asks for blank pages or copies of a page, and how many; null when cancelled.</summary>
+    AddPagesChoice? ShowAddPages(IReadOnlyList<ViewModels.PageListItem> pages, int current);
+
     /// <summary>
     /// Interactive crop for <paramref name="image"/>. Returns the chosen normalised
     /// rectangle, or null on cancel; the caller applies it through the undo stack.

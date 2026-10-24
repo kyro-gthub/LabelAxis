@@ -1,8 +1,10 @@
 using System.Globalization;
 using LabelMaker.App.Mvvm;
+using LabelMaker.App.Services;
 using LabelMaker.Core.Bulk;
 using LabelMaker.Core.Model;
 using LabelMaker.Core.Model.Objects;
+using LabelMaker.Core.Units;
 
 namespace LabelMaker.App.ViewModels;
 
@@ -25,6 +27,7 @@ public sealed partial class MainViewModel
             () => MakePagesFromRecords(Enumerable.Range(0, _session.Data?.RowCount ?? 0).ToList()),
             () => (_session.Data?.RowCount ?? 0) > 0);
         NumberedPagesCommand = new RelayCommand(MakeNumberedPages, () => NumberedBarcodes(_session.ActiveLabel) > 0);
+        PrintSelectedPagesCommand = new RelayCommand(PrintSelectedPages);
     }
 
     /// <summary>
@@ -109,6 +112,137 @@ public sealed partial class MainViewModel
         StatusText = Localization.Localizer.F("Made {0} numbered copies, up to {1}. Printing is set to print the pages.",
             documents.Count.ToString("N0", CultureInfo.CurrentCulture), names[^1]);
         return documents.Count;
+    }
+
+    // ---- several pages at once -----------------------------------------------------------------
+
+    private IReadOnlyList<PageListItem> _selectedPages = Array.Empty<PageListItem>();
+
+    /// <summary>
+    /// The pages selected in the page list with Ctrl and Shift (the page on screen is one of
+    /// them). Remove, Duplicate and Print selected pages act on all of them.
+    /// </summary>
+    public IReadOnlyList<PageListItem> SelectedPages
+    {
+        get => _selectedPages;
+        set
+        {
+            _selectedPages = value ?? Array.Empty<PageListItem>();
+            RaiseAllCanExecute();
+        }
+    }
+
+    public RelayCommand PrintSelectedPagesCommand { get; private set; } = null!;
+
+    /// <summary>The selected pages still in the list, in list order; the page on screen when only it is selected.</summary>
+    private List<PageListItem> PagesActedOn()
+    {
+        List<PageListItem> chosen = Pages.Where(p => _selectedPages.Contains(p)).ToList();
+        return chosen.Count > 1 ? chosen : SelectedPage is { } current ? new List<PageListItem> { current } : chosen;
+    }
+
+    /// <summary>Asks blank pages or copies, and how many, then adds them after the page on screen.</summary>
+    private void AddPagesAsked()
+    {
+        int current = SelectedPage is { } page ? Math.Max(0, Pages.IndexOf(page)) : 0;
+        if (_shell.ShowAddPages(Pages.ToList(), current) is { } choice)
+        {
+            AddPages(choice);
+        }
+    }
+
+    /// <summary>Adds what <paramref name="choice"/> asks for after the page on screen; returns how many pages.</summary>
+    public int AddPages(AddPagesChoice choice)
+    {
+        ArgumentNullException.ThrowIfNull(choice);
+        int count = Math.Clamp(choice.Count, 1, MaxMadePages);
+        int after = SelectedPage is { } page ? Pages.IndexOf(page) + 1 : Pages.Count;
+
+        if (choice.Blank)
+        {
+            SizeMm size = _session.ActiveLabel.SizeMm;
+            var documents = Enumerable.Range(0, count).Select(_ => new LabelDocument { SizeMm = size }).ToList();
+            var names = Enumerable.Range(0, count).Select(i => $"Page {after + 1 + i}").ToList();
+            _session.InsertPages(documents, names, count == 1 ? "Add page" : $"Add {count} pages");
+            StatusText = Localization.Localizer.F("Added {0} blank page(s).", count);
+            return count;
+        }
+
+        LabelDocument source = choice.SourcePageId is { } id && _session.Project.Pages.FirstOrDefault(p => p.Id == id) is { } chosen
+            ? chosen.Document
+            : _session.Project.MasterLabel;
+        string sourceName = choice.SourcePageId is { } sid ? _session.Project.Pages.FirstOrDefault(p => p.Id == sid)?.Name ?? MasterPageName : MasterPageName;
+
+        if (choice.CountUp && NumberedBarcodes(source) > 0)
+        {
+            IReadOnlyList<LabelDocument> numbered = PageMaker.Numbered(source, count);
+            var numberedNames = numbered.Select(d => d.Objects.OfType<BarcodeObject>().Select(b => b.Spec.Data).FirstOrDefault(v => v.Length > 0) ?? sourceName).ToList();
+            _session.InsertPages(numbered.ToList(), numberedNames, $"Make {numbered.Count} numbered copies");
+            StatusText = Localization.Localizer.F("Added {0} numbered copies of “{1}”, up to {2}.", numbered.Count, sourceName, numberedNames[^1]);
+            return numbered.Count;
+        }
+
+        var copies = Enumerable.Range(0, count).Select(_ =>
+        {
+            LabelDocument copy = source.Clone();
+            copy.Id = Guid.NewGuid().ToString("N");
+            return copy;
+        }).ToList();
+        var copyNames = Enumerable.Range(0, count).Select(i => count == 1 ? $"{sourceName} copy" : $"{sourceName} copy {i + 1}").ToList();
+        _session.InsertPages(copies, copyNames, count == 1 ? "Duplicate page" : $"Add {count} copies");
+        StatusText = choice.CountUp
+            ? Localization.Localizer.F("Added {0} copies of “{1}”. It has no barcode with a number to count up.", count, sourceName)
+            : Localization.Localizer.F("Added {0} copies of “{1}”.", count, sourceName);
+        return count;
+    }
+
+    /// <summary>Duplicates every selected page, each copy right after its page.</summary>
+    private void DuplicateSelectedPages()
+    {
+        List<PageListItem> pages = PagesActedOn();
+        if (pages.Count <= 1)
+        {
+            _session.DuplicateActivePage();
+            return;
+        }
+
+        _session.DuplicatePages(pages.Select(p => p.PageId).ToList());
+        StatusText = Localization.Localizer.F("Duplicated {0} pages.", pages.Count);
+    }
+
+    /// <summary>Removes every selected page, after asking; one page always stays.</summary>
+    private void RemoveSelectedPages()
+    {
+        List<PageListItem> pages = PagesActedOn();
+        if (pages.Count <= 1)
+        {
+            RemoveActivePage();
+            return;
+        }
+
+        if (pages.Count >= Pages.Count)
+        {
+            StatusText = "A project needs at least one page, so not every page can be removed.";
+            return;
+        }
+
+        if (!_env.Settings.ConfirmDestructiveActions || _shell.Confirm(Localization.Localizer.F("Remove the {0} selected pages?", pages.Count)))
+        {
+            _session.RemovePages(pages.Select(p => p.PageId).ToList());
+            StatusText = Localization.Localizer.F("Removed {0} pages. Undo (Ctrl+Z) brings them back.", pages.Count);
+        }
+    }
+
+    /// <summary>Opens Print set to print just the selected pages, several to a sheet.</summary>
+    private void PrintSelectedPages()
+    {
+        List<PageListItem> pages = PagesActedOn();
+        PrintSettings settings = _session.Project.PrintSettings;
+        settings.Content = PrintContent.Pages;
+        settings.PagesToPrint = PagesToPrint.Chosen;
+        settings.ChosenPages = pages.Select(p => Pages.IndexOf(p)).Where(i => i >= 0).ToList();
+        _activeTab.HasConfiguredPrintSettings = true;
+        Print(keepPageChoice: true);
     }
 
     /// <summary>How many barcodes on <paramref name="label"/> have a number that can count up.</summary>

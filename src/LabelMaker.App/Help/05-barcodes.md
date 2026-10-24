@@ -3,7 +3,7 @@ id: barcodes
 title: Barcodes and QR codes
 category: Designing
 order: 3
-keywords: barcode, qr, qr code, ean, upc, code 128, code 39, gs1, datamatrix, pdf417, aztec, itf, isbn, human readable, bulk barcode, gs1 builder, udi, medical device, expiry, batch, sscc, gtin, check digit, verify, verifier, grade, scan quality, camera, webcam
+keywords: barcode, qr, qr code, ean, upc, code 128, code 39, gs1, datamatrix, pdf417, aztec, itf, isbn, human readable, bulk barcode, gs1 builder, udi, medical device, expiry, batch, sscc, gtin, check digit, verify, verifier, grade, scan quality, camera, webcam, scanner, barcode scanner, usb scanner
 ---
 # Barcodes and QR codes
 
@@ -50,3 +50,7 @@ If the data does not suit the type (for example letters in an EAN-13), the barco
 - what to change, for example lower the printer's darkness when the bars print too wide.
 
 It is a close guide, not a certificate: light and focus change the result, so check a few times.
+
+### With a barcode scanner
+
+A USB or Bluetooth barcode scanner works too: open the check window and scan a printed label (the **Barcode scanner** box at the top is ready as soon as the window opens). LabelAxis says whether what it read is the same as a barcode on the page, and keeps count ("Scanned 12: 11 match"), which is handy for checking a whole batch. A scanner tells what a barcode says but not how well it is printed, so there is no A to F grade; for a grade, use the camera or a photo.

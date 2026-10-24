@@ -42,6 +42,7 @@ keywords: keyboard, shortcut, keys, hotkey, ctrl, toetsenbord, sneltoets, toetse
 | Toetsen | Doet |
 |---|---|
 | `F2` | De pagina hernoemen (in de paginalijst) |
+| `Ctrl`+klik / `Shift`+klik | Meerdere pagina's, of een reeks pagina's, selecteren (in de paginalijst) |
 | `Ctrl+↑` / `Ctrl+↓` | De pagina, of het object in de lijst, omhoog / omlaag |
 | `Ctrl+T` | Gegevensrecords |
 | `F5` | De gegevens vernieuwen |

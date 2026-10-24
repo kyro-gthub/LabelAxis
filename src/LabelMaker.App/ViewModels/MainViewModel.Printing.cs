@@ -32,7 +32,13 @@ public sealed partial class MainViewModel
 {
     // ---------- print / export ----------
 
-    private void Print()
+    private void Print() => Print(keepPageChoice: false);
+
+    /// <summary>
+    /// Opens printing. Normally it starts from the page on screen; <paramref name="keepPageChoice"/>
+    /// keeps a page choice already made (Print selected pages).
+    /// </summary>
+    private void Print(bool keepPageChoice)
     {
         try
         {
@@ -42,7 +48,14 @@ public sealed partial class MainViewModel
                 settings.Content = _session.Data is { RowCount: > 0 } ? PrintContent.VariableData : PrintContent.SheetFill;
             }
 
-            AimPrintAtActivePage();
+            if (keepPageChoice)
+            {
+                settings.CurrentPage = _session.ActivePagePosition;
+            }
+            else
+            {
+                AimPrintAtActivePage();
+            }
 
             // A roll goes to the thermal dialog (printer commands, dot-exact preview);
             // it can still hand over to the Windows driver from there.

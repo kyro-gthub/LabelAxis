@@ -3,7 +3,7 @@ id: getting-started
 title: Your first label
 category: Getting started
 order: 1
-keywords: start, begin, new project, tutorial, first, quick start, welcome, my designs, save as design, reuse, own template
+keywords: start, begin, new project, tutorial, first, quick start, welcome, my designs, save as design, reuse, own template, quick bar, toolbar, undo, redo
 ---
 # Your first label
 
@@ -25,6 +25,7 @@ LabelAxis designs labels and stickers and prints them on label sheets (A4 or Let
 
 ## Find your way around
 
+- **Top:** the menus, and next to them the quick bar: New, Open, Save, Undo, Redo, Print preview and Print, one click away. Point at Undo or Redo to see what it would undo or redo.
 - **Left:** `Pages` (the label designs in this project) and `Data` (a spreadsheet or database for printing many different labels).
 - **Middle:** the label itself, with rulers, guides and a grid.
 - **Right:** `Properties` (settings of the selected object), `Layers` (every object, front to back) and `Page` (the label sheet and the page on screen).

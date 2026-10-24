@@ -54,4 +54,4 @@ keywords: select, move, resize, rotate, skew, free transform, align, distribute,
 
 ## 撤销
 
-所有操作都可以用 `Ctrl+Z` 撤销，用 `Ctrl+Y` 重做。
+所有操作都可以用 `Ctrl+Z` 撤销，用 `Ctrl+Y` 重做，也可以用顶部快捷栏中的撤销和重做按钮。将指针指向它们，会显示将撤销或重做的内容，例如“撤销：复制 3 个页面”。

@@ -3,7 +3,7 @@ id: export
 title: Exporting and checking a job
 category: Exporting
 order: 1
-keywords: export, pdf, png, svg, picture, file, preflight, check, publisher, import
+keywords: export, pdf, png, svg, picture, file, preflight, check, publisher, import, publisher margins, label sheet
 ---
 # Exporting and checking a job
 
@@ -19,3 +19,5 @@ keywords: export, pdf, png, svg, picture, file, preflight, check, publisher, imp
 ## Bring in Microsoft Publisher files
 
 `File > Open Publisher file (all pages)…` turns a Publisher (.pub) file into a project; `Import text and pictures from Publisher…` brings its contents into the open project.
+
+A Publisher label file usually has one label on each page and prints several pages on each sheet. LabelAxis puts such pages on a real label sheet: the one Publisher names, or the built-in sheet with labels that size, using Publisher's own margins and gaps so the labels print where they printed from Publisher. The status bar says which sheet it chose; change it in **Label manager** if you use another one. A project brought in from Publisher before this (one label alone on each small page) is offered its label sheet when it opens; **Cancel** keeps one label per page, and that file is not asked about again.

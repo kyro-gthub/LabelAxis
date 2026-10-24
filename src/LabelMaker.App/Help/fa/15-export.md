@@ -3,7 +3,7 @@ id: export
 title: خروجی گرفتن و بررسی یک کار
 category: Exporting
 order: 1
-keywords: export, pdf, png, svg, picture, file, preflight, check, publisher, import, خروجی, تصویر, فایل, بررسی پیش از چاپ, بررسی, ورود
+keywords: export, pdf, png, svg, picture, file, preflight, check, publisher, import, خروجی, تصویر, فایل, بررسی پیش از چاپ, بررسی, ورود, publisher margins, label sheet, حاشیه‌های publisher, برگه برچسب
 ---
 # خروجی گرفتن و بررسی یک کار
 
@@ -19,3 +19,5 @@ keywords: export, pdf, png, svg, picture, file, preflight, check, publisher, imp
 ## آوردن فایل‌های Microsoft Publisher
 
 `فایل › باز کردن فایل Publisher (همه صفحه‌ها)…` یک فایل Publisher (‎.pub‎) را به پروژه تبدیل می‌کند؛ `ورود متن و تصویرها از Publisher…` محتوای آن را به پروژه باز می‌آورد.
+
+فایل برچسب Publisher معمولاً در هر صفحه یک برچسب دارد و چند صفحه را روی هر برگه چاپ می‌کند. LabelAxis این صفحه‌ها را روی یک برگه برچسب واقعی می‌گذارد: همانی که Publisher نام می‌برد، یا برگه داخلی با برچسب‌هایی به همان اندازه، با حاشیه‌ها و فاصله‌های خود Publisher، تا برچسب‌ها همان جایی چاپ شوند که از Publisher چاپ می‌شدند. نوار وضعیت می‌گوید کدام برگه را برگزید؛ اگر برگه دیگری به کار می‌برید، آن را در **مدیر برچسب** عوض کنید. به پروژه‌ای که پیش‌تر از Publisher آمده (یک برچسب تنها روی هر صفحه کوچک) هنگام باز شدن برگه برچسبش پیشنهاد می‌شود؛ **لغو** یک برچسب در هر صفحه را نگه می‌دارد، و درباره آن فایل دیگر پرسیده نمی‌شود.

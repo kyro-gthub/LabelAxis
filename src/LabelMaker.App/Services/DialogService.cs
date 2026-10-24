@@ -419,6 +419,12 @@ public sealed class DialogService : IShellServices
         return win.ShowDialog() == true ? win.Removed : 0;
     }
 
+    public AddPagesChoice? ShowAddPages(IReadOnlyList<ViewModels.PageListItem> pages, int current)
+    {
+        var win = new AddPagesWindow(pages, current) { Owner = Front };
+        return win.ShowDialog() == true ? win.Choice : null;
+    }
+
     public bool ShowLabelSize()
     {
         if (_vm is null)

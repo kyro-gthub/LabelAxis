@@ -215,6 +215,36 @@
               <MenuItem AutomationProperties.AutomationId="Menu.About" Header="_About LabelAxis" Command="{Binding AboutCommand}" />
             </MenuItem>
           </Menu>
+
+          <!-- Quick bar: the commands used most, one click away, as in Office's quick access toolbar. -->
+          <Border Width="1" Height="18" Background="{DynamicResource Br.Border}" Margin="10,0,6,0" VerticalAlignment="Center" />
+          <StackPanel x:Name="QuickBar" Orientation="Horizontal" VerticalAlignment="Center" AutomationProperties.AutomationId="Main.QuickBar">
+            <Button Style="{StaticResource IconGhost}" Command="{Binding NewCommand}" ToolTip="New project (Ctrl+N)" AutomationProperties.Name="New project" Focusable="False">
+              <Image Source="{DynamicResource Icon.New}" Width="16" Height="16" />
+            </Button>
+            <Button Style="{StaticResource IconGhost}" Command="{Binding OpenCommand}" ToolTip="Open (Ctrl+O)" AutomationProperties.Name="Open" Focusable="False">
+              <Image Source="{DynamicResource Icon.Open}" Width="16" Height="16" />
+            </Button>
+            <Button Style="{StaticResource IconGhost}" Command="{Binding SaveCommand}" ToolTip="Save (Ctrl+S)" AutomationProperties.Name="Save" Focusable="False">
+              <Image Source="{DynamicResource Icon.Save}" Width="16" Height="16" />
+            </Button>
+            <Border Width="1" Height="16" Background="{DynamicResource Br.Border}" Margin="4,0" VerticalAlignment="Center" />
+            <Button x:Name="QuickUndo" Style="{StaticResource IconGhost}" Command="{Binding UndoCommand}" ToolTip="Undo (Ctrl+Z)"
+                    ToolTipOpening="OnUndoTip" AutomationProperties.Name="Undo" Focusable="False" ToolTipService.ShowOnDisabled="True">
+              <Image Source="{DynamicResource Icon.Undo}" Width="16" Height="16" />
+            </Button>
+            <Button x:Name="QuickRedo" Style="{StaticResource IconGhost}" Command="{Binding RedoCommand}" ToolTip="Redo (Ctrl+Y)"
+                    ToolTipOpening="OnRedoTip" AutomationProperties.Name="Redo" Focusable="False" ToolTipService.ShowOnDisabled="True">
+              <Image Source="{DynamicResource Icon.Redo}" Width="16" Height="16" />
+            </Button>
+            <Border Width="1" Height="16" Background="{DynamicResource Br.Border}" Margin="4,0" VerticalAlignment="Center" />
+            <Button Style="{StaticResource IconGhost}" Command="{Binding PrintPreviewCommand}" ToolTip="Print preview (Ctrl+Shift+P)" AutomationProperties.Name="Print preview" Focusable="False">
+              <Image Source="{DynamicResource Icon.Eye}" Width="16" Height="16" />
+            </Button>
+            <Button Style="{StaticResource IconGhost}" Command="{Binding PrintCommand}" ToolTip="Print (Ctrl+P)" AutomationProperties.Name="Print" Focusable="False">
+              <Image Source="{DynamicResource Icon.Print}" Width="16" Height="16" />
+            </Button>
+          </StackPanel>
         </StackPanel>
 
         <!-- window buttons -->
@@ -561,9 +591,9 @@
                 <Button ToolTip="Next page (↓)" Command="{Binding NextPageCommand}" Style="{StaticResource IconGhost}" MinWidth="24" Margin="0,0,6,0">
                   <Path Data="M 0,0 L 5,6 L 10,0" Stroke="{DynamicResource Br.Text2}" StrokeThickness="1.5" />
                 </Button>
-                <Button Content="+" ToolTip="Add page" Command="{Binding AddPageCommand}" Style="{StaticResource IconGhost}" AutomationProperties.AutomationId="Pages.Add" />
-                <Button Content="⧉" ToolTip="Duplicate page" Command="{Binding DuplicatePageCommand}" Style="{StaticResource IconGhost}" />
-                <Button Content="✕" ToolTip="Remove page" Command="{Binding RemovePageCommand}" Style="{StaticResource IconGhost}" AutomationProperties.AutomationId="Pages.Remove" />
+                <Button Content="+" ToolTip="Add pages: blank, or copies of a page" Command="{Binding AddPageCommand}" Style="{StaticResource IconGhost}" AutomationProperties.AutomationId="Pages.Add" />
+                <Button Content="⧉" ToolTip="Duplicate the selected page(s). Ctrl+click or Shift+click to select several." Command="{Binding DuplicatePageCommand}" Style="{StaticResource IconGhost}" />
+                <Button Content="✕" ToolTip="Remove the selected page(s). Ctrl+click or Shift+click to select several." Command="{Binding RemovePageCommand}" Style="{StaticResource IconGhost}" AutomationProperties.AutomationId="Pages.Remove" />
                 <Button ToolTip="Sort and arrange pages" Style="{StaticResource IconGhost}" MinWidth="24" Click="OnAlignMenu">
                   <Path Data="M 0,1 L 10,1 M 0,5 L 7,5 M 0,9 L 4,9" Stroke="{DynamicResource Br.Text2}" StrokeThickness="1.5" />
                   <Button.ContextMenu>
@@ -581,6 +611,7 @@
             </Grid>
             <Border DockPanel.Dock="Top" Style="{StaticResource InsetPanel}" Height="170" Margin="0,0,0,14">
               <ListBox x:Name="PageList" ItemsSource="{Binding Pages}" SelectedItem="{Binding SelectedPage}"
+                       SelectionMode="Extended" SelectionChanged="OnPageListSelectionChanged"
                        BorderThickness="0" Background="Transparent" PreviewKeyDown="OnPageListKeyDown"
                        ScrollViewer.VerticalScrollBarVisibility="Auto">
                 <ListBox.Resources>
@@ -606,8 +637,10 @@
                 </ListBox.ItemContainerStyle>
                 <ListBox.ContextMenu>
                   <ContextMenu>
-                    <MenuItem Header="_Add page" Command="{Binding AddPageCommand}" />
-                    <MenuItem Header="_Duplicate page" Command="{Binding DuplicatePageCommand}" />
+                    <MenuItem Header="_Add pages…" Command="{Binding AddPageCommand}" />
+                    <MenuItem Header="_Duplicate selected pages" Command="{Binding DuplicatePageCommand}" />
+                    <MenuItem Header="Remove selected pa_ges" Command="{Binding RemovePageCommand}" />
+                    <MenuItem Header="_Print selected pages…" Command="{Binding PrintSelectedPagesCommand}" />
                     <MenuItem Header="Numbered _copies…" Command="{Binding NumberedPagesCommand}"
                               ToolTip="Copies of this page whose barcode numbers count up, one page after another" />
                     <MenuItem Header="Pages from _records…" Command="{Binding PagesFromRecordsCommand}"

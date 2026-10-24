@@ -3,7 +3,7 @@ id: barcodes
 title: Штрихкоды и QR-коды
 category: Designing
 order: 3
-keywords: barcode, qr, qr code, ean, upc, code 128, code 39, gs1, datamatrix, pdf417, aztec, itf, isbn, human readable, bulk barcode, gs1 builder, udi, medical device, expiry, batch, sscc, gtin, check digit, verify, verifier, grade, scan quality, camera, webcam, штрихкод, конструктор GS1, медицинское изделие, срок годности, партия, контрольная цифра, проверка, оценка, камера
+keywords: barcode, qr, qr code, ean, upc, code 128, code 39, gs1, datamatrix, pdf417, aztec, itf, isbn, human readable, bulk barcode, gs1 builder, udi, medical device, expiry, batch, sscc, gtin, check digit, verify, verifier, grade, scan quality, camera, webcam, штрихкод, конструктор GS1, медицинское изделие, срок годности, партия, контрольная цифра, проверка, оценка, камера, scanner, barcode scanner, usb scanner, сканер, сканер штрихкодов
 ---
 # Штрихкоды и QR-коды
 
@@ -50,3 +50,7 @@ keywords: barcode, qr, qr code, ean, upc, code 128, code 39, gs1, datamatrix, pd
 - что изменить, например уменьшить плотность принтера, если штрихи печатаются слишком широкими.
 
 Это хороший ориентир, а не сертификат: свет и фокус влияют на результат, поэтому проверьте несколько раз.
+
+### Со сканером штрихкодов
+
+Подойдёт и USB- или Bluetooth-сканер штрихкодов: откройте окно проверки и отсканируйте напечатанную этикетку (поле **Сканер штрихкодов** сверху готово сразу после открытия окна). LabelAxis сообщает, совпадает ли прочитанное со штрихкодом на странице, и ведёт счёт («Отсканировано 12: совпадают 11») — удобно для проверки целой партии. Сканер сообщает, что содержит штрихкод, но не то, насколько хорошо он напечатан, поэтому оценки от A до F нет; для оценки используйте камеру или фото.

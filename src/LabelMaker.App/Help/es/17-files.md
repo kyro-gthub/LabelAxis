@@ -3,13 +3,13 @@ id: files
 title: Proyectos, guardado y configuración
 category: Reference
 order: 2
-keywords: save, open, file, labelproj, autosave, recovery, backup, settings, theme, dark, portable, usb, recent, language, arabic, kurdish, sorani, persian, farsi, french, spanish, dutch, russian, chinese, hindi, update, new version, upgrade, themes, frost, aurora, midnight, graphite, ember, ocean, sakura, sage, glass, custom theme, own colours, make your own theme, guardar, abrir, archivo, guardado automático, recuperación, copia de seguridad, configuración, tema, oscuro, idioma, español, actualización, nueva versión, tema propio
+keywords: save, open, file, labelproj, autosave, recovery, backup, settings, theme, dark, portable, usb, recent, language, arabic, kurdish, sorani, persian, farsi, french, spanish, dutch, russian, chinese, hindi, update, new version, upgrade, themes, frost, aurora, midnight, graphite, ember, ocean, sakura, sage, glass, custom theme, own colours, make your own theme, guardar, abrir, archivo, guardado automático, recuperación, copia de seguridad, configuración, tema, oscuro, idioma, español, actualización, nueva versión, tema propio, close others, tabs, offline update, update without internet, cerrar las demás, pestañas, actualizar sin internet
 ---
 # Proyectos, guardado y configuración
 
 ## Proyectos
 
-Un proyecto (archivo .labelproj) contiene la hoja de etiquetas, todas las páginas, las imágenes que usa y su conexión de datos. Se pueden tener varios proyectos abiertos a la vez, cada uno en su pestaña sobre la etiqueta. `Archivo › Abrir recientes` muestra los últimos.
+Un proyecto (archivo .labelproj) contiene la hoja de etiquetas, todas las páginas, las imágenes que usa, su conexión de datos y sus ajustes de impresión. Se pueden tener varios proyectos abiertos a la vez, cada uno en su pestaña sobre la etiqueta; haga clic derecho en una pestaña para **Cerrar** y **Cerrar las demás**. `Archivo › Abrir recientes` muestra los últimos.
 
 ## No perder nunca el trabajo
 
@@ -29,6 +29,8 @@ Un proyecto (archivo .labelproj) contiene la hoja de etiquetas, todas las págin
 LabelAxis busca una versión más reciente aproximadamente una vez al día, y siempre que elija `Ayuda › Buscar actualizaciones…`. Cuando hay una, una barra sobre la etiqueta ofrece `Actualizar ahora`, `Novedades`, `Más tarde` y `Omitir esta versión`. **Actualizar ahora** descarga la nueva versión, comprueba que es exactamente el archivo publicado, cierra LabelAxis (preguntando si quiere guardar su trabajo), la instala y vuelve a iniciar LabelAxis. Se conservan su configuración, plantillas y calibración.
 
 En `Archivo › Configuración… › Actualizaciones` puede desactivar la comprobación diaria o escribir la **dirección de actualización**: la dirección web (https://, por ejemplo una carpeta de publicación de GitHub) o la carpeta compartida donde se publican las actualizaciones de LabelAxis. Una versión compilada con una dirección la usa cuando la casilla está vacía.
+
+**Actualizar un PC sin internet:** copie una carpeta de versión (su update.json y los dos programas de instalación, sin cambiarles el nombre) a una memoria USB o a una carpeta compartida. En ese PC, escriba la ruta de la carpeta como dirección de actualización, elija `Ayuda › Buscar actualizaciones…`, y LabelAxis comprueba la huella de cada archivo y lo instala. Después, borre la dirección para volver a la habitual.
 
 ## Copia portátil
 

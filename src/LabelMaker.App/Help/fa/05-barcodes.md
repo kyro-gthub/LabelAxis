@@ -3,7 +3,7 @@ id: barcodes
 title: بارکدها و کدهای QR
 category: Designing
 order: 3
-keywords: barcode, qr, qr code, ean, upc, code 128, code 39, gs1, datamatrix, pdf417, aztec, itf, isbn, human readable, bulk barcode, gs1 builder, udi, medical device, expiry, batch, sscc, gtin, check digit, verify, verifier, grade, scan quality, camera, webcam, بارکد, بارکد انبوه, سازنده GS1, تجهیزات پزشکی, تاریخ انقضا, بچ, رقم کنترل, بررسی, درجه, دوربین
+keywords: barcode, qr, qr code, ean, upc, code 128, code 39, gs1, datamatrix, pdf417, aztec, itf, isbn, human readable, bulk barcode, gs1 builder, udi, medical device, expiry, batch, sscc, gtin, check digit, verify, verifier, grade, scan quality, camera, webcam, بارکد, بارکد انبوه, سازنده GS1, تجهیزات پزشکی, تاریخ انقضا, بچ, رقم کنترل, بررسی, درجه, دوربین, scanner, barcode scanner, usb scanner, بارکدخوان, اسکنر بارکد
 ---
 # بارکدها و کدهای QR
 
@@ -50,3 +50,7 @@ keywords: barcode, qr, qr code, ean, upc, code 128, code 39, gs1, datamatrix, pd
 - آنچه باید تغییر کند، مثلاً کم کردن تیرگی چاپگر وقتی میله‌ها خیلی پهن چاپ می‌شوند.
 
 این راهنمای نزدیکی است، نه گواهی: نور و فوکوس نتیجه را تغییر می‌دهند، پس چند بار بررسی کنید.
+
+### با بارکدخوان
+
+بارکدخوان USB یا Bluetooth هم کار می‌کند: پنجره بررسی را باز کنید و یک برچسب چاپ‌شده را اسکن کنید (کادر **بارکدخوان** در بالا به محض باز شدن پنجره آماده است). LabelAxis می‌گوید آنچه خوانده با یکی از بارکدهای صفحه یکسان است یا نه، و شمارش را نگه می‌دارد («اسکن‌شده 12: 11 یکسان»)، که برای بررسی یک دسته کامل به کار می‌آید. بارکدخوان می‌گوید بارکد چه می‌گوید، نه اینکه چقدر خوب چاپ شده، پس نمره A تا F ندارد؛ برای نمره از دوربین یا عکس استفاده کنید.

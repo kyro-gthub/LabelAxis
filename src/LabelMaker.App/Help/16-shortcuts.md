@@ -42,6 +42,7 @@ keywords: keyboard, shortcut, keys, hotkey, ctrl
 | Keys | Does |
 |---|---|
 | `F2` | Rename the page (in the page list) |
+| `Ctrl`+click / `Shift`+click | Select several pages, or a range of pages (in the page list) |
 | `Ctrl+↑` / `Ctrl+↓` | Move the page, or the object in the list, up / down |
 | `Ctrl+T` | Data records |
 | `F5` | Refresh the data |

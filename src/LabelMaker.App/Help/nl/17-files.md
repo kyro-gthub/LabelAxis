@@ -3,13 +3,13 @@ id: files
 title: Projecten, opslaan en instellingen
 category: Reference
 order: 2
-keywords: save, open, file, labelproj, autosave, recovery, backup, settings, theme, dark, portable, usb, recent, language, arabic, kurdish, sorani, persian, farsi, french, spanish, dutch, russian, chinese, hindi, update, new version, upgrade, themes, frost, aurora, midnight, graphite, ember, ocean, sakura, sage, glass, custom theme, own colours, make your own theme, opslaan, openen, bestand, automatisch opslaan, herstel, reservekopie, instellingen, thema, donker, taal, Nederlands, update, nieuwe versie, eigen thema
+keywords: save, open, file, labelproj, autosave, recovery, backup, settings, theme, dark, portable, usb, recent, language, arabic, kurdish, sorani, persian, farsi, french, spanish, dutch, russian, chinese, hindi, update, new version, upgrade, themes, frost, aurora, midnight, graphite, ember, ocean, sakura, sage, glass, custom theme, own colours, make your own theme, opslaan, openen, bestand, automatisch opslaan, herstel, reservekopie, instellingen, thema, donker, taal, Nederlands, update, nieuwe versie, eigen thema, close others, tabs, offline update, update without internet, andere sluiten, tabbladen, bijwerken zonder internet
 ---
 # Projecten, opslaan en instellingen
 
 ## Projecten
 
-Een project (.labelproj-bestand) bevat het etiketvel, elke pagina, de afbeeldingen die het gebruikt en de gegevensverbinding. Er kunnen meerdere projecten tegelijk open zijn, elk in een eigen tabblad boven het etiket. `Bestand › Recent openen` toont de laatste.
+Een project (.labelproj-bestand) bevat het etiketvel, elke pagina, de afbeeldingen die het gebruikt, de gegevensverbinding en de afdrukinstellingen. Er kunnen meerdere projecten tegelijk open zijn, elk in een eigen tabblad boven het etiket; klik met rechts op een tabblad voor **Sluiten** en **Andere sluiten**. `Bestand › Recent openen` toont de laatste.
 
 ## Nooit werk verliezen
 
@@ -29,6 +29,8 @@ Een project (.labelproj-bestand) bevat het etiketvel, elke pagina, de afbeelding
 LabelAxis zoekt ongeveer eens per dag naar een nieuwere versie, en telkens wanneer u `Help › Op updates controleren…` kiest. Is er een, dan biedt een balk boven het etiket `Nu bijwerken`, `Wat is er nieuw`, `Later` en `Deze versie overslaan`. **Nu bijwerken** downloadt de nieuwe versie, controleert of het precies het gepubliceerde bestand is, sluit LabelAxis (en vraagt om uw werk op te slaan), installeert hem en start LabelAxis opnieuw. Uw instellingen, sjablonen en kalibratie blijven behouden.
 
 Onder `Bestand › Instellingen… › Updates` kunt u de dagelijkse controle uitzetten, of het **updateadres** invoeren: het webadres (https://, bijvoorbeeld een GitHub-releasemap) of de gedeelde map waar LabelAxis-updates worden gepubliceerd. Een versie die met een adres is gebouwd, gebruikt dat als het vak leeg blijft.
+
+**Een pc zonder internet bijwerken:** kopieer een releasemap (de update.json en beide installatieprogramma's, met ongewijzigde namen) naar een USB-stick of een gedeelde map. Typ op die pc het pad van de map als updateadres, kies `Help › Op updates controleren…`, en LabelAxis controleert de vingerafdruk van elk bestand en installeert het. Maak het adres daarna leeg om naar het gewone adres terug te gaan.
 
 ## Draagbare kopie
 

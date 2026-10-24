@@ -4,6 +4,20 @@ Notable changes to LabelAxis. Versions follow [Semantic Versioning](https://semv
 The full notes of each release, in all ten interface languages, are in
 [`build/release-notes`](build/release-notes) and on the Releases page.
 
+## [Unreleased]
+
+### Added
+
+- Several pages can be selected in the page list with Ctrl+click and Shift+click; Duplicate,
+  Remove and the page menu's new Print selected pages… act on all of them, each in one undo step.
+- Add pages (the + button) asks for blank pages or copies of a chosen page, and how many;
+  copies can count their barcodes up.
+- A quick bar next to the menus: New, Open, Save, Undo, Redo, Print preview and Print. Undo and
+  Redo say what they would undo or redo.
+- The help guide covers adding and selecting pages, numbered copies, pages from records, the
+  quick bar, barcode scanners, print settings kept with the project, Publisher label sheets,
+  closing other tabs and updating a PC without internet, in every language.
+
 ## [1.1.2] - 2026-10-25
 
 ### Added

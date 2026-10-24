@@ -3,7 +3,7 @@ id: pages
 title: Pages : plusieurs étiquettes dans un projet
 category: Pages
 order: 1
-keywords: page, pages, master label, duplicate, rename, reorder, remove, remove from all pages, delete everywhere, scroll, apply positions, apply format, page format, line up, same place, same size, apply formatting, other pages, add missing, étiquette modèle, dupliquer, renommer, réorganiser, supprimer, supprimer de toutes les pages, format de page, mise en forme
+keywords: page, pages, master label, duplicate, rename, reorder, remove, remove from all pages, delete everywhere, scroll, apply positions, apply format, page format, line up, same place, same size, apply formatting, other pages, add missing, étiquette modèle, dupliquer, renommer, réorganiser, supprimer, supprimer de toutes les pages, format de page, mise en forme, add pages, blank pages, copies, select several, ctrl click, shift click, print selected pages, numbered copies, count up, pages from records, make pages, sort, reverse, ajouter des pages, pages vides, copies, sélectionner plusieurs, imprimer les pages sélectionnées, copies numérotées, créer des pages, trier, inverser
 ---
 # Pages : plusieurs étiquettes dans un projet
 
@@ -11,14 +11,30 @@ Un projet peut contenir plusieurs modèles d'étiquettes différents, appelés *
 
 ## Travailler avec les pages
 
-- `+` ajoute une page vide ; le bouton de duplication copie la page affichée.
+- `+` ouvre **Ajouter des pages** : choisissez **Pages vides** ou **Copies d'une page** (choisissez la page dans la liste ; la page affichée est choisie au départ), et **combien**. Les nouvelles pages se placent juste après la page affichée. Les copies peuvent aussi incrémenter leurs codes-barres ; voir « Copies numérotées » plus bas.
+- Le bouton de duplication copie la ou les pages sélectionnées ; chaque copie se place juste après sa page.
 - Double-cliquez sur une page (ou appuyez sur `F2`) pour la renommer sur place.
-- `Ctrl+↑` / `Ctrl+↓`, ou le glisser, changent l'ordre.
-- Une longue liste de pages défile avec la molette ou avec les flèches haut et bas aux extrémités de sa barre de défilement.
-- Le bouton de suppression supprime la page affichée. La première page peut aussi être supprimée tant qu'il existe d'autres pages ; la suivante devient alors la page 1.
+- `Ctrl+↑` / `Ctrl+↓`, ou le glisser, changent l'ordre. Faites un clic droit sur une page pour **Trier par nom, de A à Z**, **Trier par nom, de Z à A** et **Inverser l'ordre**, ou utilisez le bouton de tri au-dessus de la liste.
+- Une longue liste de pages défile avec la molette ou avec les flèches haut et bas aux extrémités de sa barre de défilement. Une page nouvelle ou dupliquée s'affiche d'elle-même.
+- Le bouton de suppression supprime la ou les pages sélectionnées, après confirmation. La première page peut aussi être supprimée tant qu'il existe d'autres pages ; la suivante devient alors la page 1. Il reste toujours au moins une page.
 - Pour trouver une page par son nom, appuyez sur `Ctrl+F` et tapez-en une partie : les noms de pages sont cherchés avec tout le reste (**Noms des pages** sous Chercher dans). Choisissez un résultat pour ouvrir la page ; **Remplacer** la renomme.
 
 > Astuce : créez une étiquette, puis **dupliquez-la** pour chaque produit et changez seulement les textes. Les pages dupliquées gardent les noms de leurs objets, que l'outil ci-dessous utilise pour trouver « le même » objet sur chaque page.
+
+## Sélectionner plusieurs pages
+
+Dans la liste des pages, `Ctrl`+clic choisit les pages une par une et `Shift`+clic choisit toutes les pages entre celle où vous avez cliqué en dernier et celle-ci. Avec plusieurs pages sélectionnées :
+
+- **Dupliquer** copie chacune d'elles et **Supprimer** les supprime toutes, chaque fois en une seule étape que `Ctrl+Z` annule.
+- Clic droit › **Imprimer les pages sélectionnées…** ouvre Imprimer réglé sur ces seules pages, plusieurs par feuille.
+
+## Copies numérotées
+
+Clic droit sur une page › **Copies numérotées…** (ou `+` › Copies d'une page › **Incrémenter les codes-barres sur chaque copie**) crée des copies de cette page dont les codes-barres augmentent de un, page après page : `BOX-0007` devient `BOX-0008`, `BOX-0009`, et ainsi de suite. Les zéros de tête sont gardés, et la clé de contrôle des codes EAN, UPC, ITF-14 et ISBN est recalculée. Chaque copie porte le nom de son nouveau numéro. Les codes-barres remplis par des données (`{Barcode}`) ou sans numéro restent tels quels.
+
+## Une page par enregistrement
+
+Pour transformer des enregistrements importés (Excel, CSV ou une base de données) en pages, une page par enregistrement avec ses valeurs écrites, voir [[data|Données et étiquettes variables]] › « Créer une page par enregistrement ».
 
 ## Donner aux autres pages le format de cette page
 

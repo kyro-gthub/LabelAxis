@@ -1,5 +1,6 @@
 using FluentAssertions;
 using LabelMaker.App.Localization;
+using LabelMaker.Core.Localization;
 using Xunit;
 
 namespace LabelMaker.App.Tests.Localization;
@@ -76,6 +77,31 @@ public sealed class LocalizerTests
         {
             Localizer.Load(language).Translate(english).Should().NotBe(english, language.EnglishName);
         }
+    }
+
+    [Theory]
+    [InlineData("Add pages")]
+    [InlineData("Adds 5 copies of “Box” after the page on screen.")]
+    [InlineData("Remove 3 pages")]
+    [InlineData("Removed 4 pages. Undo (Ctrl+Z) brings them back.")]
+    [InlineData("Duplicate the selected page(s). Ctrl+click or Shift+click to select several.")]
+    [InlineData("Undo (Ctrl+Z)")]
+    [InlineData("Close others")]
+    public void Adding_and_selecting_pages_and_the_quick_bar_are_translated_in_every_language(string english)
+    {
+        foreach (AppLanguage language in Localizer.Languages.Where(l => l.Code != "en"))
+        {
+            Localizer.Load(language).Translate(english).Should().NotBe(english, language.EnglishName);
+        }
+    }
+
+    [Fact]
+    public void The_undo_tip_names_the_step_in_the_same_language()
+    {
+        Translator spanish = Localizer.Load(Localizer.Resolve("es"));
+
+        spanish.Format("Undo: {0} (Ctrl+Z)", spanish.Translate("Duplicate 3 pages"))
+            .Should().Be("Deshacer: Duplicar 3 páginas (Ctrl+Z)");
     }
 
     [Fact]

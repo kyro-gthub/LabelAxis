@@ -3,7 +3,7 @@ id: barcodes
 title: Barcodes en QR-codes
 category: Designing
 order: 3
-keywords: barcode, qr, qr code, ean, upc, code 128, code 39, gs1, datamatrix, pdf417, aztec, itf, isbn, human readable, bulk barcode, gs1 builder, udi, medical device, expiry, batch, sscc, gtin, check digit, verify, verifier, grade, scan quality, camera, webcam, streepjescode, GS1-bouwer, medisch hulpmiddel, vervaldatum, controlecijfer, controleren, beoordeling, camera
+keywords: barcode, qr, qr code, ean, upc, code 128, code 39, gs1, datamatrix, pdf417, aztec, itf, isbn, human readable, bulk barcode, gs1 builder, udi, medical device, expiry, batch, sscc, gtin, check digit, verify, verifier, grade, scan quality, camera, webcam, streepjescode, GS1-bouwer, medisch hulpmiddel, vervaldatum, controlecijfer, controleren, beoordeling, camera, scanner, barcode scanner, usb scanner, barcodescanner, handscanner
 ---
 # Barcodes en QR-codes
 
@@ -50,3 +50,7 @@ Passen de gegevens niet bij het type (bijvoorbeeld letters in een EAN-13), dan w
 - wat u moet veranderen, bijvoorbeeld de donkerte van de printer verlagen als de strepen te breed worden afgedrukt.
 
 Het is een goede richtlijn, geen certificaat: licht en scherpstelling veranderen de uitkomst, dus controleer een paar keer.
+
+### Met een barcodescanner
+
+Een USB- of Bluetooth-barcodescanner werkt ook: open het controlevenster en scan een afgedrukt etiket (het vak **Barcodescanner** bovenaan is klaar zodra het venster opent). LabelAxis zegt of wat het las gelijk is aan een barcode op de pagina en houdt de telling bij ("Gescand 12: 11 gelijk"), handig om een hele partij te controleren. Een scanner vertelt wat een barcode zegt, maar niet hoe goed hij is afgedrukt, dus er is geen cijfer van A tot F; gebruik voor een cijfer de camera of een foto.

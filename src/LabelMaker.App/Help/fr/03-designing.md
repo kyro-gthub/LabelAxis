@@ -54,4 +54,4 @@ La molette de la souris zoome là où se trouve le pointeur ; `Ctrl`+molette fai
 
 ## Annuler
 
-Tout peut être annulé avec `Ctrl+Z` et rétabli avec `Ctrl+Y`.
+Tout peut être annulé avec `Ctrl+Z` et rétabli avec `Ctrl+Y`, ou avec les boutons Annuler et Rétablir de la barre rapide en haut. En les pointant, vous voyez ce qu'ils annuleraient ou rétabliraient, par exemple « Annuler : Dupliquer 3 pages ».

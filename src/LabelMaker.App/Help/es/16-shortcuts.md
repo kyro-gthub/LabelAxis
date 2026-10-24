@@ -42,6 +42,7 @@ keywords: keyboard, shortcut, keys, hotkey, ctrl, teclado, atajo, teclas
 | Teclas | Hace |
 |---|---|
 | `F2` | Renombrar la página (en la lista de páginas) |
+| `Ctrl`+clic / `Shift`+clic | Seleccionar varias páginas, o un intervalo de páginas (en la lista de páginas) |
 | `Ctrl+↑` / `Ctrl+↓` | Subir / bajar la página, o el objeto en la lista |
 | `Ctrl+T` | Registros de datos |
 | `F5` | Actualizar los datos |

@@ -3,7 +3,7 @@ id: barcodes
 title: 条码和 QR 码
 category: Designing
 order: 3
-keywords: barcode, qr, qr code, ean, upc, code 128, code 39, gs1, datamatrix, pdf417, aztec, itf, isbn, human readable, bulk barcode, gs1 builder, udi, medical device, expiry, batch, sscc, gtin, check digit, verify, verifier, grade, scan quality, camera, webcam, 条码, 条形码, 批量条码, GS1 生成器, 医疗器械, 有效期, 批号, 校验位, 检测, 等级, 摄像头
+keywords: barcode, qr, qr code, ean, upc, code 128, code 39, gs1, datamatrix, pdf417, aztec, itf, isbn, human readable, bulk barcode, gs1 builder, udi, medical device, expiry, batch, sscc, gtin, check digit, verify, verifier, grade, scan quality, camera, webcam, 条码, 条形码, 批量条码, GS1 生成器, 医疗器械, 有效期, 批号, 校验位, 检测, 等级, 摄像头, scanner, barcode scanner, usb scanner, 条码扫描枪, 扫描枪, 扫码枪
 ---
 # 条码和 QR 码
 
@@ -50,3 +50,7 @@ keywords: barcode, qr, qr code, ean, upc, code 128, code 39, gs1, datamatrix, pd
 - 需要改进的地方，例如条打印得太宽时降低打印机的浓度。
 
 这是可靠的参考，而非证书：光线和对焦会影响结果，请多检测几次。
+
+### 使用条码扫描枪
+
+USB 或蓝牙条码扫描枪同样可用：打开检测窗口，扫描一张打印好的标签（窗口一打开，顶部的 **条码扫描枪** 框就已就绪）。LabelAxis 会告诉您读到的内容是否与页面上的某个条码一致，并记录数量（“已扫描 12：11 个一致”），方便检查整批标签。扫描枪能读出条码的内容，但不能判断印刷质量，因此不给出 A 到 F 的等级；如需等级，请使用摄像头或照片。

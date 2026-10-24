@@ -3,7 +3,7 @@ id: export
 title: जॉब निर्यात करना और जाँचना
 category: Exporting
 order: 1
-keywords: export, pdf, png, svg, picture, file, preflight, check, publisher, import, निर्यात, चित्र, फ़ाइल, प्रिंट-पूर्व जाँच, जाँच, आयात
+keywords: export, pdf, png, svg, picture, file, preflight, check, publisher, import, निर्यात, चित्र, फ़ाइल, प्रिंट-पूर्व जाँच, जाँच, आयात, publisher margins, label sheet, publisher मार्जिन, लेबल शीट
 ---
 # जॉब निर्यात करना और जाँचना
 
@@ -19,3 +19,5 @@ keywords: export, pdf, png, svg, picture, file, preflight, check, publisher, imp
 ## Microsoft Publisher फ़ाइलें लाएँ
 
 `फ़ाइल › Publisher फ़ाइल खोलें (सभी पेज)…` किसी Publisher (.pub) फ़ाइल को प्रोजेक्ट में बदलता है; `Publisher से टेक्स्ट और चित्र आयात करें…` उसकी सामग्री खुले प्रोजेक्ट में लाता है।
+
+Publisher की लेबल फ़ाइल में आम तौर पर हर पेज पर एक लेबल होता है और वह हर शीट पर कई पेज प्रिंट करती है। LabelAxis ऐसे पेजों को असली लेबल शीट पर रखता है: वह शीट जिसका नाम Publisher बताता है, या उस आकार के लेबल वाली बिल्ट-इन शीट, Publisher के अपने मार्जिन और गैप के साथ, ताकि लेबल वहीं प्रिंट हों जहाँ वे Publisher से होते थे। स्टेटस बार बताता है कि उसने कौन-सी शीट चुनी; आप कोई और शीट इस्तेमाल करते हैं तो उसे **लेबल मैनेजर** में बदलें। इससे पहले Publisher से लाए गए प्रोजेक्ट (हर छोटे पेज पर अकेला एक लेबल) को खुलते समय उसकी लेबल शीट सुझाई जाती है; **रद्द करें** हर पेज पर एक लेबल रखता है, और उस फ़ाइल के बारे में दोबारा नहीं पूछा जाता।

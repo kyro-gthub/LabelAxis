@@ -3,7 +3,7 @@ id: printing
 title: چاپ
 category: Printing
 order: 1
-keywords: print, printer, sheet, copies, preview, pages, current page, selected pages, copies per page, paper, margins, start position, skip, history, reprint, outlines, crop marks, automatic printing, watch folder, hot folder, web link, api, integration, other programs, json, csv, چاپ, چاپگر, برگه, نسخه, پیش‌نمایش, صفحه فعلی, حاشیه, جای شروع, تاریخچه, چاپ دوباره, علامت برش, پوشه زیر نظر, پیوند وب, برنامه‌های دیگر
+keywords: print, printer, sheet, copies, preview, pages, current page, selected pages, copies per page, paper, margins, start position, skip, history, reprint, outlines, crop marks, automatic printing, watch folder, hot folder, web link, api, integration, other programs, json, csv, چاپ, چاپگر, برگه, نسخه, پیش‌نمایش, صفحه فعلی, حاشیه, جای شروع, تاریخچه, چاپ دوباره, علامت برش, پوشه زیر نظر, پیوند وب, برنامه‌های دیگر, print settings saved, print selected pages, چاپ صفحه‌های انتخاب‌شده, تنظیمات چاپ
 ---
 # چاپ
 
@@ -17,7 +17,9 @@ keywords: print, printer, sheet, copies, preview, pages, current page, selected 
   - **همه صفحه‌ها**، **صفحه فعلی** (صفحه‌ای که می‌دیدید)، یا **صفحه‌های انتخاب‌شده** (در فهرست تیکشان بزنید).
   - هر صفحه کادر **نسخه** خودش را دارد: صفحه 1 می‌تواند 6 بار و صفحه 2 دوازده بار روی همان برگه‌ها چاپ شود. **نسخه از هر صفحه** همه را یکجا تنظیم می‌کند. این عددها با پروژه ذخیره می‌شوند.
 
-> نکته: اگر وقتی صفحه‌ای (نه برچسب اصلی) روی صفحه‌نمایش است چاپ را بزنید، پنجره چاپ از قبل روی همان صفحه تنظیم شده باز می‌شود.
+> نکته: اگر وقتی صفحه‌ای (نه برچسب اصلی) روی صفحه‌نمایش است چاپ را بزنید، پنجره چاپ از قبل روی همان صفحه تنظیم شده باز می‌شود. برای چاپ چند صفحه دلخواه، آن‌ها را در فهرست صفحه‌ها انتخاب کنید (`Ctrl`+کلیک، `Shift`+کلیک) و راست‌کلیک › **چاپ صفحه‌های انتخاب‌شده…** را بزنید.
+
+چاپگر، کاغذ، حاشیه‌ها، تعداد نسخه و مقیاسی که در پنجره چاپ انتخاب می‌کنید (و تنظیمات پنجره چاپ حرارتی) همراه پروژه ذخیره می‌شوند: ذخیره‌اش کنید، و دفعه بعد که بازش کنید سر جایشان هستند.
 
 ## جای شروع و بازه‌ها
 

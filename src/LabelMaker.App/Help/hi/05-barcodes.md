@@ -3,7 +3,7 @@ id: barcodes
 title: बारकोड और QR कोड
 category: Designing
 order: 3
-keywords: barcode, qr, qr code, ean, upc, code 128, code 39, gs1, datamatrix, pdf417, aztec, itf, isbn, human readable, bulk barcode, gs1 builder, udi, medical device, expiry, batch, sscc, gtin, check digit, verify, verifier, grade, scan quality, camera, webcam, बारकोड, बल्क बारकोड, GS1 बिल्डर, चिकित्सा उपकरण, समाप्ति, बैच, चेक डिजिट, जाँच, ग्रेड, कैमरा
+keywords: barcode, qr, qr code, ean, upc, code 128, code 39, gs1, datamatrix, pdf417, aztec, itf, isbn, human readable, bulk barcode, gs1 builder, udi, medical device, expiry, batch, sscc, gtin, check digit, verify, verifier, grade, scan quality, camera, webcam, बारकोड, बल्क बारकोड, GS1 बिल्डर, चिकित्सा उपकरण, समाप्ति, बैच, चेक डिजिट, जाँच, ग्रेड, कैमरा, scanner, barcode scanner, usb scanner, बारकोड स्कैनर, स्कैनर
 ---
 # बारकोड और QR कोड
 
@@ -50,3 +50,7 @@ keywords: barcode, qr, qr code, ean, upc, code 128, code 39, gs1, datamatrix, pd
 - क्या बदलना है, जैसे बार बहुत चौड़ी छपने पर प्रिंटर की गहराई घटाना।
 
 यह एक करीबी मार्गदर्शन है, प्रमाणपत्र नहीं: रोशनी और फ़ोकस से परिणाम बदलता है, इसलिए कुछ बार जाँचें।
+
+### बारकोड स्कैनर से
+
+USB या Bluetooth बारकोड स्कैनर भी काम करता है: जाँच विंडो खोलें और प्रिंट किया लेबल स्कैन करें (ऊपर का **बारकोड स्कैनर** बॉक्स विंडो खुलते ही तैयार रहता है)। LabelAxis बताता है कि उसने जो पढ़ा वह पेज के किसी बारकोड जैसा है या नहीं, और गिनती रखता है ("स्कैन किए 12: 11 मेल खाते"), जो पूरे बैच की जाँच में काम आता है। स्कैनर बताता है कि बारकोड में क्या लिखा है, यह नहीं कि वह कितना अच्छा प्रिंट हुआ है, इसलिए A से F ग्रेड नहीं मिलता; ग्रेड के लिए कैमरा या फ़ोटो इस्तेमाल करें।

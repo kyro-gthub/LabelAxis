@@ -3,7 +3,7 @@ id: printing
 title: Impression
 category: Printing
 order: 1
-keywords: print, printer, sheet, copies, preview, pages, current page, selected pages, copies per page, paper, margins, start position, skip, history, reprint, outlines, crop marks, automatic printing, watch folder, hot folder, web link, api, integration, other programs, json, csv, imprimer, imprimante, feuille, exemplaires, aperçu, page actuelle, marges, position de départ, historique, réimprimer, contours, traits de coupe, dossier surveillé, lien web, autres programmes
+keywords: print, printer, sheet, copies, preview, pages, current page, selected pages, copies per page, paper, margins, start position, skip, history, reprint, outlines, crop marks, automatic printing, watch folder, hot folder, web link, api, integration, other programs, json, csv, imprimer, imprimante, feuille, exemplaires, aperçu, page actuelle, marges, position de départ, historique, réimprimer, contours, traits de coupe, dossier surveillé, lien web, autres programmes, print settings saved, print selected pages, imprimer les pages sélectionnées, réglages d'impression
 ---
 # Impression
 
@@ -17,7 +17,9 @@ keywords: print, printer, sheet, copies, preview, pages, current page, selected 
   - **Toutes les pages**, **Page actuelle** (celle que vous regardiez), ou **Pages sélectionnées** (cochez-les dans la liste).
   - Chaque page a sa propre case d'**exemplaires** : la page 1 peut s'imprimer 6 fois et la page 2 douze fois sur les mêmes feuilles. **Exemplaires de chaque page** les règle toutes d'un coup. Les nombres sont enregistrés avec le projet.
 
-> Astuce : appuyer sur Imprimer quand une page (autre que l'étiquette modèle) est affichée ouvre la fenêtre Imprimer déjà réglée sur cette page.
+> Astuce : appuyer sur Imprimer quand une page (autre que l'étiquette modèle) est affichée ouvre la fenêtre Imprimer déjà réglée sur cette page. Pour imprimer quelques pages choisies, sélectionnez-les dans la liste des pages (`Ctrl`+clic, `Shift`+clic) puis clic droit › **Imprimer les pages sélectionnées…**.
+
+L'imprimante, le papier, les marges, les copies et l'échelle choisis dans la fenêtre Imprimer (et les réglages de la fenêtre d'impression thermique) sont enregistrés avec le projet : enregistrez-le, et vous les retrouverez à la prochaine ouverture.
 
 ## Position de départ et plages
 

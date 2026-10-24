@@ -3,7 +3,7 @@ id: data
 title: 数据和可变标签
 category: Data
 order: 1
-keywords: data, csv, excel, spreadsheet, database, sql, mysql, postgresql, access, odbc, sqlite, field, merge, variable, records, sequence, serial, counter, date, time, expression, function, duplicate, 数据, 电子表格, 数据库, 字段, 合并, 记录, 序列, 序列号, 计数器, 函数, 重复
+keywords: data, csv, excel, spreadsheet, database, sql, mysql, postgresql, access, odbc, sqlite, field, merge, variable, records, sequence, serial, counter, date, time, expression, function, duplicate, 数据, 电子表格, 数据库, 字段, 合并, 记录, 序列, 序列号, 计数器, 函数, 重复, make pages, page for each record, pages from records, 生成页面, 每条记录一个页面
 ---
 # 数据和可变标签
 
@@ -34,6 +34,15 @@ keywords: data, csv, excel, spreadsheet, database, sql, mysql, postgresql, acces
 ## 序列号
 
 `数据 › 管理序列…` 可设置计数器：起始值、结束值、步长以及前缀或后缀。在花括号中用其名称即可使用；每打印一张标签就加一。
+
+## 为每条记录生成一个页面
+
+除了为每条记录打印一个标签，还可以把记录变成页面，以便手动修改其中一些，或与其他页面一起打印：
+
+1. 把列放到标签上（`记录…` › **将字段添加到标签**，或在文本框中输入 `{Product}`）。
+2. 选择 `数据` › **生成页面…** 为所有记录生成页面；或打开 `记录…`，选中所需的记录（`Ctrl`+单击、`Shift`+单击），然后单击 **生成页面**。如果没有选中任何记录，则使用筛选器显示的所有记录。
+
+每个新页面都是屏幕上标签的副本，其文字、条码和表格单元格中写入了该记录的值，并以记录第一列的值命名。日期、计数器和其他占位符保持不变，因此打印这些页面时仍然有效。随后打印会设为打印这些页面，每张纸打印多个。这只是一步：`Ctrl+Z` 会移除所有新页面。
 
 ## 打印之前
 

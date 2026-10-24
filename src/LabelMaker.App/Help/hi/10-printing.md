@@ -3,7 +3,7 @@ id: printing
 title: प्रिंटिंग
 category: Printing
 order: 1
-keywords: print, printer, sheet, copies, preview, pages, current page, selected pages, copies per page, paper, margins, start position, skip, history, reprint, outlines, crop marks, automatic printing, watch folder, hot folder, web link, api, integration, other programs, json, csv, प्रिंट, प्रिंटर, शीट, प्रतियाँ, पूर्वावलोकन, मौजूदा पेज, मार्जिन, शुरुआती स्थिति, इतिहास, दोबारा प्रिंट, रूपरेखा, क्रॉप मार्क, निगरानी फ़ोल्डर, वेब लिंक, दूसरे प्रोग्राम
+keywords: print, printer, sheet, copies, preview, pages, current page, selected pages, copies per page, paper, margins, start position, skip, history, reprint, outlines, crop marks, automatic printing, watch folder, hot folder, web link, api, integration, other programs, json, csv, प्रिंट, प्रिंटर, शीट, प्रतियाँ, पूर्वावलोकन, मौजूदा पेज, मार्जिन, शुरुआती स्थिति, इतिहास, दोबारा प्रिंट, रूपरेखा, क्रॉप मार्क, निगरानी फ़ोल्डर, वेब लिंक, दूसरे प्रोग्राम, print settings saved, print selected pages, चुने गए पेज प्रिंट करें, प्रिंट सेटिंग्स
 ---
 # प्रिंटिंग
 
@@ -17,7 +17,9 @@ keywords: print, printer, sheet, copies, preview, pages, current page, selected 
   - **सभी पेज**, **मौजूदा पेज** (जिसे आप देख रहे थे), या **चुने गए पेज** (सूची में टिक करें)।
   - हर पेज का अपना **प्रतियाँ** बॉक्स है: उन्हीं शीटों पर पेज 1 छह बार और पेज 2 बारह बार प्रिंट हो सकता है। **हर पेज की प्रतियाँ** सबको एक साथ सेट करता है। ये संख्याएँ प्रोजेक्ट के साथ सहेजी जाती हैं।
 
-> सुझाव: जब स्क्रीन पर कोई पेज (मास्टर लेबल नहीं) हो और आप प्रिंट दबाएँ, तो प्रिंट विंडो पहले से उसी पेज पर सेट होकर खुलती है।
+> सुझाव: जब स्क्रीन पर कोई पेज (मास्टर लेबल नहीं) हो और आप प्रिंट दबाएँ, तो प्रिंट विंडो पहले से उसी पेज पर सेट होकर खुलती है। कुछ चुने हुए पेज प्रिंट करने के लिए, उन्हें पेज सूची में चुनें (`Ctrl`+क्लिक, `Shift`+क्लिक) और राइट-क्लिक › **चुने गए पेज प्रिंट करें…** करें।
+
+प्रिंट विंडो में चुने गए प्रिंटर, कागज़, मार्जिन, प्रतियाँ और स्केल (और थर्मल प्रिंट विंडो की थर्मल सेटिंग्स) प्रोजेक्ट के साथ सहेजे जाते हैं: उसे सहेजें, और अगली बार खोलने पर वे वहीं होंगे।
 
 ## शुरुआती स्थिति और रेंज
 

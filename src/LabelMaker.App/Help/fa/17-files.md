@@ -3,13 +3,13 @@ id: files
 title: پروژه‌ها، ذخیره و تنظیمات
 category: Reference
 order: 2
-keywords: save, open, file, labelproj, autosave, recovery, backup, settings, theme, dark, portable, usb, recent, language, arabic, kurdish, sorani, persian, farsi, french, spanish, dutch, russian, chinese, hindi, update, new version, upgrade, themes, frost, aurora, midnight, graphite, ember, ocean, sakura, sage, glass, custom theme, own colours, make your own theme, ذخیره, باز کردن, فایل, ذخیره خودکار, بازیابی, پشتیبان, تنظیمات, پوسته, تیره, قابل‌حمل, زبان, فارسی, به‌روزرسانی, نسخه جدید, پوسته خودتان
+keywords: save, open, file, labelproj, autosave, recovery, backup, settings, theme, dark, portable, usb, recent, language, arabic, kurdish, sorani, persian, farsi, french, spanish, dutch, russian, chinese, hindi, update, new version, upgrade, themes, frost, aurora, midnight, graphite, ember, ocean, sakura, sage, glass, custom theme, own colours, make your own theme, ذخیره, باز کردن, فایل, ذخیره خودکار, بازیابی, پشتیبان, تنظیمات, پوسته, تیره, قابل‌حمل, زبان, فارسی, به‌روزرسانی, نسخه جدید, پوسته خودتان, close others, tabs, offline update, update without internet, بستن بقیه, زبانه‌ها, به‌روزرسانی بدون اینترنت
 ---
 # پروژه‌ها، ذخیره و تنظیمات
 
 ## پروژه‌ها
 
-یک پروژه (فایل ‎.labelproj‎) برگه برچسب، همه صفحه‌ها، تصویرهایی که به کار می‌برد و اتصال داده‌اش را در خود دارد. چند پروژه را می‌توان همزمان باز کرد که هر کدام زبانه خودش را بالای برچسب دارد. `فایل › باز کردن موارد اخیر` آخرین‌ها را فهرست می‌کند.
+یک پروژه (فایل ‎.labelproj‎) برگه برچسب، همه صفحه‌ها، تصویرهایی که به کار می‌برد، اتصال داده و تنظیمات چاپش را در خود دارد. چند پروژه را می‌توان همزمان باز کرد که هر کدام زبانه خودش را بالای برچسب دارد؛ روی یک زبانه راست‌کلیک کنید تا **بستن** و **بستن بقیه** را ببینید. `فایل › باز کردن موارد اخیر` آخرین‌ها را فهرست می‌کند.
 
 ## هرگز کار را از دست ندهید
 
@@ -29,6 +29,8 @@ keywords: save, open, file, labelproj, autosave, recovery, backup, settings, the
 LabelAxis تقریباً روزی یک بار و هر بار که `راهنما › بررسی به‌روزرسانی…` را انتخاب کنید دنبال نسخه جدیدتر می‌گردد. اگر نسخه‌ای باشد، نواری بالای برچسب `اکنون به‌روز کن`، `تازه‌ها`، `بعداً` و `رد کردن این نسخه` را پیشنهاد می‌دهد. **اکنون به‌روز کن** نسخه جدید را دانلود می‌کند، بررسی می‌کند که دقیقاً همان فایل منتشرشده باشد، LabelAxis را می‌بندد (و برای ذخیره کارتان می‌پرسد)، نصبش می‌کند و LabelAxis را دوباره باز می‌کند. تنظیمات، الگوها و کالیبراسیون شما حفظ می‌شود.
 
 زیر `فایل › تنظیمات… › به‌روزرسانی‌ها` می‌توانید بررسی روزانه را خاموش کنید یا **نشانی به‌روزرسانی** را بنویسید: نشانی وب (https://، مثلاً یک پوشه انتشار GitHub) یا پوشه اشتراکی که به‌روزرسانی‌های LabelAxis در آن منتشر می‌شوند. نسخه‌ای که با یک نشانی ساخته شده، وقتی کادر خالی باشد از همان استفاده می‌کند.
+
+**به‌روزرسانی رایانه بدون اینترنت:** یک پوشه انتشار (فایل update.json و هر دو برنامه نصب، بدون تغییر نامشان) را روی یک USB یا در یک پوشه اشتراکی کپی کنید. روی آن رایانه، مسیر پوشه را به عنوان نشانی به‌روزرسانی بنویسید، `راهنما › بررسی به‌روزرسانی…` را انتخاب کنید، و LabelAxis اثر انگشت هر فایل را بررسی و نصبش می‌کند. پس از آن نشانی را پاک کنید تا به نشانی همیشگی برگردید.
 
 ## نسخه قابل‌حمل
 

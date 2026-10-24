@@ -3,7 +3,7 @@ id: data
 title: Données et étiquettes variables
 category: Data
 order: 1
-keywords: data, csv, excel, spreadsheet, database, sql, mysql, postgresql, access, odbc, sqlite, field, merge, variable, records, sequence, serial, counter, date, time, expression, function, duplicate, données, tableur, base de données, champ, publipostage, enregistrements, séquence, numéro de série, compteur, fonction, doublon
+keywords: data, csv, excel, spreadsheet, database, sql, mysql, postgresql, access, odbc, sqlite, field, merge, variable, records, sequence, serial, counter, date, time, expression, function, duplicate, données, tableur, base de données, champ, publipostage, enregistrements, séquence, numéro de série, compteur, fonction, doublon, make pages, page for each record, pages from records, créer des pages, une page par enregistrement
 ---
 # Données et étiquettes variables
 
@@ -34,6 +34,15 @@ Entre les accolades, vous pouvez aussi utiliser des fonctions, par exemple `{UPP
 ## Numéros de série
 
 `Données › Gérer les séquences…` crée des compteurs : début, fin, pas, et un préfixe ou un suffixe. Utilisez-en un par son nom entre accolades ; il augmente de un à chaque étiquette imprimée.
+
+## Créer une page par enregistrement
+
+Au lieu d'imprimer une étiquette par enregistrement, vous pouvez transformer les enregistrements en pages, pour en modifier certaines à la main ou les imprimer avec d'autres pages :
+
+1. Placez les colonnes sur l'étiquette (`Enregistrements…` › **Ajouter le champ à l'étiquette**, ou tapez `{Product}` dans une zone de texte).
+2. Choisissez `Données` › **Créer des pages…** pour tous les enregistrements, ou ouvrez `Enregistrements…`, sélectionnez ceux que vous voulez (`Ctrl`+clic, `Shift`+clic) et cliquez sur **Créer des pages**. Si aucun n'est sélectionné, tous les enregistrements affichés par le filtre sont utilisés.
+
+Chaque nouvelle page est une copie de l'étiquette affichée, avec les valeurs de cet enregistrement écrites dans ses textes, codes-barres et cellules de tableau, et porte le nom de la première colonne de l'enregistrement. Les dates, compteurs et autres champs restent tels quels, et fonctionnent donc toujours à l'impression des pages. L'impression est ensuite réglée pour imprimer les pages, plusieurs par feuille. C'est une seule étape : `Ctrl+Z` retire toutes les nouvelles pages.
 
 ## Avant d'imprimer
 

@@ -3,7 +3,7 @@ id: printing
 title: 打印
 category: Printing
 order: 1
-keywords: print, printer, sheet, copies, preview, pages, current page, selected pages, copies per page, paper, margins, start position, skip, history, reprint, outlines, crop marks, automatic printing, watch folder, hot folder, web link, api, integration, other programs, json, csv, 打印, 打印机, 纸张, 份数, 预览, 当前页面, 边距, 起始位置, 历史, 重新打印, 轮廓, 裁切标记, 监视文件夹, 网页链接, 其他程序
+keywords: print, printer, sheet, copies, preview, pages, current page, selected pages, copies per page, paper, margins, start position, skip, history, reprint, outlines, crop marks, automatic printing, watch folder, hot folder, web link, api, integration, other programs, json, csv, 打印, 打印机, 纸张, 份数, 预览, 当前页面, 边距, 起始位置, 历史, 重新打印, 轮廓, 裁切标记, 监视文件夹, 网页链接, 其他程序, print settings saved, print selected pages, 打印选中的页面, 打印设置
 ---
 # 打印
 
@@ -17,7 +17,9 @@ keywords: print, printer, sheet, copies, preview, pages, current page, selected 
   - **所有页面**、**当前页面**（您刚才查看的页面）或 **所选页面**（在列表中勾选）。
   - 每页都有自己的 **份数** 框：第 1 页可在同一批纸上打印 6 次，第 2 页打印十二次。**每页的份数** 可一次全部设置。这些数字会随项目保存。
 
-> 提示：当屏幕上显示的是某个页面（而非主标签）时按“打印”，“打印”窗口会直接设为该页面。
+> 提示：当屏幕上显示的是某个页面（而非主标签）时按“打印”，“打印”窗口会直接设为该页面。要打印选定的几个页面，请在页面列表中选中它们（`Ctrl`+单击、`Shift`+单击），然后右键 › **打印选中的页面…**。
+
+您在“打印”窗口中选择的打印机、纸张、边距、份数和缩放（以及热敏打印窗口中的热敏设置）会随项目一起保存：保存项目后，下次打开时它们仍在。
 
 ## 起始位置和范围
 

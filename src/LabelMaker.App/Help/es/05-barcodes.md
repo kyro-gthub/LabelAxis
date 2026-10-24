@@ -3,7 +3,7 @@ id: barcodes
 title: Códigos de barras y QR
 category: Designing
 order: 3
-keywords: barcode, qr, qr code, ean, upc, code 128, code 39, gs1, datamatrix, pdf417, aztec, itf, isbn, human readable, bulk barcode, gs1 builder, udi, medical device, expiry, batch, sscc, gtin, check digit, verify, verifier, grade, scan quality, camera, webcam, código de barras, generador GS1, producto sanitario, caducidad, lote, dígito de control, comprobar, calificación, cámara
+keywords: barcode, qr, qr code, ean, upc, code 128, code 39, gs1, datamatrix, pdf417, aztec, itf, isbn, human readable, bulk barcode, gs1 builder, udi, medical device, expiry, batch, sscc, gtin, check digit, verify, verifier, grade, scan quality, camera, webcam, código de barras, generador GS1, producto sanitario, caducidad, lote, dígito de control, comprobar, calificación, cámara, scanner, barcode scanner, usb scanner, lector, lector de códigos de barras
 ---
 # Códigos de barras y QR
 
@@ -50,3 +50,7 @@ Si los datos no encajan con el tipo (por ejemplo, letras en un EAN-13), el códi
 - qué cambiar, por ejemplo bajar la oscuridad de la impresora cuando las barras salen demasiado anchas.
 
 Es una guía cercana, no un certificado: la luz y el enfoque cambian el resultado, así que compruebe varias veces.
+
+### Con un lector de códigos de barras
+
+También sirve un lector de códigos de barras USB o Bluetooth: abra la ventana de comprobación y escanee una etiqueta impresa (el cuadro **Lector de códigos de barras** de arriba está listo en cuanto se abre la ventana). LabelAxis dice si lo que leyó es igual a un código de barras de la página y lleva la cuenta («Escaneados 12: 11 coinciden»), algo útil para comprobar un lote entero. Un lector dice lo que contiene un código de barras, pero no lo bien impreso que está, así que no hay nota de la A a la F; para tener una nota, use la cámara o una foto.

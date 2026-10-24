@@ -42,6 +42,7 @@ keywords: keyboard, shortcut, keys, hotkey, ctrl, clavier, raccourci, touches
 | Touches | Action |
 |---|---|
 | `F2` | Renommer la page (dans la liste des pages) |
+| `Ctrl`+clic / `Shift`+clic | Sélectionner plusieurs pages, ou une plage de pages (dans la liste des pages) |
 | `Ctrl+↑` / `Ctrl+↓` | Monter / descendre la page, ou l'objet dans la liste |
 | `Ctrl+T` | Enregistrements de données |
 | `F5` | Actualiser les données |

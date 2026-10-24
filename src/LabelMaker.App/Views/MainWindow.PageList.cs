@@ -32,6 +32,24 @@ public partial class MainWindow
         }
     });
 
+    /// <summary>
+    /// Ctrl+click picks pages one by one, Shift+click a range; the page commands then act on all
+    /// of them. The page on screen stays the one first chosen.
+    /// </summary>
+    private void OnPageListSelectionChanged(object sender, SelectionChangedEventArgs e) =>
+        _vm.SelectedPages = PageList.SelectedItems.OfType<PageListItem>().ToList();
+
+    /// <summary>The quick bar's Undo and Redo say what they would undo or redo ("Undo: Make 3 pages (Ctrl+Z)").</summary>
+    private void OnUndoTip(object sender, ToolTipEventArgs e) =>
+        QuickUndo.ToolTip = _vm.Session.History.NextUndoLabel is { } label
+            ? Localization.Localizer.F("Undo: {0} (Ctrl+Z)", Localization.Localizer.T(label))
+            : Localization.Localizer.T("Nothing to undo");
+
+    private void OnRedoTip(object sender, ToolTipEventArgs e) =>
+        QuickRedo.ToolTip = _vm.Session.History.NextRedoLabel is { } label
+            ? Localization.Localizer.F("Redo: {0} (Ctrl+Y)", Localization.Localizer.T(label))
+            : Localization.Localizer.T("Nothing to redo");
+
     private void OnPageDoubleClick(object sender, MouseButtonEventArgs e)
     {
         if (sender is ListBoxItem { IsSelected: true } && !IsInsideControl(e.OriginalSource as DependencyObject) && _vm.RenamePageCommand.CanExecute(null))

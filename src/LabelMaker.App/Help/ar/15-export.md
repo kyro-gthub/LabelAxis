@@ -3,7 +3,7 @@ id: export
 title: التصدير وفحص المهمة
 category: Exporting
 order: 1
-keywords: export, pdf, png, svg, picture, file, preflight, check, publisher, import, تصدير, صورة, ملف, فحص ما قبل الطباعة, فحص, استيراد
+keywords: export, pdf, png, svg, picture, file, preflight, check, publisher, import, تصدير, صورة, ملف, فحص ما قبل الطباعة, فحص, استيراد, publisher margins, label sheet, هوامش publisher, ورقة الملصقات
 ---
 # التصدير وفحص المهمة
 
@@ -19,3 +19,5 @@ keywords: export, pdf, png, svg, picture, file, preflight, check, publisher, imp
 ## جلب ملفات Microsoft Publisher
 
 يحوّل `ملف › فتح ملف Publisher (كل الصفحات)…` ملف Publisher ‏(‎.pub) إلى مشروع؛ ويجلب `استيراد النصوص والصور من Publisher…` محتوياته إلى المشروع المفتوح.
+
+يحتوي ملف ملصقات Publisher عادةً على ملصق واحد في كل صفحة، ويطبع عدة صفحات في كل ورقة. يضع LabelAxis هذه الصفحات على ورقة ملصقات حقيقية: الورقة التي يسمّيها Publisher، أو الورقة المضمّنة ذات الملصقات بهذا الحجم، مستخدمًا هوامش Publisher ومسافاته نفسها، لتُطبع الملصقات حيث كانت تُطبع من Publisher. يذكر شريط الحالة الورقة التي اختارها؛ غيّرها من **مدير الملصقات** إن كنت تستخدم ورقة أخرى. والمشروع الذي جُلب من Publisher قبل ذلك (ملصق واحد وحده في كل صفحة صغيرة) تُعرض عليه ورقة ملصقاته عند فتحه؛ ويُبقي **إلغاء** ملصقًا واحدًا في كل صفحة، ولا يُسأل عن ذلك الملف مرة أخرى.

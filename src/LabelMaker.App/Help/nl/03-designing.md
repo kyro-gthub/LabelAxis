@@ -54,4 +54,4 @@ Het muiswiel zoomt in en uit waar de aanwijzer staat; `Ctrl`+wiel schuift omhoog
 
 ## Ongedaan maken
 
-Alles kan ongedaan worden gemaakt met `Ctrl+Z` en opnieuw worden gedaan met `Ctrl+Y`.
+Alles kan ongedaan worden gemaakt met `Ctrl+Z` en opnieuw worden gedaan met `Ctrl+Y`, of met de knoppen Ongedaan maken en Opnieuw in de snelbalk bovenaan. Als u ze aanwijst, ziet u wat ze ongedaan of opnieuw zouden doen, bijvoorbeeld "Ongedaan maken: 3 pagina's dupliceren".

@@ -91,6 +91,74 @@ public sealed class MakePagesTests
     });
 
     [Fact]
+    public void Add_pages_makes_blank_pages_or_copies_of_a_chosen_page_as_many_as_asked() => AppHarness.Run(h =>
+    {
+        PutOnLabel(h, new BarcodeObject { Name = "Code", Spec = new BarcodeSpec { Data = "BOX-0007" } });
+
+        h.ViewModel.AddPages(new AddPagesChoice(3, Blank: true, SourcePageId: null, CountUp: false)).Should().Be(3);
+        h.Session.Project.Pages.Should().HaveCount(3).And.OnlyContain(p => p.Document.Objects.Count == 0);
+
+        h.ViewModel.SelectedPage = h.ViewModel.Pages[0];
+        h.ViewModel.AddPages(new AddPagesChoice(2, Blank: false, SourcePageId: null, CountUp: false));
+        h.Session.Project.Pages.Take(2).Should().OnlyContain(p => p.Document.Objects.OfType<BarcodeObject>().Single().Spec.Data == "BOX-0007");
+
+        h.ViewModel.SelectedPage = h.ViewModel.Pages[0];
+        h.ViewModel.AddPages(new AddPagesChoice(2, Blank: false, SourcePageId: null, CountUp: true));
+        h.Session.Project.Pages.Take(2).Select(p => p.Name).Should().Equal("BOX-0008", "BOX-0009");
+        h.Session.Project.Pages.Should().HaveCount(7);
+    });
+
+    [Fact]
+    public void The_add_page_button_asks_and_cancel_adds_nothing() => AppHarness.Run(h =>
+    {
+        h.Shell.AddPagesAnswer = null;
+        h.ViewModel.AddPageCommand.Execute(null);
+        h.Session.Project.Pages.Should().BeEmpty();
+
+        h.Shell.AddPagesAnswer = new AddPagesChoice(4, Blank: true, SourcePageId: null, CountUp: false);
+        h.ViewModel.AddPageCommand.Execute(null);
+        h.Session.Project.Pages.Should().HaveCount(4);
+    });
+
+    [Fact]
+    public void Several_selected_pages_are_duplicated_removed_and_printed_together() => AppHarness.Run(h =>
+    {
+        h.ViewModel.AddPages(new AddPagesChoice(4, Blank: true, SourcePageId: null, CountUp: false));
+        h.ViewModel.SelectedPage = h.ViewModel.Pages[1];
+        h.ViewModel.SelectedPages = new[] { h.ViewModel.Pages[1], h.ViewModel.Pages[3] };
+        string second = h.ViewModel.Pages[1].Name, fourth = h.ViewModel.Pages[3].Name;
+
+        h.ViewModel.DuplicatePageCommand.Execute(null);
+        h.ViewModel.Pages.Select(p => p.Name).Should().ContainInOrder(second, second + " copy", fourth, fourth + " copy");
+
+        h.ViewModel.SelectedPages = h.ViewModel.Pages.Where(p => p.Name.EndsWith(" copy", StringComparison.Ordinal)).ToList();
+        h.Shell.ConfirmAnswer = true;
+        h.ViewModel.RemovePageCommand.Execute(null);
+        h.ViewModel.Pages.Should().HaveCount(5).And.NotContain(p => p.Name.EndsWith(" copy", StringComparison.Ordinal));
+
+        h.Session.Undo();
+        h.ViewModel.Pages.Should().HaveCount(7, "removing several pages is one step that undo takes back");
+
+        h.ViewModel.SelectedPages = new[] { h.ViewModel.Pages[0], h.ViewModel.Pages[2] };
+        h.ViewModel.PrintSelectedPagesCommand.Execute(null);
+        h.Session.Project.PrintSettings.Content.Should().Be(PrintContent.Pages);
+        h.Session.Project.PrintSettings.PagesToPrint.Should().Be(PagesToPrint.Chosen);
+        h.Session.Project.PrintSettings.ChosenPages.Should().Equal(0, 2);
+    });
+
+    [Fact]
+    public void Every_page_cannot_be_removed_at_once() => AppHarness.Run(h =>
+    {
+        h.ViewModel.AddPages(new AddPagesChoice(2, Blank: true, SourcePageId: null, CountUp: false));
+        h.ViewModel.SelectedPages = h.ViewModel.Pages.ToList();
+
+        h.ViewModel.RemovePageCommand.Execute(null);
+
+        h.ViewModel.Pages.Should().HaveCount(3);
+        h.ViewModel.StatusText.Should().Contain("at least one page");
+    });
+
+    [Fact]
     public void Print_settings_changed_in_a_print_window_mark_the_project_to_be_saved() => AppHarness.Run(h =>
     {
         h.Session.Document.HasUnsavedChanges = false;

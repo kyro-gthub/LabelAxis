@@ -3,7 +3,7 @@ id: printing
 title: Printing
 category: Printing
 order: 1
-keywords: print, printer, sheet, copies, preview, pages, current page, selected pages, copies per page, paper, margins, start position, skip, history, reprint, outlines, crop marks, automatic printing, watch folder, hot folder, web link, api, integration, other programs, json, csv
+keywords: print, printer, sheet, copies, preview, pages, current page, selected pages, copies per page, paper, margins, start position, skip, history, reprint, outlines, crop marks, automatic printing, watch folder, hot folder, web link, api, integration, other programs, json, csv, print settings saved, print selected pages
 ---
 # Printing
 
@@ -17,7 +17,9 @@ keywords: print, printer, sheet, copies, preview, pages, current page, selected 
   - **All pages**, **Current page** (the page you were looking at), or **Selected pages** (tick them in the list).
   - Each page has its own **copies** box: page 1 can print 6 times and page 2 twelve times on the same sheets. **Copies of every page** sets them all at once. The numbers are saved with the project.
 
-> Tip: Pressing Print while a page (not the master label) is on screen opens the Print window set to that page already.
+> Tip: Pressing Print while a page (not the master label) is on screen opens the Print window set to that page already. To print a few chosen pages, select them in the page list (`Ctrl`+click, `Shift`+click) and right-click › **Print selected pages…**.
+
+The printer, paper, margins, copies and scale you choose in the Print window (and the thermal settings in the thermal print window) are saved with the project: save it, and they are there the next time you open it.
 
 ## Start position and ranges
 

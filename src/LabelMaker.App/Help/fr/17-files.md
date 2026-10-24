@@ -3,13 +3,13 @@ id: files
 title: Projets, enregistrement et paramètres
 category: Reference
 order: 2
-keywords: save, open, file, labelproj, autosave, recovery, backup, settings, theme, dark, portable, usb, recent, language, arabic, kurdish, sorani, persian, farsi, french, spanish, dutch, russian, chinese, hindi, update, new version, upgrade, themes, frost, aurora, midnight, graphite, ember, ocean, sakura, sage, glass, custom theme, own colours, make your own theme, enregistrer, ouvrir, fichier, enregistrement automatique, récupération, sauvegarde, paramètres, thème, sombre, langue, français, mise à jour, nouvelle version, propre thème
+keywords: save, open, file, labelproj, autosave, recovery, backup, settings, theme, dark, portable, usb, recent, language, arabic, kurdish, sorani, persian, farsi, french, spanish, dutch, russian, chinese, hindi, update, new version, upgrade, themes, frost, aurora, midnight, graphite, ember, ocean, sakura, sage, glass, custom theme, own colours, make your own theme, enregistrer, ouvrir, fichier, enregistrement automatique, récupération, sauvegarde, paramètres, thème, sombre, langue, français, mise à jour, nouvelle version, propre thème, close others, tabs, offline update, update without internet, fermer les autres, onglets, mise à jour sans internet
 ---
 # Projets, enregistrement et paramètres
 
 ## Projets
 
-Un projet (fichier .labelproj) contient la feuille d'étiquettes, toutes les pages, les images qu'il utilise et sa connexion de données. Plusieurs projets peuvent être ouverts à la fois, chacun dans son propre onglet au-dessus de l'étiquette. `Fichier › Ouvrir un fichier récent` liste les derniers.
+Un projet (fichier .labelproj) contient la feuille d'étiquettes, toutes les pages, les images qu'il utilise, sa connexion de données et ses réglages d'impression. Plusieurs projets peuvent être ouverts à la fois, chacun dans son propre onglet au-dessus de l'étiquette ; faites un clic droit sur un onglet pour **Fermer** et **Fermer les autres**. `Fichier › Ouvrir un fichier récent` liste les derniers.
 
 ## Ne jamais perdre votre travail
 
@@ -29,6 +29,8 @@ Un projet (fichier .labelproj) contient la feuille d'étiquettes, toutes les pag
 LabelAxis cherche une version plus récente environ une fois par jour, et chaque fois que vous choisissez `Aide › Rechercher les mises à jour…`. Quand il y en a une, une barre au-dessus de l'étiquette propose `Mettre à jour maintenant`, `Nouveautés`, `Plus tard` et `Ignorer cette version`. **Mettre à jour maintenant** télécharge la nouvelle version, vérifie que c'est exactement le fichier publié, ferme LabelAxis (en proposant d'enregistrer votre travail), l'installe et redémarre LabelAxis. Vos paramètres, formats et calibrages sont conservés.
 
 Dans `Fichier › Paramètres… › Mises à jour`, vous pouvez désactiver la vérification quotidienne, ou saisir l'**adresse de mise à jour** : l'adresse web (https://, par exemple un dossier de publication GitHub) ou le dossier partagé où les mises à jour de LabelAxis sont publiées. Une version construite avec une adresse l'utilise quand la case est vide.
+
+**Mettre à jour un PC sans internet :** copiez un dossier de version (son update.json et les deux programmes d'installation, sans les renommer) sur une clé USB ou dans un dossier partagé. Sur ce PC, saisissez le chemin du dossier comme adresse de mise à jour, choisissez `Aide › Rechercher les mises à jour…`, et LabelAxis vérifie l'empreinte de chaque fichier puis l'installe. Effacez ensuite l'adresse pour revenir à l'adresse habituelle.
 
 ## Copie portable
 

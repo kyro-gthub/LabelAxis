@@ -3,7 +3,7 @@ id: getting-started
 title: 您的第一个标签
 category: Getting started
 order: 1
-keywords: start, begin, new project, tutorial, first, quick start, welcome, 开始, 入门, 新建项目, 教程, 第一个, 欢迎, my designs, 我的设计, 另存为设计
+keywords: start, begin, new project, tutorial, first, quick start, welcome, 开始, 入门, 新建项目, 教程, 第一个, 欢迎, my designs, 我的设计, 另存为设计, quick bar, toolbar, undo, redo, 快捷栏, 撤销, 重做
 ---
 # 您的第一个标签
 
@@ -25,6 +25,7 @@ LabelAxis 可以设计标签和贴纸，并将其打印在标签纸（A4 或 Let
 
 ## 熟悉界面
 
+- **顶部：** 菜单，旁边是快捷栏：新建、打开、保存、撤销、重做、打印预览和打印，一键即达。将指针指向撤销或重做，可看到将撤销或重做的内容。
 - **左侧：** `页面`（本项目中的标签设计）和 `数据`（用于打印大量不同标签的电子表格或数据库）。
 - **中间：** 标签本身，带标尺、参考线和网格。
 - **右侧：** `属性`（所选对象的设置）、`图层`（所有对象，从前到后）和 `页面`（标签纸和屏幕上的页面）。

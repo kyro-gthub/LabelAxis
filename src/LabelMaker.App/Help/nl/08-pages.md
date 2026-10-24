@@ -3,7 +3,7 @@ id: pages
 title: Pagina's: meerdere etiketten in één project
 category: Pages
 order: 1
-keywords: page, pages, master label, duplicate, rename, reorder, remove, remove from all pages, delete everywhere, scroll, apply positions, apply format, page format, line up, same place, same size, apply formatting, other pages, add missing, pagina, hoofdetiket, dupliceren, hernoemen, volgorde, verwijderen, van alle pagina's verwijderen, paginaopmaak
+keywords: page, pages, master label, duplicate, rename, reorder, remove, remove from all pages, delete everywhere, scroll, apply positions, apply format, page format, line up, same place, same size, apply formatting, other pages, add missing, pagina, hoofdetiket, dupliceren, hernoemen, volgorde, verwijderen, van alle pagina's verwijderen, paginaopmaak, add pages, blank pages, copies, select several, ctrl click, shift click, print selected pages, numbered copies, count up, pages from records, make pages, sort, reverse, pagina's toevoegen, lege pagina's, kopieën, meerdere selecteren, geselecteerde pagina's afdrukken, genummerde kopieën, pagina's maken, sorteren, omkeren
 ---
 # Pagina's: meerdere etiketten in één project
 
@@ -11,14 +11,30 @@ Een project kan meerdere verschillende etiketontwerpen bevatten, **pagina's** ge
 
 ## Werken met pagina's
 
-- `+` voegt een lege pagina toe; de dupliceerknop kopieert de pagina op het scherm.
+- `+` opent **Pagina's toevoegen**: kies **Lege pagina's** of **Kopieën van een pagina** (kies de pagina in de lijst; eerst is de pagina op het scherm gekozen), en **hoeveel**. De nieuwe pagina's komen direct na de pagina op het scherm. Kopieën kunnen ook hun barcodes laten oplopen; zie "Genummerde kopieën" hieronder.
+- De dupliceerknop kopieert de geselecteerde pagina of pagina's; elke kopie komt direct na haar pagina.
 - Dubbelklik op een pagina (of druk op `F2`) om haar ter plekke te hernoemen.
-- `Ctrl+↑` / `Ctrl+↓`, of slepen, wijzigen de volgorde.
-- Een lange lijst met pagina's schuift met het muiswiel of met de pijlen omhoog en omlaag aan de uiteinden van de schuifbalk.
-- De verwijderknop verwijdert de pagina op het scherm. Ook de eerste pagina kan worden verwijderd zolang er andere pagina's zijn; de volgende pagina wordt dan pagina 1.
+- `Ctrl+↑` / `Ctrl+↓`, of slepen, wijzigen de volgorde. Klik met rechts op een pagina voor **Sorteren op naam, A tot Z**, **Sorteren op naam, Z tot A** en **Volgorde omkeren**, of gebruik de sorteerknop boven de lijst.
+- Een lange lijst met pagina's schuift met het muiswiel of met de pijlen omhoog en omlaag aan de uiteinden van de schuifbalk. Een nieuwe of gedupliceerde pagina komt vanzelf in beeld.
+- De verwijderknop verwijdert de geselecteerde pagina of pagina's, na een vraag. Ook de eerste pagina kan worden verwijderd zolang er andere pagina's zijn; de volgende pagina wordt dan pagina 1. Er blijft altijd minstens één pagina over.
 - Om een pagina op naam te vinden, drukt u op `Ctrl+F` en typt u een deel van de naam: paginanamen worden samen met al het andere doorzocht (**Paginanamen** onder Zoeken in). Kies een resultaat om die pagina te openen; **Vervangen** hernoemt haar.
 
 > Tip: maak één etiket, **dupliceer** het voor elk product en wijzig alleen de tekst. Gedupliceerde pagina's houden de namen van hun objecten, die het hulpmiddel hieronder gebruikt om "hetzelfde" object op elke pagina te vinden.
+
+## Meerdere pagina's selecteren
+
+In de paginalijst kiest `Ctrl`+klik pagina's één voor één en kiest `Shift`+klik alle pagina's tussen de pagina waarop u het laatst klikte en deze. Met meerdere geselecteerd:
+
+- **Dupliceren** kopieert elk ervan en **Verwijderen** verwijdert ze allemaal, elk in één stap die `Ctrl+Z` terugdraait.
+- Rechtsklik › **Geselecteerde pagina's afdrukken…** opent Afdrukken, ingesteld op alleen die pagina's, meerdere per vel.
+
+## Genummerde kopieën
+
+Rechtsklik op een pagina › **Genummerde kopieën…** (of `+` › Kopieën van een pagina › **De barcodenummers op elke kopie laten oplopen**) maakt kopieën van die pagina waarvan de barcodes per pagina met één oplopen: `BOX-0007` wordt `BOX-0008`, `BOX-0009`, enzovoort. Voorloopnullen blijven staan, en het controlecijfer van EAN-, UPC-, ITF-14- en ISBN-barcodes wordt opnieuw berekend. Elke kopie krijgt haar nieuwe nummer als naam. Barcodes die uit gegevens komen (`{Barcode}`) of geen nummer hebben, blijven zoals ze zijn.
+
+## Een pagina per record
+
+Om geïmporteerde records (Excel, CSV of een database) in pagina's om te zetten, één pagina per record met de waarden erin, zie [[data|Gegevens en variabele etiketten]] › "Een pagina per record maken".
 
 ## Andere pagina's de opmaak van deze pagina geven
 

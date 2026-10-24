@@ -3,7 +3,7 @@ id: printing
 title: Печать
 category: Printing
 order: 1
-keywords: print, printer, sheet, copies, preview, pages, current page, selected pages, copies per page, paper, margins, start position, skip, history, reprint, outlines, crop marks, automatic printing, watch folder, hot folder, web link, api, integration, other programs, json, csv, печать, принтер, лист, копии, предпросмотр, текущая страница, поля, начальная позиция, журнал, повторная печать, контуры, метки обреза, отслеживаемая папка, веб-ссылка, другие программы
+keywords: print, printer, sheet, copies, preview, pages, current page, selected pages, copies per page, paper, margins, start position, skip, history, reprint, outlines, crop marks, automatic printing, watch folder, hot folder, web link, api, integration, other programs, json, csv, печать, принтер, лист, копии, предпросмотр, текущая страница, поля, начальная позиция, журнал, повторная печать, контуры, метки обреза, отслеживаемая папка, веб-ссылка, другие программы, print settings saved, print selected pages, печать выбранных страниц, параметры печати
 ---
 # Печать
 
@@ -17,7 +17,9 @@ keywords: print, printer, sheet, copies, preview, pages, current page, selected 
   - **Все страницы**, **Текущая страница** (та, что была на экране) или **Выбранные страницы** (отметьте их в списке).
   - У каждой страницы своё поле **копий**: страница 1 может печататься 6 раз, а страница 2 — двенадцать раз на тех же листах. **Копий каждой страницы** задаёт их все сразу. Числа сохраняются в проекте.
 
-> Совет: если нажать «Печать», когда на экране страница (не основная этикетка), окно «Печать» откроется уже настроенным на эту страницу.
+> Совет: если нажать «Печать», когда на экране страница (не основная этикетка), окно «Печать» откроется уже настроенным на эту страницу. Чтобы напечатать несколько выбранных страниц, выделите их в списке страниц (`Ctrl`+щелчок, `Shift`+щелчок) и щёлкните правой кнопкой › **Печать выбранных страниц…**.
+
+Принтер, бумага, поля, копии и масштаб, выбранные в окне «Печать» (и параметры в окне термопечати), сохраняются вместе с проектом: сохраните его, и при следующем открытии они будут на месте.
 
 ## Начальная позиция и диапазоны
 

@@ -3,7 +3,7 @@ id: export
 title: Een taak exporteren en controleren
 category: Exporting
 order: 1
-keywords: export, pdf, png, svg, picture, file, preflight, check, publisher, import, exporteren, afbeelding, bestand, controle vooraf, controleren, importeren
+keywords: export, pdf, png, svg, picture, file, preflight, check, publisher, import, exporteren, afbeelding, bestand, controle vooraf, controleren, importeren, publisher margins, label sheet, publisher-marges, etiketvel
 ---
 # Een taak exporteren en controleren
 
@@ -19,3 +19,5 @@ keywords: export, pdf, png, svg, picture, file, preflight, check, publisher, imp
 ## Microsoft Publisher-bestanden overnemen
 
 `Bestand › Publisher-bestand openen (alle pagina's)…` maakt van een Publisher-bestand (.pub) een project; `Tekst en afbeeldingen uit Publisher importeren…` haalt de inhoud ervan naar het geopende project.
+
+Een Publisher-etiketbestand heeft meestal één etiket per pagina en drukt meerdere pagina's per vel af. LabelAxis zet zulke pagina's op een echt etiketvel: het vel dat Publisher noemt, of het ingebouwde vel met etiketten van die maat, met de eigen marges en tussenruimten van Publisher, zodat de etiketten worden afgedrukt waar ze vanuit Publisher werden afgedrukt. De statusbalk zegt welk vel het koos; wijzig het in **Etiketbeheer** als u een ander gebruikt. Een project dat eerder uit Publisher is gehaald (één etiket alleen op elke kleine pagina) krijgt bij het openen zijn etiketvel aangeboden; **Annuleren** houdt één etiket per pagina, en voor dat bestand wordt het niet meer gevraagd.

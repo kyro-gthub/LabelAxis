@@ -3,7 +3,7 @@ id: printing
 title: Afdrukken
 category: Printing
 order: 1
-keywords: print, printer, sheet, copies, preview, pages, current page, selected pages, copies per page, paper, margins, start position, skip, history, reprint, outlines, crop marks, automatic printing, watch folder, hot folder, web link, api, integration, other programs, json, csv, afdrukken, vel, exemplaren, voorbeeld, huidige pagina, marges, beginpositie, geschiedenis, opnieuw afdrukken, omtrekken, snijtekens, bewaakte map, weblink, andere programma's
+keywords: print, printer, sheet, copies, preview, pages, current page, selected pages, copies per page, paper, margins, start position, skip, history, reprint, outlines, crop marks, automatic printing, watch folder, hot folder, web link, api, integration, other programs, json, csv, afdrukken, vel, exemplaren, voorbeeld, huidige pagina, marges, beginpositie, geschiedenis, opnieuw afdrukken, omtrekken, snijtekens, bewaakte map, weblink, andere programma's, print settings saved, print selected pages, geselecteerde pagina's afdrukken, afdrukinstellingen
 ---
 # Afdrukken
 
@@ -17,7 +17,9 @@ keywords: print, printer, sheet, copies, preview, pages, current page, selected 
   - **Alle pagina's**, **Huidige pagina** (de pagina die u bekeek), of **Geselecteerde pagina's** (vink ze aan in de lijst).
   - Elke pagina heeft een eigen vak voor **exemplaren**: pagina 1 kan 6 keer en pagina 2 twaalf keer op dezelfde vellen worden afgedrukt. **Exemplaren van elke pagina** stelt ze allemaal tegelijk in. De aantallen worden met het project opgeslagen.
 
-> Tip: als u op Afdrukken drukt terwijl een pagina (niet het hoofdetiket) op het scherm staat, opent het venster Afdrukken al ingesteld op die pagina.
+> Tip: als u op Afdrukken drukt terwijl een pagina (niet het hoofdetiket) op het scherm staat, opent het venster Afdrukken al ingesteld op die pagina. Om een paar gekozen pagina's af te drukken, selecteert u ze in de paginalijst (`Ctrl`+klik, `Shift`+klik) en klikt u met rechts › **Geselecteerde pagina's afdrukken…**.
+
+De printer, het papier, de marges, de kopieën en de schaal die u in het venster Afdrukken kiest (en de thermische instellingen in het venster voor thermisch afdrukken) worden met het project opgeslagen: sla het op, en ze staan er de volgende keer dat u het opent.
 
 ## Beginpositie en bereiken
 

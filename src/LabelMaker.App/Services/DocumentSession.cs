@@ -182,8 +182,8 @@ public sealed class DocumentSession
     }
 
     /// <summary>
-    /// Puts <paramref name="documents"/> in as new pages after the page on screen (after the
-    /// last page when the master label is on screen), named by <paramref name="names"/>, in one
+    /// Puts <paramref name="documents"/> in as new pages right after the page on screen (first
+    /// among the pages when the master label is on screen), named by <paramref name="names"/>, in one
     /// step that undo takes back; the first new page is then the one on screen.
     /// </summary>
     public IReadOnlyList<LabelPage> InsertPages(IReadOnlyList<LabelDocument> documents, IReadOnlyList<string> names, string undoLabel)
@@ -202,7 +202,7 @@ public sealed class DocumentSession
 
         Execute(new PageStructureCommand(this, undoLabel, () =>
         {
-            int index = ActivePageId is null ? Project.Pages.Count : Project.Pages.FindIndex(p => p.Id == ActivePageId) + 1;
+            int index = ActivePageId is null ? 0 : Project.Pages.FindIndex(p => p.Id == ActivePageId) + 1;
             Project.Pages.InsertRange(Math.Clamp(index, 0, Project.Pages.Count), pages);
             ActivePageId = pages[0].Id;
         }));
@@ -246,6 +246,91 @@ public sealed class DocumentSession
     /// removed too while other pages exist: the next page takes its place as the master
     /// label. The last remaining page cannot be removed.
     /// </summary>
+    /// <summary>
+    /// Removes the pages with these ids (null is the master label) in one step that undo takes back.
+    /// When the master label goes, the first page left takes its place. At least one page always
+    /// stays, so asking to remove every page removes nothing and returns false.
+    /// </summary>
+    public bool RemovePages(IReadOnlyCollection<string?> ids)
+    {
+        ArgumentNullException.ThrowIfNull(ids);
+        bool master = ids.Contains(null);
+        var going = new HashSet<string>(ids.OfType<string>(), StringComparer.Ordinal);
+        int left = Project.Pages.Count(p => !going.Contains(p.Id)) + (master ? 0 : 1);
+        if (ids.Count == 0 || left == 0)
+        {
+            return false;
+        }
+
+        Execute(new PageStructureCommand(this, ids.Count == 1 ? "Remove page" : $"Remove {ids.Count} pages", () =>
+        {
+            Project.Pages.RemoveAll(p => going.Contains(p.Id));
+            if (master)
+            {
+                LabelPage next = Project.Pages[0];
+                GuideCollection guides = Project.MasterLabel.Guides;
+                Project.Pages.RemoveAt(0);
+                next.Document.Name = next.Name;
+                Project.MasterLabel = next.Document;
+                if (Project.SharedGuides)
+                {
+                    Project.MasterLabel.Guides = guides;
+                }
+            }
+
+            if (ActivePageId is { } active && (going.Contains(active) || Project.Pages.All(p => p.Id != active)))
+            {
+                ActivePageId = null;
+            }
+        }));
+        return true;
+    }
+
+    /// <summary>
+    /// A copy of each of these pages (null is the master label), each put right after its page,
+    /// in one step that undo takes back; the last copy is then on screen.
+    /// </summary>
+    public IReadOnlyList<LabelPage> DuplicatePages(IReadOnlyList<string?> ids)
+    {
+        ArgumentNullException.ThrowIfNull(ids);
+        var copies = new List<LabelPage>();
+        if (ids.Count == 0)
+        {
+            return copies;
+        }
+
+        Execute(new PageStructureCommand(this, ids.Count == 1 ? "Duplicate page" : $"Duplicate {ids.Count} pages", () =>
+        {
+            foreach (string? id in ids)
+            {
+                LabelPage? source = id is null
+                    ? new LabelPage { Name = string.IsNullOrWhiteSpace(Project.MasterLabel.Name) ? "Page 1" : Project.MasterLabel.Name, Document = Project.MasterLabel.Clone() }
+                    : Project.Pages.FirstOrDefault(p => p.Id == id);
+                if (source is null)
+                {
+                    continue;
+                }
+
+                LabelPage copy = source.Clone();
+                copy.Id = Guid.NewGuid().ToString("N");
+                copy.Document.Id = Guid.NewGuid().ToString("N");
+                copy.Name = source.Name + " copy";
+                copy.Document.Name = copy.Name;
+
+                // Right after its page; a copy of the master label comes first among the pages.
+                int at = id is null ? 0 : Project.Pages.FindIndex(p => p.Id == id) + 1;
+                Project.Pages.Insert(at, copy);
+                copies.Add(copy);
+            }
+
+            if (copies.Count > 0)
+            {
+                ActivePageId = copies[^1].Id;
+            }
+        }));
+        return copies;
+    }
+
     public bool RemoveActivePage()
     {
         if (ActivePageId is null)

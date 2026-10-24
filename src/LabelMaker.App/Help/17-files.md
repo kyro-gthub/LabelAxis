@@ -3,13 +3,13 @@ id: files
 title: Projects, saving and settings
 category: Reference
 order: 2
-keywords: save, open, file, labelproj, autosave, recovery, backup, settings, theme, dark, portable, usb, recent, language, arabic, kurdish, sorani, persian, farsi, french, spanish, dutch, russian, chinese, hindi, update, new version, upgrade, themes, frost, aurora, midnight, graphite, ember, ocean, sakura, sage, glass, custom theme, own colours, make your own theme
+keywords: save, open, file, labelproj, autosave, recovery, backup, settings, theme, dark, portable, usb, recent, language, arabic, kurdish, sorani, persian, farsi, french, spanish, dutch, russian, chinese, hindi, update, new version, upgrade, themes, frost, aurora, midnight, graphite, ember, ocean, sakura, sage, glass, custom theme, own colours, make your own theme, close others, tabs, offline update, update without internet
 ---
 # Projects, saving and settings
 
 ## Projects
 
-A project (.labelproj file) holds the label sheet, every page, the pictures it uses and its data connection. Several projects can be open at once, each in its own tab above the label. `File > Open Recent` lists the latest ones.
+A project (.labelproj file) holds the label sheet, every page, the pictures it uses, its data connection and its print settings. Several projects can be open at once, each in its own tab above the label; right-click a tab for **Close** and **Close others**. `File > Open Recent` lists the latest ones.
 
 ## Never lose work
 
@@ -29,6 +29,8 @@ A project (.labelproj file) holds the label sheet, every page, the pictures it u
 LabelAxis looks for a newer version about once a day, and whenever you choose `Help > Check for updates…`. When there is one, a bar above the label offers `Update now`, `What's new`, `Later` and `Skip this version`. **Update now** downloads the new version, checks that it is exactly the published file, closes LabelAxis (asking to save your work), installs it and starts LabelAxis again. Your settings, templates and calibration are kept.
 
 Under `File > Settings… > Updates` you can switch the daily check off, or enter the **update address**: the web address (https://, for example a GitHub release folder) or shared folder where LabelAxis updates are published. A version built with an address uses it when the box is left empty.
+
+**Updating a PC without internet:** copy a release folder (its update.json and both setup programs, with their names unchanged) to a USB stick or a shared folder. On that PC, type the folder's path as the update address, choose `Help > Check for updates…`, and LabelAxis checks each file's fingerprint and installs it. Clear the address afterwards to go back to the usual one.
 
 ## Portable copy
 

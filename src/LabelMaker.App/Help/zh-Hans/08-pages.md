@@ -3,7 +3,7 @@ id: pages
 title: 页面：一个项目中的多个标签
 category: Pages
 order: 1
-keywords: page, pages, master label, duplicate, rename, reorder, remove, remove from all pages, delete everywhere, scroll, apply positions, apply format, page format, line up, same place, same size, apply formatting, other pages, add missing, 页面, 主标签, 复制, 重命名, 排序, 删除, 从所有页面删除, 页面格式
+keywords: page, pages, master label, duplicate, rename, reorder, remove, remove from all pages, delete everywhere, scroll, apply positions, apply format, page format, line up, same place, same size, apply formatting, other pages, add missing, 页面, 主标签, 复制, 重命名, 排序, 删除, 从所有页面删除, 页面格式, add pages, blank pages, copies, select several, ctrl click, shift click, print selected pages, numbered copies, count up, pages from records, make pages, sort, reverse, 添加页面, 空白页面, 副本, 选择多个页面, 打印选中的页面, 编号副本, 生成页面, 排序, 反向排序
 ---
 # 页面：一个项目中的多个标签
 
@@ -11,14 +11,30 @@ keywords: page, pages, master label, duplicate, rename, reorder, remove, remove 
 
 ## 使用页面
 
-- `+` 添加一个空白页面；复制按钮会复制屏幕上的页面。
+- `+` 打开 **添加页面**：选择 **空白页面** 或 **某一页面的副本**（在列表中选择页面；开始时选中的是屏幕上的页面），以及 **数量**。新页面紧跟在屏幕上的页面之后。副本还可以递增其条码；请参阅下文“编号副本”。
+- 复制按钮会复制选中的一个或多个页面；每个副本紧跟在其原页面之后。
 - 双击页面（或按 `F2`）可就地重命名。
-- `Ctrl+↑` / `Ctrl+↓` 或拖动可改变顺序。
-- 页面列表很长时，可用鼠标滚轮或其滚动条两端的上下箭头滚动。
-- 删除按钮会删除屏幕上的页面。只要还有其他页面，第一页也可以删除；此后下一页成为第 1 页。
+- `Ctrl+↑` / `Ctrl+↓` 或拖动可改变顺序。右键单击页面可选择 **按名称排序，A 到 Z**、**按名称排序，Z 到 A** 和 **反向排序**，也可以使用列表上方的排序按钮。
+- 页面列表很长时，可用鼠标滚轮或其滚动条两端的上下箭头滚动。新建或复制出的页面会自动显示出来。
+- 删除按钮会在询问后删除选中的一个或多个页面。只要还有其他页面，第一页也可以删除；此后下一页成为第 1 页。始终至少保留一个页面。
 - 要按名称查找页面，请按 `Ctrl+F` 并输入名称的一部分：页面名称会和其他内容一起被搜索（查找范围中的 **页面名称**）。选择一个匹配项即可打开该页面；**替换** 可重命名它。
 
 > 提示：先做好一个标签，再为每种产品 **复制** 它，只修改文字。复制出的页面会保留其对象的名称，下面的工具会用这些名称在每页上找到“同一个”对象。
+
+## 选择多个页面
+
+在页面列表中，`Ctrl`+单击逐个选择页面，`Shift`+单击选择从上次单击的页面到此页面之间的所有页面。选中多个页面时：
+
+- **复制** 会复制其中每一个，**删除** 会删除全部，各为一步，可用 `Ctrl+Z` 撤销。
+- 右键 › **打印选中的页面…** 会打开“打印”窗口并只设为这些页面，每张纸打印多个。
+
+## 编号副本
+
+右键单击页面 › **编号副本…**（或 `+` › 某一页面的副本 › **在每份副本上递增条码**）会生成该页面的副本，其条码逐页加一：`BOX-0007` 之后是 `BOX-0008`、`BOX-0009`，依此类推。前导零会保留，EAN、UPC、ITF-14 和 ISBN 条码的校验位会重新计算。每个副本以其新编号命名。由数据填入的条码（`{Barcode}`）或不含数字的条码保持不变。
+
+## 每条记录一个页面
+
+要把导入的记录（Excel、CSV 或数据库）变成页面，每条记录一个页面并写入其值，请参阅 [[data|数据和可变标签]] › “为每条记录生成一个页面”。
 
 ## 让其他页面使用本页格式
 

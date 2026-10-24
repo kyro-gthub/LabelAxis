@@ -163,10 +163,10 @@ public sealed partial class MainViewModel
         GroupCommand = new RelayCommand(GroupSelection, () => _session.Selection.Count > 1);
         UngroupCommand = new RelayCommand(UngroupSelection, () => _session.Selection.Any(o => o.GroupId is not null));
 
-        AddPageCommand = new RelayCommand(() => _session.AddPage());
-        DuplicatePageCommand = new RelayCommand(() => _session.DuplicateActivePage());
+        AddPageCommand = new RelayCommand(AddPagesAsked);
+        DuplicatePageCommand = new RelayCommand(DuplicateSelectedPages);
         RemovePageCommand = new RelayCommand(
-            RemoveActivePage,
+            RemoveSelectedPages,
             () => !_session.IsEditingMaster || _session.Project.Pages.Count > 0);
         RenamePageCommand = new RelayCommand(RenameActivePage);
         AddVerticalGuideCommand = new RelayCommand(() => _canvas?.InsertGuideAtContext(vertical: true));

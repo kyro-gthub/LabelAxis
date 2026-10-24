@@ -3,7 +3,7 @@ id: data
 title: Datos y etiquetas variables
 category: Data
 order: 1
-keywords: data, csv, excel, spreadsheet, database, sql, mysql, postgresql, access, odbc, sqlite, field, merge, variable, records, sequence, serial, counter, date, time, expression, function, duplicate, datos, hoja de cálculo, base de datos, campo, combinar, registros, secuencia, número de serie, contador, función, duplicado
+keywords: data, csv, excel, spreadsheet, database, sql, mysql, postgresql, access, odbc, sqlite, field, merge, variable, records, sequence, serial, counter, date, time, expression, function, duplicate, datos, hoja de cálculo, base de datos, campo, combinar, registros, secuencia, número de serie, contador, función, duplicado, make pages, page for each record, pages from records, crear páginas, una página por registro
 ---
 # Datos y etiquetas variables
 
@@ -34,6 +34,15 @@ Dentro de las llaves también puede usar funciones, por ejemplo `{UPPER(Product)
 ## Números de serie
 
 `Datos › Gestionar secuencias…` configura contadores: inicio, fin, paso y un prefijo o sufijo. Use uno por su nombre entre llaves; sube de uno en uno con cada etiqueta impresa.
+
+## Crear una página por registro
+
+En lugar de imprimir una etiqueta por registro, puede convertir los registros en páginas, para cambiar algunas a mano o imprimirlas junto con otras páginas:
+
+1. Ponga las columnas en la etiqueta (`Registros…` › **Añadir campo a la etiqueta**, o escriba `{Product}` en un cuadro de texto).
+2. Elija `Datos` › **Crear páginas…** para todos los registros, o abra `Registros…`, seleccione los registros que quiera (`Ctrl`+clic, `Shift`+clic) y haga clic en **Crear páginas**. Si no hay ninguno seleccionado, usa todos los registros que muestra el filtro.
+
+Cada página nueva es una copia de la etiqueta en pantalla con los valores de ese registro escritos en sus textos, códigos de barras y celdas de tabla, y recibe el nombre de la primera columna del registro. Las fechas, los contadores y otros marcadores se quedan como están, así que siguen funcionando cuando se imprimen las páginas. Después, la impresión queda ajustada para imprimir las páginas, varias por hoja. Es un solo paso: `Ctrl+Z` quita todas las páginas nuevas.
 
 ## Antes de imprimir
 

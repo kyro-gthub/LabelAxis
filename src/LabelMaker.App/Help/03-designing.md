@@ -54,4 +54,4 @@ The mouse wheel zooms in and out where the pointer is; `Ctrl`+wheel scrolls up a
 
 ## Undo
 
-Everything can be undone with `Ctrl+Z` and redone with `Ctrl+Y`.
+Everything can be undone with `Ctrl+Z` and redone with `Ctrl+Y`, or with the Undo and Redo buttons in the quick bar at the top. Pointing at them shows what they would undo or redo, such as "Undo: Duplicate 3 pages".

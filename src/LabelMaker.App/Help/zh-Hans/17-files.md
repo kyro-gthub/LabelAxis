@@ -3,13 +3,13 @@ id: files
 title: 项目、保存和设置
 category: Reference
 order: 2
-keywords: save, open, file, labelproj, autosave, recovery, backup, settings, theme, dark, portable, usb, recent, language, arabic, kurdish, sorani, persian, farsi, french, spanish, dutch, russian, chinese, hindi, update, new version, upgrade, themes, frost, aurora, midnight, graphite, ember, ocean, sakura, sage, glass, custom theme, own colours, make your own theme, 保存, 打开, 文件, 自动保存, 恢复, 备份, 设置, 主题, 深色, 便携版, 语言, 中文, 更新, 新版本, 自定义主题
+keywords: save, open, file, labelproj, autosave, recovery, backup, settings, theme, dark, portable, usb, recent, language, arabic, kurdish, sorani, persian, farsi, french, spanish, dutch, russian, chinese, hindi, update, new version, upgrade, themes, frost, aurora, midnight, graphite, ember, ocean, sakura, sage, glass, custom theme, own colours, make your own theme, 保存, 打开, 文件, 自动保存, 恢复, 备份, 设置, 主题, 深色, 便携版, 语言, 中文, 更新, 新版本, 自定义主题, close others, tabs, offline update, update without internet, 关闭其他, 标签页, 离线更新
 ---
 # 项目、保存和设置
 
 ## 项目
 
-项目（.labelproj 文件）包含标签纸、所有页面、所用的图片以及数据连接。可以同时打开多个项目，每个项目在标签上方都有自己的标签页。`文件 › 最近打开` 列出最近的项目。
+项目（.labelproj 文件）包含标签纸、所有页面、所用的图片、数据连接以及打印设置。可以同时打开多个项目，每个项目在标签上方都有自己的标签页；右键单击标签页可选择 **关闭** 和 **关闭其他**。`文件 › 最近打开` 列出最近的项目。
 
 ## 永不丢失工作
 
@@ -29,6 +29,8 @@ keywords: save, open, file, labelproj, autosave, recovery, backup, settings, the
 LabelAxis 大约每天检查一次新版本，每当您选择 `帮助 › 检查更新…` 时也会检查。有新版本时，标签上方会出现一个栏，提供 `立即更新`、`新增功能`、`稍后` 和 `跳过此版本`。**立即更新** 会下载新版本，检查它与发布的文件完全一致，关闭 LabelAxis（并询问是否保存您的工作），安装后重新启动 LabelAxis。您的设置、模板和校准都会保留。
 
 在 `文件 › 设置… › 更新` 中，可以关闭每日检查，或输入 **更新地址**：发布 LabelAxis 更新的网址（https://，例如 GitHub 发布文件夹）或共享文件夹。内置了地址的版本会在此框留空时使用该地址。
+
+**为没有网络的电脑更新：** 将一个发布文件夹（其中的 update.json 和两个安装程序，不要改名）复制到 U 盘或共享文件夹。在那台电脑上，将该文件夹的路径填为更新地址，选择 `帮助 › 检查更新…`，LabelAxis 会核对每个文件的指纹并进行安装。之后清除该地址，即可恢复使用平常的地址。
 
 ## 便携版
 

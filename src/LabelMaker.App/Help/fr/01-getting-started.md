@@ -3,7 +3,7 @@ id: getting-started
 title: Votre première étiquette
 category: Getting started
 order: 1
-keywords: start, begin, new project, tutorial, first, quick start, welcome, démarrer, commencer, nouveau projet, tutoriel, premier, bienvenue, my designs, mes modèles, enregistrer comme modèle
+keywords: start, begin, new project, tutorial, first, quick start, welcome, démarrer, commencer, nouveau projet, tutoriel, premier, bienvenue, my designs, mes modèles, enregistrer comme modèle, quick bar, toolbar, undo, redo, barre rapide, annuler, rétablir
 ---
 # Votre première étiquette
 
@@ -25,6 +25,7 @@ LabelAxis conçoit des étiquettes et des autocollants et les imprime sur des fe
 
 ## Se repérer
 
+- **En haut :** les menus et, à côté, la barre rapide : Nouveau, Ouvrir, Enregistrer, Annuler, Rétablir, Aperçu avant impression et Imprimer, à un clic. Pointez Annuler ou Rétablir pour voir ce qui serait annulé ou rétabli.
 - **À gauche :** `Pages` (les modèles d'étiquettes de ce projet) et `Données` (un tableur ou une base de données pour imprimer beaucoup d'étiquettes différentes).
 - **Au milieu :** l'étiquette elle-même, avec règles, repères et grille.
 - **À droite :** `Propriétés` (réglages de l'objet sélectionné), `Calques` (tous les objets, de l'avant vers l'arrière) et `Page` (la feuille d'étiquettes et la page affichée).

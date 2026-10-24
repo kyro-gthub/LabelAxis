@@ -54,4 +54,4 @@ La rueda del ratón acerca y aleja donde está el puntero; `Ctrl`+rueda desplaza
 
 ## Deshacer
 
-Todo se puede deshacer con `Ctrl+Z` y rehacer con `Ctrl+Y`.
+Todo se puede deshacer con `Ctrl+Z` y rehacer con `Ctrl+Y`, o con los botones Deshacer y Rehacer de la barra rápida de arriba. Al señalarlos se ve qué desharían o reharían, por ejemplo «Deshacer: Duplicar 3 páginas».

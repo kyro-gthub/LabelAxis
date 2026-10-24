@@ -3,7 +3,7 @@ id: printing
 title: Impresión
 category: Printing
 order: 1
-keywords: print, printer, sheet, copies, preview, pages, current page, selected pages, copies per page, paper, margins, start position, skip, history, reprint, outlines, crop marks, automatic printing, watch folder, hot folder, web link, api, integration, other programs, json, csv, imprimir, impresora, hoja, copias, vista previa, página actual, márgenes, posición inicial, historial, reimprimir, contornos, marcas de corte, carpeta vigilada, enlace web, otros programas
+keywords: print, printer, sheet, copies, preview, pages, current page, selected pages, copies per page, paper, margins, start position, skip, history, reprint, outlines, crop marks, automatic printing, watch folder, hot folder, web link, api, integration, other programs, json, csv, imprimir, impresora, hoja, copias, vista previa, página actual, márgenes, posición inicial, historial, reimprimir, contornos, marcas de corte, carpeta vigilada, enlace web, otros programas, print settings saved, print selected pages, imprimir páginas seleccionadas, ajustes de impresión
 ---
 # Impresión
 
@@ -17,7 +17,9 @@ keywords: print, printer, sheet, copies, preview, pages, current page, selected 
   - **Todas las páginas**, **Página actual** (la que estaba viendo) o **Páginas seleccionadas** (márquelas en la lista).
   - Cada página tiene su propia casilla de **copias**: la página 1 puede imprimirse 6 veces y la página 2 doce veces en las mismas hojas. **Copias de cada página** las ajusta todas a la vez. Los números se guardan con el proyecto.
 
-> Consejo: pulsar Imprimir con una página (no la etiqueta maestra) en pantalla abre la ventana Imprimir ya ajustada a esa página.
+> Consejo: pulsar Imprimir con una página (no la etiqueta maestra) en pantalla abre la ventana Imprimir ya ajustada a esa página. Para imprimir unas pocas páginas elegidas, selecciónelas en la lista de páginas (`Ctrl`+clic, `Shift`+clic) y haga clic derecho › **Imprimir páginas seleccionadas…**.
+
+La impresora, el papel, los márgenes, las copias y la escala que elija en la ventana Imprimir (y los ajustes térmicos de la ventana de impresión térmica) se guardan con el proyecto: guárdelo y estarán ahí la próxima vez que lo abra.
 
 ## Posición inicial e intervalos
 

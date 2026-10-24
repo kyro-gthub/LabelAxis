@@ -3,7 +3,7 @@ id: data
 title: Data and variable labels
 category: Data
 order: 1
-keywords: data, csv, excel, spreadsheet, database, sql, mysql, postgresql, access, odbc, sqlite, field, merge, variable, records, sequence, serial, counter, date, time, expression, function, duplicate
+keywords: data, csv, excel, spreadsheet, database, sql, mysql, postgresql, access, odbc, sqlite, field, merge, variable, records, sequence, serial, counter, date, time, expression, function, duplicate, make pages, page for each record, pages from records
 ---
 # Data and variable labels
 
@@ -34,6 +34,15 @@ Inside the brackets you can also use functions, for example `{UPPER(Product)}`, 
 ## Serial numbers
 
 `Data > Manage sequences…` sets up counters: start, end, step, and a prefix or suffix. Use one by its name in brackets; it goes up by one for each printed label.
+
+## Make a page for each record
+
+Instead of printing one label per record, you can make the records into pages, to change some of them by hand or to print them alongside other pages:
+
+1. Put the columns on the label (`Records…` › **Add field to label**, or type `{Product}` in a text box).
+2. Choose `Data` › **Make pages…** for every record, or open `Records…`, select the records you want (`Ctrl`+click, `Shift`+click) and click **Make pages**. With none selected, it uses every record the filter shows.
+
+Each new page is a copy of the label on screen with that record's values written into its text, barcodes and table cells, named after the record's first column. Dates, counters and other placeholders stay as they are, so they keep working when the pages print. Printing is then set to print the pages, several to a sheet. It is one step: `Ctrl+Z` takes all the new pages away.
 
 ## Before printing
 
