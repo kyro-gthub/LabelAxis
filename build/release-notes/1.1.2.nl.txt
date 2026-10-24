@@ -1,0 +1,12 @@
+LabelAxis 1.1.2
+
+Nieuw
+• Pagina's maken uit uw records: één pagina per record van een Excel-, CSV- of database-import, gemaakt van het etiket op het scherm met de waarden van het record ingevuld. Gebruik Gegevens › Pagina's maken… voor alle records, of selecteer records in Records… en klik op Pagina's maken. Daarna kunnen de pagina's één voor één worden bewerkt en met meerdere per vel worden afgedrukt.
+• Genummerde kopieën: klik met rechts op een pagina › Genummerde kopieën… maakt kopieën waarvan de barcodes per pagina oplopen (BOX-0007, BOX-0008, …), met behoud van voorloopnullen en met opnieuw berekende EAN- en UPC-controlecijfers.
+• De barcodecontrole werkt met USB- en Bluetooth-barcodescanners: scan een afgedrukt etiket en LabelAxis zegt of het overeenkomt met een barcode op de pagina, met een lopende telling. Een scanner vertelt wat een barcode zegt, maar niet hoe goed hij is afgedrukt; de controle met camera of foto geeft nog steeds een cijfer.
+
+Oplossingen
+• Afdrukinstellingen die in het venster Afdrukken (printer, papier, marges, exemplaren, schaal) en in het venster voor thermisch afdrukken zijn gekozen, worden nu met het project opgeslagen. Eerder gingen ze verloren als het project opnieuw werd geopend.
+• Microsoft Publisher-bestanden houden de eigen marges en tussenruimten van Publisher, zodat de etiketten worden afgedrukt waar ze vanuit Publisher werden afgedrukt.
+• Excel-bestanden met een afbeelding met een lange naam mislukken niet meer bij het importeren ("picture names cannot be more than 31 characters").
+• Een gedupliceerde of toegevoegde pagina staat meteen in de paginalijst, zonder te scrollen.

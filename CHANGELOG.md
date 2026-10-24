@@ -4,6 +4,29 @@ Notable changes to LabelAxis. Versions follow [Semantic Versioning](https://semv
 The full notes of each release, in all ten interface languages, are in
 [`build/release-notes`](build/release-notes) and on the Releases page.
 
+## [1.1.2] - 2026-10-25
+
+### Added
+
+- Pages from records: one page for each record of the imported data (all of them, or those
+  chosen in Records…), made from the label on screen with the record's columns written into
+  its text, barcodes and table cells; other placeholders (dates, counters) stay live. From the
+  Data tab (Make pages…), the Records window (Make pages) and the page list's menu.
+- Numbered copies (page list menu): copies of a page whose barcodes count up page by page,
+  keeping leading zeros and working out EAN, UPC, ITF-14 and ISBN check digits again.
+- The barcode check takes USB and Bluetooth barcode scanners: what a scanner types is compared
+  with the barcodes on the page, with a running count of matches. Scanners give no grade.
+
+### Fixed
+
+- Print settings changed in the Print and thermal print windows (printer, paper, margins,
+  copies, scale, thermal settings) were not marked as a change, so they were not saved and
+  were lost when the project was opened again.
+- Publisher imports use Publisher's own margins and gaps for where its labels sit on the sheet.
+- Excel files with a picture whose name is longer than 31 characters failed to import
+  ("picture names cannot be more than 31 characters"); their records now import.
+- A duplicated or added page shows in the page list straight away.
+
 ## [1.1.1] - 2026-10-20
 
 ### Fixed

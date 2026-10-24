@@ -1,0 +1,12 @@
+LabelAxis 1.1.2
+
+Nouveautés
+• Créer des pages à partir de vos enregistrements : une page par enregistrement d'une importation Excel, CSV ou base de données, créée à partir de l'étiquette à l'écran avec les valeurs de l'enregistrement inscrites. Utilisez Données › Créer des pages… pour tous les enregistrements, ou sélectionnez des enregistrements dans Enregistrements… et cliquez sur Créer des pages. Les pages peuvent ensuite être modifiées une à une et imprimées à plusieurs par feuille.
+• Copies numérotées : clic droit sur une page › Copies numérotées… crée des copies dont les codes-barres augmentent page après page (BOX-0007, BOX-0008, …), en gardant les zéros en tête et en recalculant les chiffres de contrôle EAN et UPC.
+• La vérification des codes-barres fonctionne avec les lecteurs de codes-barres USB et Bluetooth : scannez une étiquette imprimée et LabelAxis indique si elle correspond à un code-barres de la page, avec un décompte. Un lecteur indique ce que dit un code-barres mais pas sa qualité d'impression ; la vérification par caméra ou photo donne toujours une note.
+
+Corrections
+• Les paramètres d'impression choisis dans la fenêtre Imprimer (imprimante, papier, marges, copies, échelle) et dans la fenêtre d'impression thermique sont désormais enregistrés avec le projet. Avant, ils étaient perdus à la réouverture du projet.
+• Les fichiers Microsoft Publisher gardent les marges et espacements de Publisher, donc les étiquettes s'impriment là où elles s'imprimaient depuis Publisher.
+• Les fichiers Excel contenant une image au nom long ne font plus échouer l'importation (« picture names cannot be more than 31 characters »).
+• Une page dupliquée ou ajoutée apparaît tout de suite dans la liste des pages, sans faire défiler.

@@ -1,0 +1,12 @@
+LabelAxis 1.1.2
+
+Novedades
+• Crear páginas a partir de sus registros: una página por cada registro de una importación de Excel, CSV o base de datos, creada a partir de la etiqueta en pantalla con los valores del registro escritos. Use Datos › Crear páginas… para todos los registros, o seleccione registros en Registros… y pulse Crear páginas. Después las páginas se pueden editar una a una e imprimir varias por hoja.
+• Copias numeradas: clic derecho en una página › Copias numeradas… crea copias cuyos códigos de barras aumentan página a página (BOX-0007, BOX-0008, …), manteniendo los ceros iniciales y recalculando los dígitos de control EAN y UPC.
+• La comprobación de códigos de barras funciona con lectores de códigos de barras USB y Bluetooth: escanee una etiqueta impresa y LabelAxis indica si coincide con un código de barras de la página, con un recuento continuo. Un lector dice qué dice un código de barras pero no lo bien que está impreso; la comprobación con cámara o foto sigue dando una calificación.
+
+Correcciones
+• La configuración de impresión elegida en la ventana Imprimir (impresora, papel, márgenes, copias, escala) y en la ventana de impresión térmica ahora se guarda con el proyecto. Antes se perdía al volver a abrir el proyecto.
+• Los archivos de Microsoft Publisher conservan los márgenes y separaciones del propio Publisher, así que las etiquetas se imprimen donde se imprimían desde Publisher.
+• Los archivos de Excel que contienen una imagen con un nombre largo ya no fallan al importarse ("picture names cannot be more than 31 characters").
+• Una página duplicada o añadida aparece en la lista de páginas de inmediato, sin desplazarse.

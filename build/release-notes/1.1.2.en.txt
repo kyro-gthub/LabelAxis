@@ -1,0 +1,12 @@
+LabelAxis 1.1.2
+
+New
+• Make pages from your records: one page for each record of an Excel, CSV or database import, made from the label on screen with the record's values written in. Use Data › Make pages… for all records, or select records in Records… and click Make pages. The pages can then be edited one by one and print several to a sheet.
+• Numbered copies: right-click a page › Numbered copies… makes copies whose barcodes count up page by page (BOX-0007, BOX-0008, …), keeping leading zeros and working out EAN and UPC check digits again.
+• The barcode check works with USB and Bluetooth barcode scanners: scan a printed label and LabelAxis says whether it matches a barcode on the page, with a running count. A scanner tells what a barcode says but not how well it is printed; the camera and photo check still give a grade.
+
+Fixes
+• Print settings chosen in the Print window (printer, paper, margins, copies, scale) and in the thermal print window are now saved with the project. Before, they were lost when the project was opened again.
+• Microsoft Publisher files keep Publisher's own margins and gaps, so the labels print where they printed from Publisher.
+• Excel files containing a picture with a long name no longer fail to import ("picture names cannot be more than 31 characters").
+• A duplicated or added page shows in the page list straight away, without scrolling.

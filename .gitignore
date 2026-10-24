@@ -28,6 +28,10 @@ installer/Output/
 Thumbs.db
 .DS_Store
 
+## Release folders and personal files kept in the project folder (never commit)
+/LabelAxis-*-release/
+/New folder/
+
 ## App runtime data (never commit)
 *.labelproj
 *.labelproj.bak
