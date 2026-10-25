@@ -67,12 +67,10 @@ public sealed class TextBackgroundGradientTests
         back.BackgroundAngleDegrees.Should().Be(45);
 
         var target = new TextObject { Bounds = new RectMm(0, 0, 20, 8) };
-        IUndoableCommand command = TextStyleCopy.Build(box, new[] { target }, TextStyleParts.Colour, measurer: null)!;
-        command.Do();
-        target.BackgroundTo.Should().Be(box.BackgroundTo);
-        target.BackgroundAngleDegrees.Should().Be(45);
-        command.Undo();
-        target.BackgroundTo.Should().BeNull();
+        var styled = (TextObject)PageFormatCopy.Styled(box, target, PageFormatParts.Look, TextStyleParts.Colour, measurer: null);
+        styled.BackgroundTo.Should().Be(box.BackgroundTo);
+        styled.BackgroundAngleDegrees.Should().Be(45);
+        target.BackgroundTo.Should().BeNull("the box itself changes only when the step is done");
         target.BackgroundAngleDegrees.Should().Be(90);
     }
 }

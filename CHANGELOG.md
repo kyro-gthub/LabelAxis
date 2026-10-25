@@ -23,12 +23,32 @@ The full notes of each release, in all ten interface languages, are in
   its text, barcodes and table cells; other placeholders (dates, counters) stay live. From the
   Data tab (Make pages…), the Records window (Make pages) and the page list's menu.
 - Numbered copies (page list menu): copies of a page whose barcodes count up page by page,
-  keeping leading zeros and working out EAN, UPC, ITF-14 and ISBN check digits again.
+  keeping leading zeros and working out EAN, UPC, UPC-E, ITF-14 and ISBN check digits again.
+  GS1 data counts up its serial number (21), else its SSCC or a numbered batch; dates and GTINs
+  stay as they are.
 - The barcode check takes USB and Bluetooth barcode scanners: what a scanner types is compared
-  with the barcodes on the page, with a running count of matches. Scanners give no grade.
+  with every barcode in the project (every page, and every record when a barcode comes from
+  data), with a running count of matches, so a printed batch can be checked. Scanners give no grade.
+
+### Changed
+
+- Apply formatting to other pages (Edit menu, page menu, Page tab) is one tool in place of
+  Apply page format and Apply text formatting. It can also give one object's look to every
+  object of its kind; the button under Text Settings opens it set to do that for a text box.
+- The Help menu opens the help guide, which holds Your first label, Keyboard shortcuts and
+  Troubleshooting; their separate menu items are gone.
 
 ### Fixed
 
+- Messages saying what an action did (pages made, pages removed, the label sheet chosen for a
+  Publisher file, problems) were not shown anywhere; they show in the status bar again.
+- Saving dropped the pictures of deleted image objects from the open project, so undoing the
+  delete afterwards brought back an empty picture box.
+- After undo or redo, an object no longer on the label stayed selected and could still be changed.
+- A range of records chosen for printing also limited which pages printed; ranges now apply only
+  to the kind of printing they were chosen for.
+- Number boxes did not read digits typed on a Persian, Kurdish, Arabic or Hindi keyboard.
+- Some status messages were only partly translated.
 - Print settings changed in the Print and thermal print windows (printer, paper, margins,
   copies, scale, thermal settings) were not marked as a change, so they were not saved and
   were lost when the project was opened again.

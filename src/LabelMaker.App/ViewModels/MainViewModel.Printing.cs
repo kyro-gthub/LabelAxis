@@ -38,7 +38,8 @@ public sealed partial class MainViewModel
     /// Opens printing. Normally it starts from the page on screen; <paramref name="keepPageChoice"/>
     /// keeps a page choice already made (Print selected pages).
     /// </summary>
-    private void Print(bool keepPageChoice)
+    /// <summary>Opens the print dialog (the thermal one for a roll); true when something was sent.</summary>
+    private bool Print(bool keepPageChoice)
     {
         try
         {
@@ -65,9 +66,10 @@ public sealed partial class MainViewModel
                 {
                     StatusText = "Sent to the label printer";
                     _env.SaveSettings();
+                    return true;
                 }
 
-                return;
+                return false;
             }
 
             // The app's own print dialog, not the Windows one; it still offers the
@@ -76,12 +78,15 @@ public sealed partial class MainViewModel
             {
                 StatusText = "Sent to printer";
                 _env.SaveSettings();
+                return true;
             }
         }
         catch (Exception ex) when (Faults.IsReportable(ex))
         {
             _shell.Warn("Printing failed:\n\n" + ex.Message);
         }
+
+        return false;
     }
 
     /// <summary>
@@ -101,19 +106,23 @@ public sealed partial class MainViewModel
         _ => HelpGuide.StartTopic,
     };
 
-    /// <summary>Gives the objects on other pages the place, size and look they have on this page.</summary>
-    private void ApplyLayoutToOtherPages()
+    /// <summary>
+    /// Apply formatting to other pages: gives the objects on other pages the place, size and look
+    /// they have on this page, or (<paramref name="lookOfSelection"/>, the Properties button) the
+    /// selected object's look to every object of its kind.
+    /// </summary>
+    private void ApplyFormattingToOtherPages(bool lookOfSelection)
     {
         if (_session.Project.Pages.Count == 0)
         {
-            _shell.Info("This project has only one page. Add or duplicate a page first, then it can be given this page's format.");
+            _shell.Info("This project has only one page. Add or duplicate a page first, then other pages can be given this formatting.");
             return;
         }
 
-        if (_shell.ShowApplyLayout())
+        if (_shell.ShowApplyLayout(lookOfSelection))
         {
             RefreshCanvas();
-            StatusText = "Page format applied to other pages";
+            StatusText = "Formatting applied to other pages";
         }
     }
 
@@ -137,27 +146,6 @@ public sealed partial class MainViewModel
             RebuildObjectList();
             RefreshCanvas();
             StatusText = $"Removed {removed} object(s) from the pages.";
-        }
-    }
-
-    /// <summary>Gives the selected text box's formatting to text boxes on other pages.</summary>
-    private void ApplyTextStyleToOtherPages()
-    {
-        if (_session.Selection.OfType<TextObject>().FirstOrDefault() is not { } source)
-        {
-            return;
-        }
-
-        if (_session.Project.Pages.Count == 0)
-        {
-            _shell.Info("This project has only one page. Add or duplicate a page first, then its text boxes can take this formatting.");
-            return;
-        }
-
-        if (_shell.ShowApplyTextStyle(source))
-        {
-            RefreshCanvas();
-            StatusText = "Formatting applied to other pages";
         }
     }
 
@@ -345,7 +333,7 @@ public sealed partial class MainViewModel
             byte[] png = _imageExporter.RenderLabelToImage(
                 _session.ActiveLabel, _session.CurrentResolveContext(), template, 300, RasterFormat.Png);
             File.WriteAllBytes(path, png);
-            StatusText = $"Exported {Path.GetFileName(path)} (300 DPI)";
+            StatusText = Localization.Localizer.F("Exported {0} (300 DPI)", Path.GetFileName(path));
         }
         catch (Exception ex) when (Faults.IsReportable(ex))
         {

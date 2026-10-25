@@ -297,7 +297,7 @@ public sealed partial class SelectionProperties : ObservableObject
 
             if (hadOverrides)
             {
-                commands.Add(new SetPropertyCommand<RichTextContent>("Edit Highlight", () => t.Content, v => t.Content = v, content));
+                commands.Add(new SetPropertyCommand<RichTextContent>(StepNames.For("Highlight"), () => t.Content, v => t.Content = v, content));
             }
         }
         else
@@ -313,7 +313,7 @@ public sealed partial class SelectionProperties : ObservableObject
     {
         if (!EqualityComparer<T>.Default.Equals(get(), value))
         {
-            commands.Add(new SetPropertyCommand<T>($"Edit {name}", get, set, value));
+            commands.Add(new SetPropertyCommand<T>(StepNames.For(name), get, set, value));
         }
     }
 
@@ -333,7 +333,7 @@ public sealed partial class SelectionProperties : ObservableObject
 
         RectMm target = mutate(o.Bounds);
         var command = new SetPropertyCommand<RectMm>(
-            "Edit bounds", () => o.Bounds, v => o.Bounds = v, target, (o.Id, "bounds"));
+            "Position & Size", () => o.Bounds, v => o.Bounds = v, target, (o.Id, "bounds"));
         _session.Execute(command);
         RefreshAll();
     }
@@ -345,7 +345,7 @@ public sealed partial class SelectionProperties : ObservableObject
             return;
         }
 
-        var command = new SetPropertyCommand<T>($"Edit {name}", getter, setter, value, (o.Id, name));
+        var command = new SetPropertyCommand<T>(StepNames.For(name), getter, setter, value, (o.Id, name));
         _session.Execute(command);
         RefreshAll();
     }

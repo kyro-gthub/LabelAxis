@@ -160,4 +160,30 @@ public sealed class ProjectRoundTripTests
         json.Should().NotContain("LabelMaker.Core"); // no CLR type leakage
         json.Should().Contain("\"kind\": \"Barcode\"");
     }
+
+    [Fact]
+    public void Saving_leaves_unused_pictures_out_of_the_file_but_keeps_them_for_undo()
+    {
+        var doc = new ProjectDocument { Project = new ProjectModel() };
+        string id = doc.Assets.Add(new byte[] { 1, 2, 3, 4 }, ".png");
+        var image = new ImageObject { AssetId = id };
+        doc.Project.MasterLabel.Objects.Add(image);
+        var history = new LabelMaker.Core.Editing.CommandStack();
+        history.Execute(new LabelMaker.Core.Editing.RemoveObjectsCommand(doc.Project.MasterLabel, new[] { image }));
+
+        string path = Path.Combine(Path.GetTempPath(), "labelaxis-" + Guid.NewGuid().ToString("N") + ".labelproj");
+        try
+        {
+            ProjectFile.Save(doc, path, new ProjectSaveOptions { KeepBackup = false });
+            ProjectFile.Load(path).Assets.Contains(id).Should().BeFalse("nothing in the saved project uses it");
+        }
+        finally
+        {
+            File.Delete(path);
+        }
+
+        history.Undo();
+        doc.Project.MasterLabel.Objects.Should().Contain(image);
+        doc.Assets.Contains(id).Should().BeTrue("undoing the delete brings the picture back with its picture");
+    }
 }

@@ -117,7 +117,10 @@ public sealed class FakeShell : IShellServices
     {
     }
 
-    public bool ShowPrintDialog() => false;
+    /// <summary>What the Print window answers: true as if the job were sent, false (the default) as if cancelled.</summary>
+    public bool PrintDialogAnswer { get; set; }
+
+    public bool ShowPrintDialog() => PrintDialogAnswer;
 
     public bool ShowThermalPrint() => false;
 
@@ -141,9 +144,14 @@ public sealed class FakeShell : IShellServices
 
     public bool ShowLabelSize() => false;
 
-    public bool ShowApplyTextStyle(TextObject source) => false;
+    /// <summary>How the last Apply formatting window was opened: true when for the look of the selection.</summary>
+    public bool? ApplyLayoutLookOfSelection { get; private set; }
 
-    public bool ShowApplyLayout() => false;
+    public bool ShowApplyLayout(bool lookOfSelection = false)
+    {
+        ApplyLayoutLookOfSelection = lookOfSelection;
+        return false;
+    }
 
     public int ShowRemoveFromPages()
     {

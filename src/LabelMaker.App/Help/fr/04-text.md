@@ -42,7 +42,7 @@ Tapez de l'arabe (ou de l'hébreu) et le paragraphe s'écrit de droite à gauche
 
 ## Même mise en forme sur d'autres pages
 
-`Appliquer cette mise en forme aux autres pages…` (en bas des paramètres du texte, ou dans le menu `Édition`) donne la police, la taille, le style et la couleur de la zone sélectionnée, et si vous voulez son alignement et ses espacements, aux zones de texte d'autres pages : soit la zone du **même nom** sur chaque page, soit **toutes les zones de texte**. Voir [[pages|Pages]].
+`Appliquer cette mise en forme aux autres pages…` (en bas des Paramètres du texte) ouvre `Édition › Appliquer la mise en forme aux autres pages…` réglé pour donner l'aspect de la zone sélectionnée (police, taille, style et couleurs, et si vous voulez son alignement et ses espacements) à **toutes les zones de texte** des pages cochées. Choisissez **Son nom** sous l'appariement pour ne le donner qu'à la zone de même nom sur chaque page. Voir [[pages|Pages]].
 
 ## Texte variable avec des données
 

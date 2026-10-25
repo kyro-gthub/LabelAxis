@@ -42,7 +42,7 @@ Au lieu d'imprimer une étiquette par enregistrement, vous pouvez transformer le
 1. Placez les colonnes sur l'étiquette (`Enregistrements…` › **Ajouter le champ à l'étiquette**, ou tapez `{Product}` dans une zone de texte).
 2. Choisissez `Données` › **Créer des pages…** pour tous les enregistrements, ou ouvrez `Enregistrements…`, sélectionnez ceux que vous voulez (`Ctrl`+clic, `Shift`+clic) et cliquez sur **Créer des pages**. Si aucun n'est sélectionné, tous les enregistrements affichés par le filtre sont utilisés.
 
-Chaque nouvelle page est une copie de l'étiquette affichée, avec les valeurs de cet enregistrement écrites dans ses textes, codes-barres et cellules de tableau, et porte le nom de la première colonne de l'enregistrement. Les dates, compteurs et autres champs restent tels quels, et fonctionnent donc toujours à l'impression des pages. L'impression est ensuite réglée pour imprimer les pages, plusieurs par feuille. C'est une seule étape : `Ctrl+Z` retire toutes les nouvelles pages.
+Chaque nouvelle page est une copie de l'étiquette affichée, avec les valeurs de cet enregistrement écrites dans ses textes, codes-barres et cellules de tableau, et porte le nom de la première colonne de l'enregistrement. Les dates, compteurs et autres champs restent tels quels, et fonctionnent donc toujours à l'impression des pages. L'impression est ensuite réglée pour imprimer les pages, plusieurs par feuille. C'est une seule étape : `Ctrl+Z` retire toutes les nouvelles pages. Jusqu'à 2 000 pages sont créées à la fois.
 
 ## Avant d'imprimer
 

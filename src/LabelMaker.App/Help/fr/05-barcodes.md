@@ -45,7 +45,7 @@ Si les données ne conviennent pas au type (par exemple des lettres dans un EAN-
 
 `Données › Vérifier un code-barres imprimé…` note un code-barres imprimé de A (le meilleur) à F, comme le fait un vérificateur. Démarrez la caméra et tenez l'étiquette devant elle, ou ouvrez une photo ou un scan. Vous voyez :
 
-- ce que dit le code-barres, et s'il est identique à un code-barres de la page que vous concevez ;
+- ce que dit le code-barres, et s'il est identique à un code-barres du projet (sur n'importe quelle page, et pour chaque enregistrement quand il est rempli par des données) ;
 - chaque mesure (contraste, modulation, défauts, décodabilité, zones de silence, largeur des barres) avec sa note ;
 - quoi changer, par exemple baisser la densité de l'imprimante quand les barres s'impriment trop larges.
 
@@ -53,4 +53,4 @@ C'est une indication fiable, pas un certificat : la lumière et la mise au point
 
 ### Avec un lecteur de codes-barres
 
-Un lecteur de codes-barres USB ou Bluetooth fonctionne aussi : ouvrez la fenêtre de vérification et scannez une étiquette imprimée (la case **Lecteur de codes-barres** en haut est prête dès l'ouverture de la fenêtre). LabelAxis indique si ce qu'il a lu est identique à un code-barres de la page et tient le compte (« Scannés 12 : 11 correspondent »), pratique pour vérifier tout un lot. Un lecteur dit ce que contient un code-barres, mais pas s'il est bien imprimé : il n'y a donc pas de note de A à F ; pour une note, utilisez la caméra ou une photo.
+Un lecteur de codes-barres USB ou Bluetooth fonctionne aussi : ouvrez la fenêtre de vérification et scannez une étiquette imprimée (la case **Lecteur de codes-barres** en haut est prête dès l'ouverture de la fenêtre). LabelAxis indique si ce qu'il a lu est identique à un code-barres du projet (sur n'importe quelle page, et pour chaque enregistrement quand un code-barres est rempli par des données) et tient le compte (« Scannés 12 : 11 correspondent »), pratique pour vérifier tout un lot. Un lecteur dit ce que contient un code-barres, mais pas s'il est bien imprimé : il n'y a donc pas de note de A à F ; pour une note, utilisez la caméra ou une photo.

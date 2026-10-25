@@ -42,7 +42,7 @@ Typ Arabisch (of Hebreeuws) en de alinea loopt vanzelf van rechts naar links: le
 
 ## Dezelfde opmaak op andere pagina's
 
-`Deze opmaak op andere pagina's toepassen…` (onderaan de tekstinstellingen, of in het menu `Bewerken`) geeft het lettertype, de grootte, stijl en kleur van het geselecteerde vak, en desgewenst de uitlijning en afstand, aan tekstvakken op andere pagina's: het vak met **dezelfde naam** op elke pagina, of **elk tekstvak** daar. Zie [[pages|Pagina's]].
+`Deze opmaak op andere pagina's toepassen…` (onder aan Tekstinstellingen) opent `Bewerken › Opmaak op andere pagina's toepassen…`, ingesteld om het uiterlijk van het geselecteerde vak (lettertype, grootte, stijl en kleuren, en als u wilt de uitlijning en afstand) te geven aan **elk tekstvak** op de pagina's die u aanvinkt. Kies **De naam** bij het koppelen om het alleen aan het vak met dezelfde naam op elke pagina te geven. Zie [[pages|Pagina's]].
 
 ## Wisselende tekst met gegevens
 

@@ -105,11 +105,12 @@ public interface IShellServices
     /// <summary>Change the working label size without starting a new project. Returns true if it changed.</summary>
     bool ShowLabelSize();
 
-    /// <summary>Copies <paramref name="source"/>'s formatting to text boxes on other pages. Returns true if applied.</summary>
-    bool ShowApplyTextStyle(LabelMaker.Core.Model.Objects.TextObject source);
-
-    /// <summary>Moves objects on other pages to where they are on the page on screen. Returns true if applied.</summary>
-    bool ShowApplyLayout();
+    /// <summary>
+    /// Apply formatting to other pages: gives objects on other pages the place, size and look they
+    /// have on the page on screen, or (<paramref name="lookOfSelection"/>) the selected object's look to
+    /// every object of its kind. Returns true if applied.
+    /// </summary>
+    bool ShowApplyLayout(bool lookOfSelection = false);
 
     /// <summary>Removes the selected objects and their matches from the pages chosen. Returns how many went.</summary>
     int ShowRemoveFromPages();

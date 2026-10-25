@@ -238,8 +238,8 @@ public partial class PrintWindow
             MessageBoxButton.OK, MessageBoxImage.Warning);
 
     private static int ParseInt(string s, int fallback) =>
-        int.TryParse(s, NumberStyles.Integer, CultureInfo.InvariantCulture, out int v) ? v : fallback;
+        int.TryParse(LabelMaker.Core.Localization.NativeDigits.ToAscii(s), NumberStyles.Integer, CultureInfo.InvariantCulture, out int v) ? v : fallback;
 
     private static double ParseDouble(string s, double fallback) =>
-        double.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out double v) ? v : fallback;
+        double.TryParse(LabelMaker.Core.Localization.NativeDigits.ToAscii(s), NumberStyles.Float, CultureInfo.InvariantCulture, out double v) ? v : fallback;
 }

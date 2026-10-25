@@ -6,7 +6,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Style="{StaticResource AppWindow}"
         Background="{DynamicResource Br.Surface}" TextElement.Foreground="{DynamicResource Br.Text}"
-        Title="Apply page format to other pages" Height="820" Width="560" MinHeight="560" MinWidth="480"
+        Title="Apply formatting to other pages" Height="840" Width="560" MinHeight="560" MinWidth="480"
         WindowStartupLocation="CenterOwner">
   <DockPanel Margin="18">
     <DockPanel DockPanel.Dock="Bottom" Margin="0,14,0,0">
@@ -67,6 +67,9 @@
                          Content="Its name (pages copied from this one keep the names)" />
             <RadioButton x:Name="SameOrderBox" GroupName="match" Margin="0,3" Click="OnChanged"
                          Content="Its order: 1st text to 1st text, 2nd barcode to 2nd barcode…" />
+            <RadioButton x:Name="EveryOfKindBox" GroupName="match" Margin="0,3" Click="OnChanged"
+                         AutomationProperties.AutomationId="PageFormat.EveryOfKind"
+                         Content="Every one of the same kind: one text box's look to every text box" />
           </StackPanel>
         </Border>
 

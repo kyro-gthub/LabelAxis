@@ -71,7 +71,12 @@ public partial class PrintSettingsWindow : Window
         OutlinesBox.IsChecked = s.PrintLabelOutlines;
         CropMarksBox.IsChecked = s.PrintCropMarks;
 
-        if (s.SelectedRecords.Count > 0)
+        // A range chosen for records is not a range of pages, and the other way round.
+        if (!s.RangeAppliesTo(s.Content))
+        {
+            RecordsAll.IsChecked = true;
+        }
+        else if (s.SelectedRecords.Count > 0)
         {
             RecordsSelected.IsChecked = true;
             SelectedRecordsBox.Text = string.Join(", ", s.SelectedRecords.Select(i => i + 1));
@@ -109,6 +114,7 @@ public partial class PrintSettingsWindow : Window
         s.SelectedRecords.Clear();
         s.FirstRecord = null;
         s.LastRecord = null;
+        s.RangeIsForPages = s.Content == PrintContent.Pages;
 
         if (RecordsRange.IsChecked == true)
         {
@@ -187,10 +193,10 @@ public partial class PrintSettingsWindow : Window
     }
 
     private static int ParseInt(string s, int fallback) =>
-        int.TryParse(s, NumberStyles.Integer, CultureInfo.InvariantCulture, out int v) ? v : fallback;
+        int.TryParse(LabelMaker.Core.Localization.NativeDigits.ToAscii(s), NumberStyles.Integer, CultureInfo.InvariantCulture, out int v) ? v : fallback;
 
     private static double ParseDouble(string s, double fallback) =>
-        double.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out double v) ? v : fallback;
+        double.TryParse(LabelMaker.Core.Localization.NativeDigits.ToAscii(s), NumberStyles.Float, CultureInfo.InvariantCulture, out double v) ? v : fallback;
 
     private static List<int> ParseIntList(string s) =>
         s.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)

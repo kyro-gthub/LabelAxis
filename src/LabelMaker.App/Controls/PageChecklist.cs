@@ -18,8 +18,8 @@ public enum CurrentPageRow
 }
 
 /// <summary>
-/// The "Which pages" list of the windows that work across pages (Apply page format, Apply text
-/// style, Remove from all pages): one tick box per page, numbered as in the Pages panel, with
+/// The "Which pages" list of the windows that work across pages (Apply formatting, Remove from
+/// all pages): one tick box per page, numbered as in the Pages panel, with
 /// Tick all and Untick all underneath. Each window says what to show after each page's name.
 /// </summary>
 public sealed class PageChecklist : UserControl

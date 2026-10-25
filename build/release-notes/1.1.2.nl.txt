@@ -3,11 +3,12 @@ LabelAxis 1.1.2
 Nieuw
 • Pagina's maken uit uw records: één pagina per record van een Excel-, CSV- of database-import, gemaakt van het etiket op het scherm met de waarden van het record ingevuld. Gebruik Gegevens › Pagina's maken… voor alle records, of selecteer records in Records… en klik op Pagina's maken. Daarna kunnen de pagina's één voor één worden bewerkt en met meerdere per vel worden afgedrukt.
 • Genummerde kopieën: klik met rechts op een pagina › Genummerde kopieën… maakt kopieën waarvan de barcodes per pagina oplopen (BOX-0007, BOX-0008, …), met behoud van voorloopnullen en met opnieuw berekende EAN- en UPC-controlecijfers.
-• De barcodecontrole werkt met USB- en Bluetooth-barcodescanners: scan een afgedrukt etiket en LabelAxis zegt of het overeenkomt met een barcode op de pagina, met een lopende telling. Een scanner vertelt wat een barcode zegt, maar niet hoe goed hij is afgedrukt; de controle met camera of foto geeft nog steeds een cijfer.
+• De barcodecontrole werkt met USB- en Bluetooth-barcodescanners: scan een afgedrukt etiket en LabelAxis zegt of het overeenkomt met een barcode in het project (elke pagina, en elk record als een barcode uit gegevens komt), met een lopende telling. Een scanner vertelt wat een barcode zegt, maar niet hoe goed hij is afgedrukt; de controle met camera of foto geeft nog steeds een cijfer.
 • Selecteer meerdere pagina's met Ctrl+klik en Shift+klik in de paginalijst. Dupliceren, Verwijderen en het nieuwe Geselecteerde pagina's afdrukken… (rechtsklik) werken op allemaal tegelijk, en Ctrl+Z draait elke stap terug.
 • Pagina's toevoegen (de knop +) vraagt of u lege pagina's of kopieën van een gekozen pagina wilt toevoegen, en hoeveel. Kopieën kunnen hun barcodes laten oplopen.
 • Geschiedenis ongedaan maken: het nieuwe tabblad Geschiedenis naast Eigenschappen, Lagen en Pagina (ook Bewerken › Geschiedenis ongedaan maken) toont elke stap. Klik op een stap om er direct naar terug te gaan, of weer vooruit.
 • Gebogen lijn in het menu Lijnen: dubbelklik erop en sleep de punten om de boog te wijzigen.
+• Opmaak op andere pagina's toepassen is nu één hulpmiddel (menu Bewerken, paginamenu, tabblad Pagina): het kan ook het uiterlijk van één tekstvak aan elk tekstvak geven. Het menu Help is eenvoudiger: Uw eerste etiket, Sneltoetsen en Probleemoplossing staan in de helpgids.
 • De helpgids beschrijft dit alles, en hoe u een pc zonder internet bijwerkt, in alle tien talen.
 
 Oplossingen
@@ -15,3 +16,8 @@ Oplossingen
 • Microsoft Publisher-bestanden houden de eigen marges en tussenruimten van Publisher, zodat de etiketten worden afgedrukt waar ze vanuit Publisher werden afgedrukt.
 • Excel-bestanden met een afbeelding met een lange naam mislukken niet meer bij het importeren ("picture names cannot be more than 31 characters").
 • Een gedupliceerde of toegevoegde pagina staat meteen in de paginalijst, zonder te scrollen.
+• Berichten over wat een handeling deed, verschijnen weer in de statusbalk.
+• Na opslaan haalt het ongedaan maken van het verwijderen van een afbeelding ook de afbeelding terug.
+• Na ongedaan maken blijft een object dat niet meer op het etiket staat niet geselecteerd.
+• Records die eerder voor afdrukken zijn gekozen, beperken niet meer welke pagina's worden afgedrukt.
+• Getalvakken lezen cijfers die met een Perzisch, Koerdisch, Arabisch of Hindi toetsenbord zijn getypt.

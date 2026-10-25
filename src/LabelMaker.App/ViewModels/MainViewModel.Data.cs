@@ -92,12 +92,17 @@ public sealed partial class MainViewModel
     private void UseRecords(DataSet data, DataConnectionModel connection)
     {
         PrintSettings print = _session.Project.PrintSettings;
-        bool hadChosenRecords = print.SelectedRecords.Count > 0 || print.FirstRecord is not null || print.LastRecord is not null;
+        bool hadChosenRecords = !print.RangeIsForPages &&
+                                (print.SelectedRecords.Count > 0 || print.FirstRecord is not null || print.LastRecord is not null);
 
         // Row numbers chosen for printing pointed at the previous rows; keeping them would print the wrong labels.
-        print.SelectedRecords.Clear();
-        print.FirstRecord = null;
-        print.LastRecord = null;
+        // A range of page numbers has nothing to do with the records and stays.
+        if (!print.RangeIsForPages)
+        {
+            print.SelectedRecords.Clear();
+            print.FirstRecord = null;
+            print.LastRecord = null;
+        }
 
         _session.SetData(data, connection);
         _activeTab.RecordsEditedSinceLoad = false;
@@ -282,6 +287,7 @@ public sealed partial class MainViewModel
         PrintSettings settings = _session.Project.PrintSettings;
         settings.Content = PrintContent.VariableData;
         settings.SelectedRecords = recordIndices.Distinct().Order().ToList();
+        settings.RangeIsForPages = false;
         settings.FirstRecord = null;
         settings.LastRecord = null;
         settings.FirstSheet = null;

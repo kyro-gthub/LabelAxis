@@ -35,7 +35,7 @@ public partial class AddPagesWindow : Window
     /// <summary>What was chosen, or null when the window was cancelled.</summary>
     public AddPagesChoice? Choice { get; private set; }
 
-    private int Count => int.TryParse(CountBox.Text.Trim(), NumberStyles.Integer, CultureInfo.CurrentCulture, out int n) ? n : 0;
+    private int Count => int.TryParse(LabelMaker.Core.Localization.NativeDigits.ToAscii(CountBox.Text.Trim()), NumberStyles.Integer, CultureInfo.InvariantCulture, out int n) ? n : 0;
 
     private void OnChanged(object sender, RoutedEventArgs e) => Refresh();
 

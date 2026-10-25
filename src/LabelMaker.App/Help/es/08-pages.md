@@ -3,7 +3,7 @@ id: pages
 title: Páginas: varias etiquetas en un proyecto
 category: Pages
 order: 1
-keywords: page, pages, master label, duplicate, rename, reorder, remove, remove from all pages, delete everywhere, scroll, apply positions, apply format, page format, line up, same place, same size, apply formatting, other pages, add missing, página, etiqueta maestra, duplicar, renombrar, reordenar, quitar, quitar de todas las páginas, formato de página, add pages, blank pages, copies, select several, ctrl click, shift click, print selected pages, numbered copies, count up, pages from records, make pages, sort, reverse, añadir páginas, páginas en blanco, copias, seleccionar varias, imprimir páginas seleccionadas, copias numeradas, crear páginas, ordenar, invertir
+keywords: page, pages, master label, duplicate, rename, reorder, remove, remove from all pages, delete everywhere, scroll, apply positions, apply format, page format, line up, same place, same size, apply formatting, other pages, add missing, página, etiqueta maestra, duplicar, renombrar, reordenar, quitar, quitar de todas las páginas, formato de página, add pages, blank pages, copies, select several, ctrl click, shift click, print selected pages, numbered copies, count up, pages from records, make pages, sort, reverse, añadir páginas, páginas en blanco, copias, seleccionar varias, imprimir páginas seleccionadas, copias numeradas, crear páginas, ordenar, invertir, apply formatting, every text box, aplicar formato, todos los cuadros de texto
 ---
 # Páginas: varias etiquetas en un proyecto
 
@@ -36,9 +36,9 @@ Clic derecho en una página › **Copias numeradas…** (o `+` › Copias de una
 
 Para convertir registros importados (Excel, CSV o una base de datos) en páginas, una página por registro con sus valores escritos, consulte [[data|Datos y etiquetas variables]] › «Crear una página por registro».
 
-## Dar a otras páginas el formato de esta página
+## Aplicar formato a otras páginas
 
-`Edición › Aplicar formato de página a otras páginas…` (también con clic derecho en una página, y en la pestaña `Página`) hace que las otras páginas se parezcan a la página en pantalla. Cada cuadro de texto, código de barras, imagen, forma y tabla de ellas toma la posición, el tamaño y el aspecto de su equivalente en esta página, y **conserva sus propios textos, valor de código de barras e imagen**.
+`Edición › Aplicar formato a otras páginas…` (también con clic derecho en una página, y en la pestaña `Página`) hace que las otras páginas se parezcan a la página en pantalla. Cada cuadro de texto, código de barras, imagen, forma y tabla de ellas toma la posición, el tamaño y el aspecto de su equivalente en esta página, y **conserva sus propios textos, valor de código de barras e imagen**.
 
 - **Copiar de:** todos los objetos de esta página, o solo los seleccionados.
 - **Qué copiar:**
@@ -46,7 +46,7 @@ Para convertir registros importados (Excel, CSV o una base de datos) en páginas
   - **Aspecto y configuración:** fuente y colores, tipo de código de barras, altura de barras y dígitos bajo las barras, ajuste y borde de una imagen, contorno y relleno de una forma, líneas y texto de una tabla. Para el texto puede elegir qué partes: fuente, tamaño, negrita/cursiva/subrayado, colores, alineación, interlineado y espaciado entre letras.
   - **Añadir los objetos que le faltan a una página:** un objeto de esta página sin equivalente en otra se copia allí, con sus textos e imagen.
 - **Qué objetos:** texto, códigos de barras y QR, imágenes, formas y tablas, cada uno activado o no.
-- **Emparejar por:** su **nombre o, si no, su orden** (recomendado); solo su **nombre**; o solo su **orden** (el primer cuadro de texto con el primero, el segundo código de barras con el segundo). Un código QR solo se empareja con otro QR, y un código lineal con otro lineal.
+- **Emparejar por:** su **nombre o, si no, su orden** (recomendado); solo su **nombre**; o solo su **orden** (el primer cuadro de texto con el primero, el segundo código de barras con el segundo). Un código QR solo se empareja con otro QR, y un código lineal con otro lineal. O **todos los del mismo tipo**: el aspecto de un cuadro de texto (o de un código de barras, una forma…) pasa a todos los de su tipo en las páginas marcadas. `Aplicar este formato a otras páginas…`, al final de Configuración de texto, abre la ventana preparada así para el cuadro de texto seleccionado: solo su aspecto, para todos los cuadros de texto.
 - **Qué páginas:** márquelas; cada una dice cuántos objetos cambiarían y cuántos se añadirían.
 
 Un tipo de código de barras que no puede contener el valor de una página (EAN-13 para las letras «ABC») no se impone en esa página; el código toma el resto del aspecto.
@@ -60,10 +60,6 @@ Para quitar algo de todas las etiquetas a la vez, como un código de barras anti
 - **Qué páginas:** márquelas; cada una dice cuántos objetos se quitarían.
 
 Los objetos bloqueados nunca se quitan.
-
-## El mismo formato de texto en otras páginas
-
-`Edición › Aplicar formato de texto a otras páginas…` copia la fuente, el tamaño, el estilo y el color del cuadro de texto seleccionado a otras páginas. Consulte [[text|Texto]].
 
 Cada una de estas herramientas es un solo paso de deshacer: `Ctrl+Z` deja todas las páginas como estaban.
 

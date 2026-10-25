@@ -8,7 +8,7 @@ using Xunit;
 
 namespace LabelMaker.App.Tests.Views;
 
-/// <summary>The wording and choices shared by Apply page format and Remove from all pages.</summary>
+/// <summary>The wording and choices shared by Apply formatting and Remove from all pages.</summary>
 public sealed class AcrossPagesTests
 {
     [Fact]

@@ -51,10 +51,13 @@ public sealed partial class MainViewModel
             return 0;
         }
 
-        List<int> chosen = rows.Where(r => r >= 0 && r < data.RowCount).Distinct().Take(MaxMadePages).ToList();
-        if (chosen.Count > 1 && !_shell.Confirm(
-                Localization.Localizer.F("Make {0} pages from the label on screen, one for each record?", chosen.Count.ToString("N0", CultureInfo.CurrentCulture)),
-                "Make pages"))
+        List<int> wanted = rows.Where(r => r >= 0 && r < data.RowCount).Distinct().ToList();
+        List<int> chosen = wanted.Take(MaxMadePages).ToList();
+        string question = wanted.Count > MaxMadePages
+            ? Localization.Localizer.F("Make {0} pages from the label on screen, one for each of the first {0} records? A project with more pages than that is slow to work with, so the other {1} records are left out.",
+                chosen.Count.ToString("N0", CultureInfo.CurrentCulture), (wanted.Count - chosen.Count).ToString("N0", CultureInfo.CurrentCulture))
+            : Localization.Localizer.F("Make {0} pages from the label on screen, one for each record?", chosen.Count.ToString("N0", CultureInfo.CurrentCulture));
+        if (chosen.Count > 1 && !_shell.Confirm(question, "Make pages"))
         {
             return 0;
         }
@@ -69,7 +72,7 @@ public sealed partial class MainViewModel
             names.Add(name);
         }
 
-        _session.InsertPages(documents, names, chosen.Count == 1 ? "Make page from record" : $"Make {chosen.Count} pages from records");
+        _session.InsertPages(documents, names, chosen.Count == 1 ? "Make page from record" : $"Make {chosen.Count} pages from records", printAsPages: true);
         UsePagePrinting();
         StatusText = Localization.Localizer.F("Made {0} page(s), one for each record. Printing is set to print the pages.", chosen.Count.ToString("N0", CultureInfo.CurrentCulture));
         return chosen.Count;
@@ -85,7 +88,7 @@ public sealed partial class MainViewModel
             return;
         }
 
-        if (!int.TryParse(answer.Trim(), NumberStyles.Integer, CultureInfo.CurrentCulture, out int count) || count < 1 || count > MaxMadePages)
+        if (!int.TryParse(LabelMaker.Core.Localization.NativeDigits.ToAscii(answer.Trim()), NumberStyles.Integer, CultureInfo.InvariantCulture, out int count) || count < 1 || count > MaxMadePages)
         {
             _shell.Warn(Localization.Localizer.F("Type a number of copies from 1 to {0}.", MaxMadePages), "Numbered copies");
             return;
@@ -107,7 +110,7 @@ public sealed partial class MainViewModel
 
         // Each copy is named by its new number, which is also what tells the pages apart.
         var names = documents.Select(d => d.Objects.OfType<BarcodeObject>().Select(b => b.Spec.Data).FirstOrDefault(v => v.Length > 0) ?? d.Name).ToList();
-        _session.InsertPages(documents, names, $"Make {documents.Count} numbered copies");
+        _session.InsertPages(documents, names, $"Make {documents.Count} numbered copies", printAsPages: true);
         UsePagePrinting();
         StatusText = Localization.Localizer.F("Made {0} numbered copies, up to {1}. Printing is set to print the pages.",
             documents.Count.ToString("N0", CultureInfo.CurrentCulture), names[^1]);
@@ -238,25 +241,27 @@ public sealed partial class MainViewModel
     {
         List<PageListItem> pages = PagesActedOn();
         PrintSettings settings = _session.Project.PrintSettings;
+        (PrintContent content, PagesToPrint which, List<int> chosen, bool configured) =
+            (settings.Content, settings.PagesToPrint, settings.ChosenPages, _activeTab.HasConfiguredPrintSettings);
+
         settings.Content = PrintContent.Pages;
         settings.PagesToPrint = PagesToPrint.Chosen;
         settings.ChosenPages = pages.Select(p => Pages.IndexOf(p)).Where(i => i >= 0).ToList();
         _activeTab.HasConfiguredPrintSettings = true;
-        Print(keepPageChoice: true);
+        if (!Print(keepPageChoice: true))
+        {
+            // Cancelled: printing goes back to what it was set to (the printer and paper chosen stay).
+            settings.Content = content;
+            settings.PagesToPrint = which;
+            settings.ChosenPages = chosen;
+            _activeTab.HasConfiguredPrintSettings = configured;
+        }
     }
 
     /// <summary>How many barcodes on <paramref name="label"/> have a number that can count up.</summary>
     private static int NumberedBarcodes(LabelDocument label) =>
         label.Objects.OfType<BarcodeObject>().Count(b => PageMaker.CountUp(b.Spec.Data, b.Spec.Symbology, 1) is not null);
 
-    /// <summary>The new pages print one to a label slot, several to a sheet.</summary>
-    private void UsePagePrinting()
-    {
-        if (_session.Project.PrintSettings.Content != PrintContent.Pages)
-        {
-            _session.Project.PrintSettings.Content = PrintContent.Pages;
-        }
-
-        RaiseAllCanExecute();
-    }
+    /// <summary>The new pages print one to a label slot, several to a sheet (set in the same undo step as the pages).</summary>
+    private void UsePagePrinting() => RaiseAllCanExecute();
 }

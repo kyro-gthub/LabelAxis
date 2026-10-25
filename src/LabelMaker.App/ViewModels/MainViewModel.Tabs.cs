@@ -145,15 +145,19 @@ public sealed partial class MainViewModel
             }
 
             session.Document.HasUnsavedChanges = true;
-            StatusText = $"Corrected the Formtec {fresh.ProductCode} sheet to Word's measurements " +
-                         $"({fresh.Grid.LabelWidthMm:0.##} × {fresh.Grid.LabelHeightMm:0.##} mm, first label {fresh.Grid.MarginLeftMm:0.##} mm in, {fresh.Grid.MarginTopMm:0.##} mm down). Save to keep it.";
+            StatusText = Localization.Localizer.F("Corrected the Formtec {0} sheet to Word's measurements ({1} × {2} mm, first label {3} mm in, {4} mm down). Save to keep it.",
+                fresh.ProductCode, Mm(fresh.Grid.LabelWidthMm), Mm(fresh.Grid.LabelHeightMm), Mm(fresh.Grid.MarginLeftMm), Mm(fresh.Grid.MarginTopMm));
         }
         else
         {
-            StatusText = $"Formtec {fresh.ProductCode} labels are {fresh.Grid.LabelWidthMm:0.##} × {fresh.Grid.LabelHeightMm:0.##} mm in Word's label list " +
-                         $"(this project has {old.Grid.LabelWidthMm:0.##} × {old.Grid.LabelHeightMm:0.##}). Choose the sheet again in Label manager to update it.";
+            StatusText = Localization.Localizer.F("Formtec {0} labels are {1} × {2} mm in Word's label list (this project has {3} × {4}). Choose the sheet again in Label manager to update it.",
+                fresh.ProductCode, Mm(fresh.Grid.LabelWidthMm), Mm(fresh.Grid.LabelHeightMm), Mm(old.Grid.LabelWidthMm), Mm(old.Grid.LabelHeightMm));
         }
     }
+
+    /// <summary>A size in millimetres as the status bar shows it: up to two decimals.</summary>
+    private static string Mm(double value) => value.ToString("0.##", System.Globalization.CultureInfo.CurrentCulture);
+
     /// <summary>The tab showing the project saved at <paramref name="path"/>, if it is open.</summary>
     private DocumentTab? TabForPath(string path) =>
         Tabs.FirstOrDefault(t => t.Session.Document.FilePath is { } p &&

@@ -6,7 +6,7 @@ using Xunit;
 
 namespace LabelMaker.App.Tests.Controls;
 
-/// <summary>The "Which pages" list shared by Apply page format, Apply text style and Remove from all pages.</summary>
+/// <summary>The "Which pages" list shared by Apply formatting and Remove from all pages.</summary>
 public sealed class PageChecklistTests
 {
     private static ProjectModel ThreePages()

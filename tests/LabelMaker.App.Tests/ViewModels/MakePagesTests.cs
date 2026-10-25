@@ -140,6 +140,7 @@ public sealed class MakePagesTests
         h.ViewModel.Pages.Should().HaveCount(7, "removing several pages is one step that undo takes back");
 
         h.ViewModel.SelectedPages = new[] { h.ViewModel.Pages[0], h.ViewModel.Pages[2] };
+        h.Shell.PrintDialogAnswer = true; // sent: printing stays set to these pages
         h.ViewModel.PrintSelectedPagesCommand.Execute(null);
         h.Session.Project.PrintSettings.Content.Should().Be(PrintContent.Pages);
         h.Session.Project.PrintSettings.PagesToPrint.Should().Be(PagesToPrint.Chosen);
@@ -181,4 +182,66 @@ public sealed class MakePagesTests
     [InlineData("]C1010400638133393121ABC", "010400638133393121ABC")]
     public void What_a_scanner_types_is_cleaned_before_it_is_compared(string typed, string expected) =>
         BarcodeCheckWindow.CleanScan(typed).Should().Be(expected);
+
+    [Fact]
+    public void A_scan_is_compared_with_every_page_and_every_record_not_only_the_one_on_screen() => AppHarness.Run(h =>
+    {
+        UseRecords(h, "Cold brew coffee", "Olive oil", "Wildflower honey");
+        PutOnLabel(h, new BarcodeObject { Name = "Code", Spec = new BarcodeSpec { Data = "{Barcode}" } });
+        h.ViewModel.MakeNumberedPages(0).Should().Be(0);
+        h.Session.AddPage("Carton");
+        h.Session.ActiveLabel.Objects.Add(new BarcodeObject { Name = "Box", Spec = new BarcodeSpec { Data = "BOX-0007" } });
+
+        IReadOnlyList<(string Name, string Value)> values = h.ViewModel.PageBarcodes();
+
+        values.Select(v => v.Value).Should().Contain(new[] { "P001", "P002", "P003", "BOX-0007" },
+            "a printed batch of record labels, or another page, is checked label by label");
+        values.Should().Contain(v => v.Value == "P002" && v.Name.Contains('2'));
+    });
+
+    [Fact]
+    public void Undoing_made_pages_also_puts_printing_back_as_it_was() => AppHarness.Run(h =>
+    {
+        UseRecords(h, "Cold brew coffee", "Olive oil");
+        PutOnLabel(h, new TextObject { Name = "Name", Content = RichTextContent.FromPlainText("{Product}") });
+        h.Session.Project.PrintSettings.Content = PrintContent.VariableData;
+        h.Shell.ConfirmAnswer = true;
+
+        h.ViewModel.MakePagesFromRecords(new[] { 0, 1 });
+        h.Session.Project.PrintSettings.Content.Should().Be(PrintContent.Pages);
+
+        h.Session.Undo();
+        h.Session.Project.Pages.Should().BeEmpty();
+        h.Session.Project.PrintSettings.Content.Should().Be(PrintContent.VariableData, "the pages and the switch to printing them are one step");
+    });
+
+    [Fact]
+    public void More_records_than_can_be_made_into_pages_says_how_many_are_left_out() => AppHarness.Run(h =>
+    {
+        h.Session.SetData(
+            DataSet.FromRows(new[] { "Product" }, Enumerable.Range(1, 2003).Select(i => new[] { $"P{i}" }).ToList()),
+            new DataConnectionModel { Name = "stock.csv", Kind = DataSourceKind.Csv });
+        PutOnLabel(h, new TextObject { Content = RichTextContent.FromPlainText("{Product}") });
+        h.Shell.ConfirmAnswer = false;
+
+        h.ViewModel.MakePagesFromRecords(Enumerable.Range(0, 2003).ToList()).Should().Be(0);
+
+        h.Shell.Messages[^1].Should().Contain("first").And.Contain("3", "the 3 records over the limit are named");
+    });
+
+    [Fact]
+    public void Cancelling_print_selected_pages_leaves_printing_as_it_was() => AppHarness.Run(h =>
+    {
+        h.Session.AddPage("A");
+        h.Session.AddPage("B");
+        PrintSettings settings = h.Session.Project.PrintSettings;
+        settings.Content = PrintContent.VariableData;
+        settings.PagesToPrint = PagesToPrint.All;
+        h.ViewModel.SelectedPages = h.ViewModel.Pages.Skip(1).ToList();
+
+        h.ViewModel.PrintSelectedPagesCommand.Execute(null); // the test shell cancels the Print window
+
+        settings.Content.Should().Be(PrintContent.VariableData);
+        settings.PagesToPrint.Should().Be(PagesToPrint.All);
+    });
 }

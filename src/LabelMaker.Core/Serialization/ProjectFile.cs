@@ -15,7 +15,10 @@ public sealed class ProjectDocument
 
     public bool HasUnsavedChanges { get; set; }
 
-    public ProjectBundle ToBundle() => new()
+    public ProjectBundle ToBundle() => ToBundle(Assets.All);
+
+    /// <summary>The file's contents with just <paramref name="assets"/> (the pictures the project still uses).</summary>
+    public ProjectBundle ToBundle(IEnumerable<ProjectAsset> assets) => new()
     {
         Manifest = new ProjectManifest
         {
@@ -25,7 +28,7 @@ public sealed class ProjectDocument
             ModifiedUtc = DateTimeOffset.UtcNow,
         },
         Project = Project,
-        Assets = Assets.All.ToList(),
+        Assets = assets.ToList(),
         DataCaches = DataCaches,
         ThumbnailPng = ThumbnailPng,
     };
@@ -36,7 +39,10 @@ public sealed class ProjectSaveOptions
     /// <summary>Keep a "&lt;name&gt;.labelproj.bak" copy of the previous file.</summary>
     public bool KeepBackup { get; init; } = true;
 
-    /// <summary>Prune assets no longer referenced by any object/background before saving.</summary>
+    /// <summary>
+    /// Leave out of the file the assets no longer referenced by any object or background. They
+    /// stay in the open project, so undoing a deleted picture still finds its picture.
+    /// </summary>
     public bool CollectGarbageAssets { get; init; } = true;
 }
 
@@ -62,11 +68,6 @@ public static class ProjectFile
             path += Extension;
         }
 
-        if (options.CollectGarbageAssets)
-        {
-            document.Assets.RemoveUnreferenced(CollectReferencedAssetIds(document.Project));
-        }
-
         document.Project.SchemaVersion = ProjectModel.CurrentSchemaVersion;
         document.Project.TouchModified();
 
@@ -76,7 +77,7 @@ public static class ProjectFile
 
         using (var fs = new FileStream(tempPath, FileMode.Create, FileAccess.Write, FileShare.None))
         {
-            ProjectArchive.Write(fs, document.ToBundle());
+            ProjectArchive.Write(fs, options.CollectGarbageAssets ? document.ToBundle(UsedAssets(document)) : document.ToBundle());
             fs.Flush(flushToDisk: true);
         }
 
@@ -132,6 +133,13 @@ public static class ProjectFile
         };
         document.DataCaches.AddRange(bundle.DataCaches);
         return document;
+    }
+
+    /// <summary>The project's assets that something in it still refers to.</summary>
+    private static IEnumerable<ProjectAsset> UsedAssets(ProjectDocument document)
+    {
+        var used = new HashSet<string>(CollectReferencedAssetIds(document.Project), StringComparer.OrdinalIgnoreCase);
+        return document.Assets.All.Where(a => used.Contains(a.AssetId));
     }
 
     /// <summary>Every asset id referenced anywhere in the project (for garbage collection).</summary>

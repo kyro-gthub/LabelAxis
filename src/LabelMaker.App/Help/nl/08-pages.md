@@ -3,7 +3,7 @@ id: pages
 title: Pagina's: meerdere etiketten in één project
 category: Pages
 order: 1
-keywords: page, pages, master label, duplicate, rename, reorder, remove, remove from all pages, delete everywhere, scroll, apply positions, apply format, page format, line up, same place, same size, apply formatting, other pages, add missing, pagina, hoofdetiket, dupliceren, hernoemen, volgorde, verwijderen, van alle pagina's verwijderen, paginaopmaak, add pages, blank pages, copies, select several, ctrl click, shift click, print selected pages, numbered copies, count up, pages from records, make pages, sort, reverse, pagina's toevoegen, lege pagina's, kopieën, meerdere selecteren, geselecteerde pagina's afdrukken, genummerde kopieën, pagina's maken, sorteren, omkeren
+keywords: page, pages, master label, duplicate, rename, reorder, remove, remove from all pages, delete everywhere, scroll, apply positions, apply format, page format, line up, same place, same size, apply formatting, other pages, add missing, pagina, hoofdetiket, dupliceren, hernoemen, volgorde, verwijderen, van alle pagina's verwijderen, paginaopmaak, add pages, blank pages, copies, select several, ctrl click, shift click, print selected pages, numbered copies, count up, pages from records, make pages, sort, reverse, pagina's toevoegen, lege pagina's, kopieën, meerdere selecteren, geselecteerde pagina's afdrukken, genummerde kopieën, pagina's maken, sorteren, omkeren, apply formatting, every text box, opmaak toepassen, elk tekstvak
 ---
 # Pagina's: meerdere etiketten in één project
 
@@ -36,9 +36,9 @@ Rechtsklik op een pagina › **Genummerde kopieën…** (of `+` › Kopieën van
 
 Om geïmporteerde records (Excel, CSV of een database) in pagina's om te zetten, één pagina per record met de waarden erin, zie [[data|Gegevens en variabele etiketten]] › "Een pagina per record maken".
 
-## Andere pagina's de opmaak van deze pagina geven
+## Opmaak op andere pagina's toepassen
 
-`Bewerken › Paginaopmaak op andere pagina's toepassen…` (ook met rechtsklikken op een pagina, en op het tabblad `Pagina`) laat de andere pagina's eruitzien als de pagina op het scherm. Elk tekstvak, elke barcode, afbeelding, vorm en tabel daar krijgt de plaats, grootte en het uiterlijk van zijn tegenhanger op deze pagina, en **houdt zijn eigen tekst, barcodewaarde en afbeelding**.
+`Bewerken › Opmaak op andere pagina's toepassen…` (ook met rechtsklikken op een pagina, en op het tabblad `Pagina`) laat de andere pagina's eruitzien als de pagina op het scherm. Elk tekstvak, elke barcode, afbeelding, vorm en tabel daar krijgt de plaats, grootte en het uiterlijk van zijn tegenhanger op deze pagina, en **houdt zijn eigen tekst, barcodewaarde en afbeelding**.
 
 - **Kopiëren van:** elk object op deze pagina, of alleen de geselecteerde objecten.
 - **Wat kopiëren:**
@@ -46,7 +46,7 @@ Om geïmporteerde records (Excel, CSV of een database) in pagina's om te zetten,
   - **Uiterlijk en instellingen:** lettertype en kleuren, barcodetype, streephoogte en de cijfers onder de strepen, hoe een afbeelding past en haar rand, de omtrek en opvulling van een vorm, de lijnen en tekst van een tabel. Voor tekst kiest u welke delen: lettertype, tekstgrootte, vet/cursief/onderstrepen, kleuren, uitlijning, regel- en letterafstand.
   - **De objecten toevoegen die een pagina mist:** een object op deze pagina zonder tegenhanger op een andere pagina wordt daarheen gekopieerd, met zijn tekst en afbeelding.
 - **Welke objecten:** tekst, barcodes en QR-codes, afbeeldingen, vormen en tabellen, elk aan of uit.
-- **Koppelen op:** de **naam, anders de volgorde** (aanbevolen); alleen de **naam**; of alleen de **volgorde** (het eerste tekstvak met het eerste tekstvak, de tweede barcode met de tweede barcode). Een QR-code wordt alleen met een QR-code gekoppeld, en een streepjescode alleen met een streepjescode.
+- **Koppelen op:** de **naam, anders de volgorde** (aanbevolen); alleen de **naam**; of alleen de **volgorde** (het eerste tekstvak met het eerste tekstvak, de tweede barcode met de tweede barcode). Een QR-code wordt alleen met een QR-code gekoppeld, en een streepjescode alleen met een streepjescode. Of **elk van dezelfde soort**: het uiterlijk van één tekstvak (of barcode, vorm…) gaat naar elk van die soort op de aangevinkte pagina's. `Deze opmaak op andere pagina's toepassen…` onder aan Tekstinstellingen opent het venster zo ingesteld voor het geselecteerde tekstvak: alleen het uiterlijk, voor elk tekstvak.
 - **Welke pagina's:** vink ze aan; bij elke staat hoeveel objecten zouden veranderen en hoeveel er zouden worden toegevoegd.
 
 Een barcodetype dat de waarde van een pagina niet kan bevatten (EAN-13 voor de letters "ABC"), wordt die pagina niet opgedrongen; de barcode krijgt de rest van het uiterlijk.
@@ -60,10 +60,6 @@ Om iets in één keer van alle etiketten te halen, zoals een oude barcode, een l
 - **Welke pagina's:** vink ze aan; bij elke staat hoeveel objecten zouden verdwijnen.
 
 Vergrendelde objecten worden nooit verwijderd.
-
-## Dezelfde tekstopmaak op andere pagina's
-
-`Bewerken › Tekstopmaak op andere pagina's toepassen…` kopieert het lettertype, de grootte, stijl en kleur van het geselecteerde tekstvak naar andere pagina's. Zie [[text|Tekst]].
 
 Elk van deze hulpmiddelen is één stap om ongedaan te maken: `Ctrl+Z` zet elke pagina terug.
 

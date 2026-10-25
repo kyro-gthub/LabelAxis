@@ -387,25 +387,14 @@ public sealed class DialogService : IShellServices
         return win.ShowDialog() == true ? win.Result : null;
     }
 
-    public bool ShowApplyTextStyle(LabelMaker.Core.Model.Objects.TextObject source)
+    public bool ShowApplyLayout(bool lookOfSelection = false)
     {
         if (_vm is null)
         {
             return false;
         }
 
-        var win = new ApplyTextStyleWindow(_vm.Session, source) { Owner = Front };
-        return win.ShowDialog() == true;
-    }
-
-    public bool ShowApplyLayout()
-    {
-        if (_vm is null)
-        {
-            return false;
-        }
-
-        return new ApplyLayoutWindow(_vm.Session) { Owner = Front }.ShowDialog() == true;
+        return new ApplyLayoutWindow(_vm.Session, lookOfSelection) { Owner = Front }.ShowDialog() == true;
     }
 
     public int ShowRemoveFromPages()

@@ -147,7 +147,7 @@ public sealed partial class MainViewModel : ObservableObject
         }
         catch (Exception ex) when (Faults.IsReportable(ex))
         {
-            StatusText = "Saved records could not be restored: " + ex.Message;
+            StatusText = Localization.Localizer.T("Saved records could not be restored:") + " " + ex.Message;
         }
     }
 
@@ -166,7 +166,16 @@ public sealed partial class MainViewModel : ObservableObject
 
     // ---------- bindable state ----------
 
-    public string StatusText { get => _statusText; set => SetField(ref _statusText, value); }
+    /// <summary>What the last action did; the status bar shows it for a few seconds, also when it is the same as before.</summary>
+    public string StatusText
+    {
+        get => _statusText;
+        set
+        {
+            _statusText = value ?? string.Empty;
+            OnPropertyChanged();
+        }
+    }
 
     public string Title => (_session.Document.HasUnsavedChanges ? "• " : string.Empty) +
         (_session.Document.FilePath is { } p ? Path.GetFileName(p) : _session.Project.Metadata.Title) +

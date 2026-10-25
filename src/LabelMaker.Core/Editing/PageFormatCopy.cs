@@ -99,9 +99,9 @@ public static class PageFormatCopy
 
         string label = (changed, added) switch
         {
-            (_, 0) => changed == 1 ? "Apply page format to 1 object" : $"Apply page format to {changed} objects",
+            (_, 0) => changed == 1 ? "Apply formatting to 1 object" : $"Apply formatting to {changed} objects",
             (0, _) => added == 1 ? "Add 1 object to other pages" : $"Add {added} objects to other pages",
-            _ => $"Apply page format to {changed + added} objects",
+            _ => $"Apply formatting to {changed + added} objects",
         };
         return new CompositeCommand(label, commands);
     }
@@ -249,7 +249,7 @@ public static class PageFormatCopy
             _after = after;
         }
 
-        public string Label => "Apply page format";
+        public string Label => "Apply formatting";
 
         public void Do() => Swap(_before, _after);
 

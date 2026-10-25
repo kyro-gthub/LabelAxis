@@ -45,7 +45,7 @@ If the data does not suit the type (for example letters in an EAN-13), the barco
 
 `Data > Check a printed barcode…` grades a printed barcode from A (best) to F, the way a barcode verifier does. Start the camera and hold the label in front of it, or open a photo or a scan. You see:
 
-- what the barcode says, and whether it is the same as a barcode on the page you are designing;
+- what the barcode says, and whether it is the same as a barcode in the project (on any page, and for every record when it is filled in from data);
 - each measurement (contrast, modulation, defects, decodability, quiet zones, bar width) with its grade;
 - what to change, for example lower the printer's darkness when the bars print too wide.
 
@@ -53,4 +53,4 @@ It is a close guide, not a certificate: light and focus change the result, so ch
 
 ### With a barcode scanner
 
-A USB or Bluetooth barcode scanner works too: open the check window and scan a printed label (the **Barcode scanner** box at the top is ready as soon as the window opens). LabelAxis says whether what it read is the same as a barcode on the page, and keeps count ("Scanned 12: 11 match"), which is handy for checking a whole batch. A scanner tells what a barcode says but not how well it is printed, so there is no A to F grade; for a grade, use the camera or a photo.
+A USB or Bluetooth barcode scanner works too: open the check window and scan a printed label (the **Barcode scanner** box at the top is ready as soon as the window opens). LabelAxis says whether what it read is the same as a barcode in the project (on any page, and for every record when a barcode is filled in from data), and keeps count ("Scanned 12: 11 match"), which is handy for checking a whole batch. A scanner tells what a barcode says but not how well it is printed, so there is no A to F grade; for a grade, use the camera or a photo.

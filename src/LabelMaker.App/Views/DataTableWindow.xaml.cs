@@ -144,7 +144,7 @@ public partial class DataTableWindow : Window
             : $"{total:N0} record(s) · {_data!.Columns.Count} field(s)" +
               (_filter.Length > 0 ? $" · {shown:N0} match the filter" : string.Empty) +
               (selected > 1 ? $" · {selected:N0} selected" : string.Empty) +
-              (_vm.Session.Project.PrintSettings.SelectedRecords.Count > 0
+              (!_vm.Session.Project.PrintSettings.RangeIsForPages && _vm.Session.Project.PrintSettings.SelectedRecords.Count > 0
                   ? $" · printing {_vm.Session.Project.PrintSettings.SelectedRecords.Count:N0} chosen"
                   : string.Empty);
 

@@ -29,6 +29,9 @@ public partial class BarcodeCheckWindow : Window
     private const int MaxPictureWidth = 2400;
 
     private readonly Func<IReadOnlyList<(string Name, string Value)>> _labelBarcodes;
+    private IReadOnlyList<(string Name, string Value)>? _barcodes;
+
+    private IReadOnlyList<(string Name, string Value)> Barcodes => _barcodes ??= _labelBarcodes();
     private CancellationTokenSource? _cameraStop;
     private Task? _cameraLoop;
     private WriteableBitmap? _preview;
@@ -37,7 +40,10 @@ public partial class BarcodeCheckWindow : Window
     private DateTime _lastFound = DateTime.MinValue;
     private BarcodeQualityReport? _shown;
 
-    /// <param name="labelBarcodes">The barcodes on the page being designed (name and value), to compare with.</param>
+    /// <param name="labelBarcodes">
+    /// The barcodes of the project (name and value) to compare with: read once, when first needed,
+    /// as the project cannot change while this window is open.
+    /// </param>
     public BarcodeCheckWindow(Func<IReadOnlyList<(string Name, string Value)>> labelBarcodes)
     {
         InitializeComponent();
@@ -94,7 +100,7 @@ public partial class BarcodeCheckWindow : Window
     }
 
     /// <summary>
-    /// A scanned barcode: what it says and whether it is one on this page. Scanners tell what a
+    /// A scanned barcode: what it says and whether it is one in this project. Scanners tell what a
     /// barcode says but not how well it is printed, so there is no grade; a running count shows
     /// how many of the labels scanned so far matched.
     /// </summary>
@@ -107,21 +113,21 @@ public partial class BarcodeCheckWindow : Window
         ParameterList.ItemsSource = null;
 
         bool onPage = ShowMatch(read);
-        IReadOnlyList<(string Name, string Value)> barcodes = _labelBarcodes();
+        IReadOnlyList<(string Name, string Value)> barcodes = Barcodes;
         _scans++;
         _scansMatching += onPage ? 1 : 0;
 
         GradeBadge.SetResourceReference(Border.BackgroundProperty, onPage ? "Br.Ok" : barcodes.Count == 0 ? "Br.Surface2" : "Br.Danger");
         GradeLetter.Text = onPage ? "✓" : barcodes.Count == 0 ? "?" : "✗";
-        GradeText.Text = Localizer.T(onPage ? "The scanner reads the barcode on this page"
+        GradeText.Text = Localizer.T(onPage ? "The scanner reads a barcode in this project"
             : barcodes.Count == 0 ? "Read by the barcode scanner" : "The scanner reads a different barcode");
         KindText.Text = Localizer.T("Read by a barcode scanner, which tells what a barcode says but not how well it is printed. For a grade, use the camera or a photo.");
         ValueText.Text = read.Replace(Gs1.GroupSeparator, '·');
         ShowAdvice(new[]
         {
             onPage ? "This printed barcode scans and says what the label says."
-            : barcodes.Count == 0 ? "This page has no barcode to compare it with."
-            : "The scanner read something other than the barcodes on this page. Check the barcode's data on the label, or that the right label was printed.",
+            : barcodes.Count == 0 ? "This project has no barcode to compare it with."
+            : "The scanner read something other than the barcodes in this project. Check the barcode's data on the label, or that the right label was printed.",
         });
         ScanTally.Text = Localizer.F("Scanned {0}: {1} match", _scans, _scansMatching);
     }
@@ -370,21 +376,21 @@ public partial class BarcodeCheckWindow : Window
         }
     }
 
-    /// <summary>Says whether <paramref name="text"/> (read from the picture or a scanner) is a barcode on this page; true when it is.</summary>
+    /// <summary>Says whether <paramref name="text"/> (read from the picture or a scanner) is a barcode in this project; true when it is.</summary>
     private bool ShowMatch(string text)
     {
         string scanned = Plain(text);
-        IReadOnlyList<(string Name, string Value)> barcodes = _labelBarcodes();
+        IReadOnlyList<(string Name, string Value)> barcodes = Barcodes;
         (string Name, string Value)? match = barcodes.Cast<(string Name, string Value)?>()
             .FirstOrDefault(b => Same(Plain(b!.Value.Value), scanned));
         if (match is { } m)
         {
-            MatchText.Text = "✓  " + Localizer.F("The same as “{0}” on this page.", string.IsNullOrWhiteSpace(m.Name) ? Localizer.T("the barcode") : m.Name);
+            MatchText.Text = "✓  " + Localizer.F("The same as “{0}” in this project.", string.IsNullOrWhiteSpace(m.Name) ? Localizer.T("the barcode") : m.Name);
             MatchText.SetResourceReference(TextBlock.ForegroundProperty, "Br.Ok");
             return true;
         }
 
-        MatchText.Text = barcodes.Count == 0 ? string.Empty : Localizer.T("Not the same as any barcode on this page.");
+        MatchText.Text = barcodes.Count == 0 ? string.Empty : Localizer.T("Not the same as any barcode in this project.");
         MatchText.SetResourceReference(TextBlock.ForegroundProperty, "Br.TextMuted");
         return false;
     }

@@ -38,6 +38,58 @@ public sealed class HistoryAndCurveTests
     });
 
     [Fact]
+    public void A_removed_object_does_not_stay_selected_after_undo_or_a_jump_in_the_history() => AppHarness.Run(h =>
+    {
+        h.ViewModel.AddShapeCommand.Execute("ellipse");
+        LabelObject added = h.Session.ActiveLabel.Objects[^1];
+        h.Session.Selection.Should().Contain(added);
+
+        h.Session.Undo();
+        h.Session.Selection.Should().NotContain(added);
+
+        h.Session.Redo();
+        h.Session.SetSelection(new[] { added });
+        h.ViewModel.GoToHistoryStep(h.ViewModel.HistorySteps[0]);
+        h.Session.Selection.Should().BeEmpty();
+    });
+
+    [Fact]
+    public void A_change_in_properties_is_named_in_the_history_by_the_panels_words()
+    {
+        StepNames.For("FillHex").Should().Be("Fill");
+        StepNames.For("ArrowHeadSizeMm").Should().Be("Arrow head size");
+        StepNames.For("Reset crop").Should().Be("Reset crop", "words already given are the name");
+        StepNames.For("SomeNewSettingMm").Should().Be("Some new setting", "a setting with no name here is spelled out");
+    }
+
+    [Fact]
+    public void Every_step_name_has_a_translation_in_every_language()
+    {
+        foreach (LabelMaker.App.Localization.AppLanguage language in LabelMaker.App.Localization.Localizer.Languages.Where(l => l.Code != "en"))
+        {
+            Core.Localization.Translator translator = LabelMaker.App.Localization.Localizer.Load(language);
+            foreach (string name in StepNames.All.Append("GS1 barcode").Append("Use label sheet").Append("Apply formatting to {0} objects"))
+            {
+                translator.Knows(name).Should().BeTrue($"{language.EnglishName} needs: {name}");
+            }
+        }
+    }
+
+    [Fact]
+    public void The_properties_button_opens_apply_formatting_set_to_the_selections_look() => AppHarness.Run(h =>
+    {
+        h.Session.AddPage("Second");
+        h.Session.SelectPage(null);
+        h.Session.SetSelection(h.Session.ActiveLabel.Objects.Take(1));
+
+        h.ViewModel.ApplySelectionFormatCommand.Execute(null);
+        h.Shell.ApplyLayoutLookOfSelection.Should().BeTrue();
+
+        h.ViewModel.ApplyLayoutCommand.Execute(null);
+        h.Shell.ApplyLayoutLookOfSelection.Should().BeFalse();
+    });
+
+    [Fact]
     public void Undo_history_in_the_edit_menu_opens_the_history_tab() => AppHarness.Run(h =>
     {
         h.ViewModel.ShowHistoryCommand.Execute(null);

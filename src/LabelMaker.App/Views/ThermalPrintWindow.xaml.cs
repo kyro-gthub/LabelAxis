@@ -230,7 +230,7 @@ public partial class ThermalPrintWindow : Window
 
         ContentText.Text = Print.Content switch
         {
-            PrintContent.VariableData when Print.SelectedRecords.Count > 0 => $"One label for each of {Print.SelectedRecords.Count:N0} chosen records.",
+            PrintContent.VariableData when !Print.RangeIsForPages && Print.SelectedRecords.Count > 0 => $"One label for each of {Print.SelectedRecords.Count:N0} chosen records.",
             PrintContent.VariableData => $"One label per record — {_session.RecordCount:N0} record(s).",
             PrintContent.Pages => "The project's standalone pages.",
             _ => "The master label.",
@@ -555,5 +555,5 @@ public partial class ThermalPrintWindow : Window
         int.TryParse(s.Trim(), NumberStyles.Integer, CultureInfo.InvariantCulture, out int v) && v > 0 ? v : null;
 
     private static double ParseDouble(string s, double fallback) =>
-        double.TryParse(s.Replace(',', '.'), NumberStyles.Float, CultureInfo.InvariantCulture, out double v) ? v : fallback;
+        double.TryParse(LabelMaker.Core.Localization.NativeDigits.ToAscii(s)!.Replace(',', '.'), NumberStyles.Float, CultureInfo.InvariantCulture, out double v) ? v : fallback;
 }

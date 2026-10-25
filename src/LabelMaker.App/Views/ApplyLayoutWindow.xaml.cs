@@ -11,7 +11,9 @@ namespace LabelMaker.App.Views;
 /// <summary>
 /// Gives the text, barcodes, images and so on of other pages the place, size and look they
 /// have on the page on screen — each page keeping its own words, barcode values and pictures —
-/// and can add what a page is missing, all in one undo step.
+/// and can add what a page is missing, all in one undo step. Matching "every one of the same
+/// kind" gives one object's look to every object of its kind instead: one text box's font,
+/// size and colours to every text box ("Apply formatting to other pages").
 /// </summary>
 public partial class ApplyLayoutWindow : Window
 {
@@ -19,7 +21,11 @@ public partial class ApplyLayoutWindow : Window
     private readonly LabelDocument _sourcePage;
     private readonly List<LabelObject> _selected;
 
-    public ApplyLayoutWindow(DocumentSession session)
+    /// <param name="lookOfSelection">
+    /// Set up to give the look of the selected object (a text box's font, size, colours…) to every
+    /// object of its kind on the other pages, as the Properties panel's button asks.
+    /// </param>
+    public ApplyLayoutWindow(DocumentSession session, bool lookOfSelection = false)
     {
         _session = session;
         _sourcePage = session.ActiveLabel;
@@ -30,6 +36,13 @@ public partial class ApplyLayoutWindow : Window
         SelectedObjectsBox.IsEnabled = _selected.Count > 0;
         AllObjectsBox.Content = Localizer.F("Every object on this page ({0})", _sourcePage.Objects.Count);
         AllObjectsBox.IsChecked = true;
+        if (lookOfSelection && _selected.Count > 0)
+        {
+            SelectedObjectsBox.IsChecked = true;
+            PositionBox.IsChecked = SizeBox.IsChecked = RotationBox.IsChecked = AddMissingBox.IsChecked = false;
+            LookBox.IsChecked = true;
+            EveryOfKindBox.IsChecked = true;
+        }
 
         Pages.Fill(session.Project, session.ActivePagePosition, CurrentPageRow.Fixed,
             caption => Localizer.F("{0}  (this page — the one copied from)", caption));
@@ -87,7 +100,7 @@ public partial class ApplyLayoutWindow : Window
         }
     }
 
-    private LayoutMatch Match => AcrossPages.Match(SameOrderBox, SameNameBox);
+    private LayoutMatch Match => EveryOfKindBox.IsChecked == true ? LayoutMatch.EveryOfKind : AcrossPages.Match(SameOrderBox, SameNameBox);
 
     private IReadOnlyList<(LabelObject Source, LabelObject Target)> Pairs(IEnumerable<int> positions) =>
         LayoutCopy.Pairs(_session.Project, _sourcePage, Sources, positions, Kinds, Match);

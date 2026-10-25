@@ -3,11 +3,12 @@ LabelAxis 1.1.2
 Novedades
 • Crear páginas a partir de sus registros: una página por cada registro de una importación de Excel, CSV o base de datos, creada a partir de la etiqueta en pantalla con los valores del registro escritos. Use Datos › Crear páginas… para todos los registros, o seleccione registros en Registros… y pulse Crear páginas. Después las páginas se pueden editar una a una e imprimir varias por hoja.
 • Copias numeradas: clic derecho en una página › Copias numeradas… crea copias cuyos códigos de barras aumentan página a página (BOX-0007, BOX-0008, …), manteniendo los ceros iniciales y recalculando los dígitos de control EAN y UPC.
-• La comprobación de códigos de barras funciona con lectores de códigos de barras USB y Bluetooth: escanee una etiqueta impresa y LabelAxis indica si coincide con un código de barras de la página, con un recuento continuo. Un lector dice qué dice un código de barras pero no lo bien que está impreso; la comprobación con cámara o foto sigue dando una calificación.
+• La comprobación de códigos de barras funciona con lectores de códigos de barras USB y Bluetooth: escanee una etiqueta impresa y LabelAxis indica si coincide con un código de barras del proyecto (cualquier página, y cada registro cuando un código de barras viene de los datos), con un recuento continuo. Un lector dice qué dice un código de barras pero no lo bien que está impreso; la comprobación con cámara o foto sigue dando una calificación.
 • Seleccione varias páginas con Ctrl+clic y Mayús+clic en la lista de páginas. Duplicar, Quitar y el nuevo Imprimir páginas seleccionadas… (clic derecho) actúan sobre todas a la vez, y Ctrl+Z deshace cada paso.
 • Añadir páginas (el botón +) pregunta si añadir páginas en blanco o copias de una página elegida, y cuántas. Las copias pueden numerar sus códigos de barras.
 • Historial de deshacer: la nueva pestaña Historial, junto a Propiedades, Capas y Página (también Edición › Historial de deshacer), muestra cada paso. Haga clic en uno para volver directamente a él, o para avanzar de nuevo.
 • Curva en el menú Líneas: una línea curva. Haga doble clic en ella y arrastre sus puntos para cambiar la curva.
+• Aplicar formato a otras páginas es ahora una sola herramienta (menú Edición, menú de la página, pestaña Página): también puede dar el aspecto de un cuadro de texto a todos los cuadros de texto. El menú Ayuda es más sencillo: Su primera etiqueta, Atajos de teclado y Solución de problemas están en la guía de ayuda.
 • La guía de ayuda explica todo lo anterior, y cómo actualizar un PC sin internet, en los diez idiomas.
 
 Correcciones
@@ -15,3 +16,8 @@ Correcciones
 • Los archivos de Microsoft Publisher conservan los márgenes y separaciones del propio Publisher, así que las etiquetas se imprimen donde se imprimían desde Publisher.
 • Los archivos de Excel que contienen una imagen con un nombre largo ya no fallan al importarse ("picture names cannot be more than 31 characters").
 • Una página duplicada o añadida aparece en la lista de páginas de inmediato, sin desplazarse.
+• Los mensajes que dicen lo que hizo una acción vuelven a mostrarse en la barra de estado.
+• Después de guardar, deshacer la eliminación de una imagen también recupera la imagen.
+• Después de deshacer, un objeto que ya no está en la etiqueta deja de estar seleccionado.
+• Los registros elegidos antes para imprimir ya no limitan qué páginas se imprimen.
+• Los cuadros numéricos leen los dígitos escritos con un teclado persa, kurdo, árabe o hindi.

@@ -100,6 +100,6 @@ public sealed class PrintLayoutTests
         PrintablePages.For(p, new PrintSettings { CopiesPerPage = 2 })
             .Should().Equal(p.MasterLabel, p.MasterLabel, a.Document, a.Document, b.Document, b.Document);
 
-        PrintablePages.For(p, new PrintSettings { SelectedRecords = { 1 } }).Should().Equal(b.Document);
+        PrintablePages.For(p, new PrintSettings { SelectedRecords = { 1 }, RangeIsForPages = true }).Should().Equal(b.Document);
     }
 }

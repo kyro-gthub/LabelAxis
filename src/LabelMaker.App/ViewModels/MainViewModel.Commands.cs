@@ -117,7 +117,7 @@ public sealed partial class MainViewModel
     public RelayCommand CropImageCommand { get; private set; } = null!;
     public RelayCommand ClearCropCommand { get; private set; } = null!;
     public RelayCommand PickColorCommand { get; private set; } = null!;
-    public RelayCommand ApplyTextStyleCommand { get; private set; } = null!;
+    public RelayCommand ApplySelectionFormatCommand { get; private set; } = null!;
 
     public RelayCommand AddFontCommand { get; private set; } = null!;
     public RelayCommand DrawCustomShapeCommand { get; private set; } = null!;
@@ -308,7 +308,7 @@ public sealed partial class MainViewModel
 
         // Parameter is "fill" or "stroke": which of the shape's two colours to edit.
         DrawCustomShapeCommand = new RelayCommand(() => _canvas?.BeginCustomShape());
-        ApplyLayoutCommand = new RelayCommand(ApplyLayoutToOtherPages, () => _session.ActiveLabel.Objects.Count > 0);
+        ApplyLayoutCommand = new RelayCommand(() => ApplyFormattingToOtherPages(lookOfSelection: false), () => _session.ActiveLabel.Objects.Count > 0);
         RemoveFromAllPagesCommand = new RelayCommand(RemoveFromAllPages, () => _session.Selection.Count > 0);
         HelpCommand = new RelayCommand(p => HelpGuide.Show(System.Windows.Application.Current?.MainWindow,
             p as string is { Length: > 0 } topic ? topic : HelpTopicForSelection()));
@@ -316,8 +316,8 @@ public sealed partial class MainViewModel
             () => { if (_session.Selection is [ShapeObject { Shape: ShapeKind.Custom } s]) { _canvas?.BeginPointEdit(s); } },
             () => _session.Selection is [ShapeObject { Shape: ShapeKind.Custom, Locked: false }]);
         AddFontCommand = new RelayCommand(() => AddFontFromFile());
-        ApplyTextStyleCommand = new RelayCommand(ApplyTextStyleToOtherPages,
-            () => _session.Selection.OfType<TextObject>().Any());
+        ApplySelectionFormatCommand = new RelayCommand(() => ApplyFormattingToOtherPages(lookOfSelection: true),
+            () => _session.Selection.Count > 0);
         PickColorCommand = new RelayCommand(p =>
         {
             string target = p as string ?? "fill";

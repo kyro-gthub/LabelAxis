@@ -205,14 +205,64 @@ public sealed partial class MainViewModel
         RebuildObjectList();
     }
 
-    /// <summary>The barcodes on the page on screen, with their values for the record shown, to compare a scan with.</summary>
-    private IReadOnlyList<(string Name, string Value)> PageBarcodes()
+    /// <summary>More values than this to compare a scan with would make opening the check slow.</summary>
+    private const int MaxCheckedBarcodes = 50_000;
+
+    /// <summary>
+    /// The barcodes a scan is compared with: every barcode on every page (the page on screen
+    /// first), and for one filled from data its value for every record, so a whole printed batch
+    /// of numbered copies or record labels can be checked label by label.
+    /// </summary>
+    internal IReadOnlyList<(string Name, string Value)> PageBarcodes()
     {
-        var resolver = new Core.Variables.VariableResolver(_session.CurrentResolveContext());
-        return _session.ActiveLabel.Objects.OfType<BarcodeObject>()
-            .Select(b => (b.Name ?? string.Empty, resolver.Resolve(b.Spec.Data)))
-            .ToList();
+        var found = new List<(string Name, string Value)>();
+        var seen = new HashSet<string>(StringComparer.Ordinal);
+        LabelDocument onScreen = _session.ActiveLabel;
+        int records = _session.Data?.RowCount ?? 0;
+        var current = new Core.Variables.VariableResolver(_session.CurrentResolveContext());
+        bool severalPages = _session.Project.Pages.Count > 0;
+
+        IEnumerable<LabelDocument> pages = new[] { onScreen }
+            .Concat(Core.Printing.PrintablePages.All(_session.Project).Where(p => !ReferenceEquals(p, onScreen)));
+        foreach (LabelDocument page in pages)
+        {
+            foreach (BarcodeObject barcode in page.Objects.OfType<BarcodeObject>())
+            {
+                string name = string.IsNullOrWhiteSpace(barcode.Name) ? Localization.Localizer.T("the barcode") : barcode.Name.Trim();
+                if (severalPages)
+                {
+                    name = $"{PageName(page)} › {name}";
+                }
+
+                if (records == 0 || !Core.Barcodes.Gs1.Gs1.IsFromData(barcode.Spec.Data))
+                {
+                    Add(name, current.Resolve(barcode.Spec.Data));
+                    continue;
+                }
+
+                for (int r = 0; r < records && found.Count < MaxCheckedBarcodes; r++)
+                {
+                    var resolver = new Core.Variables.VariableResolver(_session.ResolveContextFor(r));
+                    Add(Localization.Localizer.F("{0} · record {1}", name, r + 1), resolver.Resolve(barcode.Spec.Data));
+                }
+            }
+        }
+
+        return found;
+
+        void Add(string name, string value)
+        {
+            if (found.Count < MaxCheckedBarcodes && value.Length > 0 && seen.Add(value))
+            {
+                found.Add((name, value));
+            }
+        }
     }
+
+    private string PageName(LabelDocument page) =>
+        ReferenceEquals(page, _session.Project.MasterLabel)
+            ? MasterPageName
+            : _session.Project.Pages.FirstOrDefault(p => ReferenceEquals(p.Document, page))?.Name ?? page.Name;
 
     /// <summary>
     /// Makes a barcode that keeps its natural size small enough for the label (narrower bars, a

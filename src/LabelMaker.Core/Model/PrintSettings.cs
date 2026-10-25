@@ -60,6 +60,16 @@ public sealed class PrintSettings
     public List<int> SelectedRecords { get; set; } = new();
 
     /// <summary>
+    /// True when <see cref="FirstRecord"/>, <see cref="LastRecord"/> and <see cref="SelectedRecords"/>
+    /// were chosen for printing pages (page numbers), false when for records. A range chosen for one
+    /// is left alone by the other: records 1 to 2 printed earlier do not limit pages made later.
+    /// </summary>
+    public bool RangeIsForPages { get; set; }
+
+    /// <summary>Whether the record or page range applies when printing <paramref name="content"/>.</summary>
+    public bool RangeAppliesTo(PrintContent content) => content == PrintContent.Pages ? RangeIsForPages : !RangeIsForPages;
+
+    /// <summary>
     /// When printing pages: all of them, just the page that was on screen, or pages ticked
     /// in the Print dialog. For this job only, like the sheet range.
     /// </summary>
@@ -139,6 +149,7 @@ public sealed class PrintSettings
         FirstRecord = other.FirstRecord;
         LastRecord = other.LastRecord;
         SelectedRecords = new List<int>(other.SelectedRecords);
+        RangeIsForPages = other.RangeIsForPages;
         PagesToPrint = other.PagesToPrint;
         CurrentPage = other.CurrentPage;
         ChosenPages = new List<int>(other.ChosenPages);
@@ -165,6 +176,7 @@ public sealed class PrintSettings
         FirstRecord = FirstRecord,
         LastRecord = LastRecord,
         SelectedRecords = new List<int>(SelectedRecords),
+        RangeIsForPages = RangeIsForPages,
         PagesToPrint = PagesToPrint,
         CurrentPage = CurrentPage,
         ChosenPages = new List<int>(ChosenPages),

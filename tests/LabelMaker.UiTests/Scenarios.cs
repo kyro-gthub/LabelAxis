@@ -81,7 +81,7 @@ internal static class Scenarios
         AppDriver.WaitUntil(() => AppDriver.Rows(pages) == before, AppDriver.Wait, "Undo to remove the page");
     }
 
-    [Scenario("Pages are numbered from 1, and Apply page format adds this page's objects to the other pages")]
+    [Scenario("Pages are numbered from 1, and Apply formatting adds this page's objects to the other pages")]
     public static void PageFormat(string exe)
     {
         using AppDriver app = AppDriver.Start(exe);
@@ -99,7 +99,7 @@ internal static class Scenarios
         AppDriver.WaitUntil(() => AppDriver.Rows(objects) == 1, AppDriver.Wait, "the table on the new page");
 
         app.Menu("Menu.Edit", "Menu.PageFormat");
-        AutomationElement window = WindowWith(app, "PageFormat.Apply", "the Apply page format window");
+        AutomationElement window = WindowWith(app, "PageFormat.Apply", "the Apply formatting window");
         AppDriver.Click(app.Find("PageFormat.AddMissing", window));
         AppDriver.Click(app.Find("PageFormat.Apply", window));
         AppDriver.WaitUntil(() => !app.Windows().Any(w => AppDriver.FindIn(w, "PageFormat.Apply") is not null), AppDriver.Wait, "the window to close");

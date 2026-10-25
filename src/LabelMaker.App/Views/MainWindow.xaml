@@ -130,9 +130,8 @@
               <Separator />
               <MenuItem Header="_Find…" InputGestureText="Ctrl+F" Command="{Binding FindCommand}" />
               <MenuItem AutomationProperties.AutomationId="Menu.FindReplace" Header="Find and _replace…" InputGestureText="Ctrl+H" Command="{Binding FindReplaceCommand}" />
-              <MenuItem Header="Apply text _formatting to other pages…" Command="{Binding ApplyTextStyleCommand}" />
-              <MenuItem AutomationProperties.AutomationId="Menu.PageFormat" Header="Apply page f_ormat to other pages…" Command="{Binding ApplyLayoutCommand}"
-                        ToolTip="Give the objects on other pages the place, size and look they have on this page" />
+              <MenuItem AutomationProperties.AutomationId="Menu.PageFormat" Header="Apply f_ormatting to other pages…" Command="{Binding ApplyLayoutCommand}"
+                        ToolTip="Give the objects on other pages the place, size and look they have on this page, or one text box's look to every text box" />
               <MenuItem AutomationProperties.AutomationId="Menu.RemoveFromPages" Header="Remove from all _pages…" Command="{Binding RemoveFromAllPagesCommand}"
                         ToolTip="Take the selected objects, such as a barcode or a named text box, off this page and the other pages" />
               <Separator />
@@ -209,9 +208,6 @@
 
             <MenuItem AutomationProperties.AutomationId="Menu.Help" Header="_Help">
               <MenuItem AutomationProperties.AutomationId="Menu.HelpGuide" Header="_Help guide" InputGestureText="F1" Command="{Binding HelpCommand}" CommandParameter="" />
-              <MenuItem Header="_Your first label" Command="{Binding HelpCommand}" CommandParameter="getting-started" />
-              <MenuItem Header="_Keyboard shortcuts" Command="{Binding HelpCommand}" CommandParameter="shortcuts" />
-              <MenuItem Header="T_roubleshooting" Command="{Binding HelpCommand}" CommandParameter="troubleshooting" />
               <Separator />
               <MenuItem AutomationProperties.AutomationId="Menu.CheckForUpdates" Header="Check for _updates…" Command="{Binding CheckForUpdatesCommand}" />
               <MenuItem AutomationProperties.AutomationId="Menu.About" Header="_About LabelAxis" Command="{Binding AboutCommand}" />
@@ -471,10 +467,19 @@
           <Rectangle Style="{StaticResource StatusDivider}" Margin="0,0,14,0" />
         </StackPanel>
 
-        <DockPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,14,0">
+        <DockPanel x:Name="SheetPanel" Grid.Column="1" VerticalAlignment="Center" Margin="0,0,14,0">
           <Image Source="{DynamicResource Icon.Sheet}" Width="15" Height="15" Margin="0,0,7,0" />
           <TextBlock Text="{Binding SheetSummary}" Style="{StaticResource StatusText}" TextTrimming="CharacterEllipsis"
                      ToolTip="{Binding SheetSummary}" />
+        </DockPanel>
+
+        <!-- What the last action did ("Removed 4 pages…"): shown in place of the sheet for a few seconds; a click hides it. -->
+        <DockPanel x:Name="StatusMessagePanel" Grid.Column="1" VerticalAlignment="Center" Margin="0,0,14,0"
+                   Visibility="Collapsed" Background="Transparent" Cursor="Hand" MouseLeftButtonUp="OnStatusMessageClick"
+                   AutomationProperties.AutomationId="Main.StatusMessage">
+          <Ellipse Width="8" Height="8" VerticalAlignment="Center" Margin="3,0,9,0" Fill="{DynamicResource LA.Brush.AccentTertiary}" />
+          <TextBlock x:Name="StatusMessageText" Style="{StaticResource StatusText}" TextTrimming="CharacterEllipsis"
+                     Foreground="{DynamicResource Br.Text}" />
         </DockPanel>
 
         <!-- Steps the canvas through the merged records; only there when records are loaded. -->
@@ -624,7 +629,7 @@
                     <Separator />
                     <MenuItem Header="_Rename" InputGestureText="Double-click, F2" Command="{Binding RenamePageCommand}" />
                     <MenuItem Header="Label _size…" Command="{Binding LabelSizeCommand}" />
-                    <MenuItem Header="Apply this page's _format to other pages…" Command="{Binding ApplyLayoutCommand}" />
+                    <MenuItem Header="Apply _formatting to other pages…" Command="{Binding ApplyLayoutCommand}" />
                     <MenuItem Header="Save as _my design…" Command="{Binding SaveAsDesignCommand}" />
                     <Separator />
                     <MenuItem Header="Move page _up" InputGestureText="Ctrl+↑" Command="{Binding MovePageUpCommand}" />
@@ -983,7 +988,7 @@
                              Foreground="{DynamicResource Br.TextMuted}" Margin="0,4,0,0" />
                 </StackPanel>
               </Border>
-              <Button Content="Apply page format to other pages…" Style="{StaticResource GhostButton}" HorizontalAlignment="Left"
+              <Button Content="Apply formatting to other pages…" Style="{StaticResource GhostButton}" HorizontalAlignment="Left"
                       Margin="0,10,0,0" Command="{Binding ApplyLayoutCommand}"
                       ToolTip="Give the text, barcodes, images and so on of other pages the place, size and look they have on this page" />
             </StackPanel>

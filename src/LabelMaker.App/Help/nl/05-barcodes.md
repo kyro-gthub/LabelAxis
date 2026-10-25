@@ -45,7 +45,7 @@ Passen de gegevens niet bij het type (bijvoorbeeld letters in een EAN-13), dan w
 
 `Gegevens › Een afgedrukte barcode controleren…` beoordeelt een afgedrukte barcode van A (best) tot F, zoals een barcodeverificateur dat doet. Start de camera en houd het etiket ervoor, of open een foto of scan. U ziet:
 
-- wat de barcode zegt, en of die gelijk is aan een barcode op de pagina die u ontwerpt;
+- wat de barcode zegt, en of die gelijk is aan een barcode in het project (op welke pagina ook, en voor elk record als die uit gegevens komt);
 - elke meting (contrast, modulatie, defecten, decodeerbaarheid, stille zones, streepbreedte) met de beoordeling;
 - wat u moet veranderen, bijvoorbeeld de donkerte van de printer verlagen als de strepen te breed worden afgedrukt.
 
@@ -53,4 +53,4 @@ Het is een goede richtlijn, geen certificaat: licht en scherpstelling veranderen
 
 ### Met een barcodescanner
 
-Een USB- of Bluetooth-barcodescanner werkt ook: open het controlevenster en scan een afgedrukt etiket (het vak **Barcodescanner** bovenaan is klaar zodra het venster opent). LabelAxis zegt of wat het las gelijk is aan een barcode op de pagina en houdt de telling bij ("Gescand 12: 11 gelijk"), handig om een hele partij te controleren. Een scanner vertelt wat een barcode zegt, maar niet hoe goed hij is afgedrukt, dus er is geen cijfer van A tot F; gebruik voor een cijfer de camera of een foto.
+Een USB- of Bluetooth-barcodescanner werkt ook: open het controlevenster en scan een afgedrukt etiket (het vak **Barcodescanner** bovenaan is klaar zodra het venster opent). LabelAxis zegt of wat het las gelijk is aan een barcode in het project (op welke pagina ook, en voor elk record als een barcode uit gegevens komt) en houdt de telling bij ("Gescand 12: 11 gelijk"), handig om een hele partij te controleren. Een scanner vertelt wat een barcode zegt, maar niet hoe goed hij is afgedrukt, dus er is geen cijfer van A tot F; gebruik voor een cijfer de camera of een foto.

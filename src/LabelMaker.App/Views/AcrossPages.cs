@@ -5,7 +5,7 @@ using LabelMaker.Core.Model;
 
 namespace LabelMaker.App.Views;
 
-/// <summary>What the windows that work on the selection across pages (Apply page format, Remove from all pages) share.</summary>
+/// <summary>What the windows that work on the selection across pages (Apply formatting, Remove from all pages) share.</summary>
 internal static class AcrossPages
 {
     /// <summary>"The selected object (“Price”)" or "The 3 selected objects".</summary>

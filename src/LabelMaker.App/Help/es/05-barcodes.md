@@ -45,7 +45,7 @@ Si los datos no encajan con el tipo (por ejemplo, letras en un EAN-13), el códi
 
 `Datos › Comprobar un código de barras impreso…` califica un código impreso de A (el mejor) a F, como lo hace un verificador. Inicie la cámara y ponga la etiqueta delante, o abra una foto o un escaneo. Verá:
 
-- qué dice el código de barras y si es igual a un código de la página que diseña;
+- qué dice el código de barras y si es igual a un código del proyecto (de cualquier página, y de cada registro cuando se rellena con datos);
 - cada medida (contraste, modulación, defectos, decodificabilidad, zonas de silencio, ancho de barra) con su calificación;
 - qué cambiar, por ejemplo bajar la oscuridad de la impresora cuando las barras salen demasiado anchas.
 
@@ -53,4 +53,4 @@ Es una guía cercana, no un certificado: la luz y el enfoque cambian el resultad
 
 ### Con un lector de códigos de barras
 
-También sirve un lector de códigos de barras USB o Bluetooth: abra la ventana de comprobación y escanee una etiqueta impresa (el cuadro **Lector de códigos de barras** de arriba está listo en cuanto se abre la ventana). LabelAxis dice si lo que leyó es igual a un código de barras de la página y lleva la cuenta («Escaneados 12: 11 coinciden»), algo útil para comprobar un lote entero. Un lector dice lo que contiene un código de barras, pero no lo bien impreso que está, así que no hay nota de la A a la F; para tener una nota, use la cámara o una foto.
+También sirve un lector de códigos de barras USB o Bluetooth: abra la ventana de comprobación y escanee una etiqueta impresa (el cuadro **Lector de códigos de barras** de arriba está listo en cuanto se abre la ventana). LabelAxis dice si lo que leyó es igual a un código de barras del proyecto (de cualquier página, y de cada registro cuando un código de barras se rellena con datos) y lleva la cuenta («Escaneados 12: 11 coinciden»), algo útil para comprobar un lote entero. Un lector dice lo que contiene un código de barras, pero no lo bien impreso que está, así que no hay nota de la A a la F; para tener una nota, use la cámara o una foto.

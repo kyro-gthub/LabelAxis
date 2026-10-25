@@ -39,6 +39,31 @@ public partial class MainWindow
     private void OnPageListSelectionChanged(object sender, SelectionChangedEventArgs e) =>
         _vm.SelectedPages = PageList.SelectedItems.OfType<PageListItem>().ToList();
 
+    /// <summary>
+    /// The list is made again after each change; the step the project is at (usually the newest,
+    /// at the bottom) is brought back into view once the rows are there.
+    /// </summary>
+    private void ShowCurrentHistoryStep()
+    {
+        // One scroll for the whole rebuild, not one for each row added.
+        if (_historyScrollQueued)
+        {
+            return;
+        }
+
+        _historyScrollQueued = true;
+        Dispatcher.BeginInvoke(DispatcherPriority.Background, () =>
+        {
+            _historyScrollQueued = false;
+            if (_vm.HistorySteps.FirstOrDefault(s => s.IsCurrent) is { } current)
+            {
+                HistoryList.ScrollIntoView(current);
+            }
+        });
+    }
+
+    private bool _historyScrollQueued;
+
     /// <summary>A click on a step in the History tab undoes or redoes straight to it.</summary>
     private void OnHistoryStepClick(object sender, MouseButtonEventArgs e)
     {

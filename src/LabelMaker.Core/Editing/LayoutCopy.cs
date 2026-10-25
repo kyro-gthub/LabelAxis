@@ -35,6 +35,12 @@ public enum LayoutMatch
 
     /// <summary>By name where a page has an object of that name, and by order for the rest.</summary>
     NameThenOrder = 2,
+
+    /// <summary>
+    /// Every object of the same kind on the page: one text box's formatting given to every text
+    /// box. With several objects of a kind copied from, the first of them is used.
+    /// </summary>
+    EveryOfKind = 3,
 }
 
 /// <summary>
@@ -114,9 +120,25 @@ public static class LayoutCopy
         }
     }
 
-    // Each source gets at most one object of its own kind on the page, and no object is taken twice.
+    // Each source gets at most one object of its own kind on the page, and no object is taken twice;
+    // matching every one of a kind gives each object on the page the first source of its kind.
     private static List<(LabelObject Source, LabelObject? Target)> MatchPage(LabelDocument sourcePage, List<LabelObject> sources, LabelDocument page, LayoutMatch match)
     {
+        if (match == LayoutMatch.EveryOfKind)
+        {
+            var every = new List<(LabelObject Source, LabelObject? Target)>();
+            foreach (IGrouping<(ObjectKind Kind, bool TwoD), LabelObject> family in sources.GroupBy(Family))
+            {
+                LabelObject first = family.First();
+                List<LabelObject> same = page.Objects.Where(o => Family(o) == family.Key && !sources.Contains(o)).ToList();
+                every.AddRange(same.Count == 0
+                    ? new[] { (first, (LabelObject?)null) }
+                    : same.Select(o => (first, (LabelObject?)o)));
+            }
+
+            return every;
+        }
+
         var result = sources.Select(s => (Source: s, Target: (LabelObject?)null)).ToList();
         var taken = new HashSet<LabelObject>();
 

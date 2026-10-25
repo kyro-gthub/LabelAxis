@@ -173,8 +173,8 @@ public partial class SettingsWindow : Window
     public bool LanguageChanged { get; private set; }
 
     private static double ParseDouble(string text, double fallback) =>
-        double.TryParse(text, NumberStyles.Float, CultureInfo.InvariantCulture, out double v) ? v : fallback;
+        double.TryParse(LabelMaker.Core.Localization.NativeDigits.ToAscii(text), NumberStyles.Float, CultureInfo.InvariantCulture, out double v) ? v : fallback;
 
     private static int ParseInt(string text, int fallback) =>
-        int.TryParse(text, NumberStyles.Integer, CultureInfo.InvariantCulture, out int v) ? v : fallback;
+        int.TryParse(LabelMaker.Core.Localization.NativeDigits.ToAscii(text), NumberStyles.Integer, CultureInfo.InvariantCulture, out int v) ? v : fallback;
 }

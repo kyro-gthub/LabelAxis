@@ -155,7 +155,7 @@
 
           <Button Content="Apply this formatting to other pages…" Style="{StaticResource GhostButton}"
                   HorizontalAlignment="Stretch" Margin="0,10,0,0"
-                  Command="{Binding DataContext.ApplyTextStyleCommand, RelativeSource={RelativeSource AncestorType=ScrollViewer}}"
+                  Command="{Binding DataContext.ApplySelectionFormatCommand, RelativeSource={RelativeSource AncestorType=ScrollViewer}}"
                   ToolTip="Give the same font, size, colour and so on to text boxes on other pages" />
 
           <TextBlock Text="Use {Field} tokens for variable data." Foreground="{DynamicResource Br.TextMuted}"

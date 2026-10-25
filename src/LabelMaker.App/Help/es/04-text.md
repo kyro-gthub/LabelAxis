@@ -42,7 +42,7 @@ Escriba en árabe (o hebreo) y el párrafo va de derecha a izquierda por sí sol
 
 ## El mismo formato en otras páginas
 
-`Aplicar este formato a otras páginas…` (al pie de la configuración de texto, o en el menú `Edición`) da la fuente, el tamaño, el estilo y el color del cuadro seleccionado, y si quiere su alineación y espaciado, a cuadros de texto de otras páginas: el cuadro con el **mismo nombre** en cada página, o **todos los cuadros de texto**. Consulte [[pages|Páginas]].
+`Aplicar este formato a otras páginas…` (al final de Configuración de texto) abre `Edición › Aplicar formato a otras páginas…` preparado para dar el aspecto del cuadro seleccionado (fuente, tamaño, estilo y colores, y si quiere su alineación y espaciado) a **todos los cuadros de texto** de las páginas que marque. Elija **Su nombre** en Emparejar por para dárselo solo al cuadro con el mismo nombre en cada página. Consulte [[pages|Páginas]].
 
 ## Texto variable con datos
 

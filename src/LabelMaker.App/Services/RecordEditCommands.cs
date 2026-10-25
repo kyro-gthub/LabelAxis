@@ -61,6 +61,11 @@ public abstract class RecordEditCommand : IUndoableCommand
         public static ChosenRecords Capture(PrintSettings settings, DataSet data)
         {
             var chosen = new ChosenRecords();
+            if (settings.RangeIsForPages)
+            {
+                return chosen; // page numbers, not records: editing records leaves them alone
+            }
+
             if (settings.SelectedRecords.Count > 0)
             {
                 chosen._list = settings.SelectedRecords.Where(i => i >= 0 && i < data.RowCount).Select(i => data.Rows[i]).ToList();

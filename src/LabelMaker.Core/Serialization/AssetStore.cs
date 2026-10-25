@@ -43,19 +43,6 @@ public sealed class AssetStore
 
     public void Clear() => _assets.Clear();
 
-    /// <summary>Drop assets not referenced by any id in <paramref name="referencedIds"/>.</summary>
-    public int RemoveUnreferenced(IEnumerable<string> referencedIds)
-    {
-        var keep = new HashSet<string>(referencedIds, StringComparer.OrdinalIgnoreCase);
-        var dead = _assets.Keys.Where(k => !keep.Contains(k)).ToList();
-        foreach (string id in dead)
-        {
-            _assets.Remove(id);
-        }
-
-        return dead.Count;
-    }
-
     private static string NormalizeExtension(string extension)
     {
         if (string.IsNullOrWhiteSpace(extension))

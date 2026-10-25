@@ -282,15 +282,15 @@ public sealed partial class SelectionProperties
         var commands = new List<IUndoableCommand>
         {
             // The merge key folds a slider drag into one undo step.
-            new SetPropertyCommand<T>($"Edit {name}", () => get(t), v => set(t, v), value, (t.Id, name)),
+            new SetPropertyCommand<T>(StepNames.For(name), () => get(t), v => set(t, v), value, (t.Id, name)),
         };
 
         if (hadOverrides)
         {
-            commands.Add(new SetPropertyCommand<RichTextContent>($"Edit {name}", () => t.Content, v => t.Content = v, content));
+            commands.Add(new SetPropertyCommand<RichTextContent>(StepNames.For(name), () => t.Content, v => t.Content = v, content));
         }
 
-        Execute($"Edit {name}", commands);
+        Execute(StepNames.For(name), commands);
     }
 
     private static bool SameRunStyle(TextRun a, TextRun b) =>

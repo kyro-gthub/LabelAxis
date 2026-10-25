@@ -121,14 +121,34 @@ public static class PageMaker
     /// <summary>
     /// The barcode value <paramref name="by"/> numbers on: the last run of digits counted up with
     /// its zeros kept ("SKU-000123" → "SKU-000124"). For EAN, UPC, ITF-14 and ISBN given with
-    /// their check digit, the number before it counts up and the check digit is worked out again.
-    /// Null when there is no number to count, or the value is filled from data.
+    /// their check digit, the number before it counts up and the check digit is worked out again
+    /// (for UPC-E through the UPC-A number it stands for). GS1 data such as
+    /// "(01)…(17)261231(21)0001" counts up its serial number (21), or else its SSCC (00) or a
+    /// batch (10) ending in a number; dates, GTINs and the rest stay as they are. Null when there
+    /// is no number to count, or the value is filled from data.
     /// </summary>
     public static string? CountUp(string? value, BarcodeSymbology symbology, long by)
     {
         if (string.IsNullOrEmpty(value) || value.IndexOf('{') >= 0)
         {
             return null;
+        }
+
+        if (value.TrimStart().StartsWith('(') && Gs1.Parse(value) is { Count: > 0 } elements)
+        {
+            return CountUpGs1(elements, by);
+        }
+
+        if (symbology == BarcodeSymbology.UpcE && value.Length == 8 && value.All(char.IsAsciiDigit))
+        {
+            string middle = Add(value[1..7], by);
+            if (middle.Length != 6)
+            {
+                return null;
+            }
+
+            string body = value[0] + middle;
+            return body + Gs1.CheckDigit(UpcEToUpcA(body)).ToString(CultureInfo.InvariantCulture);
         }
 
         int? full = symbology switch
@@ -163,6 +183,68 @@ public static class PageMaker
         }
 
         return value[..first] + Add(value[first..(last + 1)], by) + value[(last + 1)..];
+    }
+
+    // The serial number counts first; an SSCC (one per pallet or carton) or a numbered batch otherwise.
+    private static readonly string[] CountingAis = { "21", "00", "10" };
+
+    private static string? CountUpGs1(List<Gs1Element> elements, long by)
+    {
+        foreach (string ai in CountingAis)
+        {
+            int index = elements.FindIndex(e => e.Ai == ai);
+            if (index < 0)
+            {
+                continue;
+            }
+
+            string v = elements[index].Value;
+            string? counted;
+            if (ai == "00")
+            {
+                // 17 digits and a check digit worked out again, as wide as before.
+                if (v.Length != 18 || !v.All(char.IsAsciiDigit) || Add(v[..17], by) is not { Length: 17 } body)
+                {
+                    continue;
+                }
+
+                counted = body + Gs1.CheckDigit(body).ToString(CultureInfo.InvariantCulture);
+            }
+            else
+            {
+                int first = v.Length;
+                while (first > 0 && char.IsAsciiDigit(v[first - 1]))
+                {
+                    first--;
+                }
+
+                if (first == v.Length)
+                {
+                    continue;
+                }
+
+                counted = v[..first] + Add(v[first..], by);
+            }
+
+            var copy = new List<Gs1Element>(elements) { [index] = elements[index] with { Value = counted } };
+            return Gs1.Format(copy);
+        }
+
+        return null;
+    }
+
+    /// <summary>The 11-digit UPC-A number (without its check digit) a 7-digit UPC-E number stands for.</summary>
+    private static string UpcEToUpcA(string upcE)
+    {
+        char ns = upcE[0];
+        string d = upcE[1..7];
+        return d[5] switch
+        {
+            '0' or '1' or '2' => $"{ns}{d[0]}{d[1]}{d[5]}0000{d[2]}{d[3]}{d[4]}",
+            '3' => $"{ns}{d[0]}{d[1]}{d[2]}00000{d[3]}{d[4]}",
+            '4' => $"{ns}{d[0]}{d[1]}{d[2]}{d[3]}00000{d[4]}",
+            _ => $"{ns}{d[0]}{d[1]}{d[2]}{d[3]}{d[4]}0000{d[5]}",
+        };
     }
 
     /// <summary>The digits <paramref name="digits"/> plus <paramref name="by"/>, as wide as before (or wider when it runs over).</summary>

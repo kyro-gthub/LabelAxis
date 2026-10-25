@@ -3,11 +3,12 @@ LabelAxis 1.1.2
 New
 • Make pages from your records: one page for each record of an Excel, CSV or database import, made from the label on screen with the record's values written in. Use Data › Make pages… for all records, or select records in Records… and click Make pages. The pages can then be edited one by one and print several to a sheet.
 • Numbered copies: right-click a page › Numbered copies… makes copies whose barcodes count up page by page (BOX-0007, BOX-0008, …), keeping leading zeros and working out EAN and UPC check digits again.
-• The barcode check works with USB and Bluetooth barcode scanners: scan a printed label and LabelAxis says whether it matches a barcode on the page, with a running count. A scanner tells what a barcode says but not how well it is printed; the camera and photo check still give a grade.
+• The barcode check works with USB and Bluetooth barcode scanners: scan a printed label and LabelAxis says whether it matches a barcode in the project (any page, and every record when a barcode comes from data), with a running count. A scanner tells what a barcode says but not how well it is printed; the camera and photo check still give a grade.
 • Select several pages with Ctrl+click and Shift+click in the page list. Duplicate, Remove and the new Print selected pages… (right-click) work on all of them at once, and Ctrl+Z takes each step back.
 • Add pages (the + button) asks whether to add blank pages or copies of a chosen page, and how many. Copies can count their barcodes up.
 • Undo history: the new History tab beside Properties, Layers and Page (also Edit › Undo history) lists every step. Click one to go straight back to it, or forward again.
 • Curve in the Lines menu: a curved line. Double-click it and drag its dots to change the bend.
+• Apply formatting to other pages is now one tool (Edit menu, page menu, Page tab): it can also give one text box's look to every text box. The Help menu is simpler: Your first label, Keyboard shortcuts and Troubleshooting are in the help guide.
 • The help guide covers everything above, and how to update a PC without internet, in all ten languages.
 
 Fixes
@@ -15,3 +16,8 @@ Fixes
 • Microsoft Publisher files keep Publisher's own margins and gaps, so the labels print where they printed from Publisher.
 • Excel files containing a picture with a long name no longer fail to import ("picture names cannot be more than 31 characters").
 • A duplicated or added page shows in the page list straight away, without scrolling.
+• Messages saying what an action did show in the status bar again.
+• After saving, undoing the removal of a picture brings its picture back too.
+• After undo, an object that is no longer on the label is no longer selected.
+• Records chosen for printing earlier no longer limit which pages print.
+• Number boxes read digits typed on a Persian, Kurdish, Arabic or Hindi keyboard.

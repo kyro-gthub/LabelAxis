@@ -3,7 +3,7 @@ id: pages
 title: 页面：一个项目中的多个标签
 category: Pages
 order: 1
-keywords: page, pages, master label, duplicate, rename, reorder, remove, remove from all pages, delete everywhere, scroll, apply positions, apply format, page format, line up, same place, same size, apply formatting, other pages, add missing, 页面, 主标签, 复制, 重命名, 排序, 删除, 从所有页面删除, 页面格式, add pages, blank pages, copies, select several, ctrl click, shift click, print selected pages, numbered copies, count up, pages from records, make pages, sort, reverse, 添加页面, 空白页面, 副本, 选择多个页面, 打印选中的页面, 编号副本, 生成页面, 排序, 反向排序
+keywords: page, pages, master label, duplicate, rename, reorder, remove, remove from all pages, delete everywhere, scroll, apply positions, apply format, page format, line up, same place, same size, apply formatting, other pages, add missing, 页面, 主标签, 复制, 重命名, 排序, 删除, 从所有页面删除, 页面格式, add pages, blank pages, copies, select several, ctrl click, shift click, print selected pages, numbered copies, count up, pages from records, make pages, sort, reverse, 添加页面, 空白页面, 副本, 选择多个页面, 打印选中的页面, 编号副本, 生成页面, 排序, 反向排序, apply formatting, every text box, 应用格式, 所有文本框
 ---
 # 页面：一个项目中的多个标签
 
@@ -36,9 +36,9 @@ keywords: page, pages, master label, duplicate, rename, reorder, remove, remove 
 
 要把导入的记录（Excel、CSV 或数据库）变成页面，每条记录一个页面并写入其值，请参阅 [[data|数据和可变标签]] › “为每条记录生成一个页面”。
 
-## 让其他页面使用本页格式
+## 将格式应用到其他页
 
-`编辑 › 将页面格式应用到其他页…`（右键单击页面或在 `页面` 选项卡中也可以）会让其他页面看起来像屏幕上的页面。其中的每个文本框、条码、图片、形状和表格都会采用本页对应对象的位置、尺寸和外观，并 **保留各自的文字、条码值和图片**。
+`编辑 › 将格式应用到其他页…`（右键单击页面或在 `页面` 选项卡中也可以）会让其他页面看起来像屏幕上的页面。其中的每个文本框、条码、图片、形状和表格都会采用本页对应对象的位置、尺寸和外观，并 **保留各自的文字、条码值和图片**。
 
 - **复制来源：** 本页的所有对象，或仅所选对象。
 - **复制内容：**
@@ -46,7 +46,7 @@ keywords: page, pages, master label, duplicate, rename, reorder, remove, remove 
   - **外观与设置：** 字体和颜色、条码类型、条高和条下方的数字、图片的适应方式和边框、形状的轮廓和填充、表格的线条和文字。对于文字，可以选择哪些部分：字体、字号、粗体/斜体/下划线、颜色、对齐方式、行距和字间距。
   - **添加页面缺少的对象：** 本页上在其他页面没有对应项的对象，会连同文字和图片复制过去。
 - **哪些对象：** 文字、条码和 QR 码、图片、形状和表格，可分别开启或关闭。
-- **匹配方式：** 按 **名称，否则按顺序**（推荐）；仅按 **名称**；或仅按 **顺序**（第一个文本框对应第一个文本框，第二个条码对应第二个条码）。QR 码只与 QR 码匹配，一维条码只与一维条码匹配。
+- **匹配方式：** 按 **名称，否则按顺序**（推荐）；仅按 **名称**；或仅按 **顺序**（第一个文本框对应第一个文本框，第二个条码对应第二个条码）。QR 码只与 QR 码匹配，一维条码只与一维条码匹配。或者 **所有同类对象**：把一个文本框（或条码、形状…）的外观应用到所勾选页面上的所有同类对象。“文字设置”底部的 `将此格式应用到其他页…` 会为所选文本框打开已按此设置好的窗口：只应用其外观，应用到所有文本框。
 - **哪些页面：** 勾选它们；每页都会显示将更改多少对象、添加多少对象。
 
 如果某种条码类型无法容纳某页的值（例如 EAN-13 无法容纳字母“ABC”），则不会强加到该页；该条码会采用其余外观。
@@ -60,10 +60,6 @@ keywords: page, pages, master label, duplicate, rename, reorder, remove, remove 
 - **哪些页面：** 勾选它们；每页都会显示将删除多少对象。
 
 已锁定的对象永远不会被删除。
-
-## 在其他页面使用相同的文字格式
-
-`编辑 › 将文本格式应用到其他页…` 会把所选文本框的字体、字号、样式和颜色复制到其他页面。请参阅 [[text|文字]]。
 
 这些工具每一个都只算一个撤销步骤：`Ctrl+Z` 会还原所有页面。
 

@@ -70,7 +70,7 @@ public static class SheetLayoutEngine
         ArgumentNullException.ThrowIfNull(template);
 
         IReadOnlyList<int>? recordSelection = null;
-        if (settings.Content == PrintContent.VariableData && data is { RowCount: > 0 })
+        if (settings.Content == PrintContent.VariableData && !settings.RangeIsForPages && data is { RowCount: > 0 })
         {
             if (settings.SelectedRecords.Count > 0)
             {

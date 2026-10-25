@@ -97,4 +97,24 @@ public sealed class PageChoiceTests
         copy.ChosenPages.Should().Equal(1, 2);
         copy.ChosenPages.Should().NotBeSameAs(s.ChosenPages);
     }
+
+    [Fact]
+    public void A_range_of_records_does_not_limit_pages_and_a_range_of_pages_does()
+    {
+        var project = new ProjectModel();
+        for (int i = 1; i <= 5; i++)
+        {
+            project.Pages.Add(new LabelPage { Name = $"P{i}", Document = new LabelDocument() });
+        }
+
+        // Records 1 and 2 were printed earlier; pages made since all print.
+        var s = new PrintSettings { Content = PrintContent.Pages, FirstRecord = 0, LastRecord = 1 };
+        PrintablePages.For(project, s).Should().HaveCount(5);
+        s.RangeAppliesTo(PrintContent.VariableData).Should().BeTrue();
+
+        s.RangeIsForPages = true;
+        PrintablePages.For(project, s).Should().HaveCount(2, "a range chosen for pages prints just those pages");
+        s.RangeAppliesTo(PrintContent.VariableData).Should().BeFalse("and it does not limit the records");
+        s.Clone().RangeIsForPages.Should().BeTrue();
+    }
 }

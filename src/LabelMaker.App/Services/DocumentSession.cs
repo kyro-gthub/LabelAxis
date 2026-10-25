@@ -184,9 +184,11 @@ public sealed class DocumentSession
     /// <summary>
     /// Puts <paramref name="documents"/> in as new pages right after the page on screen (first
     /// among the pages when the master label is on screen), named by <paramref name="names"/>, in one
-    /// step that undo takes back; the first new page is then the one on screen.
+    /// step that undo takes back; the first new page is then the one on screen. With
+    /// <paramref name="printAsPages"/>, printing is set to print the pages in the same step, so
+    /// undo puts printing back as it was too.
     /// </summary>
-    public IReadOnlyList<LabelPage> InsertPages(IReadOnlyList<LabelDocument> documents, IReadOnlyList<string> names, string undoLabel)
+    public IReadOnlyList<LabelPage> InsertPages(IReadOnlyList<LabelDocument> documents, IReadOnlyList<string> names, string undoLabel, bool printAsPages = false)
     {
         ArgumentNullException.ThrowIfNull(documents);
         ArgumentNullException.ThrowIfNull(names);
@@ -200,12 +202,20 @@ public sealed class DocumentSession
             return pages;
         }
 
-        Execute(new PageStructureCommand(this, undoLabel, () =>
+        IUndoableCommand insert = new PageStructureCommand(this, undoLabel, () =>
         {
             int index = ActivePageId is null ? 0 : Project.Pages.FindIndex(p => p.Id == ActivePageId) + 1;
             Project.Pages.InsertRange(Math.Clamp(index, 0, Project.Pages.Count), pages);
             ActivePageId = pages[0].Id;
-        }));
+        });
+        PrintSettings print = Project.PrintSettings;
+        Execute(printAsPages && print.Content != PrintContent.Pages
+            ? new CompositeCommand(undoLabel, new[]
+            {
+                insert,
+                new SetPropertyCommand<PrintContent>(undoLabel, () => print.Content, v => print.Content = v, PrintContent.Pages),
+            })
+            : insert);
         return pages;
     }
 
@@ -508,13 +518,13 @@ public sealed class DocumentSession
     public void Undo()
     {
         History.Undo();
-        MarkDirty();
+        AfterHistoryStep();
     }
 
     public void Redo()
     {
         History.Redo();
-        MarkDirty();
+        AfterHistoryStep();
     }
 
     /// <summary>Undoes or redoes to the step where <paramref name="doneCount"/> steps are done.</summary>
@@ -526,6 +536,17 @@ public sealed class DocumentSession
         }
 
         History.GoTo(doneCount);
+        AfterHistoryStep();
+    }
+
+    // An undo or redo can take away objects that were selected: they leave the selection too.
+    private void AfterHistoryStep()
+    {
+        if (Selection.Any(o => !ActiveLabel.Objects.Contains(o)))
+        {
+            SetSelection(Selection);
+        }
+
         MarkDirty();
     }
 
@@ -613,16 +634,19 @@ public sealed class DocumentSession
 
     public void RebuildSearchIndex() => SearchIndex.Rebuild(Project, Data);
 
-    public LabelMaker.Core.Variables.ResolveContext CurrentResolveContext()
+    public LabelMaker.Core.Variables.ResolveContext CurrentResolveContext() => ResolveContextFor(_recordIndex);
+
+    /// <summary>What fields and placeholders are filled in with for record <paramref name="recordIndex"/> (0-based).</summary>
+    public LabelMaker.Core.Variables.ResolveContext ResolveContextFor(int recordIndex)
     {
         IReadOnlyDictionary<string, string>? record =
-            Data is { RowCount: > 0 } ? Data.Rows[Math.Clamp(_recordIndex, 0, Data.RowCount - 1)] : null;
+            Data is { RowCount: > 0 } ? Data.Rows[Math.Clamp(recordIndex, 0, Data.RowCount - 1)] : null;
 
         return new LabelMaker.Core.Variables.ResolveContext
         {
             Record = record,
             Variables = Project.Variables,
-            RecordNumber = _recordIndex + 1,
+            RecordNumber = recordIndex + 1,
             RecordCount = Math.Max(1, RecordCount),
             TemplateName = Project.Template?.Name ?? string.Empty,
         };

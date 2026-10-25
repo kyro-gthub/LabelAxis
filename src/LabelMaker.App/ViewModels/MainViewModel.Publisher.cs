@@ -74,9 +74,11 @@ public sealed partial class MainViewModel
             _session.SelectPage(document.Project.Pages[0].Id);
 
             int shapes = layout.Pages.Sum(p => p.Shapes.Count);
-            StatusText = $"Opened {layout.Pages.Count} page(s) with {shapes} item(s) from {Path.GetFileName(path)}" +
-                         (sheet is null ? string.Empty : $", printing on the {SheetName(sheet)}; change it in Label manager if you use another sheet") +
-                         ". Save it as a LabelAxis project to keep it.";
+            StatusText = sheet is null
+                ? Localization.Localizer.F("Opened {0} page(s) with {1} item(s) from {2}. Save it as a LabelAxis project to keep it.",
+                    layout.Pages.Count, shapes, Path.GetFileName(path))
+                : Localization.Localizer.F("Opened {0} page(s) with {1} item(s) from {2}, printing on the {3} sheet ({4} labels on {5}); change it in Label manager if you use another sheet. Save it as a LabelAxis project to keep it.",
+                    layout.Pages.Count, shapes, Path.GetFileName(path), $"{sheet.Brand} {sheet.ProductCode}", sheet.Grid.Count, Localization.Localizer.T(sheet.EffectivePage.Name));
             if (layout.Notes.Count > 0)
             {
                 _shell.ShowTextReport("Publisher import notes",
@@ -161,7 +163,8 @@ public sealed partial class MainViewModel
         steps.Add(new SetPropertyCommand<SizeMm>("Label size", () => project.MasterLabel.SizeMm,
             v => { project.MasterLabel.SizeMm = v; OnSheetChanged(); }, labelSize));
         _session.Execute(new CompositeCommand("Use label sheet", steps));
-        StatusText = $"Printing on the {SheetName(sheet)}. Save to keep it.";
+        StatusText = Localization.Localizer.F("Printing on the {0} sheet ({1} labels on {2}). Save to keep it.",
+            $"{sheet.Brand} {sheet.ProductCode}", sheet.Grid.Count, Localization.Localizer.T(sheet.EffectivePage.Name));
     }
 
     private void ImportPublisher(string? chosenPath)

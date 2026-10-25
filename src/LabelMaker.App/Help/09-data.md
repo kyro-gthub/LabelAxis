@@ -42,7 +42,7 @@ Instead of printing one label per record, you can make the records into pages, t
 1. Put the columns on the label (`Records…` › **Add field to label**, or type `{Product}` in a text box).
 2. Choose `Data` › **Make pages…** for every record, or open `Records…`, select the records you want (`Ctrl`+click, `Shift`+click) and click **Make pages**. With none selected, it uses every record the filter shows.
 
-Each new page is a copy of the label on screen with that record's values written into its text, barcodes and table cells, named after the record's first column. Dates, counters and other placeholders stay as they are, so they keep working when the pages print. Printing is then set to print the pages, several to a sheet. It is one step: `Ctrl+Z` takes all the new pages away.
+Each new page is a copy of the label on screen with that record's values written into its text, barcodes and table cells, named after the record's first column. Dates, counters and other placeholders stay as they are, so they keep working when the pages print. Printing is then set to print the pages, several to a sheet. It is one step: `Ctrl+Z` takes all the new pages away. Up to 2,000 pages are made at a time.
 
 ## Before printing
 

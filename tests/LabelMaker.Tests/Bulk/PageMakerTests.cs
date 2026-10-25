@@ -1,5 +1,6 @@
 using FluentAssertions;
 using LabelMaker.Core.Barcodes;
+using LabelMaker.Core.Barcodes.Gs1;
 using LabelMaker.Core.Bulk;
 using LabelMaker.Core.Model;
 using LabelMaker.Core.Model.Objects;
@@ -66,5 +67,24 @@ public sealed class PageMakerTests
 
         pages.Select(p => p.Objects.OfType<BarcodeObject>().Single().Spec.Data).Should().Equal("BOX-0008", "BOX-0009", "BOX-0010");
         pages.Select(p => p.Id).Should().OnlyHaveUniqueItems();
+    }
+
+    [Theory]
+    [InlineData("(01)09506000134352(17)261231(21)0007", "(01)09506000134352(17)261231(21)0008")]
+    [InlineData("(01)09506000134352(17)261231(10)LOT41", "(01)09506000134352(17)261231(10)LOT42")]
+    [InlineData("(00)095060001343520017", "(00)095060001343520024")]
+    public void Gs1_data_counts_up_its_serial_sscc_or_batch_and_leaves_dates_and_gtins_alone(string value, string expected) =>
+        PageMaker.CountUp(value, BarcodeSymbology.GS1_128, 1).Should().Be(expected);
+
+    [Fact]
+    public void Gs1_data_with_nothing_that_counts_is_not_counted_up() =>
+        PageMaker.CountUp("(01)09506000134352(17)261231", BarcodeSymbology.GS1_128, 1).Should().BeNull("the date and the GTIN must stay");
+
+    [Fact]
+    public void Upc_e_counts_up_and_gets_the_check_digit_of_the_upc_a_number_it_stands_for()
+    {
+        // 0123456 stands for UPC-A 0 12345 00006, check digit 5; 0123457 for 0 12345 00007, check digit 2.
+        PageMaker.CountUp("01234565", BarcodeSymbology.UpcE, 1).Should().Be("01234572");
+        Gs1.CheckDigit("01234500007").Should().Be(2);
     }
 }

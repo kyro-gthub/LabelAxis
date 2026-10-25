@@ -10,7 +10,7 @@ public static class PrintablePages
     /// on it, then the numbered pages. <see cref="PrintSettings.PagesToPrint"/> narrows that to
     /// the page on screen or to pages ticked by hand (the master label among them if ticked).
     /// Otherwise a range or a chosen list (1-based page numbers, as in the panel) prints just
-    /// those numbered pages. Each page is repeated <see cref="CopiesOf"/> times, one after
+    /// those numbered pages, when it was chosen for pages (<see cref="PrintSettings.RangeIsForPages"/>). Each page is repeated <see cref="CopiesOf"/> times, one after
     /// another: its own <see cref="LabelDocument.PrintCopies"/>, or the job's
     /// <see cref="PrintSettings.CopiesPerPage"/>.
     /// </summary>
@@ -32,13 +32,13 @@ public static class PrintablePages
             var chosen = new HashSet<int>(settings.ChosenPages);
             pages.AddRange(All(project).Where((_, i) => chosen.Contains(i)));
         }
-        else if (settings.SelectedRecords.Count > 0)
+        else if (settings.RangeIsForPages && settings.SelectedRecords.Count > 0)
         {
             pages.AddRange(settings.SelectedRecords
                 .Where(i => i >= 0 && i < project.Pages.Count)
                 .Select(i => project.Pages[i].Document));
         }
-        else if (settings.FirstRecord is not null || settings.LastRecord is not null)
+        else if (settings.RangeIsForPages && (settings.FirstRecord is not null || settings.LastRecord is not null))
         {
             int first = Math.Max(0, settings.FirstRecord ?? 0);
             int last = Math.Min(project.Pages.Count - 1, settings.LastRecord ?? project.Pages.Count - 1);

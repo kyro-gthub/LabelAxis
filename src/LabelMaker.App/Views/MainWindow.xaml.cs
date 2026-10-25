@@ -90,7 +90,12 @@ public partial class MainWindow : Window
             {
                 ShowSelectedPage();
             }
+            else if (e.PropertyName == nameof(MainViewModel.StatusText))
+            {
+                ShowStatusMessage(_vm.StatusText);
+            }
         };
+        _vm.HistorySteps.CollectionChanged += (_, _) => ShowCurrentHistoryStep();
         Title = _vm.Title;
 
         _autoSaveTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(Math.Max(30, env.Settings.AutoSaveSeconds)) };

@@ -42,7 +42,7 @@ In plaats van één etiket per record af te drukken, kunt u de records in pagina
 1. Zet de kolommen op het etiket (`Records…` › **Veld aan etiket toevoegen**, of typ `{Product}` in een tekstvak).
 2. Kies `Gegevens` › **Pagina's maken…** voor elk record, of open `Records…`, selecteer de records die u wilt (`Ctrl`+klik, `Shift`+klik) en klik op **Pagina's maken**. Als er geen geselecteerd zijn, worden alle records gebruikt die het filter toont.
 
-Elke nieuwe pagina is een kopie van het etiket op het scherm met de waarden van dat record in de tekst, barcodes en tabelcellen, en krijgt de eerste kolom van het record als naam. Datums, tellers en andere plaatshouders blijven zoals ze zijn, dus ze werken nog steeds als de pagina's worden afgedrukt. Daarna is het afdrukken ingesteld op de pagina's, meerdere per vel. Het is één stap: `Ctrl+Z` haalt alle nieuwe pagina's weg.
+Elke nieuwe pagina is een kopie van het etiket op het scherm met de waarden van dat record in de tekst, barcodes en tabelcellen, en krijgt de eerste kolom van het record als naam. Datums, tellers en andere plaatshouders blijven zoals ze zijn, dus ze werken nog steeds als de pagina's worden afgedrukt. Daarna is het afdrukken ingesteld op de pagina's, meerdere per vel. Het is één stap: `Ctrl+Z` haalt alle nieuwe pagina's weg. Er worden maximaal 2.000 pagina's tegelijk gemaakt.
 
 ## Voor het afdrukken
 

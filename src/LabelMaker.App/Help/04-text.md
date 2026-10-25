@@ -42,7 +42,7 @@ Type Arabic (or Hebrew) and the paragraph runs right to left on its own: letters
 
 ## Same formatting on other pages
 
-`Apply this formatting to other pages…` (at the bottom of Text Settings, or in the `Edit` menu) gives the selected box's font, size, style and colour, and if you like its alignment and spacing, to text boxes on other pages: either the box with the **same name** on each page, or **every text box** there. See [[pages|Pages]].
+`Apply this formatting to other pages…` (at the bottom of Text Settings) opens `Edit > Apply formatting to other pages…` set to give the selected box's look (font, size, style and colours, and if you like its alignment and spacing) to **every text box** on the pages you tick. Choose **Its name** under Match by to give it only to the box with the same name on each page. See [[pages|Pages]].
 
 ## Changing text with data
 
