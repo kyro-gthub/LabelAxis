@@ -4,7 +4,7 @@ Notable changes to LabelAxis. Versions follow [Semantic Versioning](https://semv
 The full notes of each release, in all ten interface languages, are in
 [`build/release-notes`](build/release-notes) and on the Releases page.
 
-## [Unreleased]
+## [1.1.2] - 2026-10-25
 
 ### Added
 
@@ -17,11 +17,6 @@ The full notes of each release, in all ten interface languages, are in
 - The help guide covers adding and selecting pages, numbered copies, pages from records, the
   quick bar, barcode scanners, print settings kept with the project, Publisher label sheets,
   closing other tabs and updating a PC without internet, in every language.
-
-## [1.1.2] - 2026-10-25
-
-### Added
-
 - Pages from records: one page for each record of the imported data (all of them, or those
   chosen in Records…), made from the label on screen with the record's columns written into
   its text, barcodes and table cells; other placeholders (dates, counters) stay live. From the

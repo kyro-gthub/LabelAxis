@@ -4,6 +4,10 @@ Nieuw
 • Pagina's maken uit uw records: één pagina per record van een Excel-, CSV- of database-import, gemaakt van het etiket op het scherm met de waarden van het record ingevuld. Gebruik Gegevens › Pagina's maken… voor alle records, of selecteer records in Records… en klik op Pagina's maken. Daarna kunnen de pagina's één voor één worden bewerkt en met meerdere per vel worden afgedrukt.
 • Genummerde kopieën: klik met rechts op een pagina › Genummerde kopieën… maakt kopieën waarvan de barcodes per pagina oplopen (BOX-0007, BOX-0008, …), met behoud van voorloopnullen en met opnieuw berekende EAN- en UPC-controlecijfers.
 • De barcodecontrole werkt met USB- en Bluetooth-barcodescanners: scan een afgedrukt etiket en LabelAxis zegt of het overeenkomt met een barcode op de pagina, met een lopende telling. Een scanner vertelt wat een barcode zegt, maar niet hoe goed hij is afgedrukt; de controle met camera of foto geeft nog steeds een cijfer.
+• Selecteer meerdere pagina's met Ctrl+klik en Shift+klik in de paginalijst. Dupliceren, Verwijderen en het nieuwe Geselecteerde pagina's afdrukken… (rechtsklik) werken op allemaal tegelijk, en Ctrl+Z draait elke stap terug.
+• Pagina's toevoegen (de knop +) vraagt of u lege pagina's of kopieën van een gekozen pagina wilt toevoegen, en hoeveel. Kopieën kunnen hun barcodes laten oplopen.
+• Een snelbalk naast de menu's: Nieuw, Openen, Opslaan, Ongedaan maken, Opnieuw, Afdrukvoorbeeld en Afdrukken. Wijs Ongedaan maken of Opnieuw aan om te zien wat er ongedaan of opnieuw gedaan zou worden.
+• De helpgids beschrijft dit alles, en hoe u een pc zonder internet bijwerkt, in alle tien talen.
 
 Oplossingen
 • Afdrukinstellingen die in het venster Afdrukken (printer, papier, marges, exemplaren, schaal) en in het venster voor thermisch afdrukken zijn gekozen, worden nu met het project opgeslagen. Eerder gingen ze verloren als het project opnieuw werd geopend.

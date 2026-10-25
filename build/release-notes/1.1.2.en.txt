@@ -4,6 +4,10 @@ New
 • Make pages from your records: one page for each record of an Excel, CSV or database import, made from the label on screen with the record's values written in. Use Data › Make pages… for all records, or select records in Records… and click Make pages. The pages can then be edited one by one and print several to a sheet.
 • Numbered copies: right-click a page › Numbered copies… makes copies whose barcodes count up page by page (BOX-0007, BOX-0008, …), keeping leading zeros and working out EAN and UPC check digits again.
 • The barcode check works with USB and Bluetooth barcode scanners: scan a printed label and LabelAxis says whether it matches a barcode on the page, with a running count. A scanner tells what a barcode says but not how well it is printed; the camera and photo check still give a grade.
+• Select several pages with Ctrl+click and Shift+click in the page list. Duplicate, Remove and the new Print selected pages… (right-click) work on all of them at once, and Ctrl+Z takes each step back.
+• Add pages (the + button) asks whether to add blank pages or copies of a chosen page, and how many. Copies can count their barcodes up.
+• A quick bar next to the menus: New, Open, Save, Undo, Redo, Print preview and Print. Point at Undo or Redo to see what it would undo or redo.
+• The help guide covers everything above, and how to update a PC without internet, in all ten languages.
 
 Fixes
 • Print settings chosen in the Print window (printer, paper, margins, copies, scale) and in the thermal print window are now saved with the project. Before, they were lost when the project was opened again.
