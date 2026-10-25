@@ -3,7 +3,7 @@ id: designing
 title: ऑब्जेक्ट हिलाना, आकार देना और संरेखित करना
 category: Designing
 order: 1
-keywords: select, move, resize, rotate, skew, free transform, align, distribute, group, lock, layers, front, back, guides, grid, snap, rulers, zoom, undo, चुनें, हिलाएँ, आकार बदलें, घुमाएँ, तिरछा, संरेखित, बाँटें, समूह, लॉक, परतें, गाइड, ग्रिड, स्नैप, रूलर, अनडू
+keywords: select, move, resize, rotate, skew, free transform, align, distribute, group, lock, layers, front, back, guides, grid, snap, rulers, zoom, undo, चुनें, हिलाएँ, आकार बदलें, घुमाएँ, तिरछा, संरेखित, बाँटें, समूह, लॉक, परतें, गाइड, ग्रिड, स्नैप, रूलर, अनडू, undo history, history, steps, अनडू इतिहास, इतिहास, कदम
 ---
 # ऑब्जेक्ट हिलाना, आकार देना और संरेखित करना
 
@@ -54,4 +54,4 @@ keywords: select, move, resize, rotate, skew, free transform, align, distribute,
 
 ## अनडू
 
-हर काम `Ctrl+Z` से अनडू और `Ctrl+Y` से फिर से किया जा सकता है, या ऊपर क्विक बार के अनडू और फिर से करें बटनों से। उन पर पॉइंटर रखने से दिखता है कि वे क्या अनडू या फिर से करेंगे, जैसे "अनडू: 3 पेज डुप्लिकेट करें"।
+हर काम `Ctrl+Z` से अनडू और `Ctrl+Y` से फिर से किया जा सकता है। एक साथ कई कदम पीछे जाने के लिए दाईं ओर `इतिहास` टैब खोलें (या `संपादन › अनडू इतिहास`): उसमें हर कदम, सबसे पुराना पहले, दिखता है, और किसी पर क्लिक करते ही आप सीधे उस पर लौट आते हैं। उसके बाद के कदम धूसर हो जाते हैं; वहाँ तक फिर से करने के लिए उनमें से किसी पर क्लिक करें। कोई नया बदलाव धूसर कदम मिटा देता है।

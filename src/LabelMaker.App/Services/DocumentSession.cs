@@ -517,6 +517,18 @@ public sealed class DocumentSession
         MarkDirty();
     }
 
+    /// <summary>Undoes or redoes to the step where <paramref name="doneCount"/> steps are done.</summary>
+    public void GoToHistory(int doneCount)
+    {
+        if (doneCount == History.DoneCount)
+        {
+            return;
+        }
+
+        History.GoTo(doneCount);
+        MarkDirty();
+    }
+
     public void SetSelection(IEnumerable<LabelObject> objects)
     {
         Selection = objects.Where(o => ActiveLabel.Objects.Contains(o)).ToList();

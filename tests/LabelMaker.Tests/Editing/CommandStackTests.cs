@@ -96,4 +96,40 @@ public sealed class CommandStackTests
         stack.Undo();
         doc.Objects.Should().BeEmpty();
     }
+
+    [Fact]
+    public void Going_to_a_step_undoes_or_redoes_everything_in_between_with_one_change()
+    {
+        var doc = new LabelDocument();
+        var stack = new CommandStack { MergeWindow = TimeSpan.Zero };
+        TextObject[] objects = Enumerable.Range(1, 4)
+            .Select(i => new TextObject { Name = $"T{i}", Content = RichTextContent.FromPlainText($"{i}") }).ToArray();
+        foreach (TextObject obj in objects)
+        {
+            stack.Execute(new AddObjectCommand(doc, obj));
+        }
+
+        int changes = 0;
+        stack.Changed += (_, _) => changes++;
+
+        stack.GoTo(1);
+        doc.Objects.Should().Equal(objects[0]);
+        stack.DoneCount.Should().Be(1);
+        stack.RedoLabels.Should().HaveCount(3, "the undone steps stay, ready to redo");
+        changes.Should().Be(1);
+
+        stack.GoTo(3);
+        doc.Objects.Should().Equal(objects[0], objects[1], objects[2]);
+        stack.UndoLabels.Should().HaveCount(3);
+        stack.RedoLabels.Should().ContainSingle();
+
+        stack.GoTo(0);
+        doc.Objects.Should().BeEmpty();
+        stack.GoTo(99);
+        doc.Objects.Should().HaveCount(4, "a step past the end stops at the last one");
+        changes.Should().Be(4);
+
+        stack.GoTo(4);
+        changes.Should().Be(4, "going to the step already reached changes nothing");
+    }
 }

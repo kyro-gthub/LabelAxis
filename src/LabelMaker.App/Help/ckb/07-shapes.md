@@ -3,11 +3,11 @@ id: shapes
 title: شێوە، هێڵ و شێوەی تایبەت
 category: Designing
 order: 5
-keywords: shape, rectangle, rounded, ellipse, circle, triangle, polygon, star, line, arrow, dashed, custom shape, dots, draw, points, fill, gradient, stroke, شێوە, لاکێشە, بازنە, سێگۆشە, فرەگۆشە, ئەستێرە, هێڵ, تیر, پچڕپچڕ, شێوەی تایبەت, خاڵ, کێشان, پڕکردنەوە, تێکەڵەڕەنگ, هێڵی دەورە, curve, curved, smooth, bezier
+keywords: shape, rectangle, rounded, ellipse, circle, triangle, polygon, star, line, arrow, dashed, custom shape, dots, draw, points, fill, gradient, stroke, شێوە, لاکێشە, بازنە, سێگۆشە, فرەگۆشە, ئەستێرە, هێڵ, تیر, پچڕپچڕ, شێوەی تایبەت, خاڵ, کێشان, پڕکردنەوە, تێکەڵەڕەنگ, هێڵی دەورە, curve, curved, smooth, bezier, curved line, arc, چەماوە, هێڵی چەماوە
 ---
 # شێوە، هێڵ و شێوەی تایبەت
 
-`شێوەکان` و `هێڵەکان` لە شریتی ئامرازەکاندا لیستێک لە شێوەی ئامادە دەکەنەوە: لاکێشە، سندوقی گۆشە-خڕ، بازنە، سێگۆشە، فرەگۆشە، ئەستێرە، تەقینەوە، سندوقی پچڕپچڕ، هێڵ و تیر.
+`شێوەکان` و `هێڵەکان` لە شریتی ئامرازەکاندا لیستێک لە شێوەی ئامادە دەکەنەوە: لاکێشە، سندوقی گۆشە-خڕ، بازنە، سێگۆشە، فرەگۆشە، ئەستێرە، تەقینەوە، سندوقی پچڕپچڕ، هێڵ و تیر. **چەماوە** (لە `هێڵەکان`) هێڵێکی چەماوە زیاد دەکات؛ دوو کرتەی لێ بکە و خاڵەکانی ڕابکێشە بۆ گۆڕینی چەمانەوەکە.
 
 ## ڕێکخستنەکانی شێوە
 

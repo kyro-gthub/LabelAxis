@@ -188,6 +188,7 @@ public sealed partial class MainViewModel
 
         RebuildPages();
         RebuildObjectList();
+        RebuildHistory();
         RefreshSearch();
         OnDocumentChanged();
         _properties.RefreshAll();
@@ -325,7 +326,11 @@ public sealed partial class MainViewModel
         RecordsEdited?.Invoke(this, EventArgs.Empty);
     }
 
-    private void Session_HistoryChanged(object? sender, EventArgs e) => RaiseAllCanExecute();
+    private void Session_HistoryChanged(object? sender, EventArgs e)
+    {
+        RaiseAllCanExecute();
+        RebuildHistory();
+    }
 
     private void Session_PagesChanged(object? sender, EventArgs e) => RebuildPages();
 

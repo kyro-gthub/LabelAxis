@@ -85,9 +85,11 @@ public sealed class LocalizerTests
     [InlineData("Remove 3 pages")]
     [InlineData("Removed 4 pages. Undo (Ctrl+Z) brings them back.")]
     [InlineData("Duplicate the selected page(s). Ctrl+click or Shift+click to select several.")]
-    [InlineData("Undo (Ctrl+Z)")]
+    [InlineData("Undo history")]
+    [InlineData("Project as opened")]
+    [InlineData("Curve")]
     [InlineData("Close others")]
-    public void Adding_and_selecting_pages_and_the_quick_bar_are_translated_in_every_language(string english)
+    public void Adding_and_selecting_pages_the_history_and_curves_are_translated_in_every_language(string english)
     {
         foreach (AppLanguage language in Localizer.Languages.Where(l => l.Code != "en"))
         {
@@ -96,12 +98,11 @@ public sealed class LocalizerTests
     }
 
     [Fact]
-    public void The_undo_tip_names_the_step_in_the_same_language()
+    public void A_step_in_the_history_is_named_in_the_same_language()
     {
         Translator spanish = Localizer.Load(Localizer.Resolve("es"));
 
-        spanish.Format("Undo: {0} (Ctrl+Z)", spanish.Translate("Duplicate 3 pages"))
-            .Should().Be("Deshacer: Duplicar 3 páginas (Ctrl+Z)");
+        spanish.Translate("Duplicate 3 pages").Should().Be("Duplicar 3 páginas");
     }
 
     [Fact]

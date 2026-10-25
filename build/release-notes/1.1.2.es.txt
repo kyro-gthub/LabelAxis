@@ -6,7 +6,8 @@ Novedades
 • La comprobación de códigos de barras funciona con lectores de códigos de barras USB y Bluetooth: escanee una etiqueta impresa y LabelAxis indica si coincide con un código de barras de la página, con un recuento continuo. Un lector dice qué dice un código de barras pero no lo bien que está impreso; la comprobación con cámara o foto sigue dando una calificación.
 • Seleccione varias páginas con Ctrl+clic y Mayús+clic en la lista de páginas. Duplicar, Quitar y el nuevo Imprimir páginas seleccionadas… (clic derecho) actúan sobre todas a la vez, y Ctrl+Z deshace cada paso.
 • Añadir páginas (el botón +) pregunta si añadir páginas en blanco o copias de una página elegida, y cuántas. Las copias pueden numerar sus códigos de barras.
-• Una barra rápida junto a los menús: Nuevo, Abrir, Guardar, Deshacer, Rehacer, Vista previa de impresión e Imprimir. Señale Deshacer o Rehacer para ver qué desharía o reharía.
+• Historial de deshacer: la nueva pestaña Historial, junto a Propiedades, Capas y Página (también Edición › Historial de deshacer), muestra cada paso. Haga clic en uno para volver directamente a él, o para avanzar de nuevo.
+• Curva en el menú Líneas: una línea curva. Haga doble clic en ella y arrastre sus puntos para cambiar la curva.
 • La guía de ayuda explica todo lo anterior, y cómo actualizar un PC sin internet, en los diez idiomas.
 
 Correcciones

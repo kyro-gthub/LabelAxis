@@ -3,7 +3,7 @@ id: designing
 title: Moving, sizing and lining up objects
 category: Designing
 order: 1
-keywords: select, move, resize, rotate, skew, free transform, align, distribute, group, lock, layers, front, back, guides, grid, snap, rulers, zoom, undo
+keywords: select, move, resize, rotate, skew, free transform, align, distribute, group, lock, layers, front, back, guides, grid, snap, rulers, zoom, undo, undo history, history, steps
 ---
 # Moving, sizing and lining up objects
 
@@ -54,4 +54,4 @@ The mouse wheel zooms in and out where the pointer is; `Ctrl`+wheel scrolls up a
 
 ## Undo
 
-Everything can be undone with `Ctrl+Z` and redone with `Ctrl+Y`, or with the Undo and Redo buttons in the quick bar at the top. Pointing at them shows what they would undo or redo, such as "Undo: Duplicate 3 pages".
+Everything can be undone with `Ctrl+Z` and redone with `Ctrl+Y`. To go back several steps at once, open the `History` tab on the right (or `Edit > Undo history`): it lists every step, oldest first, and clicking one goes straight back to it. The steps after it turn grey; click one of them to redo up to there. A new change clears the grey steps.

@@ -6,7 +6,8 @@ New
 • The barcode check works with USB and Bluetooth barcode scanners: scan a printed label and LabelAxis says whether it matches a barcode on the page, with a running count. A scanner tells what a barcode says but not how well it is printed; the camera and photo check still give a grade.
 • Select several pages with Ctrl+click and Shift+click in the page list. Duplicate, Remove and the new Print selected pages… (right-click) work on all of them at once, and Ctrl+Z takes each step back.
 • Add pages (the + button) asks whether to add blank pages or copies of a chosen page, and how many. Copies can count their barcodes up.
-• A quick bar next to the menus: New, Open, Save, Undo, Redo, Print preview and Print. Point at Undo or Redo to see what it would undo or redo.
+• Undo history: the new History tab beside Properties, Layers and Page (also Edit › Undo history) lists every step. Click one to go straight back to it, or forward again.
+• Curve in the Lines menu: a curved line. Double-click it and drag its dots to change the bend.
 • The help guide covers everything above, and how to update a PC without internet, in all ten languages.
 
 Fixes

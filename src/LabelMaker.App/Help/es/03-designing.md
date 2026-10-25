@@ -3,7 +3,7 @@ id: designing
 title: Mover, dimensionar y alinear objetos
 category: Designing
 order: 1
-keywords: select, move, resize, rotate, skew, free transform, align, distribute, group, lock, layers, front, back, guides, grid, snap, rulers, zoom, undo, seleccionar, mover, cambiar tamaño, girar, inclinar, alinear, distribuir, agrupar, bloquear, capas, guías, cuadrícula, ajuste, reglas, deshacer
+keywords: select, move, resize, rotate, skew, free transform, align, distribute, group, lock, layers, front, back, guides, grid, snap, rulers, zoom, undo, seleccionar, mover, cambiar tamaño, girar, inclinar, alinear, distribuir, agrupar, bloquear, capas, guías, cuadrícula, ajuste, reglas, deshacer, undo history, history, steps, historial de deshacer, historial
 ---
 # Mover, dimensionar y alinear objetos
 
@@ -54,4 +54,4 @@ La rueda del ratón acerca y aleja donde está el puntero; `Ctrl`+rueda desplaza
 
 ## Deshacer
 
-Todo se puede deshacer con `Ctrl+Z` y rehacer con `Ctrl+Y`, o con los botones Deshacer y Rehacer de la barra rápida de arriba. Al señalarlos se ve qué desharían o reharían, por ejemplo «Deshacer: Duplicar 3 páginas».
+Todo se puede deshacer con `Ctrl+Z` y rehacer con `Ctrl+Y`. Para retroceder varios pasos a la vez, abra la pestaña `Historial` de la derecha (o `Edición › Historial de deshacer`): muestra cada paso, del más antiguo al más reciente, y al hacer clic en uno se vuelve directamente a él. Los pasos posteriores se ven en gris; haga clic en uno de ellos para rehacer hasta ahí. Un cambio nuevo borra los pasos en gris.

@@ -118,6 +118,8 @@
             <MenuItem AutomationProperties.AutomationId="Menu.Edit" Header="_Edit">
               <MenuItem AutomationProperties.AutomationId="Menu.Undo" Header="_Undo" InputGestureText="Ctrl+Z" Command="{Binding UndoCommand}" />
               <MenuItem Header="_Redo" InputGestureText="Ctrl+Y" Command="{Binding RedoCommand}" />
+              <MenuItem AutomationProperties.AutomationId="Menu.UndoHistory" Header="Undo _history" Command="{Binding ShowHistoryCommand}"
+                        ToolTip="Every step you can undo or redo; click one to go straight back to it" />
               <Separator />
               <MenuItem Header="Cu_t" InputGestureText="Ctrl+X" Command="{Binding CutCommand}" />
               <MenuItem Header="_Copy" InputGestureText="Ctrl+C" Command="{Binding CopyCommand}" />
@@ -215,36 +217,6 @@
               <MenuItem AutomationProperties.AutomationId="Menu.About" Header="_About LabelAxis" Command="{Binding AboutCommand}" />
             </MenuItem>
           </Menu>
-
-          <!-- Quick bar: the commands used most, one click away, as in Office's quick access toolbar. -->
-          <Border Width="1" Height="18" Background="{DynamicResource Br.Border}" Margin="10,0,6,0" VerticalAlignment="Center" />
-          <StackPanel x:Name="QuickBar" Orientation="Horizontal" VerticalAlignment="Center" AutomationProperties.AutomationId="Main.QuickBar">
-            <Button Style="{StaticResource IconGhost}" Command="{Binding NewCommand}" ToolTip="New project (Ctrl+N)" AutomationProperties.Name="New project" Focusable="False">
-              <Image Source="{DynamicResource Icon.New}" Width="16" Height="16" />
-            </Button>
-            <Button Style="{StaticResource IconGhost}" Command="{Binding OpenCommand}" ToolTip="Open (Ctrl+O)" AutomationProperties.Name="Open" Focusable="False">
-              <Image Source="{DynamicResource Icon.Open}" Width="16" Height="16" />
-            </Button>
-            <Button Style="{StaticResource IconGhost}" Command="{Binding SaveCommand}" ToolTip="Save (Ctrl+S)" AutomationProperties.Name="Save" Focusable="False">
-              <Image Source="{DynamicResource Icon.Save}" Width="16" Height="16" />
-            </Button>
-            <Border Width="1" Height="16" Background="{DynamicResource Br.Border}" Margin="4,0" VerticalAlignment="Center" />
-            <Button x:Name="QuickUndo" Style="{StaticResource IconGhost}" Command="{Binding UndoCommand}" ToolTip="Undo (Ctrl+Z)"
-                    ToolTipOpening="OnUndoTip" AutomationProperties.Name="Undo" Focusable="False" ToolTipService.ShowOnDisabled="True">
-              <Image Source="{DynamicResource Icon.Undo}" Width="16" Height="16" />
-            </Button>
-            <Button x:Name="QuickRedo" Style="{StaticResource IconGhost}" Command="{Binding RedoCommand}" ToolTip="Redo (Ctrl+Y)"
-                    ToolTipOpening="OnRedoTip" AutomationProperties.Name="Redo" Focusable="False" ToolTipService.ShowOnDisabled="True">
-              <Image Source="{DynamicResource Icon.Redo}" Width="16" Height="16" />
-            </Button>
-            <Border Width="1" Height="16" Background="{DynamicResource Br.Border}" Margin="4,0" VerticalAlignment="Center" />
-            <Button Style="{StaticResource IconGhost}" Command="{Binding PrintPreviewCommand}" ToolTip="Print preview (Ctrl+Shift+P)" AutomationProperties.Name="Print preview" Focusable="False">
-              <Image Source="{DynamicResource Icon.Eye}" Width="16" Height="16" />
-            </Button>
-            <Button Style="{StaticResource IconGhost}" Command="{Binding PrintCommand}" ToolTip="Print (Ctrl+P)" AutomationProperties.Name="Print" Focusable="False">
-              <Image Source="{DynamicResource Icon.Print}" Width="16" Height="16" />
-            </Button>
-          </StackPanel>
         </StackPanel>
 
         <!-- window buttons -->
@@ -360,6 +332,10 @@
                 <MenuItem Header="Dash-dot line" Command="{Binding AddShapeCommand}" CommandParameter="dashdot" />
                 <Separator />
                 <MenuItem Header="_Arrow" Command="{Binding AddShapeCommand}" CommandParameter="arrow" />
+                <Separator />
+                <MenuItem Header="_Curve" Command="{Binding AddShapeCommand}" CommandParameter="curve"
+                          AutomationProperties.AutomationId="Tool.Curve"
+                          ToolTip="A curved line. Double-click it (or Edit dots… in Properties) and drag its dots to change the bend; double-click the line to add a dot." />
               </ContextMenu>
             </Button.ContextMenu>
           </Button>
@@ -920,11 +896,53 @@
                            IsChecked="{Binding SelectedRightTab, Converter={StaticResource IntEquals}, ConverterParameter=1}" />
               <RadioButton GroupName="RightTab" Content="Page" Style="{StaticResource LA.Segmented.Item}"
                            IsChecked="{Binding SelectedRightTab, Converter={StaticResource IntEquals}, ConverterParameter=2}" />
+              <RadioButton GroupName="RightTab" Content="History" Style="{StaticResource LA.Segmented.Item}"
+                           AutomationProperties.AutomationId="Tab.History"
+                           IsChecked="{Binding SelectedRightTab, Converter={StaticResource IntEquals}, ConverterParameter=3}" />
             </UniformGrid>
           </Border>
 
-          <!-- One cell for all three tab bodies (see the left panel for why). -->
+          <!-- One cell for all the tab bodies (see the left panel for why). -->
           <Grid>
+
+          <!-- History tab: click a step to undo or redo straight to it -->
+          <DockPanel Visibility="{Binding SelectedRightTab, Converter={StaticResource IntEqualsVis}, ConverterParameter=3}"
+                     Margin="14,12,14,14">
+            <TextBlock DockPanel.Dock="Top" Text="UNDO HISTORY, OLDEST FIRST" Style="{StaticResource PanelSectionHeader}" />
+            <StackPanel DockPanel.Dock="Bottom" Margin="0,10,0,0">
+              <StackPanel Orientation="Horizontal">
+                <Button Content="Undo" Style="{StaticResource GhostButton}" Margin="0,0,8,0" Command="{Binding UndoCommand}" ToolTip="Ctrl+Z" />
+                <Button Content="Redo" Style="{StaticResource GhostButton}" Command="{Binding RedoCommand}" ToolTip="Ctrl+Y" />
+              </StackPanel>
+              <TextBlock Text="Click a step to go back to it. Greyed steps were undone: click one to redo up to it. A new change clears them."
+                         TextWrapping="Wrap" FontSize="11.5" Foreground="{DynamicResource Br.TextMuted}" Margin="0,8,0,0" />
+            </StackPanel>
+            <Border Style="{StaticResource InsetPanel}">
+              <ListBox x:Name="HistoryList" ItemsSource="{Binding HistorySteps}" SelectionMode="Single"
+                       BorderThickness="0" Background="Transparent" AutomationProperties.AutomationId="History.Steps"
+                       PreviewMouseLeftButtonUp="OnHistoryStepClick" KeyDown="OnHistoryStepKey">
+                <ListBox.ItemContainerStyle>
+                  <Style TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                    <Setter Property="IsSelected" Value="{Binding IsCurrent, Mode=OneWay}" />
+                  </Style>
+                </ListBox.ItemContainerStyle>
+                <ListBox.ItemTemplate>
+                  <DataTemplate>
+                    <TextBlock x:Name="StepText" Text="{Binding Display}" TextTrimming="CharacterEllipsis" ToolTip="{Binding Display}" />
+                    <DataTemplate.Triggers>
+                      <DataTrigger Binding="{Binding IsUndone}" Value="True">
+                        <Setter TargetName="StepText" Property="Foreground" Value="{DynamicResource Br.TextMuted}" />
+                        <Setter TargetName="StepText" Property="FontStyle" Value="Italic" />
+                      </DataTrigger>
+                      <DataTrigger Binding="{Binding IsCurrent}" Value="True">
+                        <Setter TargetName="StepText" Property="FontFamily" Value="{StaticResource Font.UiSemiBold}" />
+                      </DataTrigger>
+                    </DataTemplate.Triggers>
+                  </DataTemplate>
+                </ListBox.ItemTemplate>
+              </ListBox>
+            </Border>
+          </DockPanel>
 
           <!-- Layers tab -->
           <DockPanel Visibility="{Binding SelectedRightTab, Converter={StaticResource IntEqualsVis}, ConverterParameter=1}"

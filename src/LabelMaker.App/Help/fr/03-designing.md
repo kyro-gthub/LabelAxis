@@ -3,7 +3,7 @@ id: designing
 title: Déplacer, dimensionner et aligner les objets
 category: Designing
 order: 1
-keywords: select, move, resize, rotate, skew, free transform, align, distribute, group, lock, layers, front, back, guides, grid, snap, rulers, zoom, undo, sélectionner, déplacer, redimensionner, pivoter, incliner, aligner, répartir, grouper, verrouiller, calques, repères, grille, magnétisme, règles, annuler
+keywords: select, move, resize, rotate, skew, free transform, align, distribute, group, lock, layers, front, back, guides, grid, snap, rulers, zoom, undo, sélectionner, déplacer, redimensionner, pivoter, incliner, aligner, répartir, grouper, verrouiller, calques, repères, grille, magnétisme, règles, annuler, undo history, history, steps, historique des annulations, historique
 ---
 # Déplacer, dimensionner et aligner les objets
 
@@ -54,4 +54,4 @@ La molette de la souris zoome là où se trouve le pointeur ; `Ctrl`+molette fai
 
 ## Annuler
 
-Tout peut être annulé avec `Ctrl+Z` et rétabli avec `Ctrl+Y`, ou avec les boutons Annuler et Rétablir de la barre rapide en haut. En les pointant, vous voyez ce qu'ils annuleraient ou rétabliraient, par exemple « Annuler : Dupliquer 3 pages ».
+Tout peut être annulé avec `Ctrl+Z` et rétabli avec `Ctrl+Y`. Pour revenir plusieurs étapes en arrière d'un coup, ouvrez l'onglet `Historique` à droite (ou `Édition › Historique des annulations`) : il liste chaque étape, de la plus ancienne à la plus récente, et un clic sur l'une y revient directement. Les étapes suivantes passent en gris ; cliquez sur l'une d'elles pour rétablir jusque-là. Une nouvelle modification efface les étapes grisées.

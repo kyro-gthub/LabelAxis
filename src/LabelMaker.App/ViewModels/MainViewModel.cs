@@ -228,7 +228,7 @@ public sealed partial class MainViewModel : ObservableObject
 
     private int _selectedRightTab;
 
-    /// <summary>Right panel: 0 = Properties, 1 = Layers, 2 = Page.</summary>
+    /// <summary>Right panel: 0 = Properties, 1 = Layers, 2 = Page, 3 = History.</summary>
     public int SelectedRightTab { get => _selectedRightTab; set => SetField(ref _selectedRightTab, value); }
 
     private int _selectedDataTab;

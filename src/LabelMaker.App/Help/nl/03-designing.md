@@ -3,7 +3,7 @@ id: designing
 title: Objecten verplaatsen, schalen en uitlijnen
 category: Designing
 order: 1
-keywords: select, move, resize, rotate, skew, free transform, align, distribute, group, lock, layers, front, back, guides, grid, snap, rulers, zoom, undo, selecteren, verplaatsen, grootte wijzigen, draaien, hellen, uitlijnen, verdelen, groeperen, vergrendelen, lagen, hulplijnen, raster, linialen, ongedaan maken
+keywords: select, move, resize, rotate, skew, free transform, align, distribute, group, lock, layers, front, back, guides, grid, snap, rulers, zoom, undo, selecteren, verplaatsen, grootte wijzigen, draaien, hellen, uitlijnen, verdelen, groeperen, vergrendelen, lagen, hulplijnen, raster, linialen, ongedaan maken, undo history, history, steps, geschiedenis, stappen
 ---
 # Objecten verplaatsen, schalen en uitlijnen
 
@@ -54,4 +54,4 @@ Het muiswiel zoomt in en uit waar de aanwijzer staat; `Ctrl`+wiel schuift omhoog
 
 ## Ongedaan maken
 
-Alles kan ongedaan worden gemaakt met `Ctrl+Z` en opnieuw worden gedaan met `Ctrl+Y`, of met de knoppen Ongedaan maken en Opnieuw in de snelbalk bovenaan. Als u ze aanwijst, ziet u wat ze ongedaan of opnieuw zouden doen, bijvoorbeeld "Ongedaan maken: 3 pagina's dupliceren".
+Alles kan ongedaan worden gemaakt met `Ctrl+Z` en opnieuw worden gedaan met `Ctrl+Y`. Om in één keer meerdere stappen terug te gaan, opent u rechts het tabblad `Geschiedenis` (of `Bewerken › Geschiedenis ongedaan maken`): het toont elke stap, de oudste eerst, en een klik op een stap gaat er direct naar terug. De stappen erna worden grijs; klik op een ervan om tot daar opnieuw te doen. Een nieuwe wijziging wist de grijze stappen.

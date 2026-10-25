@@ -3,11 +3,11 @@ id: shapes
 title: आकृतियाँ, रेखाएँ और कस्टम आकृतियाँ
 category: Designing
 order: 5
-keywords: shape, rectangle, rounded, ellipse, circle, triangle, polygon, star, line, arrow, dashed, custom shape, dots, draw, points, fill, gradient, stroke, curve, curved, smooth, bezier, आकृति, आयत, वृत्त, बहुभुज, तारा, रेखा, तीर, कस्टम आकृति, बिंदु, भराव, ग्रेडिएंट, स्ट्रोक, वक्र
+keywords: shape, rectangle, rounded, ellipse, circle, triangle, polygon, star, line, arrow, dashed, custom shape, dots, draw, points, fill, gradient, stroke, curve, curved, smooth, bezier, आकृति, आयत, वृत्त, बहुभुज, तारा, रेखा, तीर, कस्टम आकृति, बिंदु, भराव, ग्रेडिएंट, स्ट्रोक, वक्र, curved line, arc, वक्र, वक्र रेखा
 ---
 # आकृतियाँ, रेखाएँ और कस्टम आकृतियाँ
 
-टूलबार पर `आकृतियाँ` और `रेखाएँ` तैयार आकृतियों की सूची खोलते हैं: आयत, गोल कोनों वाले बॉक्स, वृत्त, त्रिभुज, बहुभुज, तारे, बर्स्ट, डैश वाले बॉक्स, रेखाएँ और तीर।
+टूलबार पर `आकृतियाँ` और `रेखाएँ` तैयार आकृतियों की सूची खोलते हैं: आयत, गोल कोनों वाले बॉक्स, वृत्त, त्रिभुज, बहुभुज, तारे, बर्स्ट, डैश वाले बॉक्स, रेखाएँ और तीर। **वक्र** (`रेखाएँ` में) एक वक्र रेखा जोड़ता है; मोड़ बदलने के लिए उस पर डबल-क्लिक करें और उसके बिंदु खींचें।
 
 ## आकृति सेटिंग्स
 

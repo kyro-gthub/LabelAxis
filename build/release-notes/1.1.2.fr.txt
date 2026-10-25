@@ -6,7 +6,8 @@ Nouveautés
 • La vérification des codes-barres fonctionne avec les lecteurs de codes-barres USB et Bluetooth : scannez une étiquette imprimée et LabelAxis indique si elle correspond à un code-barres de la page, avec un décompte. Un lecteur indique ce que dit un code-barres mais pas sa qualité d'impression ; la vérification par caméra ou photo donne toujours une note.
 • Sélectionnez plusieurs pages avec Ctrl+clic et Maj+clic dans la liste des pages. Dupliquer, Supprimer et la nouvelle commande Imprimer les pages sélectionnées… (clic droit) agissent sur toutes à la fois, et Ctrl+Z annule chaque étape.
 • Ajouter des pages (le bouton +) demande s'il faut ajouter des pages vides ou des copies d'une page choisie, et combien. Les copies peuvent incrémenter leurs codes-barres.
-• Une barre rapide à côté des menus : Nouveau, Ouvrir, Enregistrer, Annuler, Rétablir, Aperçu avant impression et Imprimer. Pointez Annuler ou Rétablir pour voir ce qui serait annulé ou rétabli.
+• Historique des annulations : le nouvel onglet Historique, à côté de Propriétés, Calques et Page (aussi Édition › Historique des annulations), liste chaque étape. Cliquez sur l'une pour y revenir directement, ou pour avancer à nouveau.
+• Courbe dans le menu Lignes : une ligne courbe. Double-cliquez dessus et faites glisser ses points pour changer la courbure.
 • Le guide d'aide décrit tout cela, ainsi que la mise à jour d'un PC sans internet, dans les dix langues.
 
 Corrections

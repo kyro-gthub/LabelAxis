@@ -3,11 +3,11 @@ id: shapes
 title: Shapes, lines and custom shapes
 category: Designing
 order: 5
-keywords: shape, rectangle, rounded, ellipse, circle, triangle, polygon, star, line, arrow, dashed, custom shape, dots, draw, points, fill, gradient, stroke, curve, curved, smooth, bezier
+keywords: shape, rectangle, rounded, ellipse, circle, triangle, polygon, star, line, arrow, dashed, custom shape, dots, draw, points, fill, gradient, stroke, curve, curved, smooth, bezier, curved line, arc
 ---
 # Shapes, lines and custom shapes
 
-`Shapes` and `Lines` on the toolbar open a list of ready-made shapes: rectangles, rounded boxes, circles, triangles, polygons, stars, bursts, dashed boxes, lines and arrows.
+`Shapes` and `Lines` on the toolbar open a list of ready-made shapes: rectangles, rounded boxes, circles, triangles, polygons, stars, bursts, dashed boxes, lines and arrows. **Curve** (under `Lines`) adds a curved line; double-click it and drag its dots to change the bend.
 
 ## Shape Settings
 

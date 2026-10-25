@@ -3,7 +3,7 @@ id: designing
 title: نقل العناصر وتغيير حجمها ومحاذاتها
 category: Designing
 order: 1
-keywords: select, move, resize, rotate, skew, free transform, align, distribute, group, lock, layers, front, back, guides, grid, snap, rulers, zoom, undo, تحديد, نقل, تغيير الحجم, تدوير, إمالة, تحويل حر, محاذاة, توزيع, تجميع, قفل, طبقات, خطوط الإرشاد, شبكة, التقاط, مساطر, تكبير, تراجع
+keywords: select, move, resize, rotate, skew, free transform, align, distribute, group, lock, layers, front, back, guides, grid, snap, rulers, zoom, undo, تحديد, نقل, تغيير الحجم, تدوير, إمالة, تحويل حر, محاذاة, توزيع, تجميع, قفل, طبقات, خطوط الإرشاد, شبكة, التقاط, مساطر, تكبير, تراجع, undo history, history, steps, سجل التراجع, السجل, الخطوات
 ---
 # نقل العناصر وتغيير حجمها ومحاذاتها
 
@@ -54,4 +54,4 @@ keywords: select, move, resize, rotate, skew, free transform, align, distribute,
 
 ## التراجع
 
-يمكن التراجع عن أي شيء بـ `Ctrl+Z` وإعادته بـ `Ctrl+Y`، أو بزرَّي تراجع وإعادة في الشريط السريع في الأعلى. وعند الإشارة إليهما يظهر ما سيتراجعان عنه أو يعيدانه، مثل «تراجع: إزالة الصفحة».
+يمكن التراجع عن أي شيء بـ `Ctrl+Z` وإعادته بـ `Ctrl+Y`. وللرجوع عدة خطوات دفعة واحدة، افتح تبويب `السجل` على الجانب (أو `تحرير › سجل التراجع`): يعرض كل خطوة، الأقدم أولًا، والنقر على خطوة يعيدك إليها مباشرة. وتصبح الخطوات التي بعدها رمادية؛ انقر إحداها لإعادة كل شيء حتى هناك. وأي تغيير جديد يمحو الخطوات الرمادية.

@@ -39,16 +39,24 @@ public partial class MainWindow
     private void OnPageListSelectionChanged(object sender, SelectionChangedEventArgs e) =>
         _vm.SelectedPages = PageList.SelectedItems.OfType<PageListItem>().ToList();
 
-    /// <summary>The quick bar's Undo and Redo say what they would undo or redo ("Undo: Make 3 pages (Ctrl+Z)").</summary>
-    private void OnUndoTip(object sender, ToolTipEventArgs e) =>
-        QuickUndo.ToolTip = _vm.Session.History.NextUndoLabel is { } label
-            ? Localization.Localizer.F("Undo: {0} (Ctrl+Z)", Localization.Localizer.T(label))
-            : Localization.Localizer.T("Nothing to undo");
+    /// <summary>A click on a step in the History tab undoes or redoes straight to it.</summary>
+    private void OnHistoryStepClick(object sender, MouseButtonEventArgs e)
+    {
+        if ((e.OriginalSource as FrameworkElement)?.DataContext is HistoryStepItem step)
+        {
+            _vm.GoToHistoryStep(step);
+        }
+    }
 
-    private void OnRedoTip(object sender, ToolTipEventArgs e) =>
-        QuickRedo.ToolTip = _vm.Session.History.NextRedoLabel is { } label
-            ? Localization.Localizer.F("Redo: {0} (Ctrl+Y)", Localization.Localizer.T(label))
-            : Localization.Localizer.T("Nothing to redo");
+    /// <summary>Enter or Space on a step in the History tab goes to it, as a click does.</summary>
+    private void OnHistoryStepKey(object sender, KeyEventArgs e)
+    {
+        if (e.Key is Key.Enter or Key.Space && (Keyboard.FocusedElement as FrameworkElement)?.DataContext is HistoryStepItem step)
+        {
+            _vm.GoToHistoryStep(step);
+            e.Handled = true;
+        }
+    }
 
     private void OnPageDoubleClick(object sender, MouseButtonEventArgs e)
     {

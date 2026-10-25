@@ -3,7 +3,7 @@ id: designing
 title: 移动、调整大小和对齐对象
 category: Designing
 order: 1
-keywords: select, move, resize, rotate, skew, free transform, align, distribute, group, lock, layers, front, back, guides, grid, snap, rulers, zoom, undo, 选择, 移动, 调整大小, 旋转, 倾斜, 对齐, 分布, 组合, 锁定, 图层, 参考线, 网格, 吸附, 标尺, 撤销
+keywords: select, move, resize, rotate, skew, free transform, align, distribute, group, lock, layers, front, back, guides, grid, snap, rulers, zoom, undo, 选择, 移动, 调整大小, 旋转, 倾斜, 对齐, 分布, 组合, 锁定, 图层, 参考线, 网格, 吸附, 标尺, 撤销, undo history, history, steps, 撤销历史记录, 历史记录, 步骤
 ---
 # 移动、调整大小和对齐对象
 
@@ -54,4 +54,4 @@ keywords: select, move, resize, rotate, skew, free transform, align, distribute,
 
 ## 撤销
 
-所有操作都可以用 `Ctrl+Z` 撤销，用 `Ctrl+Y` 重做，也可以用顶部快捷栏中的撤销和重做按钮。将指针指向它们，会显示将撤销或重做的内容，例如“撤销：复制 3 个页面”。
+所有操作都可以用 `Ctrl+Z` 撤销，用 `Ctrl+Y` 重做。要一次后退多步，请打开右侧的 `历史记录` 选项卡（或 `编辑 › 撤销历史记录`）：其中按从早到晚列出每一步，单击某一步即可直接回到该步。其后的步骤会变为灰色；单击其中一步可重做到该步。新的更改会清除灰色步骤。

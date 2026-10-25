@@ -3,7 +3,7 @@ id: getting-started
 title: Su primera etiqueta
 category: Getting started
 order: 1
-keywords: start, begin, new project, tutorial, first, quick start, welcome, empezar, comenzar, nuevo proyecto, tutorial, primera, bienvenida, my designs, mis diseños, guardar como diseño, quick bar, toolbar, undo, redo, barra rápida, deshacer, rehacer
+keywords: start, begin, new project, tutorial, first, quick start, welcome, empezar, comenzar, nuevo proyecto, tutorial, primera, bienvenida, my designs, mis diseños, guardar como diseño, undo, redo, deshacer, rehacer, history, historial
 ---
 # Su primera etiqueta
 
@@ -25,10 +25,9 @@ LabelAxis diseña etiquetas y pegatinas y las imprime en hojas de etiquetas (hoj
 
 ## Orientarse
 
-- **Arriba:** los menús y, junto a ellos, la barra rápida: Nuevo, Abrir, Guardar, Deshacer, Rehacer, Vista previa de impresión e Imprimir, a un clic. Señale Deshacer o Rehacer para ver qué desharía o reharía.
 - **Izquierda:** `Páginas` (los diseños de etiqueta de este proyecto) y `Datos` (una hoja de cálculo o una base de datos para imprimir muchas etiquetas distintas).
 - **Centro:** la etiqueta, con reglas, guías y cuadrícula.
-- **Derecha:** `Propiedades` (ajustes del objeto seleccionado), `Capas` (todos los objetos, de delante hacia atrás) y `Página` (la hoja de etiquetas y la página en pantalla).
+- **Derecha:** `Propiedades` (ajustes del objeto seleccionado), `Capas` (todos los objetos, de delante hacia atrás) y `Página` (la hoja de etiquetas y la página en pantalla). La pestaña `Historial` muestra cada paso que puede deshacer o rehacer.
 - **Abajo:** si el proyecto está guardado, la hoja de etiquetas, el registro mostrado (cuando hay datos cargados), el zoom y la impresora con su calibración.
 
 ## Siguientes pasos

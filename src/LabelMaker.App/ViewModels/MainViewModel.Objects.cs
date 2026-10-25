@@ -91,6 +91,16 @@ public sealed partial class MainViewModel
             "dotted" => new ShapeObject { Shape = ShapeKind.Line, DashStyle = DashStyle.Dot, Bounds = NewBounds(40, 0.5), StrokeWidthMm = 0.3 },
             "dashdot" => new ShapeObject { Shape = ShapeKind.Line, DashStyle = DashStyle.DashDot, Bounds = NewBounds(40, 0.5), StrokeWidthMm = 0.3 },
             "hairline" => new ShapeObject { Shape = ShapeKind.Line, Bounds = NewBounds(40, 0.2), StrokeWidthMm = 0.1 },
+            // An open line of three dots, the middle one curved: an arch. Edit dots reshapes it.
+            "curve" => new ShapeObject
+            {
+                Shape = ShapeKind.Custom,
+                Bounds = NewBounds(40, 12),
+                StrokeWidthMm = 0.3,
+                ClosedPath = false,
+                CustomPoints = new List<PointMm> { new(0, 1), new(0.5, 0), new(1, 1) },
+                CurvedPoints = new List<bool> { false, true, false },
+            },
             "dashedbox" => new ShapeObject { Shape = ShapeKind.Rectangle, DashStyle = DashStyle.Dash, Bounds = NewBounds(30, 20) },
             _ => new ShapeObject { Shape = ShapeKind.Rectangle, Bounds = NewBounds(30, 20) },
         };

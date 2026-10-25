@@ -3,7 +3,7 @@ id: designing
 title: جابه‌جایی، اندازه و ترازبندی شیءها
 category: Designing
 order: 1
-keywords: select, move, resize, rotate, skew, free transform, align, distribute, group, lock, layers, front, back, guides, grid, snap, rulers, zoom, undo, انتخاب, جابه‌جایی, تغییر اندازه, چرخاندن, کجی, تراز, توزیع, گروه, قفل, لایه‌ها, خطوط راهنما, شبکه, چسبیدن, خط‌کش, واگرد
+keywords: select, move, resize, rotate, skew, free transform, align, distribute, group, lock, layers, front, back, guides, grid, snap, rulers, zoom, undo, انتخاب, جابه‌جایی, تغییر اندازه, چرخاندن, کجی, تراز, توزیع, گروه, قفل, لایه‌ها, خطوط راهنما, شبکه, چسبیدن, خط‌کش, واگرد, undo history, history, steps, تاریخچه واگرد, تاریخچه, گام
 ---
 # جابه‌جایی، اندازه و ترازبندی شیءها
 
@@ -54,4 +54,4 @@ keywords: select, move, resize, rotate, skew, free transform, align, distribute,
 
 ## واگرد
 
-هر کاری را می‌توان با `Ctrl+Z` واگرد و با `Ctrl+Y` ازنو انجام داد، یا با دکمه‌های واگرد و ازنو در نوار سریع بالا. با بردن نشانگر روی آن‌ها می‌بینید چه چیزی را واگرد یا ازنو می‌کنند، مثلاً «واگرد: حذف صفحه».
+هر کاری را می‌توان با `Ctrl+Z` واگرد و با `Ctrl+Y` ازنو انجام داد. برای برگشتن چند گام با هم، زبانه `تاریخچه` را در کنار باز کنید (یا `ویرایش › تاریخچه واگرد`): همه گام‌ها را، قدیمی‌ترین اول، نشان می‌دهد و با کلیک روی هر گام مستقیم به آن برمی‌گردید. گام‌های بعد از آن خاکستری می‌شوند؛ روی یکی از آن‌ها کلیک کنید تا تا همان‌جا ازنو شود. هر تغییر تازه گام‌های خاکستری را پاک می‌کند.

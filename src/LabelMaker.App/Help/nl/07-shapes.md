@@ -3,11 +3,11 @@ id: shapes
 title: Vormen, lijnen en aangepaste vormen
 category: Designing
 order: 5
-keywords: shape, rectangle, rounded, ellipse, circle, triangle, polygon, star, line, arrow, dashed, custom shape, dots, draw, points, fill, gradient, stroke, curve, curved, smooth, bezier, vorm, rechthoek, cirkel, veelhoek, ster, lijn, pijl, aangepaste vorm, punten, opvulling, kleurverloop, bocht
+keywords: shape, rectangle, rounded, ellipse, circle, triangle, polygon, star, line, arrow, dashed, custom shape, dots, draw, points, fill, gradient, stroke, curve, curved, smooth, bezier, vorm, rechthoek, cirkel, veelhoek, ster, lijn, pijl, aangepaste vorm, punten, opvulling, kleurverloop, bocht, curved line, arc, gebogen lijn, boog
 ---
 # Vormen, lijnen en aangepaste vormen
 
-`Vormen` en `Lijnen` op de werkbalk openen een lijst met kant-en-klare vormen: rechthoeken, afgeronde kaders, cirkels, driehoeken, veelhoeken, sterren, explosies, gestreepte kaders, lijnen en pijlen.
+`Vormen` en `Lijnen` op de werkbalk openen een lijst met kant-en-klare vormen: rechthoeken, afgeronde kaders, cirkels, driehoeken, veelhoeken, sterren, explosies, gestreepte kaders, lijnen en pijlen. **Gebogen lijn** (onder `Lijnen`) voegt een gebogen lijn toe; dubbelklik erop en sleep de punten om de boog te wijzigen.
 
 ## Vorminstellingen
 

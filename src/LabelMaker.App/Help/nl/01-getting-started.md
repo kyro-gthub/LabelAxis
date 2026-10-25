@@ -3,7 +3,7 @@ id: getting-started
 title: Uw eerste etiket
 category: Getting started
 order: 1
-keywords: start, begin, new project, tutorial, first, quick start, welcome, beginnen, starten, nieuw project, handleiding, eerste, welkom, my designs, mijn ontwerpen, opslaan als ontwerp, quick bar, toolbar, undo, redo, snelbalk, ongedaan maken, opnieuw
+keywords: start, begin, new project, tutorial, first, quick start, welcome, beginnen, starten, nieuw project, handleiding, eerste, welkom, my designs, mijn ontwerpen, opslaan als ontwerp, undo, redo, ongedaan maken, opnieuw, history, geschiedenis
 ---
 # Uw eerste etiket
 
@@ -25,10 +25,9 @@ LabelAxis ontwerpt etiketten en stickers en drukt ze af op etiketvellen (A4- of 
 
 ## De weg vinden
 
-- **Boven:** de menu's en daarnaast de snelbalk: Nieuw, Openen, Opslaan, Ongedaan maken, Opnieuw, Afdrukvoorbeeld en Afdrukken, met één klik. Wijs Ongedaan maken of Opnieuw aan om te zien wat ongedaan of opnieuw gedaan zou worden.
 - **Links:** `Pagina's` (de etiketontwerpen in dit project) en `Gegevens` (een spreadsheet of database om veel verschillende etiketten af te drukken).
 - **Midden:** het etiket zelf, met linialen, hulplijnen en raster.
-- **Rechts:** `Eigenschappen` (instellingen van het geselecteerde object), `Lagen` (alle objecten, van voor naar achter) en `Pagina` (het etiketvel en de pagina op het scherm).
+- **Rechts:** `Eigenschappen` (instellingen van het geselecteerde object), `Lagen` (alle objecten, van voor naar achter) en `Pagina` (het etiketvel en de pagina op het scherm). Het tabblad `Geschiedenis` toont elke stap die u ongedaan kunt maken of opnieuw kunt doen.
 - **Onder:** of het project is opgeslagen, het etiketvel, de getoonde record (als er gegevens zijn geladen), de zoom, en de printer met zijn kalibratie.
 
 ## Verder lezen

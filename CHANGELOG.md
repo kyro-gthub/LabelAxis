@@ -12,11 +12,12 @@ The full notes of each release, in all ten interface languages, are in
   Remove and the page menu's new Print selected pages… act on all of them, each in one undo step.
 - Add pages (the + button) asks for blank pages or copies of a chosen page, and how many;
   copies can count their barcodes up.
-- A quick bar next to the menus: New, Open, Save, Undo, Redo, Print preview and Print. Undo and
-  Redo say what they would undo or redo.
+- Undo history: a History tab beside Properties, Layers and Page (also Edit > Undo history)
+  lists every step; clicking one undoes or redoes straight to it.
+- Curve in the Lines menu: a curved line whose dots can be dragged to change the bend.
 - The help guide covers adding and selecting pages, numbered copies, pages from records, the
-  quick bar, barcode scanners, print settings kept with the project, Publisher label sheets,
-  closing other tabs and updating a PC without internet, in every language.
+  undo history, curves, barcode scanners, print settings kept with the project, Publisher label
+  sheets, closing other tabs and updating a PC without internet, in every language.
 - Pages from records: one page for each record of the imported data (all of them, or those
   chosen in Records…), made from the label on screen with the record's columns written into
   its text, barcodes and table cells; other placeholders (dates, counters) stay live. From the

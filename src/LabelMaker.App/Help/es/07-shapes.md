@@ -3,11 +3,11 @@ id: shapes
 title: Formas, líneas y formas personalizadas
 category: Designing
 order: 5
-keywords: shape, rectangle, rounded, ellipse, circle, triangle, polygon, star, line, arrow, dashed, custom shape, dots, draw, points, fill, gradient, stroke, curve, curved, smooth, bezier, forma, círculo, polígono, estrella, línea, flecha, forma personalizada, puntos, relleno, degradado, trazo, curva
+keywords: shape, rectangle, rounded, ellipse, circle, triangle, polygon, star, line, arrow, dashed, custom shape, dots, draw, points, fill, gradient, stroke, curve, curved, smooth, bezier, forma, círculo, polígono, estrella, línea, flecha, forma personalizada, puntos, relleno, degradado, trazo, curva, curved line, arc, curva, línea curva
 ---
 # Formas, líneas y formas personalizadas
 
-`Formas` y `Líneas` en la barra de herramientas abren una lista de formas ya hechas: rectángulos, recuadros redondeados, círculos, triángulos, polígonos, estrellas, estallidos, recuadros discontinuos, líneas y flechas.
+`Formas` y `Líneas` en la barra de herramientas abren una lista de formas ya hechas: rectángulos, recuadros redondeados, círculos, triángulos, polígonos, estrellas, estallidos, recuadros discontinuos, líneas y flechas. **Curva** (en `Líneas`) añade una línea curva; haga doble clic en ella y arrastre sus puntos para cambiar la curva.
 
 ## Configuración de forma
 

@@ -3,11 +3,11 @@ id: shapes
 title: الأشكال والخطوط والأشكال المخصصة
 category: Designing
 order: 5
-keywords: shape, rectangle, rounded, ellipse, circle, triangle, polygon, star, line, arrow, dashed, custom shape, dots, draw, points, fill, gradient, stroke, شكل, مستطيل, دائرة, مثلث, مضلع, نجمة, خط, سهم, متقطع, شكل مخصص, نقاط, رسم, تعبئة, تدرج, حد, curve, curved, smooth, bezier
+keywords: shape, rectangle, rounded, ellipse, circle, triangle, polygon, star, line, arrow, dashed, custom shape, dots, draw, points, fill, gradient, stroke, شكل, مستطيل, دائرة, مثلث, مضلع, نجمة, خط, سهم, متقطع, شكل مخصص, نقاط, رسم, تعبئة, تدرج, حد, curve, curved, smooth, bezier, curved line, arc, منحنى, خط منحن
 ---
 # الأشكال والخطوط والأشكال المخصصة
 
-يفتح `الأشكال` و`الخطوط` في شريط الأدوات قائمة بأشكال جاهزة: مستطيلات، ومربعات مستديرة الزوايا، ودوائر، ومثلثات، ومضلّعات، ونجوم، وأشكال انفجار، ومربعات متقطعة، وخطوط، وأسهم.
+يفتح `الأشكال` و`الخطوط` في شريط الأدوات قائمة بأشكال جاهزة: مستطيلات، ومربعات مستديرة الزوايا، ودوائر، ومثلثات، ومضلّعات، ونجوم، وأشكال انفجار، ومربعات متقطعة، وخطوط، وأسهم. ويضيف **منحنى** (في `الخطوط`) خطًا منحنيًا؛ انقر عليه نقرًا مزدوجًا واسحب نقاطه لتغيير الانحناء.
 
 ## إعدادات الشكل
 

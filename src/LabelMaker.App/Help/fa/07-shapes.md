@@ -3,11 +3,11 @@ id: shapes
 title: شکل‌ها، خطوط و شکل‌های سفارشی
 category: Designing
 order: 5
-keywords: shape, rectangle, rounded, ellipse, circle, triangle, polygon, star, line, arrow, dashed, custom shape, dots, draw, points, fill, gradient, stroke, curve, curved, smooth, bezier, شکل, مستطیل, دایره, چندضلعی, ستاره, خط, پیکان, شکل سفارشی, نقطه, پرکردن, گرادیان, خط دور, منحنی
+keywords: shape, rectangle, rounded, ellipse, circle, triangle, polygon, star, line, arrow, dashed, custom shape, dots, draw, points, fill, gradient, stroke, curve, curved, smooth, bezier, شکل, مستطیل, دایره, چندضلعی, ستاره, خط, پیکان, شکل سفارشی, نقطه, پرکردن, گرادیان, خط دور, منحنی, curved line, arc, منحنی, خط منحنی
 ---
 # شکل‌ها، خطوط و شکل‌های سفارشی
 
-`شکل‌ها` و `خطوط` در نوار ابزار فهرستی از شکل‌های آماده باز می‌کنند: مستطیل، کادر گوشه‌گرد، دایره، مثلث، چندضلعی، ستاره، انفجاری، کادر خط‌چین، خط و پیکان.
+`شکل‌ها` و `خطوط` در نوار ابزار فهرستی از شکل‌های آماده باز می‌کنند: مستطیل، کادر گوشه‌گرد، دایره، مثلث، چندضلعی، ستاره، انفجاری، کادر خط‌چین، خط و پیکان. **منحنی** (در `خطوط`) یک خط منحنی اضافه می‌کند؛ روی آن دوبار کلیک کنید و نقطه‌هایش را بکشید تا خمیدگی تغییر کند.
 
 ## تنظیمات شکل
 

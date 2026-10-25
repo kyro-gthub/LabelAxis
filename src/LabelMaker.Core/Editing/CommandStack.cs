@@ -75,9 +75,58 @@ public sealed class CommandStack
 
     public void Undo()
     {
+        if (StepBack())
+        {
+            Changed?.Invoke(this, EventArgs.Empty);
+        }
+    }
+
+    public void Redo()
+    {
+        if (StepForward())
+        {
+            Changed?.Invoke(this, EventArgs.Empty);
+        }
+    }
+
+    /// <summary>The steps that can be undone, oldest first.</summary>
+    public IReadOnlyList<string> UndoLabels => _undo.Select(c => c.Label).ToList();
+
+    /// <summary>The steps that can be redone, the next one first.</summary>
+    public IReadOnlyList<string> RedoLabels => Enumerable.Reverse(_redo).Select(c => c.Label).ToList();
+
+    /// <summary>How many steps are done (and so can be undone).</summary>
+    public int DoneCount => _undo.Count;
+
+    /// <summary>
+    /// Undoes or redoes until <paramref name="doneCount"/> steps are done: 0 goes back to the
+    /// start of the history. One <see cref="Changed"/> for the whole jump.
+    /// </summary>
+    public void GoTo(int doneCount)
+    {
+        int target = Math.Clamp(doneCount, 0, _undo.Count + _redo.Count);
+        bool moved = false;
+        while (_undo.Count > target && StepBack())
+        {
+            moved = true;
+        }
+
+        while (_undo.Count < target && StepForward())
+        {
+            moved = true;
+        }
+
+        if (moved)
+        {
+            Changed?.Invoke(this, EventArgs.Empty);
+        }
+    }
+
+    private bool StepBack()
+    {
         if (!CanUndo)
         {
-            return;
+            return false;
         }
 
         IUndoableCommand command = _undo[^1];
@@ -85,14 +134,14 @@ public sealed class CommandStack
         command.Undo();
         _redo.Add(command);
         _lastPushUtc = DateTime.MinValue;
-        Changed?.Invoke(this, EventArgs.Empty);
+        return true;
     }
 
-    public void Redo()
+    private bool StepForward()
     {
         if (!CanRedo)
         {
-            return;
+            return false;
         }
 
         IUndoableCommand command = _redo[^1];
@@ -100,7 +149,7 @@ public sealed class CommandStack
         command.Do();
         _undo.Add(command);
         _lastPushUtc = DateTime.MinValue;
-        Changed?.Invoke(this, EventArgs.Empty);
+        return true;
     }
 
     public void Clear()

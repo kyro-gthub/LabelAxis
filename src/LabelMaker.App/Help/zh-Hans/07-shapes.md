@@ -3,11 +3,11 @@ id: shapes
 title: 形状、线条和自定义形状
 category: Designing
 order: 5
-keywords: shape, rectangle, rounded, ellipse, circle, triangle, polygon, star, line, arrow, dashed, custom shape, dots, draw, points, fill, gradient, stroke, curve, curved, smooth, bezier, 形状, 矩形, 圆形, 多边形, 星形, 直线, 箭头, 自定义形状, 点, 填充, 渐变, 描边, 曲线
+keywords: shape, rectangle, rounded, ellipse, circle, triangle, polygon, star, line, arrow, dashed, custom shape, dots, draw, points, fill, gradient, stroke, curve, curved, smooth, bezier, 形状, 矩形, 圆形, 多边形, 星形, 直线, 箭头, 自定义形状, 点, 填充, 渐变, 描边, 曲线, curved line, arc, 曲线, 弧线
 ---
 # 形状、线条和自定义形状
 
-工具栏上的 `形状` 和 `线条` 会打开现成形状列表：矩形、圆角框、圆形、三角形、多边形、星形、爆炸形、虚线框、直线和箭头。
+工具栏上的 `形状` 和 `线条` 会打开现成形状列表：矩形、圆角框、圆形、三角形、多边形、星形、爆炸形、虚线框、直线和箭头。**曲线**（在 `线条` 中）添加一条曲线；双击它并拖动其点即可改变弯曲。
 
 ## 形状设置
 
