@@ -9,6 +9,7 @@ Nieuw
 • Geschiedenis ongedaan maken: het nieuwe tabblad Geschiedenis naast Eigenschappen, Lagen en Pagina (ook Bewerken › Geschiedenis ongedaan maken) toont elke stap. Klik op een stap om er direct naar terug te gaan, of weer vooruit.
 • Gebogen lijn in het menu Lijnen: dubbelklik erop en sleep de punten om de boog te wijzigen.
 • Opmaak op andere pagina's toepassen is nu één hulpmiddel (menu Bewerken, paginamenu, tabblad Pagina): het kan ook het uiterlijk van één tekstvak aan elk tekstvak geven. Het menu Help is eenvoudiger: Uw eerste etiket, Sneltoetsen en Probleemoplossing staan in de helpgids.
+• De etiketgrootte is nu een deel van Etiketbeheer: typ een nieuwe grootte onder Etiketgrootte, of kies een vel en gebruik dat.
 • De helpgids beschrijft dit alles, en hoe u een pc zonder internet bijwerkt, in alle tien talen.
 
 Oplossingen
@@ -21,3 +22,6 @@ Oplossingen
 • Na ongedaan maken blijft een object dat niet meer op het etiket staat niet geselecteerd.
 • Records die eerder voor afdrukken zijn gekozen, beperken niet meer welke pagina's worden afgedrukt.
 • Getalvakken lezen cijfers die met een Perzisch, Koerdisch, Arabisch of Hindi toetsenbord zijn getypt.
+• Veld aan etiket toevoegen (venster Records) en Gegevens › Gegevensveld toevoegen laten u de kolom kiezen; eerder werd altijd de eerste kolom toegevoegd.
+• Het venster Records is leesbaar in de donkere thema's.
+• Als LabelAxis opent, vult het etiket het werkvlak in plaats van klein in het midden te staan.

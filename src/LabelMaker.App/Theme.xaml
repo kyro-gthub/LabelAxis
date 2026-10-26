@@ -1155,6 +1155,24 @@
     <Setter Property="HorizontalGridLinesBrush" Value="{DynamicResource Br.Border}" />
     <Setter Property="RowHeaderWidth" Value="0" />
     <Setter Property="FontSize" Value="{StaticResource Font.Size}" />
+    <!-- WPF's own grid text is black, which cannot be read on a dark theme. -->
+    <Setter Property="Foreground" Value="{DynamicResource Br.Text}" />
+  </Style>
+  <Style TargetType="DataGridCell">
+    <Setter Property="Foreground" Value="{DynamicResource Br.Text}" />
+    <Setter Property="BorderBrush" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Style.Triggers>
+      <!-- Selected rows in the theme's colours, not Windows' blue with white text. -->
+      <Trigger Property="IsSelected" Value="True">
+        <Setter Property="Background" Value="{DynamicResource Br.AccentSoft}" />
+        <Setter Property="Foreground" Value="{DynamicResource Br.Text}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Br.AccentSoft}" />
+      </Trigger>
+      <Trigger Property="IsKeyboardFocusWithin" Value="True">
+        <Setter Property="BorderBrush" Value="{DynamicResource Br.Border}" />
+      </Trigger>
+    </Style.Triggers>
   </Style>
   <Style TargetType="DataGridColumnHeader">
     <Setter Property="Background" Value="{DynamicResource Br.Surface2}" />

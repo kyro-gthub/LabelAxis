@@ -82,7 +82,7 @@ public sealed partial class DesignerCanvas
         base.OnRenderSizeChanged(info);
         // Rounded like the canvas well it sits in, so the rulers do not poke out of its corners.
         Clip = CornerRadius > 0 ? new RectangleGeometry(new Rect(RenderSize), CornerRadius, CornerRadius) : null;
-        if (!_viewInitialised && ActualWidth > 0 && ActualHeight > 0)
+        if ((!_viewInitialised || _viewIsFitted) && ActualWidth > 0 && ActualHeight > 0)
         {
             FitToView();
         }
@@ -102,6 +102,7 @@ public sealed partial class DesignerCanvas
         _zoom = Math.Clamp(Math.Min(sx, sy), MinZoom, MaxZoom);
         _pan = default;
         _viewInitialised = true;
+        _viewIsFitted = true;
         InvalidateVisual();
         ZoomChanged?.Invoke(this, EventArgs.Empty);
     }
@@ -135,6 +136,7 @@ public sealed partial class DesignerCanvas
             anchorScreen.X - (mm.X * Scale) - pad - ((ActualWidth - pad - (LabelWidthMm * Scale)) / 2.0),
             anchorScreen.Y - (mm.Y * Scale) - pad - ((ActualHeight - pad - (LabelHeightMm * Scale)) / 2.0));
         _viewInitialised = true;
+        _viewIsFitted = false;
         InvalidateVisual();
         ZoomChanged?.Invoke(this, EventArgs.Empty);
     }
@@ -172,6 +174,7 @@ public sealed partial class DesignerCanvas
     {
         _pan = horizontal ? new Vector(-value, _pan.Y) : new Vector(_pan.X, -value);
         _viewInitialised = true;
+        _viewIsFitted = false;
         ViewChanged?.Invoke(this, EventArgs.Empty);
         InvalidateVisual();
     }

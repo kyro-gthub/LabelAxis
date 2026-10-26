@@ -17,7 +17,7 @@ Print a different label for every row of a spreadsheet or database: names, price
 
 ## Put fields on the label
 
-Write the column name in curly brackets in any text or barcode: `{Product}`, `{Price}`, `{Barcode}`. `Data > Add data field…` inserts one for you. The label on screen shows the current record; the arrows in the status bar step through them.
+Write the column name in curly brackets in any text or barcode: `{Product}`, `{Price}`, `{Barcode}`. `Data > Add data field` and a column insert one for you. The label on screen shows the current record; the arrows in the status bar step through them.
 
 ## Ready-made fields
 
@@ -39,7 +39,7 @@ Inside the brackets you can also use functions, for example `{UPPER(Product)}`, 
 
 Instead of printing one label per record, you can make the records into pages, to change some of them by hand or to print them alongside other pages:
 
-1. Put the columns on the label (`Records…` › **Add field to label**, or type `{Product}` in a text box).
+1. Put the columns on the label (`Records…` › **Add field to label** and the column, or type `{Product}` in a text box).
 2. Choose `Data` › **Make pages…** for every record, or open `Records…`, select the records you want (`Ctrl`+click, `Shift`+click) and click **Make pages**. With none selected, it uses every record the filter shows.
 
 Each new page is a copy of the label on screen with that record's values written into its text, barcodes and table cells, named after the record's first column. Dates, counters and other placeholders stay as they are, so they keep working when the pages print. Printing is then set to print the pages, several to a sheet. It is one step: `Ctrl+Z` takes all the new pages away. Up to 2,000 pages are made at a time.

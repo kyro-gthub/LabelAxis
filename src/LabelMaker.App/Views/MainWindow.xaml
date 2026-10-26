@@ -107,8 +107,8 @@
               <MenuItem Header="Open _Publisher file (all pages)…" Command="{Binding OpenPublisherPagesCommand}" />
               <MenuItem Header="_Import text and pictures from Publisher…" Command="{Binding ImportPublisherCommand}" />
               <Separator />
-              <MenuItem AutomationProperties.AutomationId="Menu.LabelManager" Header="_Label manager…" Command="{Binding TemplateManagerCommand}" />
-              <MenuItem Header="Label si_ze…" Command="{Binding LabelSizeCommand}" />
+              <MenuItem AutomationProperties.AutomationId="Menu.LabelManager" Header="_Label manager…" Command="{Binding TemplateManagerCommand}"
+                        ToolTip="Label sheets, and the size of the label in this project" />
               <Separator />
               <MenuItem AutomationProperties.AutomationId="Menu.Settings" Header="Se_ttings…" Command="{Binding SettingsCommand}" />
               <Separator />
@@ -165,7 +165,17 @@
                         Command="{Binding Gs1BuilderCommand}"
                         ToolTip="GS1-128, GS1 DataMatrix and GS1 QR codes for food, medicines, medical devices and shipping, checked as you type" />
               <Separator />
-              <MenuItem Header="Add _data field…" Command="{Binding AddDataFieldCommand}" />
+              <!-- One item per column of the records: the column chosen goes on the label as {Column}. -->
+              <MenuItem Header="Add _data field" ItemsSource="{Binding DataFieldNames}" IsEnabled="{Binding HasData}"
+                        AutomationProperties.AutomationId="Menu.AddDataField">
+                <MenuItem.ItemContainerStyle>
+                  <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                    <Setter Property="Header" Value="{Binding}" />
+                    <EventSetter Event="Click" Handler="OnAddDataFieldItem" />
+                    <Setter Property="loc:Localizer.Off" Value="True" />
+                  </Style>
+                </MenuItem.ItemContainerStyle>
+              </MenuItem>
               <MenuItem Header="Add date / time field" Command="{Binding AddDateFieldCommand}" />
             </MenuItem>
 
@@ -628,7 +638,7 @@
                               ToolTip="One page for each record, with the record's values written in" />
                     <Separator />
                     <MenuItem Header="_Rename" InputGestureText="Double-click, F2" Command="{Binding RenamePageCommand}" />
-                    <MenuItem Header="Label _size…" Command="{Binding LabelSizeCommand}" />
+                    <MenuItem Header="_Label manager…" Command="{Binding TemplateManagerCommand}" ToolTip="Label sheets, and the size of the label in this project" />
                     <MenuItem Header="Apply _formatting to other pages…" Command="{Binding ApplyLayoutCommand}" />
                     <MenuItem Header="Save as _my design…" Command="{Binding SaveAsDesignCommand}" />
                     <Separator />

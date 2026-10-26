@@ -142,8 +142,6 @@ public sealed class FakeShell : IShellServices
     {
     }
 
-    public bool ShowLabelSize() => false;
-
     /// <summary>How the last Apply formatting window was opened: true when for the look of the selection.</summary>
     public bool? ApplyLayoutLookOfSelection { get; private set; }
 

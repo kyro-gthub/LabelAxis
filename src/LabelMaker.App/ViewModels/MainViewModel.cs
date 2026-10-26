@@ -247,6 +247,9 @@ public sealed partial class MainViewModel : ObservableObject
 
     public bool HasData => _session.Data is { RowCount: > 0 };
 
+    /// <summary>The records' columns, for Data › Add data field.</summary>
+    public IReadOnlyList<string> DataFieldNames => _session.Data?.Columns.Select(c => c.Name).ToList() ?? new List<string>();
+
     public string PrintQueueSummary
     {
         get
@@ -313,6 +316,15 @@ public sealed partial class MainViewModel : ObservableObject
     public bool IsCalibrated => _env.Settings.LastPrinterName is { } printer && _env.Calibration.Has(printer);
 
     public string CalibrationStatus => IsCalibrated ? "Calibration: aligned" : "Calibration: not set";
+
+    /// <summary>After the Label manager changed the label size: the sheet line, and the label fitted in the window again.</summary>
+    public void OnLabelSizeChanged()
+    {
+        OnPropertyChanged(nameof(TemplateSummary));
+        OnPropertyChanged(nameof(SheetSummary));
+        _canvas?.FitToView();
+        RefreshCanvas();
+    }
 
     /// <summary>Switches the project to another label sheet. Also used by the Label manager's "Use this sheet".</summary>
     public void ApplyTemplate(LabelTemplate template)

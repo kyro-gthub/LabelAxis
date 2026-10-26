@@ -114,4 +114,19 @@ public sealed class ArrangeTests
         var texts = h.Session.ActiveLabel.Objects.OfType<TextObject>().Select(t => t.Content.PlainText).ToList();
         texts.Should().Contain("{CurrentDate}");
     });
+
+    [Fact]
+    public void Adding_a_data_field_puts_the_column_chosen_on_the_label_not_always_the_first() => AppHarness.Run(h =>
+    {
+        h.Session.SetData(
+            Core.Data.DataSet.FromRows(new[] { "SKU", "Product", "Price" }, new List<string[]> { new[] { "A1", "Tea", "2.50" } }),
+            new DataConnectionModel { Name = "stock.csv", Kind = DataSourceKind.Csv });
+        h.ViewModel.DataFieldNames.Should().Equal("SKU", "Product", "Price");
+
+        h.ViewModel.AddDataFieldCommand.Execute("Price");
+
+        var added = (TextObject)h.Session.ActiveLabel.Objects[^1];
+        added.Content.PlainText.Should().Be("{Price}");
+        added.Name.Should().Be("Price");
+    });
 }

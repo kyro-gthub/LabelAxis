@@ -112,7 +112,6 @@ public sealed partial class MainViewModel
     public RelayCommand AddShapeCommand { get; private set; } = null!;
     public RelayCommand AddTableCommand { get; private set; } = null!;
     public RelayCommand DataTableCommand { get; private set; } = null!;
-    public RelayCommand LabelSizeCommand { get; private set; } = null!;
     public RelayCommand SelectAllCommand { get; private set; } = null!;
     public RelayCommand CropImageCommand { get; private set; } = null!;
     public RelayCommand ClearCropCommand { get; private set; } = null!;
@@ -214,7 +213,7 @@ public sealed partial class MainViewModel
             };
             AddObject(table);
         });
-        AddDataFieldCommand = new RelayCommand(AddDataField);
+        AddDataFieldCommand = new RelayCommand(p => AddDataField(p as string));
         AddDateFieldCommand = new RelayCommand(() => AddObject(new TextObject { Name = "Date", Content = RichTextContent.FromPlainText("{CurrentDate}"), Bounds = NewBounds(30, 6) }));
 
         BringToFrontCommand = new RelayCommand(() => Reorder(int.MaxValue), () => _session.Selection.Count > 0);
@@ -404,16 +403,6 @@ public sealed partial class MainViewModel
             if (p is string s && s.Split('|') is [string target, string hex])
             {
                 _properties.ApplySwatch(target, hex);
-                RefreshCanvas();
-            }
-        });
-        LabelSizeCommand = new RelayCommand(() =>
-        {
-            if (_shell.ShowLabelSize())
-            {
-                OnPropertyChanged(nameof(TemplateSummary));
-                OnPropertyChanged(nameof(SheetSummary));
-                _canvas?.FitToView();
                 RefreshCanvas();
             }
         });

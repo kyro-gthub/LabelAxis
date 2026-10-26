@@ -31,12 +31,12 @@ De tekening rechts wordt bijgewerkt terwijl u typt. `Opslaan` bewaart het onder 
 
 ## Het etiketformaat van een project wijzigen
 
-`Pagina › Etiketformaat…` (of `Bestand › Etiketformaat…`) wijzigt het formaat van het etiket dat u ontwerpt:
+`Bestand › Etiketbeheer…` (ook **Etiketbeheer…** als u met rechts op een pagina klikt) wijzigt de grootte van het etiket dat u ontwerpt, onder **Etiketgrootte** onder het voorbeeld van het vel:
 
-- Typ een nieuwe **breedte en hoogte**, of kies een formaat uit de lijst met etiketvellen eronder (favorieten eerst; zoek op code of formaat, zoals **38x21**).
+- Typ een nieuwe **breedte en hoogte** en klik op **Grootte toepassen**. Om de grootte van een vel uit de lijst te nemen, kiest u het en klikt u op **Dit vel gebruiken**.
 - **De objecten schalen** rekt alles op het etiket op naar het nieuwe formaat.
 - **Op elke pagina toepassen** wijzigt alle pagina's van het project.
-- Na het kiezen van een vel zet **Ook afdrukken op het vel …** het project ook op dat vel over, zodat de afdruk overeenkomt.
+- **Het velraster opnieuw passend maken** houdt het papier en de marges en berekent hoeveel etiketten van de nieuwe grootte er in de breedte en hoogte passen.
 
 ## Rollen voor thermische etiketten
 

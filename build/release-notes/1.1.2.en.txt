@@ -9,6 +9,7 @@ New
 • Undo history: the new History tab beside Properties, Layers and Page (also Edit › Undo history) lists every step. Click one to go straight back to it, or forward again.
 • Curve in the Lines menu: a curved line. Double-click it and drag its dots to change the bend.
 • Apply formatting to other pages is now one tool (Edit menu, page menu, Page tab): it can also give one text box's look to every text box. The Help menu is simpler: Your first label, Keyboard shortcuts and Troubleshooting are in the help guide.
+• Label size is now part of the Label manager: type a new size under Label size, or pick a sheet and use it.
 • The help guide covers everything above, and how to update a PC without internet, in all ten languages.
 
 Fixes
@@ -21,3 +22,6 @@ Fixes
 • After undo, an object that is no longer on the label is no longer selected.
 • Records chosen for printing earlier no longer limit which pages print.
 • Number boxes read digits typed on a Persian, Kurdish, Arabic or Hindi keyboard.
+• Add field to label (Records window) and Data › Add data field let you choose the column; before, the first column was always added.
+• The Records window is readable in the dark themes.
+• When LabelAxis opens, the label fills the canvas instead of sitting small in the middle.

@@ -225,10 +225,19 @@ public sealed class DialogService : IShellServices
 
     public void ShowTemplateManager()
     {
-        var win = new TemplateManagerWindow(_env) { Owner = _owner };
-        if (win.ShowDialog() == true && win.SelectedTemplate is { } template)
+        var win = new TemplateManagerWindow(_env, _vm?.Session) { Owner = _owner };
+        if (win.ShowDialog() != true)
+        {
+            return;
+        }
+
+        if (win.SelectedTemplate is { } template)
         {
             _vm?.ApplyTemplate(template);
+        }
+        else if (win.SizeApplied)
+        {
+            _vm?.OnLabelSizeChanged();
         }
     }
 
@@ -412,17 +421,6 @@ public sealed class DialogService : IShellServices
     {
         var win = new AddPagesWindow(pages, current) { Owner = Front };
         return win.ShowDialog() == true ? win.Choice : null;
-    }
-
-    public bool ShowLabelSize()
-    {
-        if (_vm is null)
-        {
-            return false;
-        }
-
-        var win = new LabelSizeWindow(_vm.Session, _env.Settings.DisplayUnit, _env.Templates, _env.Settings.FavoriteTemplateIds) { Owner = _owner };
-        return win.ShowDialog() == true;
     }
 
     public (double X, double Y, double Width, double Height)? ShowImageCrop(LabelMaker.Core.Model.Objects.ImageObject image)

@@ -22,17 +22,32 @@ public partial class TemplateManagerWindow : Window
     private readonly AppEnvironment _env;
     private List<Category> _categories = new();
 
-    public TemplateManagerWindow(AppEnvironment env)
+    /// <param name="session">The open project, whose label size can be changed here too; null hides that part.</param>
+    public TemplateManagerWindow(AppEnvironment env, DocumentSession? session = null)
     {
         _env = env;
         UseCommand = new RelayCommand(Use);
         InitializeComponent();
         SearchBox.TextChanged += (_, _) => Refresh();
         Refresh();
+
+        if (session is not null)
+        {
+            SizeSection.Visibility = Visibility.Visible;
+            SizePanel.Show(session, env.Settings.DisplayUnit);
+            SizePanel.Applied += (_, _) =>
+            {
+                SizeApplied = true;
+                DialogResult = true;
+            };
+        }
     }
 
-    /// <summary>The sheet the user picked, or null if they closed the window.</summary>
+    /// <summary>The sheet the user picked, or null if they closed the window or changed only the label size.</summary>
     public LabelTemplate? SelectedTemplate { get; private set; }
+
+    /// <summary>True when the label size was changed with the Label size part.</summary>
+    public bool SizeApplied { get; private set; }
 
     public RelayCommand UseCommand { get; }
 

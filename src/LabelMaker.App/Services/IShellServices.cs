@@ -102,9 +102,6 @@ public interface IShellServices
     /// </summary>
     void ShowFindReplace(bool replace, string? initialQuery);
 
-    /// <summary>Change the working label size without starting a new project. Returns true if it changed.</summary>
-    bool ShowLabelSize();
-
     /// <summary>
     /// Apply formatting to other pages: gives objects on other pages the place, size and look they
     /// have on the page on screen, or (<paramref name="lookOfSelection"/>) the selected object's look to

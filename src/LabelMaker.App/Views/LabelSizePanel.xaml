@@ -1,0 +1,32 @@
+<UserControl x:Class="LabelMaker.App.Views.LabelSizePanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <!-- The Label manager's "Label size" part: changes the size of the label being designed. -->
+  <StackPanel>
+    <TextBlock Text="LABEL SIZE" Style="{StaticResource PanelSectionHeader}" />
+    <TextBlock x:Name="CurrentText" TextWrapping="Wrap" FontSize="12" Foreground="{DynamicResource Br.Text2}" Margin="0,0,0,8" />
+    <Grid Margin="0,0,0,8">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="10" />
+        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="8" />
+        <ColumnDefinition Width="Auto" />
+      </Grid.ColumnDefinitions>
+      <TextBlock Grid.Column="0" Text="Width" Style="{StaticResource FieldLabel}" Width="40" />
+      <TextBox   Grid.Column="1" x:Name="WidthBox" Style="{StaticResource NumberBox}" AutomationProperties.AutomationId="LabelSize.Width" />
+      <TextBlock Grid.Column="3" Text="Height" Style="{StaticResource FieldLabel}" Width="44" />
+      <TextBox   Grid.Column="4" x:Name="HeightBox" Style="{StaticResource NumberBox}" AutomationProperties.AutomationId="LabelSize.Height" />
+      <ComboBox  Grid.Column="6" x:Name="UnitBox" Width="62" SelectionChanged="OnUnitChanged" />
+    </Grid>
+    <CheckBox x:Name="ScaleObjects" Content="Scale the objects to match the new size" Margin="0,0,0,6" />
+    <CheckBox x:Name="AllPages" Content="Apply to every page in the project" IsChecked="True" Margin="0,0,0,6" />
+    <CheckBox x:Name="RefitSheet" IsChecked="True" Margin="0,0,0,4" Content="Re-fit the sheet grid to this label size" />
+    <TextBlock x:Name="SheetNote" TextWrapping="Wrap" FontSize="11.5" Foreground="{DynamicResource Br.TextMuted}" Margin="22,0,0,8" />
+    <Button Content="Apply size" Style="{StaticResource GhostButton}" HorizontalAlignment="Left" Click="OnApply"
+            AutomationProperties.AutomationId="LabelSize.Apply"
+            ToolTip="Change the label to this size, without changing the sheet chosen above" />
+  </StackPanel>
+</UserControl>

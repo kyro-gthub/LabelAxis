@@ -3,9 +3,10 @@
         helpsvc:HelpGuide.Topic="label-sheets"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:LabelMaker.App.Views"
         Style="{StaticResource AppWindow}"
         Background="{DynamicResource Br.Surface}" TextElement.Foreground="{DynamicResource Br.Text}"
-        Title="Label manager" Height="660" Width="1180" MinHeight="480" MinWidth="980"
+        Title="Label manager" Height="820" Width="1180" MinHeight="600" MinWidth="980"
         WindowStartupLocation="CenterOwner">
   <DockPanel>
 
@@ -79,6 +80,11 @@
         <Button DockPanel.Dock="Top" x:Name="FavoriteButton" Content="☆  Add to favourites" Style="{StaticResource GhostButton}"
                 HorizontalAlignment="Left" Margin="0,0,0,10" Click="OnToggleFavorite" IsEnabled="False"
                 ToolTip="Starred sheets are listed first, under Favourites" />
+        <!-- The project's label size (it was the Label size window); only when a project is open. -->
+        <Border DockPanel.Dock="Bottom" x:Name="SizeSection" Visibility="Collapsed" Margin="0,14,0,0" Padding="0,12,0,0"
+                BorderBrush="{DynamicResource Br.Border}" BorderThickness="0,1,0,0">
+          <local:LabelSizePanel x:Name="SizePanel" />
+        </Border>
         <Border DockPanel.Dock="Bottom" Style="{StaticResource InsetPanel}" Padding="12,10" Margin="0,12,0,0">
           <StackPanel>
             <TextBlock x:Name="PreviewTitle" FontFamily="{StaticResource Font.UiSemiBold}" FontSize="13"

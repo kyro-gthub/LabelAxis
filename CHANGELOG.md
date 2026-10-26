@@ -37,6 +37,9 @@ The full notes of each release, in all ten interface languages, are in
   object of its kind; the button under Text Settings opens it set to do that for a text box.
 - The Help menu opens the help guide, which holds Your first label, Keyboard shortcuts and
   Troubleshooting; their separate menu items are gone.
+- Label size is part of the Label manager (File menu and the page menu): type a size under
+  Label size, or pick a sheet and use it. The separate Label size window is gone.
+- Data > Add data field lists the columns to choose from, as does Add field to label in Records.
 
 ### Fixed
 
@@ -49,6 +52,10 @@ The full notes of each release, in all ten interface languages, are in
   to the kind of printing they were chosen for.
 - Number boxes did not read digits typed on a Persian, Kurdish, Arabic or Hindi keyboard.
 - Some status messages were only partly translated.
+- Add field to label (Records) always added the first column, whichever one was wanted.
+- The Records window's rows were dark text on a dark background in the dark themes.
+- When LabelAxis opened, the label stayed fitted to the window's first, smaller size and sat small
+  in the middle of the canvas; it now fills the canvas until you zoom or scroll yourself.
 - Print settings changed in the Print and thermal print windows (printer, paper, margins,
   copies, scale, thermal settings) were not marked as a change, so they were not saved and
   were lost when the project was opened again.

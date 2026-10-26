@@ -17,7 +17,7 @@ Imprimez une étiquette différente pour chaque ligne d'un tableur ou d'une base
 
 ## Placer des champs sur l'étiquette
 
-Écrivez le nom de la colonne entre accolades dans n'importe quel texte ou code-barres : `{Product}`, `{Price}`, `{Barcode}`. `Données › Ajouter un champ de données…` en insère un pour vous. L'étiquette à l'écran montre l'enregistrement actuel ; les flèches de la barre d'état les parcourent.
+Écrivez le nom de la colonne entre accolades dans n'importe quel texte ou code-barres : `{Product}`, `{Price}`, `{Barcode}`. `Données › Ajouter un champ de données` puis une colonne en insère un pour vous. L'étiquette à l'écran montre l'enregistrement actuel ; les flèches de la barre d'état les parcourent.
 
 ## Champs tout prêts
 
@@ -39,7 +39,7 @@ Entre les accolades, vous pouvez aussi utiliser des fonctions, par exemple `{UPP
 
 Au lieu d'imprimer une étiquette par enregistrement, vous pouvez transformer les enregistrements en pages, pour en modifier certaines à la main ou les imprimer avec d'autres pages :
 
-1. Placez les colonnes sur l'étiquette (`Enregistrements…` › **Ajouter le champ à l'étiquette**, ou tapez `{Product}` dans une zone de texte).
+1. Placez les colonnes sur l'étiquette (`Enregistrements…` › **Ajouter le champ à l'étiquette** puis la colonne, ou tapez `{Product}` dans une zone de texte).
 2. Choisissez `Données` › **Créer des pages…** pour tous les enregistrements, ou ouvrez `Enregistrements…`, sélectionnez ceux que vous voulez (`Ctrl`+clic, `Shift`+clic) et cliquez sur **Créer des pages**. Si aucun n'est sélectionné, tous les enregistrements affichés par le filtre sont utilisés.
 
 Chaque nouvelle page est une copie de l'étiquette affichée, avec les valeurs de cet enregistrement écrites dans ses textes, codes-barres et cellules de tableau, et porte le nom de la première colonne de l'enregistrement. Les dates, compteurs et autres champs restent tels quels, et fonctionnent donc toujours à l'impression des pages. L'impression est ensuite réglée pour imprimer les pages, plusieurs par feuille. C'est une seule étape : `Ctrl+Z` retire toutes les nouvelles pages. Jusqu'à 2 000 pages sont créées à la fois.

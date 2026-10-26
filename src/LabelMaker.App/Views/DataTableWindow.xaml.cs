@@ -239,7 +239,30 @@ public partial class DataTableWindow : Window
 
     private void OnRefresh(object sender, RoutedEventArgs e) => _vm.RefreshData();
 
-    private void OnAddField(object sender, RoutedEventArgs e) => _vm.AddDataFieldCommand.Execute(null);
+    /// <summary>
+    /// Lists the columns to choose from; the one chosen goes on the label. The column of the
+    /// cell last clicked comes first, so clicking a cell and then here adds that column.
+    /// </summary>
+    private void OnAddField(object sender, RoutedEventArgs e)
+    {
+        if (_data is null || _data.Columns.Count == 0 || sender is not Button button)
+        {
+            return;
+        }
+
+        int? current = Grid.CurrentColumn is { } column && _fieldOf.TryGetValue(column, out int index) ? index : null;
+        var menu = new ContextMenu { PlacementTarget = button, Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom };
+        Localization.Localizer.SetOff(menu, true); // column names are the user's own words
+        foreach (DataColumn field in _data.Columns.OrderBy(c => c.Index == current ? 0 : 1).ThenBy(c => c.Index))
+        {
+            var item = new MenuItem { Header = field.Name, FontWeight = field.Index == current ? FontWeights.SemiBold : FontWeights.Normal };
+            string name = field.Name;
+            item.Click += (_, _) => _vm.AddDataFieldCommand.Execute(name);
+            menu.Items.Add(item);
+        }
+
+        menu.IsOpen = true;
+    }
 
     private void OnGoToRecord(object sender, RoutedEventArgs e) => ShowSelectedRecord();
 

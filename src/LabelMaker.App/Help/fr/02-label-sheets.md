@@ -31,12 +31,12 @@ Le dessin à droite se met à jour pendant la saisie. `Enregistrer` le garde sou
 
 ## Changer la taille d'étiquette d'un projet
 
-`Page › Taille de l'étiquette…` (ou `Fichier › Taille de l'étiquette…`) change la taille de l'étiquette que vous concevez :
+`Fichier › Gestionnaire d'étiquettes…` (aussi **Gestionnaire d'étiquettes…** par clic droit sur une page) change la taille de l'étiquette que vous concevez, dans **Taille de l'étiquette**, sous l'aperçu de la planche :
 
-- Saisissez une nouvelle **largeur et hauteur**, ou choisissez un format dans la liste des feuilles d'étiquettes en dessous (favoris d'abord ; cherchez par code ou par taille, comme **38x21**).
+- Tapez une nouvelle **largeur et hauteur** puis cliquez sur **Appliquer la taille**. Pour prendre la taille d'une planche de la liste, choisissez-la et cliquez sur **Utiliser cette feuille**.
 - **Mettre les objets à l'échelle** étire tout ce qui est sur l'étiquette à la nouvelle taille.
 - **Appliquer à toutes les pages** change toutes les pages du projet.
-- Après avoir choisi une feuille, **Imprimer aussi sur la feuille …** bascule aussi le projet sur cette feuille, pour que l'impression corresponde.
+- **Réajuster la grille de la feuille** garde le papier et les marges et calcule combien d'étiquettes de la nouvelle taille tiennent en largeur et en hauteur.
 
 ## Rouleaux d'étiquettes thermiques
 

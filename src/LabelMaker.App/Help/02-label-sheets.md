@@ -31,12 +31,12 @@ The drawing on the right updates as you type. `Save` keeps it under **My templat
 
 ## Change the label size of a project
 
-`Page > Label size…` (or `File > Label size…`) changes the size of the label you are designing:
+`File > Label manager…` (also `Label manager…` when you right-click a page) changes the size of the label you are designing, under **Label size** below the sheet preview:
 
-- Type a new **width and height**, or pick a size from the list of label sheets underneath (favourites first; search by code or size, such as **38x21**).
+- Type a new **width and height** and press **Apply size**. To take the size of a sheet in the list instead, choose it and press **Use this sheet**.
 - **Scale the objects** stretches everything on the label to the new size.
 - **Apply to every page** changes all the pages in the project.
-- After picking a sheet, **Also print on the … sheet** switches the project to that sheet as well, so the printout matches.
+- **Re-fit the sheet grid** keeps the paper and margins and works out how many labels of the new size fit across and down.
 
 ## Thermal label rolls
 

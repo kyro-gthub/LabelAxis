@@ -366,4 +366,13 @@ public partial class MainWindow : Window
 
         base.OnClosing(e);
     }
+
+    /// <summary>Data › Add data field › a column: puts that column on the label.</summary>
+    private void OnAddDataFieldItem(object sender, RoutedEventArgs e)
+    {
+        if (sender is MenuItem { DataContext: string field })
+        {
+            _vm.AddDataFieldCommand.Execute(field);
+        }
+    }
 }

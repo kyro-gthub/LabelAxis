@@ -51,6 +51,10 @@ public sealed partial class DesignerCanvas : FrameworkElement
     private Vector _pan;
     private bool _viewInitialised;
 
+    // True while the view is the fitted one nobody has zoomed or scrolled since: it is fitted again
+    // when the canvas changes size (the window opening, growing, or maximising).
+    private bool _viewIsFitted;
+
     // interaction state
     private bool _spaceDown;
     private bool _panning;
@@ -155,6 +159,7 @@ public sealed partial class DesignerCanvas : FrameworkElement
             _zoom = Math.Clamp(v.Zoom, MinZoom, MaxZoom);
             _pan = v.Pan;
             _viewInitialised = true;
+            _viewIsFitted = false;
             ZoomChanged?.Invoke(this, EventArgs.Empty);
             InvalidateVisual();
         }

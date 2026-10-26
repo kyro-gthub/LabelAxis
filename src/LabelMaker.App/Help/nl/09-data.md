@@ -17,7 +17,7 @@ Druk voor elke rij van een spreadsheet of database een ander etiket af: namen, p
 
 ## Velden op het etiket zetten
 
-Schrijf de kolomnaam tussen accolades in een tekst of barcode: `{Product}`, `{Price}`, `{Barcode}`. `Gegevens › Gegevensveld toevoegen…` voegt er een voor u in. Het etiket op het scherm toont de huidige record; de pijlen in de statusbalk lopen ze door.
+Schrijf de kolomnaam tussen accolades in een tekst of barcode: `{Product}`, `{Price}`, `{Barcode}`. `Gegevens › Gegevensveld toevoegen` en een kolom voegt er een voor u in. Het etiket op het scherm toont de huidige record; de pijlen in de statusbalk lopen ze door.
 
 ## Kant-en-klare velden
 
@@ -39,7 +39,7 @@ Tussen de accolades kunt u ook functies gebruiken, bijvoorbeeld `{UPPER(Product)
 
 In plaats van één etiket per record af te drukken, kunt u de records in pagina's omzetten, om er sommige met de hand te wijzigen of ze samen met andere pagina's af te drukken:
 
-1. Zet de kolommen op het etiket (`Records…` › **Veld aan etiket toevoegen**, of typ `{Product}` in een tekstvak).
+1. Zet de kolommen op het etiket (`Records…` › **Veld aan etiket toevoegen** en de kolom, of typ `{Product}` in een tekstvak).
 2. Kies `Gegevens` › **Pagina's maken…** voor elk record, of open `Records…`, selecteer de records die u wilt (`Ctrl`+klik, `Shift`+klik) en klik op **Pagina's maken**. Als er geen geselecteerd zijn, worden alle records gebruikt die het filter toont.
 
 Elke nieuwe pagina is een kopie van het etiket op het scherm met de waarden van dat record in de tekst, barcodes en tabelcellen, en krijgt de eerste kolom van het record als naam. Datums, tellers en andere plaatshouders blijven zoals ze zijn, dus ze werken nog steeds als de pagina's worden afgedrukt. Daarna is het afdrukken ingesteld op de pagina's, meerdere per vel. Het is één stap: `Ctrl+Z` haalt alle nieuwe pagina's weg. Er worden maximaal 2.000 pagina's tegelijk gemaakt.

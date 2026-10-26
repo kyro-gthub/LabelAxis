@@ -31,12 +31,12 @@ El dibujo de la derecha se actualiza mientras escribe. `Guardar` lo conserva en 
 
 ## Cambiar el tamaño de etiqueta de un proyecto
 
-`Página › Tamaño de etiqueta…` (o `Archivo › Tamaño de etiqueta…`) cambia el tamaño de la etiqueta que diseña:
+`Archivo › Administrador de etiquetas…` (también **Administrador de etiquetas…** con clic derecho en una página) cambia el tamaño de la etiqueta que diseña, en **Tamaño de la etiqueta**, bajo la vista previa de la hoja:
 
-- Escriba un nuevo **ancho y alto**, o elija un tamaño de la lista de hojas de etiquetas de abajo (favoritos primero; busque por código o tamaño, como **38x21**).
+- Escriba un nuevo **ancho y alto** y pulse **Aplicar tamaño**. Para tomar el tamaño de una hoja de la lista, elíjala y pulse **Usar esta hoja**.
 - **Escalar los objetos** estira todo lo que hay en la etiqueta al nuevo tamaño.
 - **Aplicar a todas las páginas** cambia todas las páginas del proyecto.
-- Tras elegir una hoja, **Imprimir también en la hoja …** cambia también el proyecto a esa hoja, para que la impresión coincida.
+- **Reajustar la cuadrícula de la hoja** conserva el papel y los márgenes y calcula cuántas etiquetas del nuevo tamaño caben a lo ancho y a lo alto.
 
 ## Rollos de etiquetas térmicas
 

@@ -45,7 +45,14 @@
                   ToolTip="Insert an empty record below the selected one" />
           <Button x:Name="DeleteButton" Content="Delete" Style="{StaticResource GhostButton}" Margin="0,0,6,0"
                   Click="OnDelete" ToolTip="Delete the selected records (Delete)" />
-          <Button Content="Add field to label" Style="{StaticResource GhostButton}" Margin="0,0,6,0" Click="OnAddField" />
+          <Button Style="{StaticResource GhostButton}" Margin="0,0,6,0" Click="OnAddField"
+                  AutomationProperties.AutomationId="Records.AddField"
+                  ToolTip="Choose a column: it goes on the label as a text box that shows each record's value">
+            <StackPanel Orientation="Horizontal">
+              <TextBlock Text="Add field to label" VerticalAlignment="Center" />
+              <Path Data="M 0,0 L 8,0 L 4,5 Z" Fill="{DynamicResource Br.TextMuted}" Margin="6,0,0,0" VerticalAlignment="Center" />
+            </StackPanel>
+          </Button>
           <Button Content="Show on canvas" Style="{StaticResource GhostButton}" Click="OnGoToRecord"
                   ToolTip="Show the selected record on the label (double-click a row)" />
         </StackPanel>

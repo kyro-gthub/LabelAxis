@@ -9,6 +9,7 @@ Nouveautés
 • Historique des annulations : le nouvel onglet Historique, à côté de Propriétés, Calques et Page (aussi Édition › Historique des annulations), liste chaque étape. Cliquez sur l'une pour y revenir directement, ou pour avancer à nouveau.
 • Courbe dans le menu Lignes : une ligne courbe. Double-cliquez dessus et faites glisser ses points pour changer la courbure.
 • Appliquer la mise en forme aux autres pages est désormais un seul outil (menu Édition, menu de la page, onglet Page) : il peut aussi donner l'aspect d'une zone de texte à toutes les zones de texte. Le menu Aide est plus simple : Votre première étiquette, Raccourcis clavier et Dépannage sont dans le guide d'aide.
+• La taille de l'étiquette fait désormais partie du Gestionnaire d'étiquettes : tapez une nouvelle taille sous Taille de l'étiquette, ou choisissez une planche et utilisez-la.
 • Le guide d'aide décrit tout cela, ainsi que la mise à jour d'un PC sans internet, dans les dix langues.
 
 Corrections
@@ -21,3 +22,6 @@ Corrections
 • Après une annulation, un objet qui n'est plus sur l'étiquette n'est plus sélectionné.
 • Les enregistrements choisis auparavant pour l'impression ne limitent plus les pages imprimées.
 • Les zones numériques lisent les chiffres tapés sur un clavier persan, kurde, arabe ou hindi.
+• Ajouter le champ à l'étiquette (fenêtre Enregistrements) et Données › Ajouter un champ de données vous laissent choisir la colonne ; avant, la première colonne était toujours ajoutée.
+• La fenêtre Enregistrements est lisible avec les thèmes sombres.
+• À l'ouverture de LabelAxis, l'étiquette remplit la zone de travail au lieu de rester petite au milieu.

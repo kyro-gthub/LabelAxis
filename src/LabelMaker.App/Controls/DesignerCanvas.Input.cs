@@ -229,6 +229,7 @@ public sealed partial class DesignerCanvas
         if (_panning)
         {
             _pan = _panStartValue + (screen - _panStartScreen);
+            _viewIsFitted = false;
             ViewChanged?.Invoke(this, EventArgs.Empty);
             InvalidateVisual();
             return;
@@ -717,6 +718,7 @@ public sealed partial class DesignerCanvas
         if (_session.Selection.Count == 0)
         {
             _pan -= delta * Scale;
+            _viewIsFitted = false;
             InvalidateVisual();
             return;
         }

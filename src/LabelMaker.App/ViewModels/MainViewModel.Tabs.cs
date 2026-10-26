@@ -200,7 +200,7 @@ public sealed partial class MainViewModel
                  {
                      nameof(ActiveTab), nameof(PrinterName), nameof(CalibrationStatus), nameof(IsCalibrated),
                      nameof(TemplateSummary), nameof(LockGuides), nameof(SharedGuides), nameof(RecordText), nameof(DataSourceSummary),
-                     nameof(HasData), nameof(CanRefreshData), nameof(ActivePageName), nameof(ZoomText), nameof(SelectionInfo),
+                     nameof(HasData), nameof(DataFieldNames), nameof(CanRefreshData), nameof(ActivePageName), nameof(ZoomText), nameof(SelectionInfo),
                  })
         {
             OnPropertyChanged(name);
@@ -314,6 +314,7 @@ public sealed partial class MainViewModel
     private void Session_DataChanged(object? sender, EventArgs e)
     {
         OnPropertyChanged(nameof(RecordText));
+        OnPropertyChanged(nameof(DataFieldNames));
         OnPropertyChanged(nameof(DataSourceSummary));
         OnPropertyChanged(nameof(HasData));
         OnPropertyChanged(nameof(HasData));

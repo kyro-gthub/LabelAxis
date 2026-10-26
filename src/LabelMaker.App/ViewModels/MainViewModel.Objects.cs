@@ -337,9 +337,10 @@ public sealed partial class MainViewModel
     }
 
 
-    private void AddDataField()
+    /// <summary>A text box showing <paramref name="field"/> (a column of the records; the first one when none is named).</summary>
+    private void AddDataField(string? field)
     {
-        string field = _session.Data?.Columns.FirstOrDefault()?.Name ?? "Field";
+        field = !string.IsNullOrWhiteSpace(field) ? field : _session.Data?.Columns.FirstOrDefault()?.Name ?? "Field";
         AddObject(new TextObject { Name = field, Content = RichTextContent.FromPlainText($"{{{field}}}"), Bounds = NewBounds(35, 7) });
     }
 
