@@ -96,6 +96,12 @@ public sealed class VariableResolver : IFieldValueSource
             return LookupName(inner)?.AsText() ?? string.Empty;
         }
 
+        // A column whose name reads like a calculation ("Price (USD)", "Unit-Price") is the column.
+        if (_ctx.Record is not null && _ctx.Record.TryGetValue(inner.Trim(), out string? cell))
+        {
+            return cell ?? string.Empty;
+        }
+
         try
         {
             return _engine.EvaluateToString(inner);

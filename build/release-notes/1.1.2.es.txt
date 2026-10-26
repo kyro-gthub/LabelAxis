@@ -25,3 +25,5 @@ Correcciones
 • Añadir campo a la etiqueta (ventana Registros) y Datos › Añadir campo de datos le dejan elegir la columna; antes siempre se añadía la primera.
 • La ventana Registros se puede leer en los temas oscuros.
 • Al abrir LabelAxis, la etiqueta llena el lienzo en lugar de quedarse pequeña en el centro.
+• Los campos de datos añadidos uno tras otro reciben cada uno una fila libre en la etiqueta, con un tamaño adecuado, en lugar de quedar unos encima de otros.
+• Las columnas con paréntesis en el nombre, como "Price (USD)", o con letras no latinas muestran sus valores en la etiqueta.

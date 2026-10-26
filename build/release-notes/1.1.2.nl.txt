@@ -25,3 +25,5 @@ Oplossingen
 • Veld aan etiket toevoegen (venster Records) en Gegevens › Gegevensveld toevoegen laten u de kolom kiezen; eerder werd altijd de eerste kolom toegevoegd.
 • Het venster Records is leesbaar in de donkere thema's.
 • Als LabelAxis opent, vult het etiket het werkvlak in plaats van klein in het midden te staan.
+• Gegevensvelden die na elkaar worden toegevoegd, krijgen elk een vrije rij op het etiket, in een passende grootte, in plaats van op elkaar te belanden.
+• Kolommen met haakjes in de naam, zoals "Price (USD)", of met niet-Latijnse letters tonen hun waarden op het etiket.

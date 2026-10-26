@@ -2491,5 +2491,6 @@
   "LABEL SIZE": "РАЗМЕР ЭТИКЕТКИ",
   "Now {0} × {1} mm, with no label sheet.": "Сейчас {0} × {1} мм, без листа этикеток.",
   "Now {0} × {1} mm, on the {2} {3} sheet.": "Сейчас {0} × {1} мм, на листе {2} {3}.",
-  "Change the label to this size, without changing the sheet chosen above": "Задать этикетке этот размер, не меняя выбранный выше лист"
+  "Change the label to this size, without changing the sheet chosen above": "Задать этикетке этот размер, не меняя выбранный выше лист",
+  "The label has no free space left, so “{0}” is placed over other objects. Move it, or make room for it.": "На этикетке не осталось свободного места, поэтому «{0}» размещено поверх других объектов. Переместите его или освободите для него место."
 }

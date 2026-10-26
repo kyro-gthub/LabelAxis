@@ -25,3 +25,5 @@ Fixes
 • Add field to label (Records window) and Data › Add data field let you choose the column; before, the first column was always added.
 • The Records window is readable in the dark themes.
 • When LabelAxis opens, the label fills the canvas instead of sitting small in the middle.
+• Data fields added one after another each get a free row on the label, in a size that suits it, instead of landing on top of each other.
+• Columns with brackets in their name, such as "Price (USD)", or with non-Latin letters show their values on the label.

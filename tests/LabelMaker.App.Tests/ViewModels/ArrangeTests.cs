@@ -129,4 +129,36 @@ public sealed class ArrangeTests
         added.Content.PlainText.Should().Be("{Price}");
         added.Name.Should().Be("Price");
     });
+
+    [Fact]
+    public void Data_fields_added_one_after_another_go_in_free_rows_and_say_when_the_label_is_full() => AppHarness.Run(h =>
+    {
+        h.Session.ActiveLabel.Objects.Clear();
+        h.Session.SetData(
+            Core.Data.DataSet.FromRows(new[] { "SKU", "Price (USD)", "Description" },
+                new List<string[]> { new[] { "PRD-0001", "$4.98", "Medium-bristle toothbrush, assorted colours" } }),
+            new DataConnectionModel { Name = "products.xlsx", Kind = DataSourceKind.Xlsx });
+
+        foreach (string field in new[] { "SKU", "Price (USD)", "Description" })
+        {
+            h.ViewModel.AddDataFieldCommand.Execute(field);
+        }
+
+        var boxes = h.Session.ActiveLabel.Objects.OfType<TextObject>().ToList();
+        boxes.Should().HaveCount(3);
+        for (int i = 1; i < boxes.Count; i++)
+        {
+            boxes[i].Bounds.Top.Should().BeGreaterThanOrEqualTo(boxes[i - 1].Bounds.Bottom - 0.01, "each field has a row of its own");
+        }
+
+        boxes.Should().OnlyContain(b => b.Bounds.Bottom <= h.Session.ActiveLabel.SizeMm.Height + 0.01, "on the label");
+        boxes.Should().OnlyContain(b => b.AutoFit == Core.Model.Text.TextAutoFit.ShrinkToFit, "a long value shrinks instead of growing off the label");
+
+        for (int i = 0; i < 6; i++)
+        {
+            h.ViewModel.AddDataFieldCommand.Execute("SKU");
+        }
+
+        h.ViewModel.StatusText.Should().Contain("no free space");
+    });
 }

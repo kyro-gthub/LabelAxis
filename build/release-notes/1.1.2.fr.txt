@@ -25,3 +25,5 @@ Corrections
 • Ajouter le champ à l'étiquette (fenêtre Enregistrements) et Données › Ajouter un champ de données vous laissent choisir la colonne ; avant, la première colonne était toujours ajoutée.
 • La fenêtre Enregistrements est lisible avec les thèmes sombres.
 • À l'ouverture de LabelAxis, l'étiquette remplit la zone de travail au lieu de rester petite au milieu.
+• Les champs de données ajoutés l'un après l'autre ont chacun une ligne libre sur l'étiquette, dans une taille adaptée, au lieu de se superposer.
+• Les colonnes dont le nom contient des parenthèses, comme « Price (USD) », ou des lettres non latines affichent leurs valeurs sur l'étiquette.

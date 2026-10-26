@@ -53,6 +53,11 @@ The full notes of each release, in all ten interface languages, are in
 - Number boxes did not read digits typed on a Persian, Kurdish, Arabic or Hindi keyboard.
 - Some status messages were only partly translated.
 - Add field to label (Records) always added the first column, whichever one was wanted.
+- Data fields added one after another all landed in the same spot in the middle of the label, and a
+  long value grew past its edge; each now goes in a free row, in a size that suits the label, and a
+  long value shrinks to fit its box.
+- A column whose name has brackets, such as "Price (USD)", or letters other than Latin ones, showed
+  nothing on the label; it is filled in now, and making pages from records finds it too.
 - The Records window's rows were dark text on a dark background in the dark themes.
 - When LabelAxis opened, the label stayed fitted to the window's first, smaller size and sat small
   in the middle of the canvas; it now fills the canvas until you zoom or scroll yourself.

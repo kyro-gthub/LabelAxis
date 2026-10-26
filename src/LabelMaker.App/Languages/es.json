@@ -2491,5 +2491,6 @@
   "LABEL SIZE": "TAMAÑO DE LA ETIQUETA",
   "Now {0} × {1} mm, with no label sheet.": "Ahora {0} × {1} mm, sin hoja de etiquetas.",
   "Now {0} × {1} mm, on the {2} {3} sheet.": "Ahora {0} × {1} mm, en la hoja {2} {3}.",
-  "Change the label to this size, without changing the sheet chosen above": "Cambiar la etiqueta a este tamaño, sin cambiar la hoja elegida arriba"
+  "Change the label to this size, without changing the sheet chosen above": "Cambiar la etiqueta a este tamaño, sin cambiar la hoja elegida arriba",
+  "The label has no free space left, so “{0}” is placed over other objects. Move it, or make room for it.": "La etiqueta ya no tiene espacio libre, así que «{0}» se coloca sobre otros objetos. Muévalo o hágale sitio."
 }

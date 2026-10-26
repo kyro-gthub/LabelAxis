@@ -13,8 +13,13 @@ public static partial class TokenScanner
     [GeneratedRegex(@"\{([^{}]+)\}", RegexOptions.CultureInvariant)]
     private static partial Regex SimpleToken();
 
-    [GeneratedRegex(@"[A-Za-z_][A-Za-z0-9_ ]*", RegexOptions.CultureInvariant)]
+    // Letters of any alphabet: a column may be called "Product" or "اسم المنتج".
+    [GeneratedRegex(@"[\p{L}_][\p{L}\p{Mn}\p{Nd}_ ]*", RegexOptions.CultureInvariant)]
     private static partial Regex Identifier();
+
+    // A column name with a unit or note in brackets after a space, "Price (USD)": one name, not a call.
+    [GeneratedRegex(@"^[\p{L}_][\p{L}\p{Mn}\p{Nd}_ .#%/-]* \([^(){}]*\)$", RegexOptions.CultureInvariant)]
+    private static partial Regex NameWithNote();
 
     /// <summary>True when the string contains at least one <c>{token}</c>.</summary>
     public static bool HasTokens(string? text) =>
@@ -38,6 +43,16 @@ public static partial class TokenScanner
 
             // Bare "{Field Name}" — a single identifier, no function call / operator.
             if (Identifier().Match(inner) is { Success: true, Value: var whole } && whole == inner)
+            {
+                if (seen.Add(inner))
+                {
+                    yield return inner;
+                }
+
+                continue;
+            }
+
+            if (NameWithNote().IsMatch(inner))
             {
                 if (seen.Add(inner))
                 {

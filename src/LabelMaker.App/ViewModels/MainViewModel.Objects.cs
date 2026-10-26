@@ -341,7 +341,63 @@ public sealed partial class MainViewModel
     private void AddDataField(string? field)
     {
         field = !string.IsNullOrWhiteSpace(field) ? field : _session.Data?.Columns.FirstOrDefault()?.Name ?? "Field";
-        AddObject(new TextObject { Name = field, Content = RichTextContent.FromPlainText($"{{{field}}}"), Bounds = NewBounds(35, 7) });
+
+        // One line of text in a size that suits the label, across its width, in the first row
+        // nothing else is in, so fields added one after another do not land on top of each other.
+        // A long value (a description) shrinks to fit its box instead of growing off the label.
+        SizeMm label = _session.ActiveLabel.SizeMm;
+        double fontPt = Math.Clamp(Math.Round(label.Height * 0.35 * 2) / 2, 5, 10);
+        double lineMm = Math.Round(UnitConverter.PointsToMm(fontPt) * 1.3 + 0.6, 2);
+        double margin = Math.Min(2, label.Width * 0.05);
+        double width = Math.Max(5, label.Width - (2 * margin));
+        double height = Math.Min(lineMm, label.Height);
+        (double top, bool free) = RowFor(margin, width, height, margin);
+        AddObject(new TextObject
+        {
+            Name = field,
+            Content = RichTextContent.FromPlainText($"{{{field}}}"),
+            FontSizePt = fontPt,
+            AutoFit = TextAutoFit.ShrinkToFit,
+            Bounds = new RectMm(margin, top, width, height),
+        });
+
+        if (!free)
+        {
+            StatusText = Localization.Localizer.F("The label has no free space left, so “{0}” is placed over other objects. Move it, or make room for it.", field);
+        }
+    }
+
+    /// <summary>
+    /// Where a new box <paramref name="width"/> × <paramref name="height"/> at <paramref name="left"/>
+    /// goes: the first row from the top that no visible object reaches into, or, when the label is
+    /// full, the row that covers the least of the others, so new objects do not all land in one spot.
+    /// </summary>
+    private (double Top, bool Free) RowFor(double left, double width, double height, double margin)
+    {
+        LabelDocument label = _session.ActiveLabel;
+        double lowest = Math.Max(0, label.SizeMm.Height - height);
+        var taken = label.Objects.Where(o => o.Visible).Select(o => o.Bounds).ToList();
+        double best = 0, leastCovered = double.MaxValue;
+        for (double y = Math.Min(margin, lowest); y <= lowest + 0.001; y += 0.25)
+        {
+            var row = new RectMm(left, y, width, height);
+            double covered = taken.Sum(b => Overlap(row, b));
+            if (covered < 0.001)
+            {
+                return (Math.Round(y, 2), true);
+            }
+
+            if (covered < leastCovered - 0.001)
+            {
+                (best, leastCovered) = (y, covered);
+            }
+        }
+
+        return (Math.Round(best, 2), false);
+
+        static double Overlap(RectMm a, RectMm b) =>
+            Math.Max(0, Math.Min(a.Right, b.Right) - Math.Max(a.Left, b.Left)) *
+            Math.Max(0, Math.Min(a.Bottom, b.Bottom) - Math.Max(a.Top, b.Top));
     }
 
     private void DeleteSelection()
