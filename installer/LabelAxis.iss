@@ -58,11 +58,15 @@ ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 MinVersion=10.0.14393
 
-; Look and feel
-WizardStyle=modern
-WizardSizePercent=110
-WizardImageFile=assets\wizard-large-100.bmp,assets\wizard-large-150.bmp,assets\wizard-large-200.bmp
-WizardSmallImageFile=assets\wizard-small-100.bmp,assets\wizard-small-150.bmp,assets\wizard-small-200.bmp
+; Look and feel (Inno Setup 6.7 or later): Windows 11 controls, light or dark as Windows is set.
+; The pictures are drawn by assets\make-wizard-images.ps1 at the sizes Setup shows them.
+WizardStyle=modern dynamic windows11 hidebevels
+WizardImageFile=assets\wizard-light-202.bmp,assets\wizard-light-336.bmp,assets\wizard-light-430.bmp
+WizardImageFileDynamicDark=assets\wizard-dark-202.bmp,assets\wizard-dark-336.bmp,assets\wizard-dark-430.bmp
+WizardImageBackColor=#1543b5
+WizardImageBackColorDynamicDark=#0a1022
+WizardSmallImageFile=assets\wizard-mark-58.png,assets\wizard-mark-97.png,assets\wizard-mark-124.png
+WizardSmallImageFileDynamicDark=assets\wizard-mark-58.png,assets\wizard-mark-97.png,assets\wizard-mark-124.png
 SetupIconFile=assets\icon.ico
 ShowLanguageDialog=auto
 

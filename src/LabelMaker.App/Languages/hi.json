@@ -2500,5 +2500,6 @@
   "“{0}” holds barcodes. It can go on the label as a barcode that scans, or as its text.": "\"{0}\" में बारकोड हैं। इसे लेबल पर स्कैन होने वाले बारकोड के रूप में, या टेक्स्ट के रूप में रखा जा सकता है।",
   "{0} (suggested)": "{0} (सुझाया गया)",
   "Every value fits this type.": "हर मान इस प्रकार में ठीक बैठता है।",
-  "{0} of the values do not fit this type; those labels would show a red outline instead of bars.": "{0} मान इस प्रकार में ठीक नहीं बैठते; उन लेबल पर बार की जगह लाल रूपरेखा दिखेगी।"
+  "{0} of the values do not fit this type; those labels would show a red outline instead of bars.": "{0} मान इस प्रकार में ठीक नहीं बैठते; उन लेबल पर बार की जगह लाल रूपरेखा दिखेगी।",
+  "The printer has no paper this size, so it prints on {0}.": "प्रिंटर में इस आकार का कागज़ नहीं है, इसलिए वह {0} पर छापता है।"
 }

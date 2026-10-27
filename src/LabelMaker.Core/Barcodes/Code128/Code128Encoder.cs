@@ -46,7 +46,7 @@ public static class Code128Encoder
         codes.Add((int)(sum % 103));
         codes.Add(Code128Patterns.Stop);
 
-        return BuildSymbol(symbology, codes, HumanReadable(data), Math.Max(quietZoneModules, 10));
+        return BuildSymbol(symbology, codes, HumanReadable(data), Math.Max(quietZoneModules, 0));
     }
 
     /// <summary>

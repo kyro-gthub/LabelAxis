@@ -425,7 +425,7 @@ public static partial class DesignBuilder
                 HumanReadable = digits ? HumanReadablePosition.Below : HumanReadablePosition.None,
                 ModuleWidthMm = 0.3,
                 BarHeightMm = Math.Max(4, bounds.Height - (digits ? 3 : 0)),
-                QuietZoneModules = symbology.Is2D() ? 0 : 10,
+                QuietZoneModules = symbology.StandardQuietZone(),
             },
         };
     }

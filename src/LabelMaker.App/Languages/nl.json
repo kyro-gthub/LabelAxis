@@ -2500,5 +2500,6 @@
   "“{0}” holds barcodes. It can go on the label as a barcode that scans, or as its text.": "\"{0}\" bevat barcodes. Het kan op het etiket als een barcode die scant, of als tekst.",
   "{0} (suggested)": "{0} (voorgesteld)",
   "Every value fits this type.": "Elke waarde past bij dit type.",
-  "{0} of the values do not fit this type; those labels would show a red outline instead of bars.": "{0} van de waarden passen niet bij dit type; die etiketten zouden een rode omlijning tonen in plaats van strepen."
+  "{0} of the values do not fit this type; those labels would show a red outline instead of bars.": "{0} van de waarden passen niet bij dit type; die etiketten zouden een rode omlijning tonen in plaats van strepen.",
+  "The printer has no paper this size, so it prints on {0}.": "De printer heeft geen papier van dit formaat en drukt daarom af op {0}."
 }

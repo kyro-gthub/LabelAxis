@@ -2500,5 +2500,6 @@
   "“{0}” holds barcodes. It can go on the label as a barcode that scans, or as its text.": "“{0}”包含条码。它可以作为可扫描的条码放到标签上，也可以作为文本。",
   "{0} (suggested)": "{0}（推荐）",
   "Every value fits this type.": "所有值都适用于此类型。",
-  "{0} of the values do not fit this type; those labels would show a red outline instead of bars.": "有 {0} 个值不适用于此类型；这些标签上将显示红色轮廓而不是条码。"
+  "{0} of the values do not fit this type; those labels would show a red outline instead of bars.": "有 {0} 个值不适用于此类型；这些标签上将显示红色轮廓而不是条码。",
+  "The printer has no paper this size, so it prints on {0}.": "打印机没有这种尺寸的纸张，因此会打印在 {0} 上。"
 }

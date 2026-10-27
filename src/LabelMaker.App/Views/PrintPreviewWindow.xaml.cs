@@ -4,6 +4,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using LabelMaker.App.Localization;
 using LabelMaker.App.Printing;
 using LabelMaker.App.Services;
 using LabelMaker.Core.Diagnostics;
@@ -125,6 +126,13 @@ public partial class PrintPreviewWindow : Window
                   (_printServer.IsCalibrated(printer) || Math.Abs(settings.ScalePercent - 100) > 0.01 ? " (as printed, with calibration and scale)" : string.Empty);
             LeftStatus.ToolTip = LeftStatus.Text;
             RightStatus.Text = $"{printer ?? "No printer"} · {DescribeContent(settings)} · {settings.ScalePercent:0.#}% scale";
+            string? otherPaper = t is null ? null : _printServer.GetMedia(printer, t.EffectivePage.WidthMm, t.EffectivePage.HeightMm).PrinterPaper;
+            if (otherPaper is not null)
+            {
+                RightStatus.Text += " · " + Localizer.F("The printer has no paper this size, so it prints on {0}.", otherPaper);
+            }
+
+            RightStatus.ToolTip = RightStatus.Text;
         }
         catch (Exception ex) when (Faults.IsReportable(ex))
         {
@@ -367,6 +375,33 @@ public partial class PrintPreviewWindow : Window
 
         Chain(across, horizontal: true, guideToMm: first.Y, pageExtentMm: m.PageWidthMm);
         Chain(down, horizontal: false, guideToMm: first.X, pageExtentMm: m.PageHeightMm);
+        MakeRoomForTags(Px(m.PageWidthMm), Px(m.PageHeightMm));
+    }
+
+    /// <summary>
+    /// Widens the room around the sheet where a tag reaches past it ("bottom 11.09 mm" is wider
+    /// than the left gutter, and the last tag of a chain can be pushed past the paper's end),
+    /// so every tag can be seen in full instead of being cut off at the edge of the view.
+    /// </summary>
+    private void MakeRoomForTags(double pageWidthPx, double pageHeightPx)
+    {
+        const double Spare = 8;
+        double left = 0, top = 0, right = 0, bottom = 0;
+        foreach (Border tag in MeasureLayer.Children.OfType<Border>())
+        {
+            double x = Canvas.GetLeft(tag), y = Canvas.GetTop(tag);
+            Size size = tag.DesiredSize;
+            left = Math.Max(left, -x);
+            top = Math.Max(top, -y);
+            right = Math.Max(right, x + size.Width - pageWidthPx);
+            bottom = Math.Max(bottom, y + size.Height - pageHeightPx);
+        }
+
+        Sheet.Margin = new Thickness(
+            Math.Max(MeasureGutter.Left, left + Spare),
+            Math.Max(MeasureGutter.Top, top + Spare),
+            Math.Max(MeasureGutter.Right, right + Spare),
+            Math.Max(MeasureGutter.Bottom, bottom + Spare));
     }
 
     /// <summary>Millimetres on the sheet to screen pixels from its top-left corner.</summary>
@@ -519,17 +554,29 @@ public partial class PrintPreviewWindow : Window
         Size size = Page(_index).Size;
         Thickness gutter = MeasurementsShown ? MeasureGutter : PlainGutter;
         Sheet.Margin = gutter;
-        if (_fitMode)
-        {
-            double availableW = Math.Max(50, Scroller.ActualWidth - 70 - gutter.Left - gutter.Right);
-            double availableH = Math.Max(50, Scroller.ActualHeight - 70 - gutter.Top - gutter.Bottom);
-            _zoom = Math.Min(availableW / size.Width, availableH / size.Height);
-            _zoom = Math.Clamp(_zoom, 0.05, 8);
-        }
 
-        PageHost.LayoutTransform = new ScaleTransform(_zoom, _zoom);
-        ZoomText.Text = $"{Math.Round(_zoom * 100)}%";
-        DrawMeasurements();
+        // Measurement tags keep their size at any zoom, and a wide one widens the gutter
+        // (MakeRoomForTags), so a fitted sheet is fitted again to the gutter it ended with.
+        for (int pass = 0; pass < 2; pass++)
+        {
+            if (_fitMode)
+            {
+                double availableW = Math.Max(50, Scroller.ActualWidth - 70 - gutter.Left - gutter.Right);
+                double availableH = Math.Max(50, Scroller.ActualHeight - 70 - gutter.Top - gutter.Bottom);
+                _zoom = Math.Min(availableW / size.Width, availableH / size.Height);
+                _zoom = Math.Clamp(_zoom, 0.05, 8);
+            }
+
+            PageHost.LayoutTransform = new ScaleTransform(_zoom, _zoom);
+            ZoomText.Text = $"{Math.Round(_zoom * 100)}%";
+            DrawMeasurements();
+            if (!_fitMode || Sheet.Margin == gutter)
+            {
+                break;
+            }
+
+            gutter = Sheet.Margin;
+        }
     }
 
     private void OnZoomIn(object sender, RoutedEventArgs e) => SetZoom(_zoom * 1.2);

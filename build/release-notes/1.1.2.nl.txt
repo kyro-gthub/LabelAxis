@@ -28,3 +28,5 @@ Oplossingen
 • Als LabelAxis opent, vult het etiket het werkvlak in plaats van klein in het midden te staan.
 • Gegevensvelden die na elkaar worden toegevoegd, krijgen elk een vrije rij op het etiket, in een passende grootte, in plaats van op elkaar te belanden.
 • Kolommen met haakjes in de naam, zoals "Price (USD)", of met niet-Latijnse letters tonen hun waarden op het etiket.
+• Een barcode met een stille zone van 0 heeft zijn streepjes op de randen van zijn kader; Code 128, EAN en UPC hielden wat er ook was ingesteld witruimte binnen het kader.
+• De lijn van de printermarges in het afdrukvoorbeeld loopt niet meer door de laatste rij etiketten als de printer geen papier van het formaat van het vel heeft (het voorbeeld zegt welk papier hij gebruikt), en de onderste maat wordt niet meer afgesneden.

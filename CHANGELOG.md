@@ -71,6 +71,13 @@ The full notes of each release, in all ten interface languages, are in
 - Excel files with a picture whose name is longer than 31 characters failed to import
   ("picture names cannot be more than 31 characters"); their records now import.
 - A duplicated or added page shows in the page list straight away.
+- A quiet zone of 0 put no bars on the edges of the barcode's box: Code 128 kept at least 10
+  modules of white space, EAN and UPC 9, other linear types 10, QR 4. The quiet zone is now used
+  as set; ready-made designs start with the amount each type's standard asks for.
+- Print preview drew the printer margin line through the last row of an A4 sheet when the printer
+  had no A4 paper (a fax driver falls back to Letter, 17.6 mm shorter): the printer's border is now
+  taken from the paper it uses and applied to the sheet, and the status bar names that paper.
+  A measurement tag wider than the room beside the sheet was cut off; the room grows to fit it.
 
 ## [1.1.1] - 2026-10-20
 

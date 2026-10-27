@@ -1,5 +1,6 @@
 using FluentAssertions;
 using LabelMaker.Core.Barcodes;
+using LabelMaker.Core.Units;
 using LabelMaker.Tests.Support;
 using Xunit;
 using ZXing;
@@ -80,5 +81,39 @@ public sealed class BarcodeEngineTests
 
         natural.Width.Should().BeApproximately(symbol.TotalWidthModules * 0.5, 1e-9);
         natural.Height.Should().BeGreaterThan(12); // includes HRI band
+    }
+
+    [Theory]
+    [InlineData(BarcodeSymbology.Code128, "12345678")]
+    [InlineData(BarcodeSymbology.UpcA, "036000291452")]
+    [InlineData(BarcodeSymbology.Ean13, "5901234123457")]
+    [InlineData(BarcodeSymbology.Code39, "ABC123")]
+    [InlineData(BarcodeSymbology.QrCode, "https://example.com")]
+    public void A_quiet_zone_of_0_puts_the_bars_on_the_edges_of_the_box(BarcodeSymbology symbology, string value)
+    {
+        // Code 128 was held to at least 10 modules and EAN / UPC to 9, so the bars stayed
+        // inside their box with white space either side.
+        var spec = new BarcodeSpec { Symbology = symbology, Data = value, ModuleWidthMm = 0.26, BarHeightMm = 10, QuietZoneModules = 0 };
+        BarcodeSymbol symbol = BarcodeEngine.Encode(spec, value);
+        PlacedBarcode placed = BarcodeLayout.PlaceNatural(symbol, spec);
+
+        symbol.QuietZoneModules.Should().Be(0);
+        placed.DarkRects.Min(r => r.X).Should().BeApproximately(0, 1e-9);
+        placed.DarkRects.Max(r => r.Right).Should().BeApproximately(placed.NaturalSizeMm.Width, 1e-9);
+
+        PlacedBarcode fitted = BarcodeLayout.PlaceFit(symbol, spec, new SizeMm(40, 40));
+        fitted.DarkRects.Min(r => r.X).Should().BeApproximately(0, 1e-9);
+        fitted.DarkRects.Max(r => r.Right).Should().BeApproximately(40, 1e-9);
+    }
+
+    [Fact]
+    public void A_quiet_zone_is_used_as_set_and_ready_made_designs_start_from_the_standard_one()
+    {
+        var spec = new BarcodeSpec { Symbology = BarcodeSymbology.Ean13, Data = "5901234123457", QuietZoneModules = 3 };
+        BarcodeEngine.Encode(spec, spec.Data).QuietZoneModules.Should().Be(3);
+
+        BarcodeSymbology.Ean13.StandardQuietZone().Should().Be(9);
+        BarcodeSymbology.QrCode.StandardQuietZone().Should().Be(4);
+        BarcodeSymbology.Code128.StandardQuietZone().Should().Be(10);
     }
 }

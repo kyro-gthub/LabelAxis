@@ -2500,5 +2500,6 @@
   "“{0}” holds barcodes. It can go on the label as a barcode that scans, or as its text.": "«{0}» بارکد دارد. می‌تواند به صورت بارکدی که اسکن می‌شود یا به صورت متن روی برچسب برود.",
   "{0} (suggested)": "{0} (پیشنهادی)",
   "Every value fits this type.": "همه مقدارها با این نوع جور هستند.",
-  "{0} of the values do not fit this type; those labels would show a red outline instead of bars.": "{0} مقدار با این نوع جور نیستند؛ آن برچسب‌ها به جای میله‌ها یک کادر قرمز نشان می‌دهند."
+  "{0} of the values do not fit this type; those labels would show a red outline instead of bars.": "{0} مقدار با این نوع جور نیستند؛ آن برچسب‌ها به جای میله‌ها یک کادر قرمز نشان می‌دهند.",
+  "The printer has no paper this size, so it prints on {0}.": "چاپگر کاغذی به این اندازه ندارد، پس روی {0} چاپ می‌کند."
 }

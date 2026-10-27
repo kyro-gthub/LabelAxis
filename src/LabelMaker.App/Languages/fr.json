@@ -2500,5 +2500,6 @@
   "“{0}” holds barcodes. It can go on the label as a barcode that scans, or as its text.": "« {0} » contient des codes-barres. Il peut aller sur l'étiquette comme un code-barres qui se scanne, ou comme son texte.",
   "{0} (suggested)": "{0} (suggéré)",
   "Every value fits this type.": "Toutes les valeurs conviennent à ce type.",
-  "{0} of the values do not fit this type; those labels would show a red outline instead of bars.": "{0} des valeurs ne conviennent pas à ce type ; ces étiquettes afficheraient un contour rouge au lieu des barres."
+  "{0} of the values do not fit this type; those labels would show a red outline instead of bars.": "{0} des valeurs ne conviennent pas à ce type ; ces étiquettes afficheraient un contour rouge au lieu des barres.",
+  "The printer has no paper this size, so it prints on {0}.": "L'imprimante n'a pas de papier de ce format, elle imprime donc sur du {0}."
 }

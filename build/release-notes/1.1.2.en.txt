@@ -28,3 +28,5 @@ Fixes
 • When LabelAxis opens, the label fills the canvas instead of sitting small in the middle.
 • Data fields added one after another each get a free row on the label, in a size that suits it, instead of landing on top of each other.
 • Columns with brackets in their name, such as "Price (USD)", or with non-Latin letters show their values on the label.
+• A barcode with a quiet zone of 0 has its bars on the edges of its box; Code 128, EAN and UPC kept white space inside the box whatever was set.
+• Print preview's printer margin line no longer crosses the last row of labels when the printer has no paper of the sheet's size (the preview says which paper it uses), and the bottom measurement is no longer cut off.

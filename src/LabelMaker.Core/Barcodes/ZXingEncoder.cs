@@ -86,26 +86,12 @@ public static class ZXingEncoder
             throw new System.FormatException($"{spec.Symbology.DisplayName()} could not encode \"{resolvedValue}\": {ex.Message}", ex);
         }
 
-        int quiet = NormalizeQuietZone(spec, is2d);
+        // As set, down to 0: a quiet zone of 0 puts the bars on the edges of the barcode's box.
+        int quiet = Math.Max(0, spec.QuietZoneModules);
 
         return is2d
             ? BuildMatrixSymbol(spec.Symbology, matrix, resolvedValue, quiet)
             : BuildLinearSymbol(spec.Symbology, matrix, resolvedValue, quiet);
-    }
-
-    private static int NormalizeQuietZone(BarcodeSpec spec, bool is2d)
-    {
-        int requested = spec.QuietZoneModules;
-        int min = spec.Symbology switch
-        {
-            BarcodeSymbology.QrCode => 4,
-            BarcodeSymbology.DataMatrix => 1,
-            BarcodeSymbology.Aztec => 0,
-            BarcodeSymbology.Pdf417 => 2,
-            BarcodeSymbology.Ean13 or BarcodeSymbology.Ean8 or BarcodeSymbology.UpcA or BarcodeSymbology.UpcE => 9,
-            _ => is2d ? 0 : 10,
-        };
-        return Math.Max(requested, min);
     }
 
     private static BarcodeSymbol BuildLinearSymbol(

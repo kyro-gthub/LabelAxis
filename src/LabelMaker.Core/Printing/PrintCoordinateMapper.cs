@@ -20,6 +20,12 @@ public sealed record SheetMedia
     public double ImageableWidthMm { get; init; }
     public double ImageableHeightMm { get; init; }
 
+    /// <summary>
+    /// The paper the printer uses instead, when its driver has none of the sheet's size
+    /// (it falls back to its own default, often Letter); null when it has the sheet's size.
+    /// </summary>
+    public string? PrinterPaper { get; init; }
+
     public static SheetMedia FullBleed(double widthMm, double heightMm) => new()
     {
         PageWidthMm = widthMm,
@@ -27,6 +33,44 @@ public sealed record SheetMedia
         ImageableWidthMm = widthMm,
         ImageableHeightMm = heightMm,
     };
+
+    /// <summary>
+    /// The sheet's printable area from what a driver reports: its imageable area (origin and
+    /// extent) on the paper it actually uses, <paramref name="paperWidthMm"/> ×
+    /// <paramref name="paperHeightMm"/> in either orientation. The printer's border on each
+    /// side is kept, so a driver that answers for Letter does not put the bottom of an A4
+    /// sheet's printable area 17.6 mm too high.
+    /// </summary>
+    public static SheetMedia FromPrinter(
+        double pageWidthMm, double pageHeightMm, double paperWidthMm, double paperHeightMm,
+        double originXMm, double originYMm, double extentWidthMm, double extentHeightMm, string? paperName = null)
+    {
+        // Drivers state paper short side first; turn it the way the sheet is turned.
+        if (paperWidthMm <= 0 || paperHeightMm <= 0)
+        {
+            (paperWidthMm, paperHeightMm) = (pageWidthMm, pageHeightMm);
+        }
+        else if ((pageWidthMm > pageHeightMm) != (paperWidthMm > paperHeightMm))
+        {
+            (paperWidthMm, paperHeightMm) = (paperHeightMm, paperWidthMm);
+        }
+
+        double left = Math.Max(0, originXMm);
+        double top = Math.Max(0, originYMm);
+        double right = Math.Max(0, paperWidthMm - originXMm - extentWidthMm);
+        double bottom = Math.Max(0, paperHeightMm - originYMm - extentHeightMm);
+        bool samePaper = Math.Abs(paperWidthMm - pageWidthMm) < 1 && Math.Abs(paperHeightMm - pageHeightMm) < 1;
+        return new SheetMedia
+        {
+            PageWidthMm = pageWidthMm,
+            PageHeightMm = pageHeightMm,
+            ImageableOriginXMm = left,
+            ImageableOriginYMm = top,
+            ImageableWidthMm = Math.Max(0, pageWidthMm - left - right),
+            ImageableHeightMm = Math.Max(0, pageHeightMm - top - bottom),
+            PrinterPaper = samePaper ? null : paperName ?? $"{paperWidthMm:0.#} × {paperHeightMm:0.#} mm",
+        };
+    }
 }
 
 /// <summary>

@@ -47,7 +47,7 @@ public sealed class BarcodeSpec
     /// <summary>Bar height in millimetres (1D only). 2D symbols are square.</summary>
     public double BarHeightMm { get; set; } = 15.0;
 
-    /// <summary>Quiet zone in modules on each side (min enforced per symbology).</summary>
+    /// <summary>Quiet zone in modules on each side, used as set: 0 puts the bars on the box edges.</summary>
     public int QuietZoneModules { get; set; } = 10;
 
     public HumanReadablePosition HumanReadable { get; set; } = HumanReadablePosition.Below;

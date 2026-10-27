@@ -46,6 +46,20 @@ public static class BarcodeSymbologyInfo
 
     public static bool SupportsHumanReadable(this BarcodeSymbology s) => !s.Is2D();
 
+    /// <summary>
+    /// The quiet zone, in modules, the symbology's standard asks for on each side. Barcodes use
+    /// the quiet zone they are given, 0 included; this is what ready-made designs start with.
+    /// </summary>
+    public static int StandardQuietZone(this BarcodeSymbology s) => s switch
+    {
+        BarcodeSymbology.QrCode => 4,
+        BarcodeSymbology.DataMatrix => 1,
+        BarcodeSymbology.Aztec => 0,
+        BarcodeSymbology.Pdf417 => 2,
+        BarcodeSymbology.Ean13 or BarcodeSymbology.Ean8 or BarcodeSymbology.UpcA or BarcodeSymbology.UpcE => 9,
+        _ => 10,
+    };
+
     public static string DisplayName(this BarcodeSymbology s) => s switch
     {
         BarcodeSymbology.Code128 => "Code 128 (auto)",

@@ -2500,5 +2500,6 @@
   "“{0}” holds barcodes. It can go on the label as a barcode that scans, or as its text.": "«{0}» باڕکۆدی تێدایە. دەتوانرێت وەک باڕکۆدێکی سکانکراو یان وەک دەقەکەی بخرێتە سەر لەیبڵ.",
   "{0} (suggested)": "{0} (پێشنیارکراو)",
   "Every value fits this type.": "هەموو بەهاکان لەگەڵ ئەم جۆرە دەگونجێن.",
-  "{0} of the values do not fit this type; those labels would show a red outline instead of bars.": "{0} لە بەهاکان لەگەڵ ئەم جۆرە ناگونجێن؛ ئەو لەیبڵانە لە جیاتی هێڵەکان چوارچێوەیەکی سوور پیشان دەدەن."
+  "{0} of the values do not fit this type; those labels would show a red outline instead of bars.": "{0} لە بەهاکان لەگەڵ ئەم جۆرە ناگونجێن؛ ئەو لەیبڵانە لە جیاتی هێڵەکان چوارچێوەیەکی سوور پیشان دەدەن.",
+  "The printer has no paper this size, so it prints on {0}.": "چاپکەرەکە کاغەزی ئەم قەبارەیەی نییە، بۆیە لەسەر {0} چاپ دەکات."
 }

@@ -6,7 +6,7 @@
 |---|---|
 | OS | Windows 10 1809+ / Windows 11 (the WPF app is Windows-only) |
 | .NET SDK | **10.0** (`dotnet --version` ≥ 10.0.100) |
-| Inno Setup | 6.x (only for building the installer) — <https://jrsoftware.org/isinfo.php> |
+| Inno Setup | 6.7 or later (only for building the installer) — <https://jrsoftware.org/isinfo.php> |
 
 The engine (`LabelMaker.Core`), export library and CLI target plain `net10.0` and
 build on any OS; only `LabelMaker.App` requires Windows.
@@ -114,7 +114,8 @@ installer lays the files out anyway.
 
 ## Building the installer
 
-1. Install Inno Setup 6 (`ISCC.exe` on `PATH`, or in its usual folders).
+1. Install Inno Setup 6.7 or later (`ISCC.exe` on `PATH`, or in its usual folders). Its wizard pictures are
+   drawn by `installer\assets\make-wizard-images.ps1`; run it again after changing the app icon.
 2. Run `build\installer.ps1` (or `build\release.ps1`). It publishes, lists the files that
    only the offline build has (`installer\obsolete-runtime-files.iss`: the small installer
    removes them when it upgrades an offline install), and compiles both installers:

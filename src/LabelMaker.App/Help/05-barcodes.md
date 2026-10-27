@@ -23,6 +23,7 @@ keywords: barcode, qr, qr code, ean, upc, code 128, code 39, gs1, datamatrix, pd
 - **Data:** what the barcode holds. It can be a field such as `{Barcode}` so each label gets its own.
 - **Human-readable text:** the numbers printed under the bars, with their font and size.
 - **Colours:** keep dark bars on a light background; scanners need the contrast.
+- **Quiet zone:** the white space kept either side of the bars (around a QR code), in bar widths. 0 puts the bars right on the edges of the barcode's box; then leave white space around the box on the label yourself, as scanners need it. Ready-made designs use the amount the barcode's standard asks for.
 
 If the data does not suit the type (for example letters in an EAN-13), the barcode is drawn as a red outline and the panel says why.
 

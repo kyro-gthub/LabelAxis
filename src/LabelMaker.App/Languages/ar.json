@@ -2500,5 +2500,6 @@
   "“{0}” holds barcodes. It can go on the label as a barcode that scans, or as its text.": "يحتوي «{0}» على باركودات. يمكن وضعه على الملصق باركودًا يُمسح ضوئيًا، أو نصًّا.",
   "{0} (suggested)": "{0} (مقترح)",
   "Every value fits this type.": "كل القيم تناسب هذا النوع.",
-  "{0} of the values do not fit this type; those labels would show a red outline instead of bars.": "{0} من القيم لا تناسب هذا النوع؛ ستظهر في تلك الملصقات حدود حمراء بدل الأشرطة."
+  "{0} of the values do not fit this type; those labels would show a red outline instead of bars.": "{0} من القيم لا تناسب هذا النوع؛ ستظهر في تلك الملصقات حدود حمراء بدل الأشرطة.",
+  "The printer has no paper this size, so it prints on {0}.": "لا توجد لدى الطابعة ورقة بهذا الحجم، لذا تطبع على {0}."
 }

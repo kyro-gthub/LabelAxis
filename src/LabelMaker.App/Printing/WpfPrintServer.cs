@@ -124,19 +124,20 @@ public sealed class WpfPrintServer
                 : server.GetPrintQueue(printerName);
 
             // Ask about this sheet's paper, not the driver's default paper.
-            PrintCapabilities caps = queue.GetPrintCapabilities(TicketFor(queue, null, pageWidthMm, pageHeightMm, landscape: false));
+            // A driver without that paper (a fax driver, many US drivers) answers for its own
+            // default, so the area is read against the paper it settled on.
+            PrintTicket ticket = TicketFor(queue, null, pageWidthMm, pageHeightMm, landscape: false);
+            PrintCapabilities caps = queue.GetPrintCapabilities(ticket);
             PageImageableArea? area = caps.PageImageableArea;
             if (area is not null)
             {
-                return new SheetMedia
-                {
-                    PageWidthMm = pageWidthMm,
-                    PageHeightMm = pageHeightMm,
-                    ImageableOriginXMm = UnitConverter.DiuToMm(area.OriginWidth),
-                    ImageableOriginYMm = UnitConverter.DiuToMm(area.OriginHeight),
-                    ImageableWidthMm = UnitConverter.DiuToMm(area.ExtentWidth),
-                    ImageableHeightMm = UnitConverter.DiuToMm(area.ExtentHeight),
-                };
+                PageMediaSize? paper = ticket.PageMediaSize;
+                return SheetMedia.FromPrinter(
+                    pageWidthMm, pageHeightMm,
+                    UnitConverter.DiuToMm(paper?.Width ?? 0), UnitConverter.DiuToMm(paper?.Height ?? 0),
+                    UnitConverter.DiuToMm(area.OriginWidth), UnitConverter.DiuToMm(area.OriginHeight),
+                    UnitConverter.DiuToMm(area.ExtentWidth), UnitConverter.DiuToMm(area.ExtentHeight),
+                    PaperName(paper?.PageMediaSizeName));
             }
         }
         catch (Exception fault)
@@ -146,6 +147,17 @@ public sealed class WpfPrintServer
         }
 
         return SheetMedia.FullBleed(pageWidthMm, pageHeightMm);
+
+        static string? PaperName(PageMediaSizeName? name) => name switch
+        {
+            PageMediaSizeName.ISOA3 => "A3",
+            PageMediaSizeName.ISOA4 => "A4",
+            PageMediaSizeName.ISOA5 => "A5",
+            PageMediaSizeName.ISOA6 => "A6",
+            PageMediaSizeName.NorthAmericaLetter => "Letter",
+            PageMediaSizeName.NorthAmericaLegal => "Legal",
+            _ => null,
+        };
     }
 
     /// <summary>

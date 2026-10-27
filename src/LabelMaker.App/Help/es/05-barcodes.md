@@ -23,6 +23,7 @@ keywords: barcode, qr, qr code, ean, upc, code 128, code 39, gs1, datamatrix, pd
 - **Datos:** lo que contiene el código de barras. Puede ser un campo como `{Barcode}` para que cada etiqueta tenga el suyo.
 - **Texto legible:** los números impresos bajo las barras, con su fuente y tamaño.
 - **Colores:** mantenga barras oscuras sobre fondo claro; los lectores necesitan el contraste.
+- **Zona de silencio:** el espacio en blanco a cada lado de las barras (alrededor de un código QR), en anchos de barra. Con 0 las barras quedan justo en los bordes del cuadro del código; deje usted espacio en blanco alrededor del cuadro en la etiqueta, porque los lectores lo necesitan. Los diseños listos usan lo que pide la norma del código.
 
 Si los datos no encajan con el tipo (por ejemplo, letras en un EAN-13), el código se dibuja como un contorno rojo y el panel explica por qué.
 

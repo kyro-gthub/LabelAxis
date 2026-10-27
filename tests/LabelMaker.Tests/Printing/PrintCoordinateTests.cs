@@ -19,6 +19,37 @@ public sealed class PrintCoordinateTests
     };
 
     [Fact]
+    public void A_driver_answering_for_Letter_keeps_its_border_on_an_A4_sheet()
+    {
+        // A fax driver has no A4: it reported Letter's whole 279.4 mm as printable, and the
+        // preview drew the bottom margin line across the last row of an A4 sheet.
+        SheetMedia media = SheetMedia.FromPrinter(210, 297, 215.9, 279.4, 0, 0, 215.9, 279.4, "Letter");
+
+        media.ImageableWidthMm.Should().BeApproximately(210, 1e-9);
+        media.ImageableHeightMm.Should().BeApproximately(297, 1e-9);
+        media.PrinterPaper.Should().Be("Letter");
+
+        SheetMedia bordered = SheetMedia.FromPrinter(210, 297, 215.9, 279.4, 4.2, 4.2, 207.5, 271, "Letter");
+        bordered.ImageableOriginYMm.Should().BeApproximately(4.2, 1e-9);
+        bordered.ImageableHeightMm.Should().BeApproximately(297 - 4.2 - 4.2, 1e-9);
+        bordered.ImageableWidthMm.Should().BeApproximately(210 - 4.2 - 4.2, 1e-9);
+    }
+
+    [Fact]
+    public void A_driver_with_the_sheets_paper_gives_its_area_as_it_is_in_either_orientation()
+    {
+        SheetMedia portrait = SheetMedia.FromPrinter(210, 297, 210, 297, 3, 5, 204, 287);
+        portrait.PrinterPaper.Should().BeNull();
+        portrait.ImageableHeightMm.Should().BeApproximately(287, 1e-9);
+
+        // Paper sizes come short side first; a landscape sheet turns them.
+        SheetMedia landscape = SheetMedia.FromPrinter(297, 210, 210, 297, 5, 3, 287, 204);
+        landscape.PrinterPaper.Should().BeNull();
+        landscape.ImageableWidthMm.Should().BeApproximately(287, 1e-9);
+        landscape.ImageableHeightMm.Should().BeApproximately(204, 1e-9);
+    }
+
+    [Fact]
     public void Without_calibration_labels_print_where_the_template_puts_them_whatever_the_printer_border()
     {
         // Print pages are positioned from the paper's corner; subtracting the printer's

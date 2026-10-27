@@ -6,7 +6,7 @@
                                              Microsoft first when the PC does not have it
       LabelAxis-Setup-<version>-Offline.exe  everything inside, no download during setup
 
-    Requires Inno Setup 6 (ISCC.exe on PATH, or in its usual install folders).
+    Requires Inno Setup 6.7 or later (ISCC.exe on PATH, or in its usual install folders).
     Usage:  powershell -ExecutionPolicy Bypass -File build\installer.ps1 [-OutputDir <folder>; default: artifacts\out] [-SkipPublish] [-UpdateUrl https://…]
 #>
 param(

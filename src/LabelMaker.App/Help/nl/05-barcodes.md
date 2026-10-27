@@ -23,6 +23,7 @@ keywords: barcode, qr, qr code, ean, upc, code 128, code 39, gs1, datamatrix, pd
 - **Gegevens:** wat de barcode bevat. Dit kan een veld zijn zoals `{Barcode}`, zodat elk etiket zijn eigen krijgt.
 - **Leesbare tekst:** de cijfers onder de strepen, met hun lettertype en grootte.
 - **Kleuren:** houd donkere strepen op een lichte achtergrond; scanners hebben dat contrast nodig.
+- **Stille zone:** de witte ruimte aan weerszijden van de streepjes (rond een QR-code), in streepbreedtes. Met 0 komen de streepjes precies op de randen van het barcodekader; laat dan zelf witruimte rond het kader op het etiket, want scanners hebben die nodig. Kant-en-klare ontwerpen gebruiken wat de norm van de barcode vraagt.
 
 Passen de gegevens niet bij het type (bijvoorbeeld letters in een EAN-13), dan wordt de barcode als rode omtrek getekend en zegt het paneel waarom.
 

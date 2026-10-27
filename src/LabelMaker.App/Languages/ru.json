@@ -2500,5 +2500,6 @@
   "“{0}” holds barcodes. It can go on the label as a barcode that scans, or as its text.": "«{0}» содержит штрихкоды. Их можно поместить на этикетку как сканируемый штрихкод или как текст.",
   "{0} (suggested)": "{0} (рекомендуется)",
   "Every value fits this type.": "Все значения подходят для этого типа.",
-  "{0} of the values do not fit this type; those labels would show a red outline instead of bars.": "Значений, которые не подходят для этого типа: {0}; на таких этикетках вместо штрихов будет красный контур."
+  "{0} of the values do not fit this type; those labels would show a red outline instead of bars.": "Значений, которые не подходят для этого типа: {0}; на таких этикетках вместо штрихов будет красный контур.",
+  "The printer has no paper this size, so it prints on {0}.": "У принтера нет бумаги этого размера, поэтому он печатает на {0}."
 }
