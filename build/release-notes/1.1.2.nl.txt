@@ -12,7 +12,7 @@ Nieuw
 • De etiketgrootte is nu een deel van Etiketbeheer: typ een nieuwe grootte onder Etiketgrootte, of kies een vel en gebruik dat.
 • Een kolom met barcodes die aan het etiket wordt toegevoegd, wordt een echte barcode die scant: LabelAxis kiest het waarschijnlijke type (EAN, UPC, Code 128…) en laat u eerst een ander type, of tekst, kiezen.
 • Ongeveer 3.500 extra etiketvellen: Avery, Avery Zweckform, HERMA, APLI, Agipa, Decadry, Sigel, OnlineLabels, TANEX, 3M, Brother, DYMO, met de maten die elke fabrikant opgeeft voor de etikettenlijst van Microsoft Word. Elke fabrikant heeft een eigen ingang in Etiketbeheer; zoek op productcode.
-• Setup heeft een nieuw uiterlijk en volgt de lichte of donkere modus van Windows.
+• Setup is nu een eigen venster van LabelAxis: installeer alleen voor uzelf of voor iedereen, kies de map, het bestandstype en een snelkoppeling, en volg elke stap. Het spreekt alle tien talen en volgt de lichte of donkere modus van Windows.
 • De helpgids beschrijft dit alles, en hoe u een pc zonder internet bijwerkt, in alle tien talen.
 
 Oplossingen

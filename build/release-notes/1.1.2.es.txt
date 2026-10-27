@@ -12,7 +12,7 @@ Novedades
 • El tamaño de la etiqueta forma parte ahora del Administrador de etiquetas: escriba un tamaño nuevo en Tamaño de la etiqueta, o elija una hoja y úsela.
 • Una columna de códigos de barras añadida a la etiqueta se convierte en un código de barras real que se escanea: LabelAxis elige el tipo probable (EAN, UPC, Code 128…) y antes le deja elegir otro, o texto.
 • Unas 3.500 hojas de etiquetas más: Avery, Avery Zweckform, HERMA, APLI, Agipa, Decadry, Sigel, OnlineLabels, TANEX, 3M, Brother, DYMO, con las medidas que cada fabricante da para la lista de etiquetas de Microsoft Word. Cada fabricante tiene su propia entrada en el Administrador de etiquetas; busque por código de producto.
-• El instalador tiene un aspecto nuevo y sigue el modo claro u oscuro de Windows.
+• El instalador es ahora una ventana propia de LabelAxis: instale solo para usted o para todos, elija la carpeta, el tipo de archivo y un acceso directo, y siga cada paso. Está en los diez idiomas y sigue el modo claro u oscuro de Windows.
 • La guía de ayuda explica todo lo anterior, y cómo actualizar un PC sin internet, en los diez idiomas.
 
 Correcciones

@@ -1,0 +1,310 @@
+<Window x:Class="LabelAxis.Setup.SetupWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="LabelAxis Setup" Width="840" Height="560"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent" ResizeMode="CanMinimize"
+        WindowStartupLocation="CenterScreen" UseLayoutRounding="True" SnapsToDevicePixels="True"
+        FontFamily="{StaticResource Brand}" FontSize="13" Foreground="{DynamicResource Text}">
+  <!-- 30 px of room around the window for its shadow. -->
+  <Grid Margin="30">
+    <Border CornerRadius="14" Background="{DynamicResource Bg}">
+      <Border.Effect>
+        <DropShadowEffect x:Name="Shadow" Color="#1E293B" BlurRadius="40" ShadowDepth="12" Direction="270" Opacity="0.28" />
+      </Border.Effect>
+    </Border>
+
+    <Grid x:Name="Frame">
+      <Grid.Clip>
+        <RectangleGeometry Rect="0,0,780,500" RadiusX="14" RadiusY="14" />
+      </Grid.Clip>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="250" />
+        <ColumnDefinition />
+      </Grid.ColumnDefinitions>
+
+      <!-- The blue panel: the mark, and where Setup has got to. -->
+      <Grid x:Name="Side">
+        <Rectangle>
+          <Rectangle.Fill>
+            <LinearGradientBrush StartPoint="0.1,0" EndPoint="0.9,1">
+              <GradientStop Color="{DynamicResource PanelTop}" Offset="0" />
+              <GradientStop Color="{DynamicResource PanelBottom}" Offset="1" />
+            </LinearGradientBrush>
+          </Rectangle.Fill>
+        </Rectangle>
+        <Ellipse Width="300" Height="260" Margin="-120,-110,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" IsHitTestVisible="False">
+          <Ellipse.Fill>
+            <RadialGradientBrush>
+              <GradientStop Color="#40FFFFFF" Offset="0" />
+              <GradientStop Color="#00FFFFFF" Offset="1" />
+            </RadialGradientBrush>
+          </Ellipse.Fill>
+        </Ellipse>
+        <Canvas x:Name="SheetPattern" Width="200" Height="220" HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                Margin="70,0,0,-60" IsHitTestVisible="False" FlowDirection="LeftToRight">
+          <Canvas.RenderTransform>
+            <RotateTransform Angle="-8" />
+          </Canvas.RenderTransform>
+          <Rectangle Width="200" Height="230" RadiusX="8" RadiusY="8" Fill="#14FFFFFF" Stroke="#24FFFFFF" />
+        </Canvas>
+        <StackPanel Margin="28,26,24,0" VerticalAlignment="Top">
+          <StackPanel Orientation="Horizontal">
+            <Image Source="pack://application:,,,/Assets/logo.png" Width="38" Height="38" RenderOptions.BitmapScalingMode="HighQuality" />
+            <StackPanel Margin="11,0,0,0" VerticalAlignment="Center">
+              <TextBlock Text="LabelAxis" FontFamily="{StaticResource Brand}" FontWeight="ExtraBold" FontSize="19" Foreground="White" />
+              <TextBlock x:Name="VersionText" FontSize="11" Foreground="#CCFFFFFF" Margin="0,1,0,0" />
+            </StackPanel>
+          </StackPanel>
+          <Rectangle Height="1" Fill="#33FFFFFF" Margin="0,26" />
+          <StackPanel x:Name="StepList" />
+        </StackPanel>
+        <TextBlock x:Name="OpenSourceText" FontSize="10.5" Foreground="#B3FFFFFF" VerticalAlignment="Bottom" Margin="28,0,20,22"
+                   TextWrapping="Wrap" />
+      </Grid>
+
+      <Grid Grid.Column="1" Background="{DynamicResource Bg}">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,10,12,0" Panel.ZIndex="2">
+          <Button x:Name="MinimiseButton" Style="{StaticResource Chrome}" Content="&#xE921;" Click="OnMinimise" />
+          <Button x:Name="CloseButton" Style="{StaticResource Chrome}" Content="&#xE8BB;" Click="OnClose" Margin="2,0,0,0" />
+        </StackPanel>
+
+        <Grid Margin="40,42,40,28">
+          <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
+          </Grid.RowDefinitions>
+
+          <!-- 1  Welcome -->
+          <StackPanel x:Name="WelcomePage">
+            <TextBlock x:Name="WelcomeOver" FontWeight="ExtraBold" FontSize="11" Foreground="{DynamicResource Accent}" />
+            <TextBlock x:Name="WelcomeTitle" FontWeight="ExtraBold" FontSize="27" Margin="0,6,0,0" />
+            <TextBlock x:Name="WelcomeBody" FontSize="13.5" Foreground="{DynamicResource Muted}" TextWrapping="Wrap" Margin="0,8,0,0" LineHeight="20" />
+            <StackPanel Margin="0,24,0,0">
+              <DockPanel Margin="0,0,0,14">
+                <Border Width="40" Height="40" CornerRadius="11" Background="{DynamicResource AccentSoft}">
+                  <TextBlock Text="&#xE8A9;" FontFamily="{StaticResource Icons}" FontSize="17" Foreground="{DynamicResource Accent}"
+                             HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Border>
+                <StackPanel Margin="14,0,0,0" VerticalAlignment="Center">
+                  <TextBlock x:Name="Feature1Title" FontWeight="Bold" FontSize="14" />
+                  <TextBlock x:Name="Feature1Text" FontSize="12.5" Foreground="{DynamicResource Muted}" Margin="0,2,0,0" TextWrapping="Wrap" />
+                </StackPanel>
+              </DockPanel>
+              <DockPanel Margin="0,0,0,14">
+                <Border Width="40" Height="40" CornerRadius="11" Background="{DynamicResource AccentSoft}">
+                  <Path Fill="{DynamicResource Accent}" Width="18" Height="14" Stretch="Fill" HorizontalAlignment="Center" VerticalAlignment="Center"
+                        Data="M0,0h2v14h-2z M3,0h1v14h-1z M5,0h3v14h-3z M9,0h1v14h-1z M11,0h2v14h-2z M14,0h1v14h-1z M16,0h2v14h-2z" />
+                </Border>
+                <StackPanel Margin="14,0,0,0" VerticalAlignment="Center">
+                  <TextBlock x:Name="Feature2Title" FontWeight="Bold" FontSize="14" />
+                  <TextBlock x:Name="Feature2Text" FontSize="12.5" Foreground="{DynamicResource Muted}" Margin="0,2,0,0" TextWrapping="Wrap" />
+                </StackPanel>
+              </DockPanel>
+              <DockPanel Margin="0,0,0,14">
+                <Border Width="40" Height="40" CornerRadius="11" Background="{DynamicResource AccentSoft}">
+                  <TextBlock Text="&#xE8A5;" FontFamily="{StaticResource Icons}" FontSize="17" Foreground="{DynamicResource Accent}"
+                             HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Border>
+                <StackPanel Margin="14,0,0,0" VerticalAlignment="Center">
+                  <TextBlock x:Name="Feature3Title" FontWeight="Bold" FontSize="14" />
+                  <TextBlock x:Name="Feature3Text" FontSize="12.5" Foreground="{DynamicResource Muted}" Margin="0,2,0,0" TextWrapping="Wrap" />
+                </StackPanel>
+              </DockPanel>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+              <Button x:Name="LanguageButton" Click="OnLanguageButton" Cursor="Hand" Foreground="{DynamicResource Text}" FocusVisualStyle="{StaticResource NoFocusVisual}">
+                <Button.Template>
+                  <ControlTemplate TargetType="Button">
+                    <Border x:Name="Face" CornerRadius="8" BorderBrush="{DynamicResource Line}" BorderThickness="1.2"
+                            Background="{DynamicResource Field}" Padding="10,7">
+                      <ContentPresenter />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                      <Trigger Property="IsMouseOver" Value="True">
+                        <Setter TargetName="Face" Property="Background" Value="{DynamicResource Hover}" />
+                      </Trigger>
+                      <Trigger Property="IsKeyboardFocused" Value="True">
+                        <Setter TargetName="Face" Property="BorderBrush" Value="{DynamicResource Accent}" />
+                      </Trigger>
+                    </ControlTemplate.Triggers>
+                  </ControlTemplate>
+                </Button.Template>
+                <StackPanel Orientation="Horizontal">
+                  <TextBlock Text="&#xE774;" FontFamily="{StaticResource Icons}" FontSize="13" Foreground="{DynamicResource Muted}" VerticalAlignment="Center" />
+                  <TextBlock x:Name="LanguageName" FontSize="12.5" Margin="8,0,16,0" VerticalAlignment="Center" />
+                  <TextBlock Text="&#xE70D;" FontFamily="{StaticResource Icons}" FontSize="9" Foreground="{DynamicResource Muted}" VerticalAlignment="Center" />
+                </StackPanel>
+              </Button>
+              <CheckBox x:Name="AcceptBox" Style="{StaticResource Check}" Margin="20,0,0,0" VerticalAlignment="Center" IsChecked="True"
+                        Click="OnAcceptChanged">
+                <StackPanel Orientation="Horizontal">
+                  <TextBlock x:Name="AcceptBefore" FontSize="12.5" />
+                  <Button x:Name="LicenceLink" Style="{StaticResource Link}" FontSize="12.5" Click="OnShowLicence" />
+                  <TextBlock x:Name="AcceptAfter" FontSize="12.5" />
+                </StackPanel>
+              </CheckBox>
+            </StackPanel>
+            <Popup x:Name="LanguagePopup" PlacementTarget="{Binding ElementName=LanguageButton}" Placement="Top" VerticalOffset="-6"
+                   StaysOpen="False" AllowsTransparency="True" PopupAnimation="Fade">
+              <Border CornerRadius="10" Background="{DynamicResource Bg}" BorderBrush="{DynamicResource Line}" BorderThickness="1.2"
+                      Padding="6" Margin="0,0,10,14">
+                <Border.Effect>
+                  <DropShadowEffect Color="#1E293B" BlurRadius="18" ShadowDepth="4" Direction="270" Opacity="0.25" />
+                </Border.Effect>
+                <StackPanel x:Name="LanguageList" MinWidth="170" />
+              </Border>
+            </Popup>
+          </StackPanel>
+
+          <!-- 2  Options -->
+          <StackPanel x:Name="OptionsPage" Visibility="Collapsed">
+            <TextBlock x:Name="OptionsOver" FontWeight="ExtraBold" FontSize="11" Foreground="{DynamicResource Accent}" />
+            <TextBlock x:Name="OptionsTitle" FontWeight="ExtraBold" FontSize="27" Margin="0,6,0,0" />
+            <TextBlock x:Name="InstallForLabel" FontWeight="Bold" FontSize="10.5" Foreground="{DynamicResource Muted}" Margin="0,18,0,8" />
+            <Grid>
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="12" />
+                <ColumnDefinition />
+              </Grid.ColumnDefinitions>
+              <RadioButton x:Name="JustMeCard" Style="{StaticResource Card}" GroupName="Scope" Checked="OnScopeChanged">
+                <StackPanel>
+                  <DockPanel>
+                    <TextBlock Text="&#xE77B;" FontFamily="{StaticResource Icons}" FontSize="15" VerticalAlignment="Top" Margin="0,2,0,0" />
+                    <TextBlock x:Name="JustMeTitle" FontWeight="Bold" FontSize="13.5" Margin="9,0,0,0" TextWrapping="Wrap" />
+                  </DockPanel>
+                  <TextBlock x:Name="JustMeText" FontSize="11.5" Foreground="{DynamicResource Muted}" Margin="0,6,0,0" TextWrapping="Wrap" />
+                </StackPanel>
+              </RadioButton>
+              <RadioButton x:Name="EveryoneCard" Grid.Column="2" Style="{StaticResource Card}" GroupName="Scope" Checked="OnScopeChanged">
+                <StackPanel>
+                  <DockPanel>
+                    <TextBlock Text="&#xE716;" FontFamily="{StaticResource Icons}" FontSize="15" VerticalAlignment="Top" Margin="0,2,0,0" />
+                    <TextBlock x:Name="EveryoneTitle" FontWeight="Bold" FontSize="13.5" Margin="9,0,0,0" TextWrapping="Wrap" />
+                  </DockPanel>
+                  <TextBlock x:Name="EveryoneText" FontSize="11.5" Foreground="{DynamicResource Muted}" Margin="0,6,0,0" TextWrapping="Wrap" />
+                </StackPanel>
+              </RadioButton>
+            </Grid>
+            <TextBlock x:Name="FolderLabel" FontWeight="Bold" FontSize="10.5" Foreground="{DynamicResource Muted}" Margin="0,16,0,8" />
+            <DockPanel>
+              <Button x:Name="BrowseButton" DockPanel.Dock="Right" Style="{StaticResource Secondary}" Height="36" MinWidth="0" Padding="12,0"
+                      Margin="8,0,0,0" FontSize="12.5" Click="OnBrowse" />
+              <TextBox x:Name="FolderBox" Style="{StaticResource FolderField}" />
+            </DockPanel>
+            <TextBlock x:Name="UpdatingNote" FontSize="11.5" Foreground="{DynamicResource Muted}" Margin="0,6,0,0" TextWrapping="Wrap" Visibility="Collapsed" />
+            <Rectangle Height="1" Fill="{DynamicResource Line}" Margin="0,16,0,12" />
+            <CheckBox x:Name="AssociateSwitch" Style="{StaticResource Switch}" IsChecked="True" Margin="0,0,0,10">
+              <StackPanel>
+                <TextBlock x:Name="AssociateTitle" FontWeight="SemiBold" FontSize="13" />
+                <TextBlock x:Name="AssociateText" FontSize="11.5" Foreground="{DynamicResource Muted}" Margin="0,1,0,0" />
+              </StackPanel>
+            </CheckBox>
+            <CheckBox x:Name="DesktopSwitch" Style="{StaticResource Switch}">
+              <StackPanel>
+                <TextBlock x:Name="DesktopTitle" FontWeight="SemiBold" FontSize="13" />
+                <TextBlock x:Name="DesktopText" FontSize="11.5" Foreground="{DynamicResource Muted}" Margin="0,1,0,0" />
+              </StackPanel>
+            </CheckBox>
+          </StackPanel>
+
+          <!-- 3  Installing -->
+          <StackPanel x:Name="InstallPage" Visibility="Collapsed">
+            <TextBlock x:Name="InstallingOver" FontWeight="ExtraBold" FontSize="11" Foreground="{DynamicResource Accent}" />
+            <TextBlock x:Name="InstallingTitle" FontWeight="ExtraBold" FontSize="27" Margin="0,6,0,0" />
+            <DockPanel Margin="0,14,0,0">
+              <TextBlock x:Name="PercentText" DockPanel.Dock="Right" FontWeight="ExtraBold" FontSize="22" Foreground="{DynamicResource Accent}" />
+              <TextBlock x:Name="StatusText" FontSize="12.5" Foreground="{DynamicResource Muted}" VerticalAlignment="Bottom" Margin="0,0,10,4"
+                         TextTrimming="CharacterEllipsis" />
+            </DockPanel>
+            <Grid x:Name="Track" Height="10" Margin="0,8,0,22" ClipToBounds="True">
+              <Border CornerRadius="5" Background="{DynamicResource Surface}" />
+              <Border x:Name="Fill" CornerRadius="5" HorizontalAlignment="Left" Width="0">
+                <Border.Background>
+                  <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                    <GradientStop Color="#60A5FA" Offset="0" />
+                    <GradientStop Color="{DynamicResource AccentColor}" Offset="1" />
+                  </LinearGradientBrush>
+                </Border.Background>
+                <Border.RenderTransform>
+                  <TranslateTransform x:Name="FillShift" />
+                </Border.RenderTransform>
+              </Border>
+            </Grid>
+            <StackPanel x:Name="TaskList" />
+            <Border x:Name="TipBox" CornerRadius="11" Background="{DynamicResource AccentSoft}" Padding="14,11" Margin="0,4,0,0">
+              <DockPanel>
+                <TextBlock Text="&#xE82F;" FontFamily="{StaticResource Icons}" FontSize="16" Foreground="{DynamicResource Accent}" VerticalAlignment="Center" />
+                <TextBlock FontSize="12" Margin="10,0,0,0" TextWrapping="Wrap" VerticalAlignment="Center">
+                  <Run x:Name="TipTitle" FontWeight="Bold" />
+                  <Run x:Name="TipText" />
+                </TextBlock>
+              </DockPanel>
+            </Border>
+            <Border x:Name="ErrorBox" CornerRadius="11" Background="{DynamicResource DangerSoft}" Padding="14,11" Margin="0,4,0,0" Visibility="Collapsed">
+              <DockPanel>
+                <TextBlock Text="&#xE783;" FontFamily="{StaticResource Icons}" FontSize="16" Foreground="{DynamicResource Danger}" VerticalAlignment="Top" Margin="0,1,0,0" />
+                <StackPanel Margin="10,0,0,0">
+                  <TextBlock x:Name="ErrorTitle" FontWeight="Bold" FontSize="12.5" Foreground="{DynamicResource Danger}" />
+                  <TextBlock x:Name="ErrorText" FontSize="12" TextWrapping="Wrap" Margin="0,3,0,0" />
+                </StackPanel>
+              </DockPanel>
+            </Border>
+          </StackPanel>
+
+          <!-- 4  Finish -->
+          <StackPanel x:Name="FinishPage" Visibility="Collapsed">
+            <Grid Width="64" Height="64" HorizontalAlignment="Left">
+              <Ellipse Fill="{DynamicResource Good}" Opacity="0.14" />
+              <Ellipse Width="46" Height="46">
+                <Ellipse.Fill>
+                  <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                    <GradientStop Color="#4ADE80" Offset="0" />
+                    <GradientStop Color="{DynamicResource GoodColor}" Offset="1" />
+                  </LinearGradientBrush>
+                </Ellipse.Fill>
+              </Ellipse>
+              <TextBlock Text="&#xE73E;" FontFamily="{StaticResource Icons}" FontSize="22" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Grid>
+            <TextBlock x:Name="ReadyTitle" FontWeight="ExtraBold" FontSize="27" Margin="0,16,0,0" />
+            <TextBlock x:Name="ReadyBody" FontSize="13.5" Foreground="{DynamicResource Muted}" Margin="0,8,0,0" TextWrapping="Wrap" />
+            <Border x:Name="NewCard" CornerRadius="12" Background="{DynamicResource Surface}" Padding="18,14" Margin="0,20,0,0">
+              <StackPanel>
+                <TextBlock x:Name="NewInText" FontWeight="ExtraBold" FontSize="10.5" Foreground="{DynamicResource Accent}" Margin="0,0,0,10" />
+                <StackPanel x:Name="HighlightList" />
+              </StackPanel>
+            </Border>
+            <CheckBox x:Name="OpenNowBox" Style="{StaticResource Check}" IsChecked="True" Margin="0,18,0,0">
+              <TextBlock x:Name="OpenNowText" />
+            </CheckBox>
+          </StackPanel>
+
+          <DockPanel Grid.Row="1" LastChildFill="False">
+            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Bottom">
+              <Button x:Name="SecondaryButton" Style="{StaticResource Secondary}" Click="OnSecondary" />
+              <Button x:Name="PrimaryButton" Style="{StaticResource Primary}" Click="OnPrimary" IsDefault="True" />
+            </StackPanel>
+            <StackPanel DockPanel.Dock="Left" VerticalAlignment="Center" MaxWidth="230">
+              <TextBlock x:Name="AppOpenNote" FontSize="11.5" FontWeight="SemiBold" Foreground="{DynamicResource Danger}" TextWrapping="Wrap"
+                         Margin="0,0,0,4" Visibility="Collapsed" />
+              <TextBlock x:Name="FooterText" FontSize="11.5" Foreground="{DynamicResource Muted}" TextWrapping="Wrap" />
+            </StackPanel>
+          </DockPanel>
+        </Grid>
+
+        <!-- The licence, over the pages until it is closed. -->
+        <Grid x:Name="LicencePanel" Background="{DynamicResource Bg}" Visibility="Collapsed" Panel.ZIndex="1">
+          <DockPanel Margin="40,42,40,28">
+            <TextBlock x:Name="LicenceTitle" DockPanel.Dock="Top" FontWeight="ExtraBold" FontSize="22" Margin="0,0,0,12" />
+            <Button x:Name="LicenceClose" DockPanel.Dock="Bottom" Style="{StaticResource Primary}" HorizontalAlignment="Right" Margin="0,14,0,0" Click="OnHideLicence" />
+            <Border CornerRadius="10" Background="{DynamicResource Surface}" Padding="16,12">
+              <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <TextBlock x:Name="LicenceBody" FontSize="12" TextWrapping="Wrap" FlowDirection="LeftToRight" LineHeight="18" />
+              </ScrollViewer>
+            </Border>
+          </DockPanel>
+        </Grid>
+      </Grid>
+    </Grid>
+  </Grid>
+</Window>

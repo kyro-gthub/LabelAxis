@@ -1,6 +1,7 @@
 <#
-    Builds the LabelAxis setup programs: publishes a release build, then compiles both
-    Inno Setup installers with the version from Directory.Build.props.
+    Builds the LabelAxis setup programs: publishes a release build, compiles both Inno Setup
+    installers with the version from Directory.Build.props, and puts each inside LabelAxis's
+    own Setup window (src\LabelAxis.Setup).
 
       LabelAxis-Setup-<version>.exe          small: installs the .NET Desktop Runtime from
                                              Microsoft first when the PC does not have it
@@ -54,15 +55,27 @@ $lines += $obsolete | ForEach-Object { "Type: files; Name: ""{app}\$_""" }
 Set-Content (Join-Path $root 'installer\obsolete-runtime-files.iss') $lines -Encoding UTF8
 Write-Host ("{0} runtime files are removed when the small installer upgrades an offline install." -f $obsolete.Count)
 
+# Each installer is LabelAxis's own Setup window (src\LabelAxis.Setup) carrying the Inno Setup
+# installer, which it runs silently with the choices made in the window; a silent install, as
+# LabelAxis's updater starts it, goes straight to the Inno Setup installer.
 $built = @()
-foreach ($flavour in @(@{ Name = 'small'; Define = '/DShared'; File = "LabelAxis-Setup-$version.exe" },
-                       @{ Name = 'offline'; Define = '/DOffline'; File = "LabelAxis-Setup-$version-Offline.exe" })) {
+foreach ($flavour in @(@{ Name = 'small'; Define = '/DShared'; App = $shared; File = "LabelAxis-Setup-$version.exe" },
+                       @{ Name = 'offline'; Define = '/DOffline'; App = $full; File = "LabelAxis-Setup-$version-Offline.exe" })) {
     Write-Host "== Compile $($flavour.Name) installer $version ==" -ForegroundColor Cyan
-    & $iscc /Q "/DAppVersion=$version" $flavour.Define (Join-Path $root 'installer\LabelAxis.iss')
+    $engineName = "LabelAxis-Engine-$version-$($flavour.Name)"
+    & $iscc /Q "/DAppVersion=$version" $flavour.Define "/F$engineName" (Join-Path $root 'installer\LabelAxis.iss')
     if ($LASTEXITCODE -ne 0) { throw "Inno Setup failed ($LASTEXITCODE)." }
+    $engine = Join-Path $root "installer\Output\$engineName.exe"
 
-    $setup = Join-Path $root "installer\Output\$($flavour.File)"
-    Copy-Item $setup $OutputDir -Force
+    $files = @(Get-ChildItem $flavour.App -Recurse -File)
+    $sizeMb = [int][Math]::Ceiling(($files | Measure-Object Length -Sum).Sum / 1MB)
+    $window = Join-Path $root "artifacts\setup-$($flavour.Name)"
+    Remove-Item $window -Recurse -Force -ErrorAction SilentlyContinue
+    dotnet build (Join-Path $root 'src\LabelAxis.Setup\LabelAxis.Setup.csproj') -c Release --no-incremental -nologo -v q `
+        "-p:SetupEngine=$engine" "-p:SetupFlavour=$($flavour.Name)" "-p:SetupSizeMb=$sizeMb" "-p:SetupFiles=$($files.Count)" -o $window
+    if ($LASTEXITCODE -ne 0) { throw "The Setup window failed to build ($LASTEXITCODE)." }
+
+    Copy-Item (Join-Path $window 'LabelAxis-Setup.exe') (Join-Path $OutputDir $flavour.File) -Force
     $built += Get-Item (Join-Path $OutputDir $flavour.File)
 }
 

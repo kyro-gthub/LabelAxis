@@ -1,0 +1,80 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    The Setup window: LabelAxis's own installer screens (welcome, options, progress, finish),
+    in the app's ten languages, light or dark as Windows is set. The installing itself is done
+    by the Inno Setup installer inside it (installer\LabelAxis.iss), run silently, so upgrades,
+    the uninstaller, file types and shortcuts work as before.
+
+    It is built for the .NET Framework that comes with Windows 10 and 11 (and against the copy of
+    it in Windows, so no targeting pack is needed): Setup has to run on a PC that has no .NET 10
+    yet. build\installer.ps1 builds it once per installer with these properties:
+      SetupEngine     the Inno Setup installer to carry
+      SetupFlavour    small (gets .NET 10 from Microsoft when needed) or offline
+      SetupSizeMb     how much the program takes on disk
+      SetupFiles      how many files it copies (for the progress bar)
+  -->
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net462</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <AssemblyName>LabelAxis-Setup</AssemblyName>
+    <RootNamespace>LabelAxis.Setup</RootNamespace>
+    <ApplicationIcon>..\..\installer\assets\icon.ico</ApplicationIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <GenerateAssemblyTitleAttribute>true</GenerateAssemblyTitleAttribute>
+    <AssemblyTitle>LabelAxis Setup</AssemblyTitle>
+    <!-- One .exe and nothing beside it: Windows runs it on the newest .NET Framework it has. -->
+    <GenerateSupportedRuntime>false</GenerateSupportedRuntime>
+    <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
+    <DebugType>none</DebugType>
+    <PathMap>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\..\'))=/_/</PathMap>
+
+    <AutomaticallyUseReferenceAssemblyPackages>false</AutomaticallyUseReferenceAssemblyPackages>
+    <DisableImplicitFrameworkReferences>true</DisableImplicitFrameworkReferences>
+    <NetFx>$(WINDIR)\Microsoft.NET\Framework64\v4.0.30319</NetFx>
+    <FrameworkPathOverride>$(NetFx)</FrameworkPathOverride>
+
+    <SetupFlavour Condition="'$(SetupFlavour)' == ''">small</SetupFlavour>
+    <SetupSizeMb Condition="'$(SetupSizeMb)' == ''">0</SetupSizeMb>
+    <SetupFiles Condition="'$(SetupFiles)' == ''">0</SetupFiles>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="mscorlib" HintPath="$(NetFx)\mscorlib.dll" />
+    <Reference Include="System" HintPath="$(NetFx)\System.dll" />
+    <Reference Include="System.Core" HintPath="$(NetFx)\System.Core.dll" />
+    <Reference Include="System.Xaml" HintPath="$(NetFx)\System.Xaml.dll" />
+    <Reference Include="WindowsBase" HintPath="$(NetFx)\WPF\WindowsBase.dll" />
+    <Reference Include="PresentationCore" HintPath="$(NetFx)\WPF\PresentationCore.dll" />
+    <Reference Include="PresentationFramework" HintPath="$(NetFx)\WPF\PresentationFramework.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+      <_Parameter1>SetupFlavour</_Parameter1>
+      <_Parameter2>$(SetupFlavour)</_Parameter2>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+      <_Parameter1>SetupSizeMb</_Parameter1>
+      <_Parameter2>$(SetupSizeMb)</_Parameter2>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+      <_Parameter1>SetupFiles</_Parameter1>
+      <_Parameter2>$(SetupFiles)</_Parameter2>
+    </AssemblyAttribute>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="$(SetupEngine)" LogicalName="engine.exe" Condition="'$(SetupEngine)' != ''" />
+    <EmbeddedResource Include="..\..\LICENSE" LogicalName="LICENSE.txt" />
+    <Resource Include="..\LabelMaker.App\Assets\logo.png" Link="Assets\logo.png" />
+    <Resource Include="..\LabelMaker.App\Assets\Fonts\PlusJakartaSans-Regular.ttf" Link="Fonts\PlusJakartaSans-Regular.ttf" />
+    <Resource Include="..\LabelMaker.App\Assets\Fonts\PlusJakartaSans-Medium.ttf" Link="Fonts\PlusJakartaSans-Medium.ttf" />
+    <Resource Include="..\LabelMaker.App\Assets\Fonts\PlusJakartaSans-SemiBold.ttf" Link="Fonts\PlusJakartaSans-SemiBold.ttf" />
+    <Resource Include="..\LabelMaker.App\Assets\Fonts\PlusJakartaSans-Bold.ttf" Link="Fonts\PlusJakartaSans-Bold.ttf" />
+    <Resource Include="..\LabelMaker.App\Assets\Fonts\PlusJakartaSans-ExtraBold.ttf" Link="Fonts\PlusJakartaSans-ExtraBold.ttf" />
+  </ItemGroup>
+
+</Project>

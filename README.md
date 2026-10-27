@@ -249,7 +249,8 @@ labelaxis inspect --project labels.labelproj
 │   ├─ LabelMaker.Export/          PDF and SVG drawing and exporters
 │   ├─ LabelMaker.Data/            databases and Publisher import
 │   ├─ LabelMaker.App/             the Windows program (LabelAxis.exe)
-│   └─ LabelMaker.Cli/             the command-line tool (labelaxis.exe)
+│   ├─ LabelMaker.Cli/             the command-line tool (labelaxis.exe)
+│   └─ LabelAxis.Setup/            the Setup window, carrying the Inno Setup installer
 ├─ tests/                          unit tests and UI tests
 ├─ installer/                      Inno Setup scripts
 └─ build/                          build, test and release scripts

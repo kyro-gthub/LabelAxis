@@ -12,7 +12,7 @@ New
 • Label size is now part of the Label manager: type a new size under Label size, or pick a sheet and use it.
 • A column of barcodes added to the label becomes a real barcode that scans: LabelAxis picks the likely type (EAN, UPC, Code 128…) and lets you choose another, or text, first.
 • About 3,500 more label sheets: Avery, Avery Zweckform, HERMA, APLI, Agipa, Decadry, Sigel, OnlineLabels, TANEX, 3M, Brother, DYMO, with the measurements each maker gives for Microsoft Word's list of labels. Each maker has its own entry in the Label manager; search by product code.
-• Setup has a new look and follows Windows' light or dark mode.
+• Setup is LabelAxis's own window now: install just for you or for everyone, choose the folder, the file type and a desktop shortcut, and follow each step. It speaks all ten languages and follows Windows' light or dark mode.
 • The help guide covers everything above, and how to update a PC without internet, in all ten languages.
 
 Fixes

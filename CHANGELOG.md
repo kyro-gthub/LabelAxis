@@ -36,8 +36,14 @@ The full notes of each release, in all ten interface languages, are in
   `build\import-word-catalogues.ps1`; layouts Word places label by label, business cards, cards,
   posters and binder tabs are left out. Avery L7160 now has Avery's own figures instead of an
   estimate. Each maker gets an entry in the Label manager.
-- Setup (Inno Setup 6.7): Windows 11 style that follows Windows' light or dark mode, with new
-  side pictures for each and the LabelAxis mark on the other pages.
+- Setup is LabelAxis's own window (`src/LabelAxis.Setup`): Welcome, Options (just for you or
+  everyone, the folder, the .labelproj file type, a desktop shortcut), Installing (with .NET 10
+  fetched from Microsoft when the small installer needs it, and each file as it is copied) and
+  Finish, in all ten languages, right to left where needed, light or dark like Windows. An
+  installed copy is found and updated in place. It runs on the .NET Framework that comes with
+  Windows and carries the Inno Setup installer, which still does the installing; a silent install,
+  as the updater starts it, goes straight to that installer. Inno Setup's own windows (the
+  uninstaller, the updater's progress) have the Windows 11 style and new pictures.
 
 ### Changed
 

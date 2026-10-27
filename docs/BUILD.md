@@ -125,11 +125,23 @@ installer lays the files out anyway.
    ISCC /DAppVersion=1.0.0 /DOffline installer\LabelAxis.iss   # offline
    ```
 
-The installer is **per-user** by default (`PrivilegesRequired=lowest`; the first page
+   Each one is then put inside LabelAxis's own Setup window (`src\LabelAxis.Setup`, built with
+   `-p:SetupEngine=<the Inno installer>`), which keeps the file names above. The window is
+   built for the .NET Framework that comes with Windows, against the copy of it in
+   `%WINDIR%\Microsoft.NET\Framework64`, so it needs no targeting pack and runs on a PC that
+   has no .NET 10 yet.
+
+The Setup window asks the questions (just for you or everyone, the folder, the file type, a
+desktop shortcut), gets the .NET 10 Desktop Runtime from Microsoft when the small installer
+needs it, then runs the Inno Setup installer silently with those answers and follows its log
+for the progress bar. Run with `/SILENT` or `/VERYSILENT` (as LabelAxis's updater does), it
+shows nothing and hands every switch to the Inno Setup installer.
+
+The installer is **per-user** by default (`PrivilegesRequired=lowest`; the Options page
 offers all users), adds a Start Menu shortcut and registers the `.labelproj` file
-association with the app icon. Uninstall is via *Apps & features*. When the small
-installer has to install the Microsoft .NET 10 Desktop Runtime, Microsoft's own installer
-asks Windows for administrator rights for that step (the runtime is shared by all users).
+association with the app icon. Uninstall is via *Apps & features* (Inno Setup's uninstaller).
+When the small installer has to install the Microsoft .NET 10 Desktop Runtime, Microsoft's own
+installer asks Windows for administrator rights for that step (the runtime is shared by all users).
 
 ## Versioning
 
