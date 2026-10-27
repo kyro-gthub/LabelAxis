@@ -32,3 +32,4 @@ Oplossingen
 • Kolommen met haakjes in de naam, zoals "Price (USD)", of met niet-Latijnse letters tonen hun waarden op het etiket.
 • Een barcode met een stille zone van 0 heeft zijn streepjes op de randen van zijn kader; Code 128, EAN en UPC hielden wat er ook was ingesteld witruimte binnen het kader.
 • De lijn van de printermarges in het afdrukvoorbeeld loopt niet meer door de laatste rij etiketten als de printer geen papier van het formaat van het vel heeft (het voorbeeld zegt welk papier hij gebruikt), en de onderste maat wordt niet meer afgesneden.
+• De titel en barcode van een nieuw project passen op kleine etiketten: de titel blijft op één regel en de barcode staat eronder, in plaats van over elkaar heen.

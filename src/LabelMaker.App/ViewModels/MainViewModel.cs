@@ -94,25 +94,54 @@ public sealed partial class MainViewModel : ObservableObject
         return new ProjectDocument { Project = project };
     }
 
-    private static void SeedStarterLabel(ProjectModel project)
+    /// <summary>
+    /// A title and a barcode sized for the label: on a 25 × 10 mm label the fixed 10 pt title
+    /// wrapped onto a second line below its box and the barcode's 8 pt digits left a sliver of
+    /// bars over it. The title keeps to one line and shrinks to fit; the barcode takes the rest.
+    /// </summary>
+    internal static void SeedStarterLabel(ProjectModel project)
     {
         var doc = project.MasterLabel;
         double w = doc.SizeMm.Width;
         double h = doc.SizeMm.Height;
+        double margin = Math.Clamp(Math.Min(w, h) * 0.08, 0.5, 2);
+        double innerW = w - (2 * margin);
+        double innerH = h - (2 * margin);
+        double titleH = Math.Min(8, innerH * (h < 20 ? 0.38 : 0.3));
+        double gap = Math.Min(1, innerH * 0.05);
+        double padding = Math.Min(0.5, titleH * 0.08);
         doc.Objects.Add(new TextObject
         {
             Name = "Title",
-            Bounds = new RectMm(2, 2, Math.Max(10, w - 4), Math.Min(8, h / 3)),
+            Bounds = new RectMm(margin, margin, innerW, titleH),
             Content = RichTextContent.FromPlainText(Localization.Localizer.T("Product name")),
-            FontSizePt = 10,
+            FontSizePt = Math.Clamp(Math.Round(UnitConverter.MmToPoints((titleH - (2 * padding)) / 1.25) * 2) / 2, 4, 10),
             Bold = true,
+            WordWrap = false,
+            AutoFit = TextAutoFit.ShrinkToFit,
+            MinAutoFitPt = 3,
+            PaddingMm = new Thickness(padding, padding, padding, padding),
         });
+
+        // The digits take about a quarter of the barcode's height; a barcode under 6 mm is all bars.
+        double barcodeH = Math.Min(14, innerH - titleH - gap);
+        double barcodeW = Math.Min(70, innerW);
+        double digitsPt = barcodeH < 6 ? 0 : Math.Clamp(Math.Round(UnitConverter.MmToPoints(barcodeH * 0.22)), 4, 8);
+        double digitsMm = digitsPt <= 0 ? 0 : (digitsPt * 25.4 / 72.0 * 1.35) + 0.4;
         doc.Objects.Add(new BarcodeObject
         {
             Name = "Barcode",
-            Bounds = new RectMm(2, Math.Min(11, h / 2), Math.Max(20, w - 4), Math.Min(12, h / 2)),
+            Bounds = new RectMm(margin + ((innerW - barcodeW) / 2), margin + titleH + gap, barcodeW, barcodeH),
             AutoSize = false,
-            Spec = new BarcodeSpec { Symbology = BarcodeSymbology.Code128, Data = "1234567890", ModuleWidthMm = 0.3, BarHeightMm = Math.Min(10, h / 3) },
+            Spec = new BarcodeSpec
+            {
+                Symbology = BarcodeSymbology.Code128,
+                Data = "1234567890",
+                ModuleWidthMm = 0.3,
+                BarHeightMm = Math.Max(1, barcodeH - digitsMm),
+                HumanReadable = digitsPt > 0 ? HumanReadablePosition.Below : HumanReadablePosition.None,
+                HumanReadableFontSizePt = digitsPt > 0 ? digitsPt : 8,
+            },
         });
     }
 

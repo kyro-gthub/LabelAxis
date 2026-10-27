@@ -73,6 +73,10 @@ The full notes of each release, in all ten interface languages, are in
 - The Records window's rows were dark text on a dark background in the dark themes.
 - When LabelAxis opened, the label stayed fitted to the window's first, smaller size and sat small
   in the middle of the canvas; it now fills the canvas until you zoom or scroll yourself.
+- The title and barcode a new project starts with were the same size on every label, so on a
+  small one (25 × 10 mm) the title ran onto a second line over the barcode and the barcode's
+  digits squeezed its bars to a sliver. Both are now sized for the label: the title on one line,
+  shrinking to fit, and the barcode below it (all bars on a very low label).
 - Print settings changed in the Print and thermal print windows (printer, paper, margins,
   copies, scale, thermal settings) were not marked as a change, so they were not saved and
   were lost when the project was opened again.

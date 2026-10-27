@@ -32,3 +32,4 @@ Corrections
 • Les colonnes dont le nom contient des parenthèses, comme « Price (USD) », ou des lettres non latines affichent leurs valeurs sur l'étiquette.
 • Un code-barres dont la zone de silence est 0 a ses barres sur les bords de son cadre ; Code 128, EAN et UPC gardaient un espace blanc dans le cadre quel que soit le réglage.
 • Dans l'aperçu avant impression, la ligne des marges de l'imprimante ne traverse plus la dernière rangée d'étiquettes quand l'imprimante n'a pas de papier au format de la planche (l'aperçu indique le papier utilisé), et la cote du bas n'est plus coupée.
+• Le titre et le code-barres d'un nouveau projet tiennent sur les petites étiquettes : le titre reste sur une ligne et le code-barres se place dessous, au lieu de se chevaucher.

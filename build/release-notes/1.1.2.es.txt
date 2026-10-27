@@ -32,3 +32,4 @@ Correcciones
 • Las columnas con paréntesis en el nombre, como "Price (USD)", o con letras no latinas muestran sus valores en la etiqueta.
 • Un código de barras con zona de silencio 0 tiene las barras en los bordes de su cuadro; Code 128, EAN y UPC dejaban espacio en blanco dentro del cuadro fuera cual fuera el ajuste.
 • La línea de márgenes de la impresora en la vista previa ya no cruza la última fila de etiquetas cuando la impresora no tiene papel del tamaño de la hoja (la vista previa dice qué papel usa), y la medida inferior ya no queda cortada.
+• El título y el código de barras de un proyecto nuevo caben en etiquetas pequeñas: el título queda en una línea y el código debajo, en lugar de montarse uno sobre otro.
