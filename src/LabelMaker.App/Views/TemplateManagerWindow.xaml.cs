@@ -29,6 +29,7 @@ public partial class TemplateManagerWindow : Window
         UseCommand = new RelayCommand(Use);
         InitializeComponent();
         SearchBox.TextChanged += (_, _) => Refresh();
+        PreviewHost.SizeChanged += (_, _) => { if (List.SelectedItem is Row row) { DrawPreview(row.Template); } };
         Refresh();
 
         if (session is not null)
@@ -154,13 +155,18 @@ public partial class TemplateManagerWindow : Window
         DrawPreview(t);
     }
 
-    /// <summary>Draws the page with its label grid to scale — the shape of the sheet, not its JSON.</summary>
+    /// <summary>
+    /// Draws the page with its label grid to scale — the shape of the sheet, not its JSON — as
+    /// large as the preview box allows (it is shorter when the Label size section is shown).
+    /// </summary>
     private void DrawPreview(LabelTemplate t)
     {
         PreviewHost.Children.Clear();
         if (t.EffectivePage.WidthMm > 0 && t.EffectivePage.HeightMm > 0)
         {
-            PreviewHost.Children.Add(SheetPreview.Draw(this, t, 250, 330));
+            double w = PreviewHost.ActualWidth > 20 ? PreviewHost.ActualWidth - 4 : 250;
+            double h = PreviewHost.ActualHeight > 20 ? PreviewHost.ActualHeight - 4 : 330;
+            PreviewHost.Children.Add(SheetPreview.Draw(this, t, w, h));
         }
     }
 
