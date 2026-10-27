@@ -2492,5 +2492,13 @@
   "Now {0} × {1} mm, with no label sheet.": "اکنون {0} × {1} میلی‌متر، بدون برگه برچسب.",
   "Now {0} × {1} mm, on the {2} {3} sheet.": "اکنون {0} × {1} میلی‌متر، روی برگه {2} {3}.",
   "Change the label to this size, without changing the sheet chosen above": "تغییر برچسب به این اندازه، بدون تغییر برگه‌ای که بالا انتخاب شده",
-  "The label has no free space left, so “{0}” is placed over other objects. Move it, or make room for it.": "برچسب دیگر جای خالی ندارد، پس «{0}» روی شیءهای دیگر قرار گرفت. جابه‌جایش کنید یا برایش جا باز کنید."
+  "The label has no free space left, so “{0}” is placed over other objects. Move it, or make room for it.": "برچسب دیگر جای خالی ندارد، پس «{0}» روی شیءهای دیگر قرار گرفت. جابه‌جایش کنید یا برایش جا باز کنید.",
+  "Add a field to the label": "افزودن فیلد به برچسب",
+  "ADD IT AS": "افزودن به صورت",
+  "A barcode": "بارکد",
+  "Text (the value as it is written)": "متن (مقدار همان‌طور که نوشته شده)",
+  "“{0}” holds barcodes. It can go on the label as a barcode that scans, or as its text.": "«{0}» بارکد دارد. می‌تواند به صورت بارکدی که اسکن می‌شود یا به صورت متن روی برچسب برود.",
+  "{0} (suggested)": "{0} (پیشنهادی)",
+  "Every value fits this type.": "همه مقدارها با این نوع جور هستند.",
+  "{0} of the values do not fit this type; those labels would show a red outline instead of bars.": "{0} مقدار با این نوع جور نیستند؛ آن برچسب‌ها به جای میله‌ها یک کادر قرمز نشان می‌دهند."
 }

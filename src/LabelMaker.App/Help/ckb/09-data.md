@@ -3,7 +3,7 @@ id: data
 title: داتا و لەیبڵی گۆڕاو
 category: Data
 order: 1
-keywords: data, csv, excel, spreadsheet, database, sql, mysql, postgresql, access, odbc, sqlite, field, merge, variable, records, sequence, serial, counter, date, time, expression, function, duplicate, داتا, خشتە, بنکەدراوە, خانە, تێکەڵکردن, گۆڕاو, تۆمار, زنجیرە, ژمارەکردن, ژمێرەر, ڕێکەوت, کات, فەنکشن, دووبارە, make pages, page for each record, pages from records, دروستکردنی لاپەڕە, لاپەڕە بۆ هەر تۆمارێک
+keywords: data, csv, excel, spreadsheet, database, sql, mysql, postgresql, access, odbc, sqlite, field, merge, variable, records, sequence, serial, counter, date, time, expression, function, duplicate, داتا, خشتە, بنکەدراوە, خانە, تێکەڵکردن, گۆڕاو, تۆمار, زنجیرە, ژمارەکردن, ژمێرەر, ڕێکەوت, کات, فەنکشن, دووبارە, make pages, page for each record, pages from records, دروستکردنی لاپەڕە, لاپەڕە بۆ هەر تۆمارێک, barcode column, ستوونی باڕکۆد
 ---
 # داتا و لەیبڵی گۆڕاو
 
@@ -17,7 +17,7 @@ keywords: data, csv, excel, spreadsheet, database, sql, mysql, postgresql, acces
 
 ## دانانی خانەکان لەسەر لەیبڵ
 
-ناوی ستوونەکە لەناو کەوانەی لووتکەداردا لە هەر دەق یان باڕکۆدێکدا بنووسە: `{Product}`، `{Price}`، `{Barcode}`. `داتا › زیادکردنی خانەی داتا` و ستوونێک یەکێکت بۆ دادەنێت. لەیبڵی سەر شاشە تۆماری ئێستا پیشان دەدات؛ تیرەکانی شریتی دۆخ یەک یەک بە ناو تۆمارەکاندا دەڕۆن.
+ناوی ستوونەکە لەناو کەوانەی لووتکەداردا لە هەر دەق یان باڕکۆدێکدا بنووسە: `{Product}`، `{Price}`، `{Barcode}`. `داتا › زیادکردنی خانەی داتا` و ستوونێک یەکێکت بۆ دادەنێت. لەیبڵی سەر شاشە تۆماری ئێستا پیشان دەدات؛ تیرەکانی شریتی دۆخ یەک یەک بە ناو تۆمارەکاندا دەڕۆن. ستوونێکی باڕکۆد (ژمارەی EAN یان UPC، یان ستوونێک بە ناوی Barcode) سەرەتا دەپرسێت ئایا وەک باڕکۆدێکی سکانکراو و لە چ جۆرێک بخرێتە سەر لەیبڵەکە، کە جۆرە گونجاوەکە پێشتر هەڵبژێردراوە، یان وەک دەق.
 
 ## خانە ئامادەکان
 

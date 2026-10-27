@@ -3,7 +3,7 @@ id: data
 title: 数据和可变标签
 category: Data
 order: 1
-keywords: data, csv, excel, spreadsheet, database, sql, mysql, postgresql, access, odbc, sqlite, field, merge, variable, records, sequence, serial, counter, date, time, expression, function, duplicate, 数据, 电子表格, 数据库, 字段, 合并, 记录, 序列, 序列号, 计数器, 函数, 重复, make pages, page for each record, pages from records, 生成页面, 每条记录一个页面
+keywords: data, csv, excel, spreadsheet, database, sql, mysql, postgresql, access, odbc, sqlite, field, merge, variable, records, sequence, serial, counter, date, time, expression, function, duplicate, 数据, 电子表格, 数据库, 字段, 合并, 记录, 序列, 序列号, 计数器, 函数, 重复, make pages, page for each record, pages from records, 生成页面, 每条记录一个页面, barcode column, 条码列
 ---
 # 数据和可变标签
 
@@ -17,7 +17,7 @@ keywords: data, csv, excel, spreadsheet, database, sql, mysql, postgresql, acces
 
 ## 在标签上放置字段
 
-在任意文字或条码中，用花括号写出列名：`{Product}`、`{Price}`、`{Barcode}`。`数据 › 添加数据字段` 中的某一列 会为您插入。屏幕上的标签显示当前记录；状态栏中的箭头可逐条切换。
+在任意文字或条码中，用花括号写出列名：`{Product}`、`{Price}`、`{Barcode}`。`数据 › 添加数据字段` 中的某一列 会为您插入。屏幕上的标签显示当前记录；状态栏中的箭头可逐条切换。添加条码列（EAN 或 UPC 编号，或名为 Barcode 的列）时，会先询问是作为可扫描的条码放到标签上（以及使用哪种类型，已预先选好最可能的类型），还是作为文本。
 
 ## 现成字段
 

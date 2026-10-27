@@ -10,6 +10,7 @@ Nouveautés
 • Courbe dans le menu Lignes : une ligne courbe. Double-cliquez dessus et faites glisser ses points pour changer la courbure.
 • Appliquer la mise en forme aux autres pages est désormais un seul outil (menu Édition, menu de la page, onglet Page) : il peut aussi donner l'aspect d'une zone de texte à toutes les zones de texte. Le menu Aide est plus simple : Votre première étiquette, Raccourcis clavier et Dépannage sont dans le guide d'aide.
 • La taille de l'étiquette fait désormais partie du Gestionnaire d'étiquettes : tapez une nouvelle taille sous Taille de l'étiquette, ou choisissez une planche et utilisez-la.
+• Une colonne de codes-barres ajoutée à l'étiquette devient un vrai code-barres qui se scanne : LabelAxis choisit le type probable (EAN, UPC, Code 128…) et vous laisse d'abord en choisir un autre, ou du texte.
 • Le guide d'aide décrit tout cela, ainsi que la mise à jour d'un PC sans internet, dans les dix langues.
 
 Corrections

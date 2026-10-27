@@ -3,7 +3,7 @@ id: data
 title: داده و برچسب‌های متغیر
 category: Data
 order: 1
-keywords: data, csv, excel, spreadsheet, database, sql, mysql, postgresql, access, odbc, sqlite, field, merge, variable, records, sequence, serial, counter, date, time, expression, function, duplicate, داده, صفحه‌گسترده, پایگاه‌داده, فیلد, ادغام, رکورد, شماره‌گذاری, شماره سریال, شمارنده, تابع, تکراری, make pages, page for each record, pages from records, ساخت صفحه‌ها, صفحه برای هر رکورد
+keywords: data, csv, excel, spreadsheet, database, sql, mysql, postgresql, access, odbc, sqlite, field, merge, variable, records, sequence, serial, counter, date, time, expression, function, duplicate, داده, صفحه‌گسترده, پایگاه‌داده, فیلد, ادغام, رکورد, شماره‌گذاری, شماره سریال, شمارنده, تابع, تکراری, make pages, page for each record, pages from records, ساخت صفحه‌ها, صفحه برای هر رکورد, barcode column, ستون بارکد
 ---
 # داده و برچسب‌های متغیر
 
@@ -17,7 +17,7 @@ keywords: data, csv, excel, spreadsheet, database, sql, mysql, postgresql, acces
 
 ## گذاشتن فیلد روی برچسب
 
-نام ستون را در هر متن یا بارکدی میان آکولاد بنویسید: `{Product}`، `{Price}`، `{Barcode}`. `داده › افزودن فیلد داده` و یک ستون یکی را برایتان درج می‌کند. برچسب روی صفحه‌نمایش رکورد فعلی را نشان می‌دهد؛ پیکان‌های نوار وضعیت میان رکوردها جابه‌جا می‌شوند.
+نام ستون را در هر متن یا بارکدی میان آکولاد بنویسید: `{Product}`، `{Price}`، `{Barcode}`. `داده › افزودن فیلد داده` و یک ستون یکی را برایتان درج می‌کند. برچسب روی صفحه‌نمایش رکورد فعلی را نشان می‌دهد؛ پیکان‌های نوار وضعیت میان رکوردها جابه‌جا می‌شوند. برای ستونی از بارکدها (شماره‌های EAN یا UPC، یا ستونی به نام Barcode) ابتدا پرسیده می‌شود که به صورت بارکدی که اسکن می‌شود و از چه نوعی روی برچسب برود، با نوع محتمل که از پیش انتخاب شده، یا به صورت متن.
 
 ## فیلدهای آماده
 

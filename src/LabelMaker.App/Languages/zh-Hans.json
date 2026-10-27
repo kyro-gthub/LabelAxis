@@ -2492,5 +2492,13 @@
   "Now {0} × {1} mm, with no label sheet.": "当前 {0} × {1} mm，没有标签纸。",
   "Now {0} × {1} mm, on the {2} {3} sheet.": "当前 {0} × {1} mm，使用 {2} {3} 标签纸。",
   "Change the label to this size, without changing the sheet chosen above": "把标签改为此尺寸，不更改上方选择的标签纸",
-  "The label has no free space left, so “{0}” is placed over other objects. Move it, or make room for it.": "标签上已没有空位，因此“{0}”被放在其他对象上方。请移动它，或为它腾出位置。"
+  "The label has no free space left, so “{0}” is placed over other objects. Move it, or make room for it.": "标签上已没有空位，因此“{0}”被放在其他对象上方。请移动它，或为它腾出位置。",
+  "Add a field to the label": "向标签添加字段",
+  "ADD IT AS": "添加为",
+  "A barcode": "条码",
+  "Text (the value as it is written)": "文本（按原样写出的值）",
+  "“{0}” holds barcodes. It can go on the label as a barcode that scans, or as its text.": "“{0}”包含条码。它可以作为可扫描的条码放到标签上，也可以作为文本。",
+  "{0} (suggested)": "{0}（推荐）",
+  "Every value fits this type.": "所有值都适用于此类型。",
+  "{0} of the values do not fit this type; those labels would show a red outline instead of bars.": "有 {0} 个值不适用于此类型；这些标签上将显示红色轮廓而不是条码。"
 }

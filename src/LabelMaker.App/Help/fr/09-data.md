@@ -3,7 +3,7 @@ id: data
 title: Données et étiquettes variables
 category: Data
 order: 1
-keywords: data, csv, excel, spreadsheet, database, sql, mysql, postgresql, access, odbc, sqlite, field, merge, variable, records, sequence, serial, counter, date, time, expression, function, duplicate, données, tableur, base de données, champ, publipostage, enregistrements, séquence, numéro de série, compteur, fonction, doublon, make pages, page for each record, pages from records, créer des pages, une page par enregistrement
+keywords: data, csv, excel, spreadsheet, database, sql, mysql, postgresql, access, odbc, sqlite, field, merge, variable, records, sequence, serial, counter, date, time, expression, function, duplicate, données, tableur, base de données, champ, publipostage, enregistrements, séquence, numéro de série, compteur, fonction, doublon, make pages, page for each record, pages from records, créer des pages, une page par enregistrement, barcode column, colonne de codes-barres
 ---
 # Données et étiquettes variables
 
@@ -17,7 +17,7 @@ Imprimez une étiquette différente pour chaque ligne d'un tableur ou d'une base
 
 ## Placer des champs sur l'étiquette
 
-Écrivez le nom de la colonne entre accolades dans n'importe quel texte ou code-barres : `{Product}`, `{Price}`, `{Barcode}`. `Données › Ajouter un champ de données` puis une colonne en insère un pour vous. L'étiquette à l'écran montre l'enregistrement actuel ; les flèches de la barre d'état les parcourent.
+Écrivez le nom de la colonne entre accolades dans n'importe quel texte ou code-barres : `{Product}`, `{Price}`, `{Barcode}`. `Données › Ajouter un champ de données` puis une colonne en insère un pour vous. L'étiquette à l'écran montre l'enregistrement actuel ; les flèches de la barre d'état les parcourent. Une colonne de codes-barres (numéros EAN ou UPC, ou une colonne nommée Barcode) demande d'abord si elle va sur l'étiquette comme un code-barres qui se scanne, et de quel type, le type probable étant déjà choisi ; ou comme du texte.
 
 ## Champs tout prêts
 

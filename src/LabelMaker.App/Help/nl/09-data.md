@@ -3,7 +3,7 @@ id: data
 title: Gegevens en variabele etiketten
 category: Data
 order: 1
-keywords: data, csv, excel, spreadsheet, database, sql, mysql, postgresql, access, odbc, sqlite, field, merge, variable, records, sequence, serial, counter, date, time, expression, function, duplicate, gegevens, rekenblad, veld, samenvoegen, reeks, serienummer, teller, functie, dubbel, make pages, page for each record, pages from records, pagina's maken, pagina per record
+keywords: data, csv, excel, spreadsheet, database, sql, mysql, postgresql, access, odbc, sqlite, field, merge, variable, records, sequence, serial, counter, date, time, expression, function, duplicate, gegevens, rekenblad, veld, samenvoegen, reeks, serienummer, teller, functie, dubbel, make pages, page for each record, pages from records, pagina's maken, pagina per record, barcode column, barcodekolom
 ---
 # Gegevens en variabele etiketten
 
@@ -17,7 +17,7 @@ Druk voor elke rij van een spreadsheet of database een ander etiket af: namen, p
 
 ## Velden op het etiket zetten
 
-Schrijf de kolomnaam tussen accolades in een tekst of barcode: `{Product}`, `{Price}`, `{Barcode}`. `Gegevens › Gegevensveld toevoegen` en een kolom voegt er een voor u in. Het etiket op het scherm toont de huidige record; de pijlen in de statusbalk lopen ze door.
+Schrijf de kolomnaam tussen accolades in een tekst of barcode: `{Product}`, `{Price}`, `{Barcode}`. `Gegevens › Gegevensveld toevoegen` en een kolom voegt er een voor u in. Het etiket op het scherm toont de huidige record; de pijlen in de statusbalk lopen ze door. Bij een kolom met barcodes (EAN- of UPC-nummers, of een kolom met de naam Barcode) wordt eerst gevraagd of die op het etiket komt als een barcode die scant, en van welk type, met het waarschijnlijke type al gekozen; of als tekst.
 
 ## Kant-en-klare velden
 

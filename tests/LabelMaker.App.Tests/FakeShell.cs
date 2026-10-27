@@ -162,6 +162,18 @@ public sealed class FakeShell : IShellServices
 
     public LabelMaker.App.Services.AddPagesChoice? ShowAddPages(IReadOnlyList<LabelMaker.App.ViewModels.PageListItem> pages, int current) => AddPagesAnswer;
 
+    /// <summary>The answer to "add this column as a barcode or text?"; as the barcode type suggested when null.</summary>
+    public LabelMaker.App.Services.FieldInsertChoice? FieldAsBarcodeAnswer { get; set; }
+
+    /// <summary>The type the program suggested the last time it asked.</summary>
+    public LabelMaker.Core.Barcodes.BarcodeSymbology? FieldAsBarcodeSuggested { get; set; }
+
+    public LabelMaker.App.Services.FieldInsertChoice? AskFieldAsBarcode(string field, IReadOnlyList<string> values, LabelMaker.Core.Barcodes.BarcodeSymbology suggested)
+    {
+        FieldAsBarcodeSuggested = suggested;
+        return FieldAsBarcodeAnswer ?? new LabelMaker.App.Services.FieldInsertChoice(suggested);
+    }
+
     public (double X, double Y, double Width, double Height)? ShowImageCrop(ImageObject image) => null;
 
     public T RunJob<T>(string heading, string unit, int total, Func<IProgress<int>, CancellationToken, Task<T>> job) =>

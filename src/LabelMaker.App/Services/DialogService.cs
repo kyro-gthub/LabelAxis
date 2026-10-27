@@ -423,6 +423,12 @@ public sealed class DialogService : IShellServices
         return win.ShowDialog() == true ? win.Choice : null;
     }
 
+    public FieldInsertChoice? AskFieldAsBarcode(string field, IReadOnlyList<string> values, LabelMaker.Core.Barcodes.BarcodeSymbology suggested)
+    {
+        var win = new FieldAsBarcodeWindow(field, values, suggested) { Owner = Front };
+        return win.ShowDialog() == true ? new FieldInsertChoice(win.Choice) : null;
+    }
+
     public (double X, double Y, double Width, double Height)? ShowImageCrop(LabelMaker.Core.Model.Objects.ImageObject image)
     {
         if (_vm is null)

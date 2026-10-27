@@ -2492,5 +2492,13 @@
   "Now {0} × {1} mm, with no label sheet.": "अभी {0} × {1} mm, बिना लेबल शीट के।",
   "Now {0} × {1} mm, on the {2} {3} sheet.": "अभी {0} × {1} mm, {2} {3} शीट पर।",
   "Change the label to this size, without changing the sheet chosen above": "ऊपर चुनी शीट बदले बिना लेबल को यह आकार दें",
-  "The label has no free space left, so “{0}” is placed over other objects. Move it, or make room for it.": "लेबल पर कोई खाली जगह नहीं बची, इसलिए \"{0}\" दूसरे ऑब्जेक्ट के ऊपर रखा गया है। उसे हटाएँ, या उसके लिए जगह बनाएँ।"
+  "The label has no free space left, so “{0}” is placed over other objects. Move it, or make room for it.": "लेबल पर कोई खाली जगह नहीं बची, इसलिए \"{0}\" दूसरे ऑब्जेक्ट के ऊपर रखा गया है। उसे हटाएँ, या उसके लिए जगह बनाएँ।",
+  "Add a field to the label": "लेबल में फ़ील्ड जोड़ें",
+  "ADD IT AS": "इस रूप में जोड़ें",
+  "A barcode": "बारकोड",
+  "Text (the value as it is written)": "टेक्स्ट (मान जैसा लिखा है)",
+  "“{0}” holds barcodes. It can go on the label as a barcode that scans, or as its text.": "\"{0}\" में बारकोड हैं। इसे लेबल पर स्कैन होने वाले बारकोड के रूप में, या टेक्स्ट के रूप में रखा जा सकता है।",
+  "{0} (suggested)": "{0} (सुझाया गया)",
+  "Every value fits this type.": "हर मान इस प्रकार में ठीक बैठता है।",
+  "{0} of the values do not fit this type; those labels would show a red outline instead of bars.": "{0} मान इस प्रकार में ठीक नहीं बैठते; उन लेबल पर बार की जगह लाल रूपरेखा दिखेगी।"
 }

@@ -10,6 +10,7 @@ Novedades
 • Curva en el menú Líneas: una línea curva. Haga doble clic en ella y arrastre sus puntos para cambiar la curva.
 • Aplicar formato a otras páginas es ahora una sola herramienta (menú Edición, menú de la página, pestaña Página): también puede dar el aspecto de un cuadro de texto a todos los cuadros de texto. El menú Ayuda es más sencillo: Su primera etiqueta, Atajos de teclado y Solución de problemas están en la guía de ayuda.
 • El tamaño de la etiqueta forma parte ahora del Administrador de etiquetas: escriba un tamaño nuevo en Tamaño de la etiqueta, o elija una hoja y úsela.
+• Una columna de códigos de barras añadida a la etiqueta se convierte en un código de barras real que se escanea: LabelAxis elige el tipo probable (EAN, UPC, Code 128…) y antes le deja elegir otro, o texto.
 • La guía de ayuda explica todo lo anterior, y cómo actualizar un PC sin internet, en los diez idiomas.
 
 Correcciones

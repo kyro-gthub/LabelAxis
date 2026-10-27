@@ -3,7 +3,7 @@ id: data
 title: Datos y etiquetas variables
 category: Data
 order: 1
-keywords: data, csv, excel, spreadsheet, database, sql, mysql, postgresql, access, odbc, sqlite, field, merge, variable, records, sequence, serial, counter, date, time, expression, function, duplicate, datos, hoja de cálculo, base de datos, campo, combinar, registros, secuencia, número de serie, contador, función, duplicado, make pages, page for each record, pages from records, crear páginas, una página por registro
+keywords: data, csv, excel, spreadsheet, database, sql, mysql, postgresql, access, odbc, sqlite, field, merge, variable, records, sequence, serial, counter, date, time, expression, function, duplicate, datos, hoja de cálculo, base de datos, campo, combinar, registros, secuencia, número de serie, contador, función, duplicado, make pages, page for each record, pages from records, crear páginas, una página por registro, barcode column, columna de códigos de barras
 ---
 # Datos y etiquetas variables
 
@@ -17,7 +17,7 @@ Imprima una etiqueta distinta por cada fila de una hoja de cálculo o base de da
 
 ## Poner campos en la etiqueta
 
-Escriba el nombre de la columna entre llaves en cualquier texto o código de barras: `{Product}`, `{Price}`, `{Barcode}`. `Datos › Añadir campo de datos` y una columna inserta uno por usted. La etiqueta en pantalla muestra el registro actual; las flechas de la barra de estado los recorren.
+Escriba el nombre de la columna entre llaves en cualquier texto o código de barras: `{Product}`, `{Price}`, `{Barcode}`. `Datos › Añadir campo de datos` y una columna inserta uno por usted. La etiqueta en pantalla muestra el registro actual; las flechas de la barra de estado los recorren. Una columna de códigos de barras (números EAN o UPC, o una columna llamada Barcode) pregunta antes si va a la etiqueta como un código de barras que se escanea, y de qué tipo, con el tipo probable ya elegido; o como texto.
 
 ## Campos ya preparados
 

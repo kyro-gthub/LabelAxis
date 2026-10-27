@@ -2492,5 +2492,13 @@
   "Now {0} × {1} mm, with no label sheet.": "Actuellement {0} × {1} mm, sans planche d'étiquettes.",
   "Now {0} × {1} mm, on the {2} {3} sheet.": "Actuellement {0} × {1} mm, sur la planche {2} {3}.",
   "Change the label to this size, without changing the sheet chosen above": "Donner cette taille à l'étiquette, sans changer la planche choisie ci-dessus",
-  "The label has no free space left, so “{0}” is placed over other objects. Move it, or make room for it.": "L'étiquette n'a plus de place libre, donc « {0} » est placé par-dessus d'autres objets. Déplacez-le ou faites-lui de la place."
+  "The label has no free space left, so “{0}” is placed over other objects. Move it, or make room for it.": "L'étiquette n'a plus de place libre, donc « {0} » est placé par-dessus d'autres objets. Déplacez-le ou faites-lui de la place.",
+  "Add a field to the label": "Ajouter un champ à l'étiquette",
+  "ADD IT AS": "L'AJOUTER COMME",
+  "A barcode": "Un code-barres",
+  "Text (the value as it is written)": "Du texte (la valeur telle qu'elle est écrite)",
+  "“{0}” holds barcodes. It can go on the label as a barcode that scans, or as its text.": "« {0} » contient des codes-barres. Il peut aller sur l'étiquette comme un code-barres qui se scanne, ou comme son texte.",
+  "{0} (suggested)": "{0} (suggéré)",
+  "Every value fits this type.": "Toutes les valeurs conviennent à ce type.",
+  "{0} of the values do not fit this type; those labels would show a red outline instead of bars.": "{0} des valeurs ne conviennent pas à ce type ; ces étiquettes afficheraient un contour rouge au lieu des barres."
 }

@@ -3,7 +3,7 @@ id: data
 title: البيانات والملصقات المتغيرة
 category: Data
 order: 1
-keywords: data, csv, excel, spreadsheet, database, sql, mysql, postgresql, access, odbc, sqlite, field, merge, variable, records, sequence, serial, counter, date, time, expression, function, duplicate, بيانات, جدول بيانات, قاعدة بيانات, حقل, دمج, متغير, سجلات, تسلسل, ترقيم, عداد, تاريخ, وقت, دالة, تكرار, make pages, page for each record, pages from records, إنشاء صفحات, صفحة لكل سجل
+keywords: data, csv, excel, spreadsheet, database, sql, mysql, postgresql, access, odbc, sqlite, field, merge, variable, records, sequence, serial, counter, date, time, expression, function, duplicate, بيانات, جدول بيانات, قاعدة بيانات, حقل, دمج, متغير, سجلات, تسلسل, ترقيم, عداد, تاريخ, وقت, دالة, تكرار, make pages, page for each record, pages from records, إنشاء صفحات, صفحة لكل سجل, barcode column, عمود باركود
 ---
 # البيانات والملصقات المتغيرة
 
@@ -17,7 +17,7 @@ keywords: data, csv, excel, spreadsheet, database, sql, mysql, postgresql, acces
 
 ## وضع الحقول على الملصق
 
-اكتب اسم العمود بين قوسين معقوفين في أي نص أو باركود: `{Product}` و`{Price}` و`{Barcode}`. ويدرج `البيانات › إضافة حقل بيانات` ثم عمود حقلًا لك. يعرض الملصق على الشاشة السجل الحالي؛ وتتنقّل الأسهم في شريط الحالة بين السجلات.
+اكتب اسم العمود بين قوسين معقوفين في أي نص أو باركود: `{Product}` و`{Price}` و`{Barcode}`. ويدرج `البيانات › إضافة حقل بيانات` ثم عمود حقلًا لك. يعرض الملصق على الشاشة السجل الحالي؛ وتتنقّل الأسهم في شريط الحالة بين السجلات. عند إضافة عمود باركودات (أرقام EAN أو UPC، أو عمود اسمه Barcode) يُسأل أولًا هل يوضع على الملصق باركودًا يُمسح ضوئيًا ومن أي نوع، مع اختيار النوع المرجّح مسبقًا، أم نصًّا.
 
 ## حقول جاهزة
 

@@ -2492,5 +2492,13 @@
   "Now {0} × {1} mm, with no label sheet.": "Сейчас {0} × {1} мм, без листа этикеток.",
   "Now {0} × {1} mm, on the {2} {3} sheet.": "Сейчас {0} × {1} мм, на листе {2} {3}.",
   "Change the label to this size, without changing the sheet chosen above": "Задать этикетке этот размер, не меняя выбранный выше лист",
-  "The label has no free space left, so “{0}” is placed over other objects. Move it, or make room for it.": "На этикетке не осталось свободного места, поэтому «{0}» размещено поверх других объектов. Переместите его или освободите для него место."
+  "The label has no free space left, so “{0}” is placed over other objects. Move it, or make room for it.": "На этикетке не осталось свободного места, поэтому «{0}» размещено поверх других объектов. Переместите его или освободите для него место.",
+  "Add a field to the label": "Добавить поле на этикетку",
+  "ADD IT AS": "ДОБАВИТЬ КАК",
+  "A barcode": "Штрихкод",
+  "Text (the value as it is written)": "Текст (значение как оно написано)",
+  "“{0}” holds barcodes. It can go on the label as a barcode that scans, or as its text.": "«{0}» содержит штрихкоды. Их можно поместить на этикетку как сканируемый штрихкод или как текст.",
+  "{0} (suggested)": "{0} (рекомендуется)",
+  "Every value fits this type.": "Все значения подходят для этого типа.",
+  "{0} of the values do not fit this type; those labels would show a red outline instead of bars.": "Значений, которые не подходят для этого типа: {0}; на таких этикетках вместо штрихов будет красный контур."
 }

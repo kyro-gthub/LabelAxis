@@ -116,6 +116,12 @@ public interface IShellServices
     AddPagesChoice? ShowAddPages(IReadOnlyList<ViewModels.PageListItem> pages, int current);
 
     /// <summary>
+    /// Asks whether the column <paramref name="field"/>, which holds barcodes, goes on the label as a
+    /// barcode (and of which type, <paramref name="suggested"/> chosen to begin with) or as text; null if cancelled.
+    /// </summary>
+    FieldInsertChoice? AskFieldAsBarcode(string field, IReadOnlyList<string> values, Core.Barcodes.BarcodeSymbology suggested);
+
+    /// <summary>
     /// Interactive crop for <paramref name="image"/>. Returns the chosen normalised
     /// rectangle, or null on cancel; the caller applies it through the undo stack.
     /// </summary>

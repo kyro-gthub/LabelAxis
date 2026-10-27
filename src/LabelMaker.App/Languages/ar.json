@@ -2492,5 +2492,13 @@
   "Now {0} × {1} mm, with no label sheet.": "الآن {0} × {1} مم، بلا ورقة ملصقات.",
   "Now {0} × {1} mm, on the {2} {3} sheet.": "الآن {0} × {1} مم، على ورقة {2} {3}.",
   "Change the label to this size, without changing the sheet chosen above": "تغيير الملصق إلى هذا الحجم، دون تغيير الورقة المختارة أعلاه",
-  "The label has no free space left, so “{0}” is placed over other objects. Move it, or make room for it.": "لم يبقَ في الملصق مكان فارغ، لذا وُضع «{0}» فوق عناصر أخرى. انقله، أو أفسح له مكانًا."
+  "The label has no free space left, so “{0}” is placed over other objects. Move it, or make room for it.": "لم يبقَ في الملصق مكان فارغ، لذا وُضع «{0}» فوق عناصر أخرى. انقله، أو أفسح له مكانًا.",
+  "Add a field to the label": "إضافة حقل إلى الملصق",
+  "ADD IT AS": "إضافته على شكل",
+  "A barcode": "باركود",
+  "Text (the value as it is written)": "نص (القيمة كما هي مكتوبة)",
+  "“{0}” holds barcodes. It can go on the label as a barcode that scans, or as its text.": "يحتوي «{0}» على باركودات. يمكن وضعه على الملصق باركودًا يُمسح ضوئيًا، أو نصًّا.",
+  "{0} (suggested)": "{0} (مقترح)",
+  "Every value fits this type.": "كل القيم تناسب هذا النوع.",
+  "{0} of the values do not fit this type; those labels would show a red outline instead of bars.": "{0} من القيم لا تناسب هذا النوع؛ ستظهر في تلك الملصقات حدود حمراء بدل الأشرطة."
 }

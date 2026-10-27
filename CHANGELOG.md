@@ -40,6 +40,9 @@ The full notes of each release, in all ten interface languages, are in
 - Label size is part of the Label manager (File menu and the page menu): type a size under
   Label size, or pick a sheet and use it. The separate Label size window is gone.
 - Data > Add data field lists the columns to choose from, as does Add field to label in Records.
+- A column of barcodes (EAN, UPC, ITF-14 or ISBN numbers with right check digits, or a column named
+  Barcode) goes on the label as a real barcode: a window asks which type, with the likely one
+  chosen and a count of values that type cannot hold, or offers text instead.
 
 ### Fixed
 

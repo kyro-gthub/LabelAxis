@@ -342,6 +342,25 @@ public sealed partial class MainViewModel
     {
         field = !string.IsNullOrWhiteSpace(field) ? field : _session.Data?.Columns.FirstOrDefault()?.Name ?? "Field";
 
+        // A column of barcodes becomes a barcode that scans, of the type chosen (the likely one offered first).
+        if (_session.Data is { } data && data.Columns.Any(c => c.Name == field))
+        {
+            List<string> values = data.Rows.Take(200).Select(r => r.TryGetValue(field, out string? v) ? v ?? string.Empty : string.Empty).ToList();
+            if (BarcodeColumns.Suggest(field, values) is { } suggested)
+            {
+                if (_shell.AskFieldAsBarcode(field, values, suggested) is not { } choice)
+                {
+                    return;
+                }
+
+                if (choice.Barcode is { } symbology)
+                {
+                    AddDataBarcode(field, symbology, values.FirstOrDefault(v => v.Length > 0) ?? string.Empty);
+                    return;
+                }
+            }
+        }
+
         // One line of text in a size that suits the label, across its width, in the first row
         // nothing else is in, so fields added one after another do not land on top of each other.
         // A long value (a description) shrinks to fit its box instead of growing off the label.
@@ -360,6 +379,29 @@ public sealed partial class MainViewModel
             AutoFit = TextAutoFit.ShrinkToFit,
             Bounds = new RectMm(margin, top, width, height),
         });
+
+        if (!free)
+        {
+            StatusText = Localization.Localizer.F("The label has no free space left, so “{0}” is placed over other objects. Move it, or make room for it.", field);
+        }
+    }
+
+    /// <summary>
+    /// A barcode of <paramref name="symbology"/> showing the column <paramref name="field"/>, sized
+    /// for the label from the first record's value, and placed where it covers the least.
+    /// </summary>
+    private void AddDataBarcode(string field, BarcodeSymbology symbology, string sampleValue)
+    {
+        var spec = new BarcodeSpec { Symbology = symbology, Data = sampleValue };
+        SizeMm size = FitToLabel(spec);
+        spec.Data = $"{{{field}}}";
+
+        SizeMm label = _session.ActiveLabel.SizeMm;
+        double width = Math.Min(size.Width, label.Width);
+        double height = Math.Min(size.Height, label.Height);
+        double left = Math.Max(0, (label.Width - width) / 2);
+        (double top, bool free) = RowFor(left, width, height, Math.Min(2, label.Height * 0.05));
+        AddObject(new BarcodeObject { Name = field, AutoSize = true, Spec = spec, Bounds = new RectMm(left, top, width, height) });
 
         if (!free)
         {

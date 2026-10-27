@@ -3,7 +3,7 @@ id: data
 title: डेटा और परिवर्ती लेबल
 category: Data
 order: 1
-keywords: data, csv, excel, spreadsheet, database, sql, mysql, postgresql, access, odbc, sqlite, field, merge, variable, records, sequence, serial, counter, date, time, expression, function, duplicate, डेटा, स्प्रेडशीट, डेटाबेस, फ़ील्ड, मर्ज, रिकॉर्ड, क्रम संख्या, सीरियल नंबर, काउंटर, फ़ंक्शन, डुप्लिकेट, make pages, page for each record, pages from records, पेज बनाएँ, हर रिकॉर्ड के लिए पेज
+keywords: data, csv, excel, spreadsheet, database, sql, mysql, postgresql, access, odbc, sqlite, field, merge, variable, records, sequence, serial, counter, date, time, expression, function, duplicate, डेटा, स्प्रेडशीट, डेटाबेस, फ़ील्ड, मर्ज, रिकॉर्ड, क्रम संख्या, सीरियल नंबर, काउंटर, फ़ंक्शन, डुप्लिकेट, make pages, page for each record, pages from records, पेज बनाएँ, हर रिकॉर्ड के लिए पेज, barcode column, बारकोड कॉलम
 ---
 # डेटा और परिवर्ती लेबल
 
@@ -17,7 +17,7 @@ keywords: data, csv, excel, spreadsheet, database, sql, mysql, postgresql, acces
 
 ## लेबल पर फ़ील्ड रखें
 
-किसी भी टेक्स्ट या बारकोड में कॉलम का नाम कर्ली ब्रैकेट में लिखें: `{Product}`, `{Price}`, `{Barcode}`। `डेटा › डेटा फ़ील्ड जोड़ें` और एक कॉलम आपके लिए एक डालता है। स्क्रीन पर लेबल मौजूदा रिकॉर्ड दिखाता है; स्टेटस बार के तीर उनके बीच चलते हैं।
+किसी भी टेक्स्ट या बारकोड में कॉलम का नाम कर्ली ब्रैकेट में लिखें: `{Product}`, `{Price}`, `{Barcode}`। `डेटा › डेटा फ़ील्ड जोड़ें` और एक कॉलम आपके लिए एक डालता है। स्क्रीन पर लेबल मौजूदा रिकॉर्ड दिखाता है; स्टेटस बार के तीर उनके बीच चलते हैं। बारकोड वाले कॉलम (EAN या UPC नंबर, या Barcode नाम का कॉलम) के लिए पहले पूछा जाता है कि वह लेबल पर स्कैन होने वाले बारकोड के रूप में जाए, और किस प्रकार का, जिसमें संभावित प्रकार पहले से चुना होता है; या टेक्स्ट के रूप में।
 
 ## तैयार फ़ील्ड
 

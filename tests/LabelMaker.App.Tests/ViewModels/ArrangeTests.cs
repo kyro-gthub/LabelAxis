@@ -131,6 +131,36 @@ public sealed class ArrangeTests
     });
 
     [Fact]
+    public void A_column_of_barcodes_goes_on_the_label_as_a_barcode_of_the_type_chosen_or_as_text() => AppHarness.Run(h =>
+    {
+        h.Session.ActiveLabel.Objects.Clear();
+        h.Session.SetData(
+            Core.Data.DataSet.FromRows(new[] { "SKU", "Barcode" },
+                new List<string[]> { new[] { "PRD-0001", "4006381333931" }, new[] { "PRD-0002", "5901234123457" } }),
+            new DataConnectionModel { Name = "products.xlsx", Kind = DataSourceKind.Xlsx });
+
+        h.ViewModel.AddDataFieldCommand.Execute("Barcode");
+
+        h.Shell.FieldAsBarcodeSuggested.Should().Be(Core.Barcodes.BarcodeSymbology.Ean13);
+        var barcode = h.Session.ActiveLabel.Objects.OfType<BarcodeObject>().Single();
+        barcode.Spec.Data.Should().Be("{Barcode}");
+        barcode.Spec.Symbology.Should().Be(Core.Barcodes.BarcodeSymbology.Ean13);
+        barcode.Bounds.Right.Should().BeLessThanOrEqualTo(h.Session.ActiveLabel.SizeMm.Width + 0.01);
+
+        h.Shell.FieldAsBarcodeAnswer = new LabelMaker.App.Services.FieldInsertChoice(Core.Barcodes.BarcodeSymbology.QrCode);
+        h.ViewModel.AddDataFieldCommand.Execute("Barcode");
+        h.Session.ActiveLabel.Objects.OfType<BarcodeObject>().Last().Spec.Symbology.Should().Be(Core.Barcodes.BarcodeSymbology.QrCode, "the type chosen in the window");
+
+        h.Shell.FieldAsBarcodeAnswer = new LabelMaker.App.Services.FieldInsertChoice(null);
+        h.ViewModel.AddDataFieldCommand.Execute("Barcode");
+        h.Session.ActiveLabel.Objects[^1].Should().BeOfType<TextObject>("text was chosen");
+
+        h.Shell.FieldAsBarcodeSuggested = null;
+        h.ViewModel.AddDataFieldCommand.Execute("SKU");
+        h.Shell.FieldAsBarcodeSuggested.Should().BeNull("a column of ordinary text is not asked about");
+    });
+
+    [Fact]
     public void Data_fields_added_one_after_another_go_in_free_rows_and_say_when_the_label_is_full() => AppHarness.Run(h =>
     {
         h.Session.ActiveLabel.Objects.Clear();

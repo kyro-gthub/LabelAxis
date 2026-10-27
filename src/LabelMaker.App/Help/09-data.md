@@ -3,7 +3,7 @@ id: data
 title: Data and variable labels
 category: Data
 order: 1
-keywords: data, csv, excel, spreadsheet, database, sql, mysql, postgresql, access, odbc, sqlite, field, merge, variable, records, sequence, serial, counter, date, time, expression, function, duplicate, make pages, page for each record, pages from records
+keywords: data, csv, excel, spreadsheet, database, sql, mysql, postgresql, access, odbc, sqlite, field, merge, variable, records, sequence, serial, counter, date, time, expression, function, duplicate, make pages, page for each record, pages from records, barcode column, field as barcode
 ---
 # Data and variable labels
 
@@ -17,7 +17,7 @@ Print a different label for every row of a spreadsheet or database: names, price
 
 ## Put fields on the label
 
-Write the column name in curly brackets in any text or barcode: `{Product}`, `{Price}`, `{Barcode}`. `Data > Add data field` and a column insert one for you. The label on screen shows the current record; the arrows in the status bar step through them.
+Write the column name in curly brackets in any text or barcode: `{Product}`, `{Price}`, `{Barcode}`. `Data > Add data field` and a column insert one for you. The label on screen shows the current record; the arrows in the status bar step through them. A column of barcodes (EAN or UPC numbers, or a column called Barcode) asks first whether it goes on the label as a barcode that scans, and of which type, with the likely type already chosen; or as text.
 
 ## Ready-made fields
 

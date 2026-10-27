@@ -3,7 +3,7 @@ id: data
 title: Данные и переменные этикетки
 category: Data
 order: 1
-keywords: data, csv, excel, spreadsheet, database, sql, mysql, postgresql, access, odbc, sqlite, field, merge, variable, records, sequence, serial, counter, date, time, expression, function, duplicate, данные, таблица, база данных, поле, слияние, записи, последовательность, серийный номер, счётчик, функция, дубликат, make pages, page for each record, pages from records, создать страницы, страница для каждой записи
+keywords: data, csv, excel, spreadsheet, database, sql, mysql, postgresql, access, odbc, sqlite, field, merge, variable, records, sequence, serial, counter, date, time, expression, function, duplicate, данные, таблица, база данных, поле, слияние, записи, последовательность, серийный номер, счётчик, функция, дубликат, make pages, page for each record, pages from records, создать страницы, страница для каждой записи, barcode column, столбец штрихкодов
 ---
 # Данные и переменные этикетки
 
@@ -17,7 +17,7 @@ keywords: data, csv, excel, spreadsheet, database, sql, mysql, postgresql, acces
 
 ## Поля на этикетке
 
-Напишите имя столбца в фигурных скобках в любом тексте или штрихкоде: `{Product}`, `{Price}`, `{Barcode}`. `Данные › Добавить поле данных` и столбец вставит его за вас. Этикетка на экране показывает текущую запись; стрелки в строке состояния переходят между записями.
+Напишите имя столбца в фигурных скобках в любом тексте или штрихкоде: `{Product}`, `{Price}`, `{Barcode}`. `Данные › Добавить поле данных` и столбец вставит его за вас. Этикетка на экране показывает текущую запись; стрелки в строке состояния переходят между записями. Для столбца со штрихкодами (номера EAN или UPC, либо столбец с именем Barcode) сначала спрашивается, поместить ли его на этикетку как сканируемый штрихкод и какого типа — вероятный тип уже выбран, — или как текст.
 
 ## Готовые поля
 

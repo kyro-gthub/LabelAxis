@@ -10,6 +10,7 @@ Nieuw
 • Gebogen lijn in het menu Lijnen: dubbelklik erop en sleep de punten om de boog te wijzigen.
 • Opmaak op andere pagina's toepassen is nu één hulpmiddel (menu Bewerken, paginamenu, tabblad Pagina): het kan ook het uiterlijk van één tekstvak aan elk tekstvak geven. Het menu Help is eenvoudiger: Uw eerste etiket, Sneltoetsen en Probleemoplossing staan in de helpgids.
 • De etiketgrootte is nu een deel van Etiketbeheer: typ een nieuwe grootte onder Etiketgrootte, of kies een vel en gebruik dat.
+• Een kolom met barcodes die aan het etiket wordt toegevoegd, wordt een echte barcode die scant: LabelAxis kiest het waarschijnlijke type (EAN, UPC, Code 128…) en laat u eerst een ander type, of tekst, kiezen.
 • De helpgids beschrijft dit alles, en hoe u een pc zonder internet bijwerkt, in alle tien talen.
 
 Oplossingen

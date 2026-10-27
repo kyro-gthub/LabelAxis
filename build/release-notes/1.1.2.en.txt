@@ -10,6 +10,7 @@ New
 • Curve in the Lines menu: a curved line. Double-click it and drag its dots to change the bend.
 • Apply formatting to other pages is now one tool (Edit menu, page menu, Page tab): it can also give one text box's look to every text box. The Help menu is simpler: Your first label, Keyboard shortcuts and Troubleshooting are in the help guide.
 • Label size is now part of the Label manager: type a new size under Label size, or pick a sheet and use it.
+• A column of barcodes added to the label becomes a real barcode that scans: LabelAxis picks the likely type (EAN, UPC, Code 128…) and lets you choose another, or text, first.
 • The help guide covers everything above, and how to update a PC without internet, in all ten languages.
 
 Fixes
