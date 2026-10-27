@@ -45,9 +45,12 @@ public static class PublisherSheet
     /// <summary>
     /// The sheet for a Publisher page of this size, or null when the page is not a label or no
     /// sheet has labels this size. The sheet Publisher itself names (its label product, such as
-    /// "Avery L7651") wins; then the sheet last used in LabelAxis; then the closest in size.
+    /// "Avery L7651") wins; then a sheet laid out as Publisher lays out its pages
+    /// (<paramref name="layout"/>: the same margins and gaps), the last used first; then the sheet
+    /// last used in LabelAxis; then the closest in size.
     /// </summary>
-    public static LabelTemplate? Find(TemplateStore store, double widthMm, double heightMm, string? publisherLabel = null, string? lastUsedId = null)
+    public static LabelTemplate? Find(TemplateStore store, double widthMm, double heightMm, string? publisherLabel = null, string? lastUsedId = null,
+        PubSheetLayout? layout = null)
     {
         if (!IsLabelPage(widthMm, heightMm))
         {
@@ -63,6 +66,12 @@ public static class PublisherSheet
         if (!string.IsNullOrWhiteSpace(publisherLabel) && sheets.FirstOrDefault(t => Names(publisherLabel, t)) is { } named)
         {
             return named;
+        }
+
+        if (layout is not null && sheets.Where(t => ReferenceEquals(FromPublisher(layout, widthMm, heightMm, t), t))
+                .OrderByDescending(t => t.Id == lastUsedId).FirstOrDefault() is { } laidOut)
+        {
+            return laidOut;
         }
 
         return sheets.FirstOrDefault(t => t.Id == lastUsedId) ?? sheets[0];

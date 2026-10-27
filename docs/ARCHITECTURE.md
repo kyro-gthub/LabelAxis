@@ -161,7 +161,7 @@ implicitly** (spec §41):
 ## 4. Formtec template schema
 
 Namespace `LabelMaker.Core.Formtec`. Templates are **data**, loaded from JSON
-files under `templates/formtec/` and from the user template folder — never
+files under `templates/formtec/` and `templates/sheets/` (one catalogue per maker) and from the user template folder — never
 hard-coded in logic (spec §3, §33). Full schema in
 [`TEMPLATE-SCHEMA.md`](TEMPLATE-SCHEMA.md). Summary:
 
@@ -194,7 +194,7 @@ hard-coded in logic (spec §3, §33). Full schema in
   every shipped template's corner labels.
 * Validation: grid must fit inside the page; label + gaps + margins reconciled;
   warns if any label crosses the printable margin.
-* `TemplateStore` — loads built-ins (embedded + `templates/formtec/`), merges the
+* `TemplateStore` — loads built-ins (embedded `templates/formtec/` + `templates/sheets/`), merges the
   user folder (`%APPDATA%\LabelAxis\templates`), supports search by product
   code, by dimensions (± tolerance), by category, plus duplicate / edit /
   import / export (JSON and CSV). Adding a template is dropping a `.json` file.
@@ -411,6 +411,7 @@ LabelAxis/
 │   ├─ ARCHITECTURE.md   TEMPLATE-SCHEMA.md   BUILD.md
 │   ├─ DEVELOPER.md      ROADMAP.md           OMISSIONS.md
 ├─ templates/formtec/*.json         shipped Formtec templates (data)
+├─ templates/sheets/*.json          other makers' sheets, one catalogue (JSON array) per brand
 ├─ src/
 │   ├─ LabelMaker.Core/             net10.0 — no UI. The whole engine:
 │   │   ├─ Units/  Model/  Model/Objects/  Editing/

@@ -3,11 +3,13 @@ id: label-sheets
 title: Feuilles et formats d'étiquettes
 category: Label sheets
 order: 1
-keywords: template, sheet, formtec, avery, label manager, custom size, sticker size, favourite, favorite, star, paper, label size, resize, feuille, modèle, gestionnaire d'étiquettes, format personnalisé, favori, papier, taille de l'étiquette
+keywords: template, sheet, formtec, avery, label manager, custom size, sticker size, favourite, favorite, star, paper, label size, resize, feuille, modèle, gestionnaire d'étiquettes, format personnalisé, favori, papier, taille de l'étiquette, herma, apli, agipa, decadry, sigel, onlinelabels, tanex, 3m, post-it, brother, dymo, zweckform, product code
 ---
 # Feuilles et formats d'étiquettes
 
 Une **feuille d'étiquettes** (aussi appelée modèle) indique la taille de chaque autocollant, combien tiennent en largeur et en hauteur, et où le premier commence sur le papier. LabelAxis contient la gamme Formtec et d'autres ; vous pouvez ajouter les vôtres.
+
+Environ 3 700 planches sont incluses, de Formtec, Avery, Avery Zweckform, HERMA, APLI, Agipa, Decadry, Sigel, OnlineLabels, TANEX, 3M, Brother, DYMO. Leurs mesures sont celles que chaque fabricant fournit pour la liste d'étiquettes de Microsoft Word. Dans le gestionnaire d'étiquettes, chaque fabricant a sa propre entrée à gauche ; ou tapez un code produit comme `L7160` ou `4226` dans la zone de recherche.
 
 ## Choisir ou changer de feuille
 

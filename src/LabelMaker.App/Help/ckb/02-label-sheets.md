@@ -3,11 +3,13 @@ id: label-sheets
 title: پەڕەی لەیبڵ و قەبارەکان
 category: Label sheets
 order: 1
-keywords: template, sheet, formtec, avery, label manager, custom size, sticker size, favourite, favorite, star, paper, label size, resize, قاڵب, پەڕە, بەڕێوەبەری لەیبڵ, قەبارەی تایبەت, قەبارەی ستیکەر, دڵخواز, ئەستێرە, کاغەز, قەبارەی لەیبڵ
+keywords: template, sheet, formtec, avery, label manager, custom size, sticker size, favourite, favorite, star, paper, label size, resize, قاڵب, پەڕە, بەڕێوەبەری لەیبڵ, قەبارەی تایبەت, قەبارەی ستیکەر, دڵخواز, ئەستێرە, کاغەز, قەبارەی لەیبڵ, herma, apli, agipa, decadry, sigel, onlinelabels, tanex, 3m, post-it, brother, dymo, zweckform, product code
 ---
 # پەڕەی لەیبڵ و قەبارەکان
 
 **پەڕەی لەیبڵ** (کە پێی دەوترێت قاڵبیش) دەڵێت هەر ستیکەرێک چەند گەورەیە، چەندیان بە ئاسۆیی و ستوونی جێیان دەبێتەوە، و یەکەمیان لە کوێی کاغەزەکە دەست پێدەکات. LabelAxis زنجیرەی Formtec و هی تری لەگەڵدایە؛ دەتوانیت هی خۆشت زیاد بکەیت.
+
+نزیکەی 3,700 پەڕە لەناو بەرنامەکەدان، لە Formtec, Avery, Avery Zweckform, HERMA, APLI, Agipa, Decadry, Sigel, OnlineLabels, TANEX, 3M, Brother, DYMO. پێوانەکانیان ئەوانەن کە هەر بەرهەمهێنەرێک بۆ لیستی لەیبڵەکانی Microsoft Word دەیدات. لە بەڕێوەبەری لەیبڵدا هەر بەرهەمهێنەرێک بڕگەیەکی خۆی هەیە لە لای چەپ، یان کۆدی بەرهەمێک وەک `L7160` یان `4226` لە خانەی گەڕاندا بنووسە.
 
 ## هەڵبژاردن یان گۆڕینی پەڕە
 

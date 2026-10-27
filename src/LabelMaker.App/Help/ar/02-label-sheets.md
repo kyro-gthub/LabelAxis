@@ -3,11 +3,13 @@ id: label-sheets
 title: أوراق الملصقات وأحجامها
 category: Label sheets
 order: 1
-keywords: template, sheet, formtec, avery, label manager, custom size, sticker size, favourite, favorite, star, paper, label size, resize, قالب, ورقة, مدير الملصقات, حجم مخصص, حجم الاستيكر, المفضلة, نجمة, ورق, حجم الملصق
+keywords: template, sheet, formtec, avery, label manager, custom size, sticker size, favourite, favorite, star, paper, label size, resize, قالب, ورقة, مدير الملصقات, حجم مخصص, حجم الاستيكر, المفضلة, نجمة, ورق, حجم الملصق, herma, apli, agipa, decadry, sigel, onlinelabels, tanex, 3m, post-it, brother, dymo, zweckform, product code
 ---
 # أوراق الملصقات وأحجامها
 
 تحدّد **ورقة الملصقات** (وتُسمّى أيضًا القالب) حجم كل استيكر، وعدد ما يتسع منها أفقيًا وعموديًا، وأين يبدأ الأول على الورق. يأتي LabelAxis مع مجموعة Formtec وغيرها، ويمكنك إضافة أوراقك الخاصة.
+
+تأتي مع البرنامج نحو 3,700 ورقة من Formtec, Avery, Avery Zweckform, HERMA, APLI, Agipa, Decadry, Sigel, OnlineLabels, TANEX, 3M, Brother, DYMO. مقاساتها هي التي يقدّمها كل مُصنّع لقائمة الملصقات في Microsoft Word. في مدير الملصقات لكل مُصنّع بند خاص به على اليسار، أو اكتب رمز منتج مثل `L7160` أو `4226` في مربع البحث.
 
 ## اختيار الورقة أو تغييرها
 

@@ -11,6 +11,8 @@ Nieuw
 • Opmaak op andere pagina's toepassen is nu één hulpmiddel (menu Bewerken, paginamenu, tabblad Pagina): het kan ook het uiterlijk van één tekstvak aan elk tekstvak geven. Het menu Help is eenvoudiger: Uw eerste etiket, Sneltoetsen en Probleemoplossing staan in de helpgids.
 • De etiketgrootte is nu een deel van Etiketbeheer: typ een nieuwe grootte onder Etiketgrootte, of kies een vel en gebruik dat.
 • Een kolom met barcodes die aan het etiket wordt toegevoegd, wordt een echte barcode die scant: LabelAxis kiest het waarschijnlijke type (EAN, UPC, Code 128…) en laat u eerst een ander type, of tekst, kiezen.
+• Ongeveer 3.500 extra etiketvellen: Avery, Avery Zweckform, HERMA, APLI, Agipa, Decadry, Sigel, OnlineLabels, TANEX, 3M, Brother, DYMO, met de maten die elke fabrikant opgeeft voor de etikettenlijst van Microsoft Word. Elke fabrikant heeft een eigen ingang in Etiketbeheer; zoek op productcode.
+• Setup heeft een nieuw uiterlijk en volgt de lichte of donkere modus van Windows.
 • De helpgids beschrijft dit alles, en hoe u een pc zonder internet bijwerkt, in alle tien talen.
 
 Oplossingen

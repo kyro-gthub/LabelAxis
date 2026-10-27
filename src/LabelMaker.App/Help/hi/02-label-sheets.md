@@ -3,11 +3,13 @@ id: label-sheets
 title: लेबल शीट और आकार
 category: Label sheets
 order: 1
-keywords: template, sheet, formtec, avery, label manager, custom size, sticker size, favourite, favorite, star, paper, label size, resize, शीट, टेम्पलेट, लेबल मैनेजर, कस्टम आकार, पसंदीदा, कागज़, लेबल का आकार
+keywords: template, sheet, formtec, avery, label manager, custom size, sticker size, favourite, favorite, star, paper, label size, resize, शीट, टेम्पलेट, लेबल मैनेजर, कस्टम आकार, पसंदीदा, कागज़, लेबल का आकार, herma, apli, agipa, decadry, sigel, onlinelabels, tanex, 3m, post-it, brother, dymo, zweckform, product code
 ---
 # लेबल शीट और आकार
 
 **लेबल शीट** (जिसे टेम्पलेट भी कहते हैं) बताती है कि हर स्टिकर कितना बड़ा है, चौड़ाई और ऊँचाई में कितने आते हैं, और पहला कागज़ पर कहाँ से शुरू होता है। LabelAxis में Formtec और दूसरी शीटें हैं; आप अपनी भी जोड़ सकते हैं।
+
+लगभग 3,700 शीट पहले से शामिल हैं, Formtec, Avery, Avery Zweckform, HERMA, APLI, Agipa, Decadry, Sigel, OnlineLabels, TANEX, 3M, Brother, DYMO की। उनके माप वही हैं जो हर निर्माता Microsoft Word की लेबल सूची के लिए देता है। लेबल मैनेजर में हर निर्माता की बाईं ओर अपनी अलग प्रविष्टि है, या खोज बॉक्स में `L7160` या `4226` जैसा उत्पाद कोड लिखें।
 
 ## शीट चुनें या बदलें
 

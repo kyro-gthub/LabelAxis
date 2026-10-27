@@ -65,14 +65,28 @@ public sealed class TemplateStore
                 continue;
             }
 
+            // A Formtec sheet, or one maker's whole catalogue.
+            IReadOnlyList<LabelTemplate> templates;
             try
             {
-                LabelTemplate t = TemplateJson.FromStream(s, isUserDefined: false);
-                AddOrReplace(t, validate: true);
+                templates = TemplateJson.ManyFromStream(s, isUserDefined: false);
             }
             catch (Exception ex) when (Faults.IsReportable(ex))
             {
                 _errors.Add(new TemplateLoadError(resource, ex.Message));
+                continue;
+            }
+
+            foreach (LabelTemplate t in templates)
+            {
+                try
+                {
+                    AddOrReplace(t, validate: true);
+                }
+                catch (Exception ex) when (Faults.IsReportable(ex))
+                {
+                    _errors.Add(new TemplateLoadError($"{resource} ({t.Id})", ex.Message));
+                }
             }
         }
     }

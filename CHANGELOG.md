@@ -29,6 +29,15 @@ The full notes of each release, in all ten interface languages, are in
 - The barcode check takes USB and Bluetooth barcode scanners: what a scanner types is compared
   with every barcode in the project (every page, and every record when a barcode comes from
   data), with a running count of matches, so a printed batch can be checked. Scanners give no grade.
+- About 3,540 more built-in label sheets (3,716 in all): Avery (A4/A5 and US Letter), Avery
+  Zweckform, HERMA, APLI, Agipa, Decadry, Sigel, OnlineLabels, TANEX, 3M (with Post-it), Brother
+  and DYMO, from the measurements each maker supplies for Microsoft Word's label list (corner
+  radius and round labels included). One catalogue file per maker in `templates/sheets`, made by
+  `build\import-word-catalogues.ps1`; layouts Word places label by label, business cards, cards,
+  posters and binder tabs are left out. Avery L7160 now has Avery's own figures instead of an
+  estimate. Each maker gets an entry in the Label manager.
+- Setup (Inno Setup 6.7): Windows 11 style that follows Windows' light or dark mode, with new
+  side pictures for each and the LabelAxis mark on the other pages.
 
 ### Changed
 
@@ -67,7 +76,8 @@ The full notes of each release, in all ten interface languages, are in
 - Print settings changed in the Print and thermal print windows (printer, paper, margins,
   copies, scale, thermal settings) were not marked as a change, so they were not saved and
   were lost when the project was opened again.
-- Publisher imports use Publisher's own margins and gaps for where its labels sit on the sheet.
+- Publisher imports use Publisher's own margins and gaps for where its labels sit on the sheet,
+  and pick the built-in sheet laid out the same way when Publisher does not name one.
 - Excel files with a picture whose name is longer than 31 characters failed to import
   ("picture names cannot be more than 31 characters"); their records now import.
 - A duplicated or added page shows in the page list straight away.

@@ -161,6 +161,25 @@ public sealed class PublisherLayoutConverterTests
         PublisherSheet.Find(store, 38, 21.2, "Some other label", null).Should().Be(sheets[0]);
     }
 
+    [Fact]
+    public void Without_a_named_sheet_the_one_laid_out_as_Publisher_lays_out_its_pages_is_found()
+    {
+        // Many makers sell 38 × 21.2 mm labels; Publisher's margins and gaps tell them apart.
+        TemplateStore store = TemplateStore.CreateWithBuiltIns();
+        IReadOnlyList<LabelTemplate> sheets = PublisherSheet.Candidates(store, 38, 21.2);
+        LabelGrid g = sheets.Last(t => !SameLayout(t, sheets[0])).Grid;
+        var layout = new PubSheetLayout(Pt(g.MarginLeftMm), Pt(g.MarginTopMm), Pt(g.HGapMm), Pt(g.VGapMm));
+
+        LabelTemplate found = PublisherSheet.Find(store, 38, 21.2, null, sheets[0].Id, layout)!;
+
+        PublisherSheet.FromPublisher(layout, 38, 21.2, found).Should().BeSameAs(found, "its layout is Publisher's, so it prints as Publisher did");
+        found.Should().NotBe(sheets[0], "the last sheet used is laid out differently");
+
+        static bool SameLayout(LabelTemplate a, LabelTemplate b) =>
+            Math.Abs(a.Grid.MarginLeftMm - b.Grid.MarginLeftMm) <= 0.5 && Math.Abs(a.Grid.MarginTopMm - b.Grid.MarginTopMm) <= 0.5 &&
+            Math.Abs(a.Grid.HGapMm - b.Grid.HGapMm) <= 0.5 && Math.Abs(a.Grid.VGapMm - b.Grid.VGapMm) <= 0.5;
+    }
+
     private static double Pt(double mm) => mm * 72 / 25.4;
 
     [Fact]

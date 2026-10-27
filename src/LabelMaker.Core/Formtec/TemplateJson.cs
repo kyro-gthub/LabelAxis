@@ -98,6 +98,31 @@ public static class TemplateJson
         return FromDto(dto, isUserDefined);
     }
 
+    /// <summary>
+    /// The templates in <paramref name="stream"/>: one template, or a catalogue (a JSON array of
+    /// them, one file per maker), which loads far faster than thousands of separate files.
+    /// </summary>
+    public static IReadOnlyList<LabelTemplate> ManyFromStream(Stream stream, bool isUserDefined = false)
+    {
+        using var buffer = new MemoryStream();
+        stream.CopyTo(buffer);
+        ReadOnlySpan<byte> json = buffer.GetBuffer().AsSpan(0, (int)buffer.Length);
+        int first = 0;
+        while (first < json.Length && (char.IsWhiteSpace((char)json[first]) || json[first] == 0xEF || json[first] == 0xBB || json[first] == 0xBF))
+        {
+            first++;
+        }
+
+        if (first >= json.Length || json[first] != (byte)'[')
+        {
+            TemplateDto one = JsonSerializer.Deserialize<TemplateDto>(json[first..], Options) ?? throw new FormatException("Empty template document.");
+            return new[] { FromDto(one, isUserDefined) };
+        }
+
+        List<TemplateDto> dtos = JsonSerializer.Deserialize<List<TemplateDto>>(json[first..], Options) ?? new List<TemplateDto>();
+        return dtos.Select(d => FromDto(d, isUserDefined)).ToList();
+    }
+
     public static string ToJson(LabelTemplate template) =>
         JsonSerializer.Serialize(ToDto(template), Options);
 

@@ -3,11 +3,13 @@ id: label-sheets
 title: Label sheets and sizes
 category: Label sheets
 order: 1
-keywords: template, sheet, formtec, avery, label manager, custom size, sticker size, favourite, favorite, star, paper, label size, resize
+keywords: template, sheet, formtec, avery, label manager, custom size, sticker size, favourite, favorite, star, paper, label size, resize, herma, apli, agipa, decadry, sigel, onlinelabels, tanex, 3m, post-it, brother, dymo, zweckform, product code
 ---
 # Label sheets and sizes
 
 A **label sheet** (also called a template) says how big each sticker is, how many fit across and down, and where the first one starts on the paper. LabelAxis comes with the Formtec range and others; you can add your own.
+
+About 3,700 sheets are built in, from Formtec, Avery, Avery Zweckform, HERMA, APLI, Agipa, Decadry, Sigel, OnlineLabels, TANEX, 3M, Brother and DYMO. Their measurements are the ones each maker gives for Microsoft Word's list of labels. In the Label manager each maker has its own entry on the left, or type a product code such as `L7160` or `4226` in the search box.
 
 ## Choose or change the sheet
 

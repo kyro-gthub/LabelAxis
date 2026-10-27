@@ -3,11 +3,13 @@ id: label-sheets
 title: Листы и размеры этикеток
 category: Label sheets
 order: 1
-keywords: template, sheet, formtec, avery, label manager, custom size, sticker size, favourite, favorite, star, paper, label size, resize, лист, шаблон, диспетчер этикеток, свой размер, избранное, бумага, размер этикетки
+keywords: template, sheet, formtec, avery, label manager, custom size, sticker size, favourite, favorite, star, paper, label size, resize, лист, шаблон, диспетчер этикеток, свой размер, избранное, бумага, размер этикетки, herma, apli, agipa, decadry, sigel, onlinelabels, tanex, 3m, post-it, brother, dymo, zweckform, product code
 ---
 # Листы и размеры этикеток
 
 **Лист этикеток** (его ещё называют шаблоном) задаёт размер каждой наклейки, сколько их помещается по ширине и высоте и где на бумаге начинается первая. В LabelAxis есть серия Formtec и другие; можно добавлять свои.
+
+Встроено около 3 700 листов: Formtec, Avery, Avery Zweckform, HERMA, APLI, Agipa, Decadry, Sigel, OnlineLabels, TANEX, 3M, Brother, DYMO. Их размеры — те, что каждый производитель даёт для списка этикеток Microsoft Word. В диспетчере этикеток у каждого производителя своя строка слева; или введите код товара, например `L7160` или `4226`, в поле поиска.
 
 ## Выбрать или сменить лист
 

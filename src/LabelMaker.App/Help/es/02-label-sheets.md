@@ -3,11 +3,13 @@ id: label-sheets
 title: Hojas y tamaños de etiquetas
 category: Label sheets
 order: 1
-keywords: template, sheet, formtec, avery, label manager, custom size, sticker size, favourite, favorite, star, paper, label size, resize, hoja, plantilla, administrador de etiquetas, tamaño personalizado, favorito, papel, tamaño de etiqueta
+keywords: template, sheet, formtec, avery, label manager, custom size, sticker size, favourite, favorite, star, paper, label size, resize, hoja, plantilla, administrador de etiquetas, tamaño personalizado, favorito, papel, tamaño de etiqueta, herma, apli, agipa, decadry, sigel, onlinelabels, tanex, 3m, post-it, brother, dymo, zweckform, product code
 ---
 # Hojas y tamaños de etiquetas
 
 Una **hoja de etiquetas** (también llamada plantilla) indica el tamaño de cada pegatina, cuántas caben a lo ancho y a lo alto, y dónde empieza la primera en el papel. LabelAxis incluye la gama Formtec y otras; puede añadir las suyas.
+
+Vienen incluidas unas 3.700 hojas de Formtec, Avery, Avery Zweckform, HERMA, APLI, Agipa, Decadry, Sigel, OnlineLabels, TANEX, 3M, Brother, DYMO. Sus medidas son las que cada fabricante da para la lista de etiquetas de Microsoft Word. En el Administrador de etiquetas cada fabricante tiene su propia entrada a la izquierda; o escriba un código de producto como `L7160` o `4226` en el cuadro de búsqueda.
 
 ## Elegir o cambiar la hoja
 

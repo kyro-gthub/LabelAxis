@@ -3,11 +3,13 @@ id: label-sheets
 title: 标签纸和尺寸
 category: Label sheets
 order: 1
-keywords: template, sheet, formtec, avery, label manager, custom size, sticker size, favourite, favorite, star, paper, label size, resize, 标签纸, 模板, 标签管理器, 自定义尺寸, 收藏, 纸张, 标签尺寸
+keywords: template, sheet, formtec, avery, label manager, custom size, sticker size, favourite, favorite, star, paper, label size, resize, 标签纸, 模板, 标签管理器, 自定义尺寸, 收藏, 纸张, 标签尺寸, herma, apli, agipa, decadry, sigel, onlinelabels, tanex, 3m, post-it, brother, dymo, zweckform, product code
 ---
 # 标签纸和尺寸
 
 **标签纸**（也称模板）规定了每个贴纸的大小、横向和纵向能放多少个，以及第一个贴纸在纸上的起始位置。LabelAxis 自带 Formtec 系列等标签纸；您也可以添加自己的。
+
+内置约 3,700 种标签纸，来自 Formtec, Avery, Avery Zweckform, HERMA, APLI, Agipa, Decadry, Sigel, OnlineLabels, TANEX, 3M, Brother, DYMO。其尺寸是各制造商为 Microsoft Word 标签列表提供的数据。在标签管理器中，每个制造商在左侧都有自己的条目；也可以在搜索框中输入产品代码，例如 `L7160` 或 `4226`。
 
 ## 选择或更换标签纸
 

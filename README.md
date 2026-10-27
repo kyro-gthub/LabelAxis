@@ -20,7 +20,7 @@ guide. The interface and the help guide are in ten languages.
 - **What you see is what prints.** The canvas, the print preview, PDF, pictures and the
   printer all draw through the same engine. A 40 × 20 mm label prints at 40 × 20 mm.
   Pages are never shrunk to fit unless you ask.
-- **It lines up on your sheet.** There are 178 built-in label sheets and a calibration
+- **It lines up on your sheet.** There are about 3,700 built-in label sheets and a calibration
   wizard that remembers each printer's offset, and you can start on any label of a
   part-used sheet.
 - **Barcodes that scan.** LabelAxis has its own Code 128 / GS1-128 encoder and covers
@@ -124,8 +124,10 @@ are ready for a spreadsheet. A **blank sheet** or a **custom size** is one tab a
 
 ### Printing
 
-- **Label sheets:** 178 Formtec sheets (the 3000 series and the whole GS-1xxx family)
-  plus Avery. You can import more as JSON or CSV, or measure your own.
+- **Label sheets:** about 3,700 sheets from Formtec (the 3000 series and the whole GS-1xxx
+  family), Avery, Avery Zweckform, HERMA, APLI, Agipa, Decadry, Sigel, OnlineLabels, TANEX, 3M,
+  Brother and DYMO, with the measurements each maker gives for Microsoft Word's list of
+  labels. You can import more as JSON or CSV, or measure your own.
 - Full print preview, copies per page, and a start position on part-used sheets with
   skipped labels.
 - A **calibration wizard** stores the offset and scale for each printer.
@@ -238,6 +240,7 @@ labelaxis inspect --project labels.labelproj
 ├─ Directory.Packages.props        pinned package versions
 ├─ docs/                           architecture, template schema, build, UI design, ideas
 ├─ templates/formtec/              label-sheet templates (data, not code)
+├─ templates/sheets/               other makers' sheets, one catalogue file per brand
 ├─ templates/designs/              the ready-made designs
 ├─ src/
 │   ├─ LabelMaker.Core/            the engine: units, model, sheets, barcodes, data,

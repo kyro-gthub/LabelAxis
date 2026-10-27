@@ -3,11 +3,13 @@ id: label-sheets
 title: Etiketvellen en formaten
 category: Label sheets
 order: 1
-keywords: template, sheet, formtec, avery, label manager, custom size, sticker size, favourite, favorite, star, paper, label size, resize, vel, sjabloon, etiketbeheer, aangepast formaat, favoriet, papier, etiketformaat
+keywords: template, sheet, formtec, avery, label manager, custom size, sticker size, favourite, favorite, star, paper, label size, resize, vel, sjabloon, etiketbeheer, aangepast formaat, favoriet, papier, etiketformaat, herma, apli, agipa, decadry, sigel, onlinelabels, tanex, 3m, post-it, brother, dymo, zweckform, product code
 ---
 # Etiketvellen en formaten
 
 Een **etiketvel** (ook wel sjabloon) zegt hoe groot elke sticker is, hoeveel er naast en onder elkaar passen en waar de eerste op het papier begint. LabelAxis bevat de Formtec-reeks en andere; u kunt uw eigen vellen toevoegen.
+
+Er zijn ongeveer 3.700 vellen ingebouwd, van Formtec, Avery, Avery Zweckform, HERMA, APLI, Agipa, Decadry, Sigel, OnlineLabels, TANEX, 3M, Brother, DYMO. Hun maten zijn die welke elke fabrikant opgeeft voor de etikettenlijst van Microsoft Word. In Etiketbeheer heeft elke fabrikant links een eigen ingang, of typ een productcode zoals `L7160` of `4226` in het zoekvak.
 
 ## Het vel kiezen of wijzigen
 

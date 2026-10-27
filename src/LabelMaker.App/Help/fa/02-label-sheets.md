@@ -3,11 +3,13 @@ id: label-sheets
 title: برگه‌ها و اندازه‌های برچسب
 category: Label sheets
 order: 1
-keywords: template, sheet, formtec, avery, label manager, custom size, sticker size, favourite, favorite, star, paper, label size, resize, برگه, الگو, مدیر برچسب, اندازه سفارشی, برگزیده, کاغذ, اندازه برچسب
+keywords: template, sheet, formtec, avery, label manager, custom size, sticker size, favourite, favorite, star, paper, label size, resize, برگه, الگو, مدیر برچسب, اندازه سفارشی, برگزیده, کاغذ, اندازه برچسب, herma, apli, agipa, decadry, sigel, onlinelabels, tanex, 3m, post-it, brother, dymo, zweckform, product code
 ---
 # برگه‌ها و اندازه‌های برچسب
 
 **برگه برچسب** (که الگو هم نامیده می‌شود) می‌گوید هر برچسب چسبی چه اندازه‌ای دارد، چندتا در عرض و ارتفاع جا می‌شوند و اولی کجای کاغذ شروع می‌شود. LabelAxis مجموعه Formtec و برگه‌های دیگر را دارد؛ می‌توانید برگه‌های خودتان را هم اضافه کنید.
+
+حدود 3,700 برگه در برنامه هست، از Formtec, Avery, Avery Zweckform, HERMA, APLI, Agipa, Decadry, Sigel, OnlineLabels, TANEX, 3M, Brother, DYMO. اندازه‌های آن‌ها همان‌هایی است که هر سازنده برای فهرست برچسب‌های Microsoft Word می‌دهد. در مدیر برچسب هر سازنده در سمت چپ مورد خودش را دارد، یا کد محصولی مانند `L7160` یا `4226` را در کادر جستجو بنویسید.
 
 ## انتخاب یا تغییر برگه
 

@@ -110,6 +110,15 @@ This is implemented once in `TemplateGeometry` and covered by
 Invalid user files are listed in `TemplateStore.LoadErrors` and skipped — one bad
 file never blocks the rest.
 
+## Catalogues
+
+A built-in file may also hold a JSON **array** of templates in the shape above (files in the
+user folder hold one template each). The built-in sheets of other makers ship that way, one
+file per brand in `templates/sheets/` (Avery alone has
+over a thousand), because opening thousands of separate embedded files made start-up slow.
+They are made by `build\import-word-catalogues.ps1` from the measurements in Microsoft
+Word's label database; run it again rather than editing them by hand.
+
 ---
 
 ## CSV batch format

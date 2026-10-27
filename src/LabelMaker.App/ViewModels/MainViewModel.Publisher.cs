@@ -60,7 +60,7 @@ public sealed partial class MainViewModel
 
             // A label publication (one label per page) goes on its label sheet, several to a sheet.
             (double widthMm, double heightMm) = PublisherLayoutConverter.PageSizeMm(layout);
-            Core.Formtec.LabelTemplate? sheet = PublisherSheet.Find(_env.Templates, widthMm, heightMm, layout.LabelName, _env.Settings.LastTemplateId);
+            Core.Formtec.LabelTemplate? sheet = PublisherSheet.Find(_env.Templates, widthMm, heightMm, layout.LabelName, _env.Settings.LastTemplateId, layout.Sheet);
 
             // Publisher's own margins and gaps say exactly where its labels print; a built-in sheet
             // with the same layout is used as it is, any other layout is made into a sheet.
