@@ -15,6 +15,37 @@
       </Setter>
     </Style>
 
+    <!-- The Welcome page's feature icons: white line drawings on a blue tile, all drawn on the
+         same 24-unit grid with the same stroke so they read as one set. -->
+    <Style x:Key="FeatureTile" TargetType="Border">
+      <Setter Property="Width" Value="42" />
+      <Setter Property="Height" Value="42" />
+      <Setter Property="CornerRadius" Value="12" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="BorderBrush" Value="#30FFFFFF" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="Background">
+        <Setter.Value>
+          <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#5B9BFA" Offset="0" />
+            <GradientStop Color="#1D4ED8" Offset="1" />
+          </LinearGradientBrush>
+        </Setter.Value>
+      </Setter>
+      <Setter Property="Effect">
+        <Setter.Value>
+          <DropShadowEffect Color="#2563EB" BlurRadius="12" ShadowDepth="3" Direction="270" Opacity="0.28" />
+        </Setter.Value>
+      </Setter>
+    </Style>
+    <Style x:Key="IconLine" TargetType="Path">
+      <Setter Property="Stroke" Value="White" />
+      <Setter Property="StrokeThickness" Value="1.6" />
+      <Setter Property="StrokeStartLineCap" Value="Round" />
+      <Setter Property="StrokeEndLineCap" Value="Round" />
+      <Setter Property="StrokeLineJoin" Value="Round" />
+    </Style>
+
     <Style x:Key="Primary" TargetType="Button">
       <Setter Property="Height" Value="38" />
       <Setter Property="MinWidth" Value="112" />

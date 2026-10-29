@@ -99,7 +99,35 @@ internal static class Strings
             "На этом ПК установлен LabelAxis {0}. Он будет обновлён до {1}; настройки, листы и макеты сохранятся.",
             "此电脑上已有 LabelAxis {0}。将更新到 {1}；您的设置、标签纸和设计都会保留。",
         },
-        ["Feature1Title"] = new[] { "3,700 label sheets", "3,700 ورقة ملصقات", "3,700 پەڕەی لەیبڵ", "3.700 hojas de etiquetas", "3,700 برگهٔ برچسب", "3 700 planches d'étiquettes", "3,700 लेबल शीट", "3.700 etiketvellen", "3 700 листов этикеток", "3,700 种标签纸" },
+        ["ReinstallTitle"] = new[] { "Reinstall LabelAxis", "إعادة تثبيت LabelAxis", "دووبارە دامەزراندنەوەی LabelAxis", "Reinstalar LabelAxis", "نصب دوبارهٔ LabelAxis", "Réinstaller LabelAxis", "LabelAxis फिर से इंस्टॉल करें", "LabelAxis opnieuw installeren", "Переустановка LabelAxis", "重新安装 LabelAxis" },
+        ["ButtonReinstall"] = new[] { "Reinstall", "إعادة التثبيت", "دووبارە دامەزراندنەوە", "Reinstalar", "نصب دوباره", "Réinstaller", "फिर से इंस्टॉल करें", "Opnieuw installeren", "Переустановить", "重新安装" },
+        ["ReinstallBody"] = new[]
+        {
+            "LabelAxis {0} is already on this PC. Installing it again puts back any missing or damaged files; your settings, sheets and designs stay.",
+            "LabelAxis {0} موجود بالفعل على هذا الحاسوب. إعادة تثبيته تعيد أي ملفات مفقودة أو تالفة، وتبقى إعداداتك وأوراقك وتصاميمك كما هي.",
+            "LabelAxis {0} پێشتر لەسەر ئەم کۆمپیوتەرەیە. دووبارە دامەزراندنەوەی هەر فایلێکی ونبوو یان تێکچوو دەگەڕێنێتەوە؛ ڕێکخستن، پەڕە و دیزاینەکانت دەمێننەوە.",
+            "LabelAxis {0} ya está en este PC. Instalarlo de nuevo repone los archivos que falten o estén dañados; su configuración, hojas y diseños se conservan.",
+            "LabelAxis {0} از قبل روی این رایانه است. نصب دوباره هر فایل گم‌شده یا آسیب‌دیده را برمی‌گرداند؛ تنظیمات، برگه‌ها و طرح‌هایتان می‌مانند.",
+            "LabelAxis {0} est déjà sur ce PC. Le réinstaller remet les fichiers manquants ou abîmés ; vos réglages, planches et modèles sont conservés.",
+            "इस पीसी पर LabelAxis {0} पहले से है। फिर से इंस्टॉल करने पर गायब या ख़राब फ़ाइलें वापस आ जाती हैं; आपकी सेटिंग्स, शीट और डिज़ाइन बने रहते हैं।",
+            "LabelAxis {0} staat al op deze pc. Opnieuw installeren zet ontbrekende of beschadigde bestanden terug; uw instellingen, vellen en ontwerpen blijven.",
+            "LabelAxis {0} уже установлен на этом ПК. Повторная установка вернёт недостающие или повреждённые файлы; настройки, листы и макеты сохранятся.",
+            "此电脑上已有 LabelAxis {0}。重新安装会恢复缺失或损坏的文件；您的设置、标签纸和设计都会保留。",
+        },
+        ["NewerBody"] = new[]
+        {
+            "A newer LabelAxis ({0}) is on this PC. Installing {1} puts this older version in its place; your settings, sheets and designs stay.",
+            "يوجد LabelAxis أحدث ({0}) على هذا الحاسوب. تثبيت {1} يضع هذا الإصدار الأقدم مكانه، وتبقى إعداداتك وأوراقك وتصاميمك كما هي.",
+            "LabelAxisـێکی نوێتر ({0}) لەسەر ئەم کۆمپیوتەرەیە. دامەزراندنی {1} ئەم وەشانە کۆنترە لە جێگەی دادەنێت؛ ڕێکخستن، پەڕە و دیزاینەکانت دەمێننەوە.",
+            "Hay un LabelAxis más reciente ({0}) en este PC. Instalar {1} pone esta versión anterior en su lugar; su configuración, hojas y diseños se conservan.",
+            "LabelAxis تازه‌تری ({0}) روی این رایانه است. نصب {1} این نسخهٔ قدیمی‌تر را جای آن می‌گذارد؛ تنظیمات، برگه‌ها و طرح‌هایتان می‌مانند.",
+            "Un LabelAxis plus récent ({0}) est sur ce PC. Installer la {1} met cette version plus ancienne à sa place ; vos réglages, planches et modèles sont conservés.",
+            "इस पीसी पर नया LabelAxis ({0}) है। {1} इंस्टॉल करने पर यह पुराना संस्करण उसकी जगह आ जाता है; आपकी सेटिंग्स, शीट और डिज़ाइन बने रहते हैं।",
+            "Er staat een nieuwere LabelAxis ({0}) op deze pc. Installeren van {1} zet deze oudere versie op zijn plaats; uw instellingen, vellen en ontwerpen blijven.",
+            "На этом ПК установлена более новая версия LabelAxis ({0}). Установка {1} заменит её этой, более старой; настройки, листы и макеты сохранятся.",
+            "此电脑上有更新的 LabelAxis（{0}）。安装 {1} 会用这个旧版本替换它；您的设置、标签纸和设计都会保留。",
+        },
+        ["Feature1Title"] =new[] { "3,700 label sheets", "3,700 ورقة ملصقات", "3,700 پەڕەی لەیبڵ", "3.700 hojas de etiquetas", "3,700 برگهٔ برچسب", "3 700 planches d'étiquettes", "3,700 लेबल शीट", "3.700 etiketvellen", "3 700 листов этикеток", "3,700 种标签纸" },
         ["Feature1Text"] = new[]
         {
             "Avery, HERMA, Formtec, APLI and nine more makers", "Avery وHERMA وFormtec وAPLI وتسعة مصنّعين آخرين", "Avery، HERMA، Formtec، APLI و نۆ بەرهەمهێنەری تر",

@@ -105,10 +105,15 @@ public partial class SetupWindow : Window
         CloseButton.ToolTip = Strings.T("ButtonClose");
         LanguageName.Text = Strings.LanguageNames[Array.IndexOf(Strings.Languages, Strings.Language)];
 
-        bool update = _installed is not null;
         WelcomeOver.Text = Strings.T("WelcomeOver");
-        WelcomeTitle.Text = Strings.T(update ? "UpdateTitle" : "WelcomeTitle");
-        WelcomeBody.Text = update ? Strings.F("UpdateBody", _installed!.Version, Machine.Version) : Strings.T("WelcomeBody");
+        WelcomeTitle.Text = Strings.T(Kind switch { Install.Update => "UpdateTitle", Install.Again => "ReinstallTitle", _ => "WelcomeTitle" });
+        WelcomeBody.Text = Kind switch
+        {
+            Install.Update => Strings.F("UpdateBody", _installed!.Version, Machine.Version),
+            Install.Again => Strings.F("ReinstallBody", Machine.Version),
+            Install.Older => Strings.F("NewerBody", _installed!.Version, Machine.Version),
+            _ => Strings.T("WelcomeBody"),
+        };
         Feature1Title.Text = Strings.T("Feature1Title");
         Feature1Text.Text = Strings.T("Feature1Text");
         Feature2Title.Text = Strings.T("Feature2Title");
@@ -189,7 +194,7 @@ public partial class SetupWindow : Window
         FinishPage.Visibility = step == FinishStep ? Visibility.Visible : Visibility.Collapsed;
         DrawSteps();
 
-        string install = Strings.T(_installed is null ? "ButtonInstall" : "ButtonUpdate");
+        string install = Strings.T(Kind switch { Install.Update => "ButtonUpdate", Install.Again => "ButtonReinstall", _ => "ButtonInstall" });
         SecondaryButton.Visibility = Visibility.Visible;
         PrimaryButton.Visibility = Visibility.Visible;
         AppOpenNote.Visibility = step <= OptionsStep && Machine.AppIsRunning() ? Visibility.Visible : Visibility.Collapsed;
@@ -231,6 +236,34 @@ public partial class SetupWindow : Window
     }
 
     private bool ForEveryone => EveryoneCard.IsChecked == true;
+
+    private enum Install
+    {
+        Fresh,
+        Update,
+        Again,
+        Older,
+    }
+
+    /// <summary>What installing does here: a first install, an update, the same version again, or an older one.</summary>
+    private Install Kind
+    {
+        get
+        {
+            if (_installed is null)
+            {
+                return Install.Fresh;
+            }
+
+            if (!Version.TryParse(_installed.Version, out Version? installed) || !Version.TryParse(Machine.Version, out Version? mine))
+            {
+                return Install.Update;
+            }
+
+            int order = installed.CompareTo(mine);
+            return order < 0 ? Install.Update : order == 0 ? Install.Again : Install.Older;
+        }
+    }
 
     /// <summary>The four steps in the blue panel: ticked when done, a ring around the current one.</summary>
     private void DrawSteps()
