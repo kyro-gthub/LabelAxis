@@ -35,7 +35,7 @@ keywords: select, move, resize, rotate, skew, free transform, align, distribute,
 
 ## Delante y detrás
 
-Los objetos más abajo en la lista `Capas` (a la derecha) se dibujan detrás de los de arriba. Arrastre las filas para cambiar el orden, o use `Ctrl+B` (traer al frente), `Ctrl+Mayús+B` (enviar al fondo) y `Ctrl+↑` / `Ctrl+↓` en la lista.
+Los objetos más abajo en la lista **Objetos de la página** (a la izquierda) se dibujan detrás de los de arriba. Arrastre las filas para cambiar el orden, o use `Ctrl+B` (traer al frente), `Ctrl+Mayús+B` (enviar al fondo) y `Ctrl+↑` / `Ctrl+↓` en la lista.
 
 ## Agrupar y bloquear
 

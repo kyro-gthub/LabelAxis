@@ -12,7 +12,7 @@ The full notes of each release, in all ten interface languages, are in
   Remove and the page menu's new Print selected pages… act on all of them, each in one undo step.
 - Add pages (the + button) asks for blank pages or copies of a chosen page, and how many;
   copies can count their barcodes up.
-- Undo history: a History tab beside Properties, Layers and Page (also Edit > Undo history)
+- Undo history: a History tab beside Properties (also Edit > Undo history)
   lists every step; clicking one undoes or redoes straight to it.
 - Curve in the Lines menu: a curved line whose dots can be dragged to change the bend.
 - The help guide covers adding and selecting pages, numbered copies, pages from records, the
@@ -47,11 +47,13 @@ The full notes of each release, in all ten interface languages, are in
 
 ### Changed
 
-- Apply formatting to other pages (Edit menu, page menu, Page tab) is one tool in place of
+- Apply formatting to other pages (Edit menu, page menu) is one tool in place of
   Apply page format and Apply text formatting. It can also give one object's look to every
   object of its kind; the button under Text Settings opens it set to do that for a text box.
 - The Help menu opens the help guide, which holds Your first label, Keyboard shortcuts and
   Troubleshooting; their separate menu items are gone.
+- The right panel has Properties and History only. The Layers tab repeated the left panel's
+  Objects on page list, and the Page tab the Label manager and Apply formatting to other pages.
 - Label size is part of the Label manager (File menu and the page menu): type a size under
   Label size, or pick a sheet and use it. The separate Label size window is gone.
 - Data > Add data field lists the columns to choose from, as does Add field to label in Records.
@@ -91,6 +93,9 @@ The full notes of each release, in all ten interface languages, are in
 - Excel files with a picture whose name is longer than 31 characters failed to import
   ("picture names cannot be more than 31 characters"); their records now import.
 - A duplicated or added page shows in the page list straight away.
+- Editing text on the label ended (kept as typed) as soon as the mouse moved out of the text box:
+  passing over the canvas gave it the keyboard, taking it from the editor. The canvas no longer
+  takes the keyboard while text is being typed there or in a side panel box.
 - A quiet zone of 0 put no bars on the edges of the barcode's box: Code 128 kept at least 10
   modules of white space, EAN and UPC 9, other linear types 10, QR 4. The quiet zone is now used
   as set; ready-made designs start with the amount each type's standard asks for.

@@ -6,9 +6,9 @@ Nieuw
 • De barcodecontrole werkt met USB- en Bluetooth-barcodescanners: scan een afgedrukt etiket en LabelAxis zegt of het overeenkomt met een barcode in het project (elke pagina, en elk record als een barcode uit gegevens komt), met een lopende telling. Een scanner vertelt wat een barcode zegt, maar niet hoe goed hij is afgedrukt; de controle met camera of foto geeft nog steeds een cijfer.
 • Selecteer meerdere pagina's met Ctrl+klik en Shift+klik in de paginalijst. Dupliceren, Verwijderen en het nieuwe Geselecteerde pagina's afdrukken… (rechtsklik) werken op allemaal tegelijk, en Ctrl+Z draait elke stap terug.
 • Pagina's toevoegen (de knop +) vraagt of u lege pagina's of kopieën van een gekozen pagina wilt toevoegen, en hoeveel. Kopieën kunnen hun barcodes laten oplopen.
-• Geschiedenis ongedaan maken: het nieuwe tabblad Geschiedenis naast Eigenschappen, Lagen en Pagina (ook Bewerken › Geschiedenis ongedaan maken) toont elke stap. Klik op een stap om er direct naar terug te gaan, of weer vooruit.
+• Geschiedenis ongedaan maken: het nieuwe tabblad Geschiedenis naast Eigenschappen (ook Bewerken › Geschiedenis ongedaan maken) toont elke stap. Klik op een stap om er direct naar terug te gaan, of weer vooruit.
 • Gebogen lijn in het menu Lijnen: dubbelklik erop en sleep de punten om de boog te wijzigen.
-• Opmaak op andere pagina's toepassen is nu één hulpmiddel (menu Bewerken, paginamenu, tabblad Pagina): het kan ook het uiterlijk van één tekstvak aan elk tekstvak geven. Het menu Help is eenvoudiger: Uw eerste etiket, Sneltoetsen en Probleemoplossing staan in de helpgids.
+• Opmaak op andere pagina's toepassen is nu één hulpmiddel (menu Bewerken, paginamenu): het kan ook het uiterlijk van één tekstvak aan elk tekstvak geven. Het menu Help is eenvoudiger: Uw eerste etiket, Sneltoetsen en Probleemoplossing staan in de helpgids.
 • De etiketgrootte is nu een deel van Etiketbeheer: typ een nieuwe grootte onder Etiketgrootte, of kies een vel en gebruik dat.
 • Een kolom met barcodes die aan het etiket wordt toegevoegd, wordt een echte barcode die scant: LabelAxis kiest het waarschijnlijke type (EAN, UPC, Code 128…) en laat u eerst een ander type, of tekst, kiezen.
 • Ongeveer 3.500 extra etiketvellen: Avery, Avery Zweckform, HERMA, APLI, Agipa, Decadry, Sigel, OnlineLabels, TANEX, 3M, Brother, DYMO, met de maten die elke fabrikant opgeeft voor de etikettenlijst van Microsoft Word. Elke fabrikant heeft een eigen ingang in Etiketbeheer; zoek op productcode.
@@ -33,3 +33,4 @@ Oplossingen
 • Een barcode met een stille zone van 0 heeft zijn streepjes op de randen van zijn kader; Code 128, EAN en UPC hielden wat er ook was ingesteld witruimte binnen het kader.
 • De lijn van de printermarges in het afdrukvoorbeeld loopt niet meer door de laatste rij etiketten als de printer geen papier van het formaat van het vel heeft (het voorbeeld zegt welk papier hij gebruikt), en de onderste maat wordt niet meer afgesneden.
 • De titel en barcode van een nieuw project passen op kleine etiketten: de titel blijft op één regel en de barcode staat eronder, in plaats van over elkaar heen.
+• Tekst bewerken op het etiket stopt niet meer als de muis buiten het tekstvak komt. Klik ergens anders of druk op Ctrl+Enter om de wijziging te houden, of op Esc om haar ongedaan te maken.

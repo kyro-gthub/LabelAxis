@@ -35,7 +35,7 @@ keywords: select, move, resize, rotate, skew, free transform, align, distribute,
 
 ## Front and back
 
-Objects lower in the `Layers` list (on the right) are drawn behind those above them. Drag rows to reorder, or use `Ctrl+B` (bring to front), `Ctrl+Shift+B` (send to back), and `Ctrl+↑` / `Ctrl+↓` in the list.
+Objects lower in the **Objects on page** list (on the left) are drawn behind those above them. Drag rows to reorder, or use `Ctrl+B` (bring to front), `Ctrl+Shift+B` (send to back), and `Ctrl+↑` / `Ctrl+↓` in the list.
 
 ## Group and lock
 

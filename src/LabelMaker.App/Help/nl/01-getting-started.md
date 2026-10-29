@@ -27,7 +27,7 @@ LabelAxis ontwerpt etiketten en stickers en drukt ze af op etiketvellen (A4- of 
 
 - **Links:** `Pagina's` (de etiketontwerpen in dit project) en `Gegevens` (een spreadsheet of database om veel verschillende etiketten af te drukken).
 - **Midden:** het etiket zelf, met linialen, hulplijnen en raster.
-- **Rechts:** `Eigenschappen` (instellingen van het geselecteerde object), `Lagen` (alle objecten, van voor naar achter) en `Pagina` (het etiketvel en de pagina op het scherm). Het tabblad `Geschiedenis` toont elke stap die u ongedaan kunt maken of opnieuw kunt doen.
+- **Rechts:** `Eigenschappen` (instellingen van het geselecteerde object) en `Geschiedenis` (elke stap die u ongedaan kunt maken of opnieuw kunt doen). De objecten van de pagina, van voor naar achter, staan links onder **Objecten op pagina**, en het etiketvel kiest u in `Bestand › Etiketbeheer…`.
 - **Onder:** of het project is opgeslagen, het etiketvel, de getoonde record (als er gegevens zijn geladen), de zoom, en de printer met zijn kalibratie.
 
 ## Verder lezen

@@ -35,7 +35,7 @@ keywords: select, move, resize, rotate, skew, free transform, align, distribute,
 
 ## Avant et arrière
 
-Les objets plus bas dans la liste `Calques` (à droite) sont dessinés derrière ceux du dessus. Faites glisser les lignes pour changer l'ordre, ou utilisez `Ctrl+B` (premier plan), `Ctrl+Maj+B` (arrière-plan) et `Ctrl+↑` / `Ctrl+↓` dans la liste.
+Les objets plus bas dans la liste **Objets de la page** (à gauche) sont dessinés derrière ceux du dessus. Faites glisser les lignes pour changer l'ordre, ou utilisez `Ctrl+B` (premier plan), `Ctrl+Maj+B` (arrière-plan) et `Ctrl+↑` / `Ctrl+↓` dans la liste.
 
 ## Grouper et verrouiller
 

@@ -907,13 +907,9 @@
             <UniformGrid Rows="1">
               <RadioButton GroupName="RightTab" Content="Properties" Style="{StaticResource LA.Segmented.Item}"
                            IsChecked="{Binding SelectedRightTab, Converter={StaticResource IntEquals}, ConverterParameter=0}" />
-              <RadioButton GroupName="RightTab" Content="Layers" Style="{StaticResource LA.Segmented.Item}"
-                           IsChecked="{Binding SelectedRightTab, Converter={StaticResource IntEquals}, ConverterParameter=1}" />
-              <RadioButton GroupName="RightTab" Content="Page" Style="{StaticResource LA.Segmented.Item}"
-                           IsChecked="{Binding SelectedRightTab, Converter={StaticResource IntEquals}, ConverterParameter=2}" />
               <RadioButton GroupName="RightTab" Content="History" Style="{StaticResource LA.Segmented.Item}"
                            AutomationProperties.AutomationId="Tab.History"
-                           IsChecked="{Binding SelectedRightTab, Converter={StaticResource IntEquals}, ConverterParameter=3}" />
+                           IsChecked="{Binding SelectedRightTab, Converter={StaticResource IntEquals}, ConverterParameter=1}" />
             </UniformGrid>
           </Border>
 
@@ -921,7 +917,7 @@
           <Grid>
 
           <!-- History tab: click a step to undo or redo straight to it -->
-          <DockPanel Visibility="{Binding SelectedRightTab, Converter={StaticResource IntEqualsVis}, ConverterParameter=3}"
+          <DockPanel Visibility="{Binding SelectedRightTab, Converter={StaticResource IntEqualsVis}, ConverterParameter=1}"
                      Margin="14,12,14,14">
             <TextBlock DockPanel.Dock="Top" Text="UNDO HISTORY, OLDEST FIRST" Style="{StaticResource PanelSectionHeader}" />
             <StackPanel DockPanel.Dock="Bottom" Margin="0,10,0,0">
@@ -958,51 +954,6 @@
               </ListBox>
             </Border>
           </DockPanel>
-
-          <!-- Layers tab -->
-          <DockPanel Visibility="{Binding SelectedRightTab, Converter={StaticResource IntEqualsVis}, ConverterParameter=1}"
-                     Margin="14,12,14,14">
-            <TextBlock DockPanel.Dock="Top" Text="OBJECTS, FRONT TO BACK" Style="{StaticResource PanelSectionHeader}" />
-            <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Margin="0,10,0,0">
-              <Button Content="Bring forward" Style="{StaticResource GhostButton}" Margin="0,0,8,0" Command="{Binding BringForwardCommand}" />
-              <Button Content="Send backward" Style="{StaticResource GhostButton}" Command="{Binding SendBackwardCommand}" />
-            </StackPanel>
-            <Border Style="{StaticResource InsetPanel}">
-              <ListBox ItemsSource="{Binding ObjectList}" SelectionMode="Extended" DisplayMemberPath="Display"
-                       BorderThickness="0" Background="Transparent" SelectionChanged="OnObjectListSelectionChanged">
-                <ListBox.ItemContainerStyle>
-                  <Style TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
-                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=OneWay}" />
-                  </Style>
-                </ListBox.ItemContainerStyle>
-              </ListBox>
-            </Border>
-          </DockPanel>
-
-          <!-- Page tab -->
-          <ScrollViewer VerticalScrollBarVisibility="Auto"
-                        Visibility="{Binding SelectedRightTab, Converter={StaticResource IntEqualsVis}, ConverterParameter=2}">
-            <StackPanel Margin="14,12,14,14">
-              <TextBlock Text="LABEL SHEET" Style="{StaticResource PanelSectionHeader}" />
-              <Border Style="{StaticResource InsetPanel}" Padding="12,10" Margin="0,0,0,12">
-                <TextBlock Text="{Binding TemplateSummary}" TextWrapping="Wrap" FontSize="12.5" />
-              </Border>
-              <Button Content="Change template…" Style="{StaticResource PrimaryButton}" HorizontalAlignment="Left"
-                      Command="{Binding TemplateManagerCommand}" Margin="0,0,0,14" />
-
-              <TextBlock Text="CURRENT PAGE" Style="{StaticResource PanelSectionHeader}" />
-              <Border Style="{StaticResource InsetPanel}" Padding="12,10">
-                <StackPanel>
-                  <TextBlock Text="{Binding ActivePageName}" FontFamily="{StaticResource Font.UiSemiBold}" FontSize="13" />
-                  <TextBlock Text="{Binding SelectionInfo}" FontFamily="{StaticResource Font.Mono}" FontSize="11.5"
-                             Foreground="{DynamicResource Br.TextMuted}" Margin="0,4,0,0" />
-                </StackPanel>
-              </Border>
-              <Button Content="Apply formatting to other pages…" Style="{StaticResource GhostButton}" HorizontalAlignment="Left"
-                      Margin="0,10,0,0" Command="{Binding ApplyLayoutCommand}"
-                      ToolTip="Give the text, barcodes, images and so on of other pages the place, size and look they have on this page" />
-            </StackPanel>
-          </ScrollViewer>
 
           <!-- Properties tab (PropertiesPanel.xaml) -->
           <local:PropertiesPanel Visibility="{Binding SelectedRightTab, Converter={StaticResource IntEqualsVis}, ConverterParameter=0}" />

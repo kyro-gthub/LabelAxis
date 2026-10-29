@@ -38,7 +38,7 @@ Om geïmporteerde records (Excel, CSV of een database) in pagina's om te zetten,
 
 ## Opmaak op andere pagina's toepassen
 
-`Bewerken › Opmaak op andere pagina's toepassen…` (ook met rechtsklikken op een pagina, en op het tabblad `Pagina`) laat de andere pagina's eruitzien als de pagina op het scherm. Elk tekstvak, elke barcode, afbeelding, vorm en tabel daar krijgt de plaats, grootte en het uiterlijk van zijn tegenhanger op deze pagina, en **houdt zijn eigen tekst, barcodewaarde en afbeelding**.
+`Bewerken › Opmaak op andere pagina's toepassen…` (ook met rechtsklikken op een pagina) laat de andere pagina's eruitzien als de pagina op het scherm. Elk tekstvak, elke barcode, afbeelding, vorm en tabel daar krijgt de plaats, grootte en het uiterlijk van zijn tegenhanger op deze pagina, en **houdt zijn eigen tekst, barcodewaarde en afbeelding**.
 
 - **Kopiëren van:** elk object op deze pagina, of alleen de geselecteerde objecten.
 - **Wat kopiëren:**
@@ -53,7 +53,7 @@ Een barcodetype dat de waarde van een pagina niet kan bevatten (EAN-13 voor de l
 
 ## Een object van alle pagina's verwijderen
 
-Om iets in één keer van alle etiketten te halen, zoals een oude barcode, een logo of een tekstvak met de naam "Aanbieding", selecteert u het op één pagina en kiest u `Bewerken › Van alle pagina's verwijderen…` (ook met rechtsklikken erop op het etiket of in `Lagen`).
+Om iets in één keer van alle etiketten te halen, zoals een oude barcode, een logo of een tekstvak met de naam "Aanbieding", selecteert u het op één pagina en kiest u `Bewerken › Van alle pagina's verwijderen…` (ook met rechtsklikken erop op het etiket of in **Objecten op pagina**).
 
 - **Ook van deze pagina verwijderen** verwijdert ook het geselecteerde object zelf; vink het uit om het hier te houden.
 - **Koppelen op** vindt hetzelfde object op de andere pagina's: de **naam, anders de volgorde** (aanbevolen), alleen de **naam**, of alleen de **volgorde**.

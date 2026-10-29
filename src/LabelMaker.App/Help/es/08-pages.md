@@ -38,7 +38,7 @@ Para convertir registros importados (Excel, CSV o una base de datos) en páginas
 
 ## Aplicar formato a otras páginas
 
-`Edición › Aplicar formato a otras páginas…` (también con clic derecho en una página, y en la pestaña `Página`) hace que las otras páginas se parezcan a la página en pantalla. Cada cuadro de texto, código de barras, imagen, forma y tabla de ellas toma la posición, el tamaño y el aspecto de su equivalente en esta página, y **conserva sus propios textos, valor de código de barras e imagen**.
+`Edición › Aplicar formato a otras páginas…` (también con clic derecho en una página) hace que las otras páginas se parezcan a la página en pantalla. Cada cuadro de texto, código de barras, imagen, forma y tabla de ellas toma la posición, el tamaño y el aspecto de su equivalente en esta página, y **conserva sus propios textos, valor de código de barras e imagen**.
 
 - **Copiar de:** todos los objetos de esta página, o solo los seleccionados.
 - **Qué copiar:**
@@ -53,7 +53,7 @@ Un tipo de código de barras que no puede contener el valor de una página (EAN-
 
 ## Quitar un objeto de todas las páginas
 
-Para quitar algo de todas las etiquetas a la vez, como un código de barras antiguo, un logotipo o un cuadro de texto llamado «Oferta», selecciónelo en una página y elija `Edición › Quitar de todas las páginas…` (también con clic derecho sobre él en la etiqueta o en `Capas`).
+Para quitar algo de todas las etiquetas a la vez, como un código de barras antiguo, un logotipo o un cuadro de texto llamado «Oferta», selecciónelo en una página y elija `Edición › Quitar de todas las páginas…` (también con clic derecho sobre él en la etiqueta o en **Objetos de la página**).
 
 - **Quitarlo también de esta página** quita también el propio objeto seleccionado; desmárquelo para conservarlo aquí.
 - **Emparejar por** encuentra el mismo objeto en las otras páginas: su **nombre o, si no, su orden** (recomendado), solo su **nombre**, o solo su **orden**.

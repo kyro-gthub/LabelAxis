@@ -27,7 +27,7 @@ LabelAxis conçoit des étiquettes et des autocollants et les imprime sur des fe
 
 - **À gauche :** `Pages` (les modèles d'étiquettes de ce projet) et `Données` (un tableur ou une base de données pour imprimer beaucoup d'étiquettes différentes).
 - **Au milieu :** l'étiquette elle-même, avec règles, repères et grille.
-- **À droite :** `Propriétés` (réglages de l'objet sélectionné), `Calques` (tous les objets, de l'avant vers l'arrière) et `Page` (la feuille d'étiquettes et la page affichée). L'onglet `Historique` liste chaque étape que vous pouvez annuler ou rétablir.
+- **À droite :** `Propriétés` (réglages de l'objet sélectionné) et `Historique` (chaque étape que vous pouvez annuler ou rétablir). Les objets de la page, de l'avant vers l'arrière, sont à gauche sous **Objets de la page**, et la feuille d'étiquettes se choisit dans `Fichier › Gestionnaire d'étiquettes…`.
 - **En bas :** si le projet est enregistré, la feuille d'étiquettes, l'enregistrement affiché (quand des données sont chargées), le zoom, et l'imprimante avec son calibrage.
 
 ## Pour aller plus loin

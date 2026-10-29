@@ -73,8 +73,11 @@ public partial class MainWindow : Window
         {
             // Passing over the canvas must not pull focus out of a rename box and cancel it, nor
             // out of another window: focusing an element brings its window to the front, so a
-            // maximised main window would cover the Help guide or any other open window.
-            if (IsActive && !_canvas.IsKeyboardFocusWithin && !IsRenaming)
+            // maximised main window would cover the Help guide or any other open window. Nor out
+            // of text being typed: the text editor on the label (moving the mouse out of its box
+            // ended the edit) or a box in the side panels.
+            if (IsActive && !_canvas.IsKeyboardFocusWithin && !IsRenaming && !_textEditor.IsEditing &&
+                Keyboard.FocusedElement is not System.Windows.Controls.Primitives.TextBoxBase)
             {
                 _canvas.Focus();
             }

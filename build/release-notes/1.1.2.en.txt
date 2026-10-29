@@ -6,9 +6,9 @@ New
 • The barcode check works with USB and Bluetooth barcode scanners: scan a printed label and LabelAxis says whether it matches a barcode in the project (any page, and every record when a barcode comes from data), with a running count. A scanner tells what a barcode says but not how well it is printed; the camera and photo check still give a grade.
 • Select several pages with Ctrl+click and Shift+click in the page list. Duplicate, Remove and the new Print selected pages… (right-click) work on all of them at once, and Ctrl+Z takes each step back.
 • Add pages (the + button) asks whether to add blank pages or copies of a chosen page, and how many. Copies can count their barcodes up.
-• Undo history: the new History tab beside Properties, Layers and Page (also Edit › Undo history) lists every step. Click one to go straight back to it, or forward again.
+• Undo history: the new History tab beside Properties (also Edit › Undo history) lists every step. Click one to go straight back to it, or forward again.
 • Curve in the Lines menu: a curved line. Double-click it and drag its dots to change the bend.
-• Apply formatting to other pages is now one tool (Edit menu, page menu, Page tab): it can also give one text box's look to every text box. The Help menu is simpler: Your first label, Keyboard shortcuts and Troubleshooting are in the help guide.
+• Apply formatting to other pages is now one tool (Edit menu, page menu): it can also give one text box's look to every text box. The Help menu is simpler: Your first label, Keyboard shortcuts and Troubleshooting are in the help guide.
 • Label size is now part of the Label manager: type a new size under Label size, or pick a sheet and use it.
 • A column of barcodes added to the label becomes a real barcode that scans: LabelAxis picks the likely type (EAN, UPC, Code 128…) and lets you choose another, or text, first.
 • About 3,500 more label sheets: Avery, Avery Zweckform, HERMA, APLI, Agipa, Decadry, Sigel, OnlineLabels, TANEX, 3M, Brother, DYMO, with the measurements each maker gives for Microsoft Word's list of labels. Each maker has its own entry in the Label manager; search by product code.
@@ -33,3 +33,4 @@ Fixes
 • A barcode with a quiet zone of 0 has its bars on the edges of its box; Code 128, EAN and UPC kept white space inside the box whatever was set.
 • Print preview's printer margin line no longer crosses the last row of labels when the printer has no paper of the sheet's size (the preview says which paper it uses), and the bottom measurement is no longer cut off.
 • A new project's title and barcode fit small labels: the title stays on one line and the barcode sits below it, instead of running over each other.
+• Editing text on the label no longer ends when the mouse moves out of the text box. Click elsewhere or press Ctrl+Enter to keep the change, or Esc to undo it.

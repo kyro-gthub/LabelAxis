@@ -35,7 +35,7 @@ keywords: select, move, resize, rotate, skew, free transform, align, distribute,
 
 ## Voor en achter
 
-Objecten lager in de lijst `Lagen` (rechts) worden achter de objecten erboven getekend. Sleep rijen om de volgorde te wijzigen, of gebruik `Ctrl+B` (naar voorgrond), `Ctrl+Shift+B` (naar achtergrond) en `Ctrl+↑` / `Ctrl+↓` in de lijst.
+Objecten lager in de lijst **Objecten op pagina** (links) worden achter de objecten erboven getekend. Sleep rijen om de volgorde te wijzigen, of gebruik `Ctrl+B` (naar voorgrond), `Ctrl+Shift+B` (naar achtergrond) en `Ctrl+↑` / `Ctrl+↓` in de lijst.
 
 ## Groeperen en vergrendelen
 

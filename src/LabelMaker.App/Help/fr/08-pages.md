@@ -38,7 +38,7 @@ Pour transformer des enregistrements importés (Excel, CSV ou une base de donné
 
 ## Appliquer la mise en forme aux autres pages
 
-`Édition › Appliquer la mise en forme aux autres pages…` (aussi par clic droit sur une page, et dans l'onglet `Page`) donne aux autres pages l'apparence de la page affichée. Chaque zone de texte, code-barres, image, forme et tableau y prend la place, la taille et l'apparence de son équivalent sur cette page, et **garde ses propres textes, valeur de code-barres et image**.
+`Édition › Appliquer la mise en forme aux autres pages…` (aussi par clic droit sur une page) donne aux autres pages l'apparence de la page affichée. Chaque zone de texte, code-barres, image, forme et tableau y prend la place, la taille et l'apparence de son équivalent sur cette page, et **garde ses propres textes, valeur de code-barres et image**.
 
 - **Copier depuis :** tous les objets de cette page, ou seulement les objets sélectionnés.
 - **Quoi copier :**
@@ -53,7 +53,7 @@ Un type de code-barres qui ne peut pas contenir la valeur d'une page (EAN-13 pou
 
 ## Supprimer un objet de toutes les pages
 
-Pour retirer quelque chose de toutes les étiquettes d'un coup, comme un ancien code-barres, un logo ou une zone de texte nommée « Offre », sélectionnez-le sur une page et choisissez `Édition › Supprimer de toutes les pages…` (aussi par clic droit dessus sur l'étiquette ou dans `Calques`).
+Pour retirer quelque chose de toutes les étiquettes d'un coup, comme un ancien code-barres, un logo ou une zone de texte nommée « Offre », sélectionnez-le sur une page et choisissez `Édition › Supprimer de toutes les pages…` (aussi par clic droit dessus sur l'étiquette ou dans **Objets de la page**).
 
 - **Le supprimer aussi de cette page** supprime aussi l'objet sélectionné lui-même ; décochez pour le garder ici.
 - **Associer par** trouve le même objet sur les autres pages : son **nom, sinon son ordre** (recommandé), son **nom** seulement, ou son **ordre** seulement.

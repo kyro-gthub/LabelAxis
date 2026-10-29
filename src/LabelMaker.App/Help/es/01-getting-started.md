@@ -27,7 +27,7 @@ LabelAxis diseña etiquetas y pegatinas y las imprime en hojas de etiquetas (hoj
 
 - **Izquierda:** `Páginas` (los diseños de etiqueta de este proyecto) y `Datos` (una hoja de cálculo o una base de datos para imprimir muchas etiquetas distintas).
 - **Centro:** la etiqueta, con reglas, guías y cuadrícula.
-- **Derecha:** `Propiedades` (ajustes del objeto seleccionado), `Capas` (todos los objetos, de delante hacia atrás) y `Página` (la hoja de etiquetas y la página en pantalla). La pestaña `Historial` muestra cada paso que puede deshacer o rehacer.
+- **Derecha:** `Propiedades` (ajustes del objeto seleccionado) e `Historial` (cada paso que puede deshacer o rehacer). Los objetos de la página, de delante hacia atrás, están a la izquierda en **Objetos de la página**, y la hoja de etiquetas se elige en `Archivo › Administrador de etiquetas…`.
 - **Abajo:** si el proyecto está guardado, la hoja de etiquetas, el registro mostrado (cuando hay datos cargados), el zoom y la impresora con su calibración.
 
 ## Siguientes pasos

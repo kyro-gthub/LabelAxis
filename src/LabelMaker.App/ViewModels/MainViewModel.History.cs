@@ -7,7 +7,7 @@ namespace LabelMaker.App.ViewModels;
 public sealed partial class MainViewModel
 {
     /// <summary>The right panel's History tab (see <see cref="SelectedRightTab"/>).</summary>
-    public const int HistoryTab = 3;
+    public const int HistoryTab = 1;
 
     public RelayCommand ShowHistoryCommand { get; private set; } = null!;
     public RelayCommand GoToHistoryStepCommand { get; private set; } = null!;

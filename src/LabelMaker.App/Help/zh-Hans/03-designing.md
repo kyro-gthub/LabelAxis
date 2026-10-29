@@ -35,7 +35,7 @@ keywords: select, move, resize, rotate, skew, free transform, align, distribute,
 
 ## 前后次序
 
-在右侧 `图层` 列表中位置越靠下的对象，绘制在越靠后的位置。拖动各行可重新排序，或在列表中使用 `Ctrl+B`（置于顶层）、`Ctrl+Shift+B`（置于底层）以及 `Ctrl+↑` / `Ctrl+↓`。
+在左侧 **页面上的对象** 列表中位置越靠下的对象，绘制在越靠后的位置。拖动各行可重新排序，或在列表中使用 `Ctrl+B`（置于顶层）、`Ctrl+Shift+B`（置于底层）以及 `Ctrl+↑` / `Ctrl+↓`。
 
 ## 组合和锁定
 

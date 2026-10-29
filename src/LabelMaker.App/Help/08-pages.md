@@ -38,7 +38,7 @@ To turn imported records (Excel, CSV or a database) into pages, one page per rec
 
 ## Apply formatting to other pages
 
-`Edit > Apply formatting to other pages…` (also when you right-click a page, and on the `Page` tab) makes the other pages look like the page on screen. Each text box, barcode, picture, shape and table there takes the place, size and look of its match on this page, and **keeps its own words, barcode value and picture**.
+`Edit > Apply formatting to other pages…` (also when you right-click a page) makes the other pages look like the page on screen. Each text box, barcode, picture, shape and table there takes the place, size and look of its match on this page, and **keeps its own words, barcode value and picture**.
 
 - **Copy from:** every object on this page, or only the selected objects.
 - **What to copy:**
@@ -53,7 +53,7 @@ A barcode type that cannot hold a page's value (EAN-13 for the letters "ABC") is
 
 ## Remove an object from all pages
 
-To take something off every label at once, such as an old barcode, a logo or a text box called "Offer", select it on one page and choose `Edit > Remove from all pages…` (also when you right-click it on the label or in `Layers`).
+To take something off every label at once, such as an old barcode, a logo or a text box called "Offer", select it on one page and choose `Edit > Remove from all pages…` (also when you right-click it on the label or in **Objects on page**).
 
 - **Also remove it from this page** removes the selected object itself too; untick it to keep it here.
 - **Match by** finds the same object on the other pages: its **name, or else its order** (recommended), its **name** only, or its **order** only.

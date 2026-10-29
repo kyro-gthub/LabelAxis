@@ -85,12 +85,10 @@ public sealed partial class MainViewModel
     {
         _activeTab?.RefreshHeader();
         OnPropertyChanged(nameof(Title));
-        OnPropertyChanged(nameof(SelectionInfo));
         OnPropertyChanged(nameof(DocumentTabTitle));
         OnPropertyChanged(nameof(SaveStateText));
         OnPropertyChanged(nameof(HasUnsavedChanges));
         OnPropertyChanged(nameof(SheetSummary));
-        OnPropertyChanged(nameof(TemplateSummary));
         OnPropertyChanged(nameof(SharedGuides));
         OnPropertyChanged(nameof(LockGuides));
         RebuildObjectList();
@@ -101,7 +99,6 @@ public sealed partial class MainViewModel
     private void OnSelectionChanged()
     {
         SyncObjectListSelection();
-        OnPropertyChanged(nameof(SelectionInfo));
         _properties.RefreshAll();
         RefreshCanvas();
         RaiseAllCanExecute();

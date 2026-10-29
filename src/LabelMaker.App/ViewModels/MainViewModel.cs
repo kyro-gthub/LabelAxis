@@ -210,25 +210,6 @@ public sealed partial class MainViewModel : ObservableObject
         (_session.Document.FilePath is { } p ? Path.GetFileName(p) : _session.Project.Metadata.Title) +
         " — LabelAxis";
 
-    public string SelectionInfo
-    {
-        get
-        {
-            if (_session.Selection.Count == 0)
-            {
-                return $"{_session.ActiveLabel.Objects.Count} object(s)";
-            }
-
-            if (_session.Selection.Count == 1)
-            {
-                RectMm b = _session.Selection[0].Bounds;
-                return $"X {b.X:0.00}  Y {b.Y:0.00}  W {b.Width:0.00}  H {b.Height:0.00} mm";
-            }
-
-            return $"{_session.Selection.Count} selected";
-        }
-    }
-
     /// <summary>Units offered for every length in the UI. Storage stays millimetres.</summary>
     public IReadOnlyList<Core.Units.Unit> DisplayUnits { get; } = new[]
     {
@@ -349,7 +330,6 @@ public sealed partial class MainViewModel : ObservableObject
     /// <summary>After the Label manager changed the label size: the sheet line, and the label fitted in the window again.</summary>
     public void OnLabelSizeChanged()
     {
-        OnPropertyChanged(nameof(TemplateSummary));
         OnPropertyChanged(nameof(SheetSummary));
         _canvas?.FitToView();
         RefreshCanvas();
@@ -388,23 +368,7 @@ public sealed partial class MainViewModel : ObservableObject
     {
         _canvas?.FitToView();
         RefreshCanvas();
-        OnPropertyChanged(nameof(TemplateSummary));
         OnPropertyChanged(nameof(SheetSummary));
-    }
-
-    public string TemplateSummary
-    {
-        get
-        {
-            LabelTemplate? t = _session.Project.Template;
-            if (t is null)
-            {
-                return "No template";
-            }
-
-            return $"{t.Brand} {t.ProductCode} — {t.Name}\n{t.Grid.Columns}×{t.Grid.Rows} · " +
-                   $"label {t.Grid.LabelWidthMm:0.##}×{t.Grid.LabelHeightMm:0.##} mm · {t.EffectivePage.Name}";
-        }
     }
 
     public bool ShowGrid
