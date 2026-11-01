@@ -9,37 +9,37 @@
     <PackageVersion Include="ZXing.Net" Version="0.16.11" />
 
     <!-- Tabular data import -->
-    <PackageVersion Include="CsvHelper" Version="33.1.0" />
+    <PackageVersion Include="CsvHelper" Version="34.0.0" />
     <PackageVersion Include="ClosedXML" Version="0.105.1" />
 
     <!-- Live data connections (LabelMaker.Data) -->
-    <PackageVersion Include="Microsoft.Data.Sqlite" Version="10.0.12" />
-    <PackageVersion Include="Microsoft.Data.SqlClient" Version="7.0.3" />
+    <PackageVersion Include="Microsoft.Data.Sqlite" Version="10.0.14" />
+    <PackageVersion Include="Microsoft.Data.SqlClient" Version="7.1.1" />
     <PackageVersion Include="MySqlConnector" Version="2.6.2" />
     <PackageVersion Include="Npgsql" Version="10.0.3" />
-    <PackageVersion Include="System.Data.Odbc" Version="10.0.12" />
-    <PackageVersion Include="System.Data.OleDb" Version="10.0.12" />
+    <PackageVersion Include="System.Data.Odbc" Version="10.0.14" />
+    <PackageVersion Include="System.Data.OleDb" Version="10.0.14" />
 
     <!-- Compound files (Microsoft Publisher .pub content import) -->
-    <PackageVersion Include="OpenMcdf" Version="3.3.0" />
+    <PackageVersion Include="OpenMcdf" Version="3.4.0" />
 
     <!-- Bluetooth / serial label printers (Windows gives a paired Bluetooth printer a COM port) -->
-    <PackageVersion Include="System.IO.Ports" Version="10.0.12" />
+    <PackageVersion Include="System.IO.Ports" Version="10.0.14" />
 
     <!-- Vector PDF export -->
-    <PackageVersion Include="PdfSharp" Version="6.2.4" />
+    <PackageVersion Include="PdfSharp" Version="6.5.0" />
 
     <!-- Pinned past CVE-2026-84008 / CVE-2026-70162; PdfSharp and SqlClient bring in older ones -->
     <PackageVersion Include="System.Security.Cryptography.Pkcs" Version="10.0.13" />
 
     <!-- Logging abstraction only (no sinks pulled into Core) -->
-    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.12" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.14" />
 
     <!-- Test stack -->
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.11.0" />
     <PackageVersion Include="xunit" Version="2.9.3" />
-    <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.4" />
-    <PackageVersion Include="coverlet.collector" Version="6.0.4" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="4.0.1" />
+    <PackageVersion Include="coverlet.collector" Version="10.1.0" />
     <PackageVersion Include="FluentAssertions" Version="7.2.2" />
   </ItemGroup>
 </Project>
