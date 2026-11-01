@@ -34,3 +34,4 @@ Fixes
 • Print preview's printer margin line no longer crosses the last row of labels when the printer has no paper of the sheet's size (the preview says which paper it uses), and the bottom measurement is no longer cut off.
 • A new project's title and barcode fit small labels: the title stays on one line and the barcode sits below it, instead of running over each other.
 • Editing text on the label no longer ends when the mouse moves out of the text box. Click elsewhere or press Ctrl+Enter to keep the change, or Esc to undo it.
+• Formtec GS-1084, GS-1096, GS-1136 and GS-1145 print where the labels are: their margins and gaps now come from Formtec's own templates. GS-1054 and GS-1081 are added.

@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-gs-1081",
+  "brand": "Formtec",
+  "productCode": "GS-1081",
+  "name": "Formtec GS-1081 — 52.99 × 9.98 mm, 81-up",
+  "categories": ["General", "Formtec GS"],
+  "page": { "size": "A4", "widthMm": 210, "heightMm": 297 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 3,
+    "rows": 27,
+    "labelWidthMm": 52.99,
+    "labelHeightMm": 9.98,
+    "marginTopMm": 12.59,
+    "marginLeftMm": 15.49,
+    "hGapMm": 10,
+    "vGapMm": 0,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "Formtec GS-1081 A4 sheet: 81 labels (3 x 27), each 52.99 x 9.98 mm.",
+  "source": "Formtec's Word template for GS-1081 (formteckorea.com): page margins, column widths and row heights"
+}

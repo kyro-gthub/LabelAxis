@@ -12,7 +12,8 @@
 param(
     [string]$LabelFile = 'C:\Program Files\Microsoft Office\root\Office16\PAGESIZE\PGLBL010.XML',
     [string]$OutDir = (Join-Path (Split-Path -Parent $PSScriptRoot) 'templates\formtec'),
-    [string[]]$Keep = @('formtec-gs-1084', 'formtec-gs-1096', 'formtec-gs-1136', 'formtec-gs-1145')
+    # Sheets Word does not have, made from Formtec's own Word templates (formteckorea.com).
+    [string[]]$Keep = @('formtec-gs-1054', 'formtec-gs-1081', 'formtec-gs-1084', 'formtec-gs-1096', 'formtec-gs-1136', 'formtec-gs-1145')
 )
 
 $ErrorActionPreference = 'Stop'

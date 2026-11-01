@@ -40,6 +40,30 @@ public sealed class FormtecGeometryTests
         last.Y.Should().BeApproximately(11 + (12 * 21.15), 1e-6);
         last.Right.Should().BeApproximately(200, 1e-6, "labels butt together, leaving 10 mm each side");
     }
+    [Theory]
+    // Code, across, down, label width, height, left, top, gap across, gap down: as Formtec's own
+    // Word template for each sheet lays it out (formteckorea.com), to within its rounding.
+    [InlineData("gs-1065", 5, 13, 38, 21.15, 10, 11, 0, 0)]
+    [InlineData("gs-1189", 7, 27, 25, 10, 8.5, 13.5, 3, 0)]
+    [InlineData("gs-1136", 4, 34, 45.99, 7.99, 8.48, 11.61, 3, 0)]
+    [InlineData("gs-1145", 5, 29, 29.99, 9, 19.99, 17.11, 5.01, 0)]
+    [InlineData("gs-1081", 3, 27, 52.99, 9.98, 15.49, 12.59, 10, 0)]
+    [InlineData("gs-1084", 4, 21, 46, 11, 6.09, 17.27, 4.6, 1.56)]
+    public void Gs_sheets_match_formtecs_own_templates(string code, int across, int down, double w, double h,
+        double left, double top, double hGap, double vGap)
+    {
+        LabelGrid g = Store.Get("formtec-" + code)!.Grid;
+        g.Columns.Should().Be(across);
+        g.Rows.Should().Be(down);
+        g.LabelWidthMm.Should().BeApproximately(w, 0.03);
+        g.LabelHeightMm.Should().BeApproximately(h, 0.03);
+        g.MarginLeftMm.Should().BeApproximately(left, 0.03);
+        g.MarginTopMm.Should().BeApproximately(top, 0.03);
+        g.HGapMm.Should().BeApproximately(hGap, 0.03);
+        g.VGapMm.Should().BeApproximately(vGap, 0.03);
+        Store.Get("formtec-" + code)!.Categories.Should().NotContain("Unverified");
+    }
+
     [Fact]
     public void Row_major_index_maps_left_to_right_then_top_to_bottom()
     {

@@ -29,7 +29,7 @@ The full notes of each release, in all ten interface languages, are in
 - The barcode check takes USB and Bluetooth barcode scanners: what a scanner types is compared
   with every barcode in the project (every page, and every record when a barcode comes from
   data), with a running count of matches, so a printed batch can be checked. Scanners give no grade.
-- About 3,540 more built-in label sheets (3,716 in all): Avery (A4/A5 and US Letter), Avery
+- About 3,540 more built-in label sheets (3,718 in all): Avery (A4/A5 and US Letter), Avery
   Zweckform, HERMA, APLI, Agipa, Decadry, Sigel, OnlineLabels, TANEX, 3M (with Post-it), Brother
   and DYMO, from the measurements each maker supplies for Microsoft Word's label list (corner
   radius and round labels included). One catalogue file per maker in `templates/sheets`, made by
@@ -96,6 +96,11 @@ The full notes of each release, in all ten interface languages, are in
 - Editing text on the label ended (kept as typed) as soon as the mouse moved out of the text box:
   passing over the canvas gave it the keyboard, taking it from the editor. The canvas no longer
   takes the keyboard while text is being typed there or in a side panel box.
+- Formtec GS-1084, GS-1096, GS-1136 and GS-1145, which Word's label list does not have, had an
+  estimated layout (labels touching, centred); they now have the margins and gaps of Formtec's own
+  Word templates (GS-1136: 3 mm between columns, 8.5 mm from the left; GS-1145: 5 mm and 20 mm;
+  GS-1084: 4.6 mm and 6.1 mm). GS-1054 and GS-1081 are added the same way. Every other GS sheet
+  was checked against Formtec's templates and agrees to within 0.02 mm.
 - A quiet zone of 0 put no bars on the edges of the barcode's box: Code 128 kept at least 10
   modules of white space, EAN and UPC 9, other linear types 10, QR 4. The quiet zone is now used
   as set; ready-made designs start with the amount each type's standard asks for.

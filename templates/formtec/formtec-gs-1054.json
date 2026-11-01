@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-gs-1054",
+  "brand": "Formtec",
+  "productCode": "GS-1054",
+  "name": "Formtec GS-1054 — 62.7 × 14.99 mm, 54-up",
+  "categories": ["General", "Formtec GS"],
+  "page": { "size": "A4", "widthMm": 210, "heightMm": 297 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 3,
+    "rows": 18,
+    "labelWidthMm": 62.7,
+    "labelHeightMm": 14.99,
+    "marginTopMm": 12.59,
+    "marginLeftMm": 9.24,
+    "hGapMm": 2.49,
+    "vGapMm": 0,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "Formtec GS-1054 A4 sheet: 54 labels (3 x 18), each 62.7 x 14.99 mm. In the template each cell is 65.19 x 14.99 mm; the 62.7 mm label Formtec lists is centred in it.",
+  "source": "Formtec's Word template for GS-1054 (formteckorea.com): page margins, column widths and row heights"
+}
