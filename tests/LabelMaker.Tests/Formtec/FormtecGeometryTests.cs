@@ -49,7 +49,13 @@ public sealed class FormtecGeometryTests
     [InlineData("gs-1145", 5, 29, 29.99, 9, 19.99, 17.11, 5.01, 0)]
     [InlineData("gs-1081", 3, 27, 52.99, 9.98, 15.49, 12.59, 10, 0)]
     [InlineData("gs-1084", 4, 21, 46, 11, 6.09, 17.27, 4.6, 1.56)]
-    public void Gs_sheets_match_formtecs_own_templates(string code, int across, int down, double w, double h,
+    [InlineData("gs-1096", 6, 16, 30, 14, 9.98, 21.58, 2, 1.95)]
+    [InlineData("lsm-2105", 3, 7, 63.5, 38.08, 7.2, 15.88, 2.54, 0)]
+    [InlineData("lsm-2109", 2, 9, 100, 29.9, 3.7, 13.49, 2.39, 0)]
+    [InlineData("lsm-2218", 3, 6, 63.5, 45, 7.25, 9.98, 2.49, 0)]
+    [InlineData("lsm-2640", 3, 4, 63.5, 63.5, 5.24, 15.47, 4.5, 4.5)]
+    [InlineData("psm-2742p", 1, 2, 117.79, 117.79, 45.99, 14.99, 0, 29.49)]
+    public void Sheets_match_formtecs_own_templates(string code, int across, int down, double w, double h,
         double left, double top, double hGap, double vGap)
     {
         LabelGrid g = Store.Get("formtec-" + code)!.Grid;

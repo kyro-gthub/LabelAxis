@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-lsm-2628",
+  "brand": "Formtec",
+  "productCode": "LSM-2628",
+  "name": "Formtec LSM-2628 — 11.99 × 130 mm, 30-up",
+  "categories": ["General"],
+  "page": { "size": "A4", "widthMm": 210, "heightMm": 297 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 15,
+    "rows": 2,
+    "labelWidthMm": 11.99,
+    "labelHeightMm": 130,
+    "marginTopMm": 14.99,
+    "marginLeftMm": 14.99,
+    "hGapMm": 0,
+    "vGapMm": 6.98,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "Formtec LSM-2628 A4 sheet: 30 labels (15 x 2). Labels 12 x 130 mm.",
+  "source": "Formtec's Word template for LSM-2628 (formteckorea.com): page margins, column widths and row heights"
+}

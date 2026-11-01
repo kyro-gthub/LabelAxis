@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-psm-2742p",
+  "brand": "Formtec",
+  "productCode": "PSM-2742P",
+  "name": "Formtec PSM-2742P — 117.79 × 117.79 mm, 2-up",
+  "categories": ["CD/DVD & media"],
+  "page": { "size": "A4", "widthMm": 210, "heightMm": 297 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 1,
+    "rows": 2,
+    "labelWidthMm": 117.79,
+    "labelHeightMm": 117.79,
+    "marginTopMm": 14.99,
+    "marginLeftMm": 45.98,
+    "hGapMm": 0,
+    "vGapMm": 29.49,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Ellipse"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "Formtec PSM-2742P A4 sheet: 2 labels (1 x 2). CD/DVD labels, inkjet (glossy), 118 mm across, 41 mm hole.",
+  "source": "Formtec's Word template for PSM-2742P (formteckorea.com): page margins, column widths and row heights"
+}

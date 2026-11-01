@@ -69,12 +69,12 @@ public static class PublisherSheet
         }
 
         if (layout is not null && sheets.Where(t => ReferenceEquals(FromPublisher(layout, widthMm, heightMm, t), t))
-                .OrderByDescending(t => t.Id == lastUsedId).FirstOrDefault() is { } laidOut)
+                .OrderByDescending(t => string.Equals(t.Id, lastUsedId, StringComparison.OrdinalIgnoreCase)).FirstOrDefault() is { } laidOut)
         {
             return laidOut;
         }
 
-        return sheets.FirstOrDefault(t => t.Id == lastUsedId) ?? sheets[0];
+        return sheets.FirstOrDefault(t => string.Equals(t.Id, lastUsedId, StringComparison.OrdinalIgnoreCase)) ?? sheets[0];
     }
 
     /// <summary>

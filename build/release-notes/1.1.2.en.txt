@@ -35,3 +35,4 @@ Fixes
 • A new project's title and barcode fit small labels: the title stays on one line and the barcode sits below it, instead of running over each other.
 • Editing text on the label no longer ends when the mouse moves out of the text box. Click elsewhere or press Ctrl+Enter to keep the change, or Esc to undo it.
 • Formtec GS-1084, GS-1096, GS-1136 and GS-1145 print where the labels are: their margins and gaps now come from Formtec's own templates. GS-1054 and GS-1081 are added.
+• More Formtec sheets: the LSM, PSM and IJM address, shipping, media, round and CD/DVD sheets, measured from Formtec's own templates. Starred sheets keep their star after updating.

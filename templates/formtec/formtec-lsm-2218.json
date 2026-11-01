@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-lsm-2218",
+  "brand": "Formtec",
+  "productCode": "LSM-2218",
+  "name": "Formtec LSM-2218 — 63.5 × 45 mm, 18-up",
+  "categories": ["Address"],
+  "page": { "size": "A4", "widthMm": 210, "heightMm": 297 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 3,
+    "rows": 6,
+    "labelWidthMm": 63.5,
+    "labelHeightMm": 45,
+    "marginTopMm": 9.98,
+    "marginLeftMm": 7.25,
+    "hGapMm": 2.49,
+    "vGapMm": 0,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "Formtec LSM-2218 A4 sheet: 18 labels (3 x 6). Address labels; each of the template's 65.99 mm cells holds a 63.5 mm label (Formtec's size) and the gap to its right.",
+  "source": "Formtec's Word template for LSM-2218 (formteckorea.com): page margins, column widths and row heights"
+}

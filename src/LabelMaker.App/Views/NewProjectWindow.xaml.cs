@@ -22,7 +22,7 @@ public partial class NewProjectWindow : Window
         InitializeComponent();
         _store = store;
         _savedFavorites = favorites;
-        _favorites = new HashSet<string>(favorites ?? Array.Empty<string>(), StringComparer.Ordinal);
+        _favorites = new HashSet<string>(favorites ?? Array.Empty<string>(), StringComparer.OrdinalIgnoreCase);
         SearchBox.TextChanged += (_, _) => Refresh();
         Refresh();
 

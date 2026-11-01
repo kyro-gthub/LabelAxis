@@ -277,6 +277,12 @@ internal static class Strings
             "No se pudo instalar Microsoft .NET 10 (error {0}). Vuelva a intentarlo o use el instalador sin conexión.", "Microsoft .NET 10 نصب نشد (خطای {0}). دوباره امتحان کنید، یا از نصب‌کنندهٔ آفلاین استفاده کنید.", "Microsoft .NET 10 n'a pas pu être installé (erreur {0}). Réessayez, ou utilisez l'installateur hors ligne.",
             "Microsoft .NET 10 इंस्टॉल नहीं हो सका (त्रुटि {0})। फिर कोशिश करें, या ऑफ़लाइन इंस्टॉलर इस्तेमाल करें।", "Microsoft .NET 10 kon niet worden geïnstalleerd (fout {0}). Probeer opnieuw, of gebruik het offline installatieprogramma.", "Не удалось установить Microsoft .NET 10 (ошибка {0}). Повторите или используйте автономный установщик.", "无法安装 Microsoft .NET 10（错误 {0}）。请重试，或使用离线安装程序。",
         },
+        ["ErrorFolder"] = new[]
+        {
+            "Choose a whole folder path, such as C:\\Program Files\\LabelAxis.", "اختر مسار مجلد كاملًا، مثل C:\\Program Files\\LabelAxis.", "ڕێڕەوێکی تەواوی بوخچە هەڵبژێرە، وەک C:\\Program Files\\LabelAxis.",
+            "Elija una ruta de carpeta completa, como C:\\Program Files\\LabelAxis.", "مسیر کامل یک پوشه را انتخاب کنید، مانند C:\\Program Files\\LabelAxis.", "Choisissez un chemin de dossier complet, comme C:\\Program Files\\LabelAxis.",
+            "पूरा फ़ोल्डर पथ चुनें, जैसे C:\\Program Files\\LabelAxis।", "Kies een volledig mappad, zoals C:\\Program Files\\LabelAxis.", "Укажите полный путь к папке, например C:\\Program Files\\LabelAxis.", "请选择完整的文件夹路径，例如 C:\\Program Files\\LabelAxis。",
+        },
         ["ErrorMissing"] = new[]
         {
             "This Setup is incomplete: it has no installer inside. Download it again.", "هذا الإعداد غير مكتمل: لا يحتوي على المثبّت. نزّله مرة أخرى.", "ئەم دامەزرێنەرە ناتەواوە: دامەزرێنەری تێدا نییە. دووبارە دایبگرە.",

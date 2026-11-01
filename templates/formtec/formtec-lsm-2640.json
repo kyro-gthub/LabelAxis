@@ -13,14 +13,14 @@
     "rows": 4,
     "labelWidthMm": 63.5,
     "labelHeightMm": 63.5,
-    "marginTopMm": 15.475,
-    "marginLeftMm": 5.25,
+    "marginTopMm": 15.47,
+    "marginLeftMm": 5.24,
     "hGapMm": 4.5,
     "vGapMm": 4.5,
     "cornerRadiusMm": 0.0,
-    "labelShape": "Rectangle"
+    "labelShape": "Ellipse"
   },
   "fillOrder": "RowMajor",
-  "notes": "A4 Name Badge Laser/Inkjet(100 Sheet/12 Label)",
-  "source": "Microsoft Word label database (Formtec, PGLBL010.XML)"
+  "notes": "Formtec LSM-2640 A4 sheet: 12 labels (3 x 4). Round name badges, 63.5 mm across.",
+  "source": "Formtec's Word template for LSM-2640 (formteckorea.com): page margins, column widths and row heights"
 }

@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-lsm-2639",
+  "brand": "Formtec",
+  "productCode": "LSM-2639",
+  "name": "Formtec LSM-2639 — 37.96 × 37.96 mm, 20-up",
+  "categories": ["General"],
+  "page": { "size": "A4", "widthMm": 210, "heightMm": 297 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 4,
+    "rows": 5,
+    "labelWidthMm": 37.96,
+    "labelHeightMm": 37.96,
+    "marginTopMm": 27.99,
+    "marginLeftMm": 22.31,
+    "hGapMm": 4.5,
+    "vGapMm": 12.7,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Ellipse"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "Formtec LSM-2639 A4 sheet: 20 labels (4 x 5). Round labels, 38 mm across.",
+  "source": "Formtec's Word template for LSM-2639 (formteckorea.com): page margins, column widths and row heights"
+}

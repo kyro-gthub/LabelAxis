@@ -4,16 +4,14 @@
     Every number (label size, labels across/down, gaps, position of the first label)
     comes straight from that file, converted to millimetres.
 
-    Existing formtec-*.json files are replaced; ids listed in -Keep (sheets Word does
-    not know) are left alone.
+    Existing formtec-*.json files are replaced; sheets Word does not know, made from
+    Formtec's own Word templates, are left alone.
 
     Usage:  powershell -ExecutionPolicy Bypass -File build\import-word-labels.ps1
 #>
 param(
     [string]$LabelFile = 'C:\Program Files\Microsoft Office\root\Office16\PAGESIZE\PGLBL010.XML',
-    [string]$OutDir = (Join-Path (Split-Path -Parent $PSScriptRoot) 'templates\formtec'),
-    # Sheets Word does not have, made from Formtec's own Word templates (formteckorea.com).
-    [string[]]$Keep = @('formtec-gs-1054', 'formtec-gs-1081', 'formtec-gs-1084', 'formtec-gs-1096', 'formtec-gs-1136', 'formtec-gs-1145')
+    [string]$OutDir = (Join-Path (Split-Path -Parent $PSScriptRoot) 'templates\formtec')
 )
 
 $ErrorActionPreference = 'Stop'
@@ -96,13 +94,19 @@ foreach ($p in $xml.SelectNodes('//*[local-name()="product"]')) {
         "  `"source`": `"Microsoft Word label database (Formtec, PGLBL010.XML)`"`n" +
         "}`n"
 
-    [IO.File]::WriteAllText((Join-Path $OutDir "$id.json"), $json, $utf8)
+    # A sheet made from Formtec's own Word template wins over Word's list (LSM-2640 is round,
+    # which Word's list does not say).
+    $target = Join-Path $OutDir "$id.json"
+    if (-not ((Test-Path $target) -and ([IO.File]::ReadAllText($target) -match '"source": "Formtec''s Word template'))) {
+        [IO.File]::WriteAllText($target, $json, $utf8)
+    }
     $written += "$id.json"
 }
 
-# Old estimated Formtec files that Word does not define are removed, except those kept on purpose.
+# Files Word does not define are removed, except the sheets made from Formtec's own Word
+# templates (their "source" says so; see the GS, LSM, IJM and PSM sheets).
 Get-ChildItem $OutDir -Filter 'formtec-*.json' |
-    Where-Object { $written -notcontains $_.Name -and $Keep -notcontains $_.BaseName } |
+    Where-Object { $written -notcontains $_.Name -and -not ([IO.File]::ReadAllText($_.FullName) -match '"source": "Formtec''s Word template') } |
     ForEach-Object { [IO.File]::Delete($_.FullName); Write-Host "removed $($_.Name)" }
 
 Write-Host "Wrote $($written.Count) Formtec templates from Word's label database."

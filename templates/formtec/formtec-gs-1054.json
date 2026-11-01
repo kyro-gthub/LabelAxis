@@ -14,13 +14,13 @@
     "labelWidthMm": 62.7,
     "labelHeightMm": 14.99,
     "marginTopMm": 12.59,
-    "marginLeftMm": 9.24,
+    "marginLeftMm": 7.99,
     "hGapMm": 2.49,
     "vGapMm": 0,
     "cornerRadiusMm": 0.0,
     "labelShape": "Rectangle"
   },
   "fillOrder": "RowMajor",
-  "notes": "Formtec GS-1054 A4 sheet: 54 labels (3 x 18), each 62.7 x 14.99 mm. In the template each cell is 65.19 x 14.99 mm; the 62.7 mm label Formtec lists is centred in it.",
+  "notes": "Formtec GS-1054 A4 sheet: 54 labels (3 x 18), each 62.7 x 14.99 mm. In the template each cell is 65.19 x 14.99 mm: the 62.7 mm label Formtec lists and the gap to its right.",
   "source": "Formtec's Word template for GS-1054 (formteckorea.com): page margins, column widths and row heights"
 }

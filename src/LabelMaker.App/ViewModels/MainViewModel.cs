@@ -87,7 +87,9 @@ public sealed partial class MainViewModel : ObservableObject
 
     private ProjectDocument CreateBlankDocument()
     {
-        LabelTemplate template = _env.Templates.Get(_env.Settings.LastTemplateId ?? "formtec-3100")
+        // The sheet used last; else Formtec 3100, not whichever maker's catalogue loaded first.
+        LabelTemplate template = (_env.Settings.LastTemplateId is { } last ? _env.Templates.Get(last) : null)
+                                 ?? _env.Templates.Get("formtec-3100")
                                  ?? _env.Templates.All.First();
         ProjectModel project = ProjectModel.CreateNew(template, "Untitled");
         SeedStarterLabel(project);

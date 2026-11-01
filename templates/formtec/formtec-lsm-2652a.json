@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-lsm-2652a",
+  "brand": "Formtec",
+  "productCode": "LSM-2652A",
+  "name": "Formtec LSM-2652A — 76.99 × 76.99 mm, 6-up",
+  "categories": ["CD/DVD & media"],
+  "page": { "size": "A4", "widthMm": 210, "heightMm": 297 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 2,
+    "rows": 3,
+    "labelWidthMm": 76.99,
+    "labelHeightMm": 76.99,
+    "marginTopMm": 19,
+    "marginLeftMm": 20.99,
+    "hGapMm": 14,
+    "vGapMm": 14,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Ellipse"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "Formtec LSM-2652A A4 sheet: 6 labels (2 x 3). Mini CD labels, 77 mm across, 17.5 mm hole.",
+  "source": "Formtec's Word template for LSM-2652A (formteckorea.com): page margins, column widths and row heights"
+}

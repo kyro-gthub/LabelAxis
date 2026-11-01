@@ -29,7 +29,7 @@ The full notes of each release, in all ten interface languages, are in
 - The barcode check takes USB and Bluetooth barcode scanners: what a scanner types is compared
   with every barcode in the project (every page, and every record when a barcode comes from
   data), with a running count of matches, so a printed batch can be checked. Scanners give no grade.
-- About 3,540 more built-in label sheets (3,718 in all): Avery (A4/A5 and US Letter), Avery
+- About 3,540 more built-in label sheets (3,729 in all): Avery (A4/A5 and US Letter), Avery
   Zweckform, HERMA, APLI, Agipa, Decadry, Sigel, OnlineLabels, TANEX, 3M (with Post-it), Brother
   and DYMO, from the measurements each maker supplies for Microsoft Word's label list (corner
   radius and round labels included). One catalogue file per maker in `templates/sheets`, made by
@@ -99,8 +99,17 @@ The full notes of each release, in all ten interface languages, are in
 - Formtec GS-1084, GS-1096, GS-1136 and GS-1145, which Word's label list does not have, had an
   estimated layout (labels touching, centred); they now have the margins and gaps of Formtec's own
   Word templates (GS-1136: 3 mm between columns, 8.5 mm from the left; GS-1145: 5 mm and 20 mm;
-  GS-1084: 4.6 mm and 6.1 mm). GS-1054 and GS-1081 are added the same way. Every other GS sheet
-  was checked against Formtec's templates and agrees to within 0.02 mm.
+  GS-1084: 4.6 mm and 6.1 mm). GS-1054 and GS-1081 are added the same way, and so are the
+  export sheets Word's list lacks: LSM-2109, 2218, 2620, 2628, 2639, 2652, 2652A, 2742P and 2742AP,
+  and PSM-2742P and 2742AP. Every other GS, LSM, PSM and IJM sheet was checked against Formtec's
+  templates and agrees to within 0.03 mm; LSM-2640 is now round, as Formtec makes it.
+- Stars on label sheets (favourites) were lost when a sheet's id changed only in its letter case,
+  as Avery L7160's did (`avery-L7160` to `avery-l7160`); sheet ids and stars now ignore case.
+- A new project used whichever maker's catalogue loaded first when the last sheet used was gone;
+  it uses Formtec 3100 again.
+- Setup: pressing Enter twice could start two installs; Enter on the licence started the install
+  behind it; a folder that is not a whole path went to the installer, which failed with only an
+  error number. Each is handled now, the last with a message in all ten languages.
 - A quiet zone of 0 put no bars on the edges of the barcode's box: Code 128 kept at least 10
   modules of white space, EAN and UPC 9, other linear types 10, QR 4. The quiet zone is now used
   as set; ready-made designs start with the amount each type's standard asks for.

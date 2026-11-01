@@ -54,7 +54,8 @@ public partial class TemplateManagerWindow : Window
 
     // ---- listing ----------------------------------------------------------
 
-    private HashSet<string> Favorites => new(_env.Settings.FavoriteTemplateIds, StringComparer.Ordinal);
+    // Sheet ids ignore case (avery-L7160 in 1.1.1 is avery-l7160 now), so stars do too.
+    private HashSet<string> Favorites => new(_env.Settings.FavoriteTemplateIds, StringComparer.OrdinalIgnoreCase);
 
     private void Refresh() => Refresh(null, null);
 
@@ -195,7 +196,7 @@ public partial class TemplateManagerWindow : Window
         }
 
         List<string> favorites = _env.Settings.FavoriteTemplateIds;
-        if (!favorites.Remove(row.Template.Id))
+        if (favorites.RemoveAll(f => string.Equals(f, row.Template.Id, StringComparison.OrdinalIgnoreCase)) == 0)
         {
             favorites.Add(row.Template.Id);
         }
@@ -225,7 +226,7 @@ public partial class TemplateManagerWindow : Window
         }
 
         List<string> favorites = _env.Settings.FavoriteTemplateIds;
-        favorites.Remove(saved.Id);
+        favorites.RemoveAll(f => string.Equals(f, saved.Id, StringComparison.OrdinalIgnoreCase));
         if (win.IsFavorite)
         {
             favorites.Add(saved.Id);
@@ -258,7 +259,7 @@ public partial class TemplateManagerWindow : Window
         try
         {
             _env.Templates.DeleteUserTemplate(row.Template.Id);
-            if (_env.Settings.FavoriteTemplateIds.Remove(row.Template.Id))
+            if (_env.Settings.FavoriteTemplateIds.RemoveAll(f => string.Equals(f, row.Template.Id, StringComparison.OrdinalIgnoreCase)) > 0)
             {
                 _env.SaveSettings();
             }

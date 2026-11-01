@@ -1,0 +1,26 @@
+{
+  "schema": "labelmaker.template/1",
+  "id": "formtec-lsm-2620",
+  "brand": "Formtec",
+  "productCode": "LSM-2620",
+  "name": "Formtec LSM-2620 — 119.29 × 42.74 mm, 6-up",
+  "categories": ["Address"],
+  "page": { "size": "A4", "widthMm": 210, "heightMm": 297 },
+  "orientation": "Portrait",
+  "printableMarginMm": { "top": 4.0, "right": 4.0, "bottom": 4.0, "left": 4.0 },
+  "grid": {
+    "columns": 1,
+    "rows": 6,
+    "labelWidthMm": 119.29,
+    "labelHeightMm": 42.74,
+    "marginTopMm": 19,
+    "marginLeftMm": 45.35,
+    "hGapMm": 0,
+    "vGapMm": 0,
+    "cornerRadiusMm": 0.0,
+    "labelShape": "Rectangle"
+  },
+  "fillOrder": "RowMajor",
+  "notes": "Formtec LSM-2620 A4 sheet: 6 labels (1 x 6). Address labels.",
+  "source": "Formtec's Word template for LSM-2620 (formteckorea.com): page margins, column widths and row heights"
+}

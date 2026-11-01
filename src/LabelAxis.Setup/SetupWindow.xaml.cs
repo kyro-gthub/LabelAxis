@@ -31,6 +31,8 @@ public partial class SetupWindow : Window
 
     private static readonly string[] Placeholder = { "{0}" };
 
+    private static readonly char[] Wildcards = { '*', '?', '"', '<', '>', '|' };
+
     private readonly InstalledCopy? _installed = Machine.FindInstalled();
     private readonly bool _needsRuntime = Machine.IsSmall && !Machine.DesktopRuntimeInstalled();
     private int _step;
@@ -197,6 +199,7 @@ public partial class SetupWindow : Window
         string install = Strings.T(Kind switch { Install.Update => "ButtonUpdate", Install.Again => "ButtonReinstall", _ => "ButtonInstall" });
         SecondaryButton.Visibility = Visibility.Visible;
         PrimaryButton.Visibility = Visibility.Visible;
+        AppOpenNote.Text = Strings.T("AppOpen");
         AppOpenNote.Visibility = step <= OptionsStep && Machine.AppIsRunning() ? Visibility.Visible : Visibility.Collapsed;
         switch (step)
         {
@@ -396,10 +399,20 @@ public partial class SetupWindow : Window
         using Stream? s = typeof(SetupWindow).Assembly.GetManifestResourceStream("LICENSE.txt");
         LicenceBody.Text = s is null ? string.Empty : new StreamReader(s).ReadToEnd();
         LicencePanel.Visibility = Visibility.Visible;
+
+        // Enter closes the licence, not Install behind it.
+        PrimaryButton.IsDefault = false;
+        LicenceClose.IsDefault = true;
+        LicenceClose.Focus();
         e.Handled = true;
     }
 
-    private void OnHideLicence(object sender, RoutedEventArgs e) => LicencePanel.Visibility = Visibility.Collapsed;
+    private void OnHideLicence(object sender, RoutedEventArgs e)
+    {
+        LicencePanel.Visibility = Visibility.Collapsed;
+        LicenceClose.IsDefault = false;
+        PrimaryButton.IsDefault = true;
+    }
 
     private void OnMinimise(object sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
 
@@ -435,6 +448,21 @@ public partial class SetupWindow : Window
 
     private async Task InstallAsync()
     {
+        // Enter pressed twice, or Install clicked again before the page changed: one install only.
+        if (_busy)
+        {
+            return;
+        }
+
+        if (!IsUsableFolder(FolderBox.Text))
+        {
+            Show(OptionsStep);
+            AppOpenNote.Text = Strings.T("ErrorFolder");
+            AppOpenNote.Visibility = Visibility.Visible;
+            FolderBox.Focus();
+            return;
+        }
+
         var choice = new InstallChoice
         {
             ForEveryone = ForEveryone,
@@ -478,9 +506,29 @@ public partial class SetupWindow : Window
         {
             Fail(ex.Message);
         }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or System.ComponentModel.Win32Exception or InvalidOperationException)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or System.ComponentModel.Win32Exception or InvalidOperationException
+                                   or ArgumentException or NotSupportedException or System.Security.SecurityException or System.Net.WebException)
         {
             Fail(ex.Message);
+        }
+    }
+
+    /// <summary>A full path on a drive (C:\…) or a network share, with no characters Windows refuses.</summary>
+    private static bool IsUsableFolder(string text)
+    {
+        string folder = text.Trim();
+        if (folder.Length < 3 || folder.IndexOfAny(System.IO.Path.GetInvalidPathChars()) >= 0 || folder.IndexOfAny(Wildcards) >= 0)
+        {
+            return false;
+        }
+
+        try
+        {
+            return System.IO.Path.IsPathRooted(folder) && System.IO.Path.GetPathRoot(folder) is { Length: > 2 } && System.IO.Path.GetFullPath(folder).Length > 3;
+        }
+        catch (Exception ex) when (ex is ArgumentException or NotSupportedException or PathTooLongException or System.Security.SecurityException)
+        {
+            return false;
         }
     }
 
