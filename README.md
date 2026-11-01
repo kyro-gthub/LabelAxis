@@ -285,6 +285,17 @@ A smaller program that always works beats a bigger one full of half-working feat
 
 ---
 
+## Trademarks
+
+Avery, Avery Zweckform, HERMA, APLI, Agipa, Decadry, Sigel, OnlineLabels, TANEX, 3M, Post-it,
+Brother, DYMO and Formtec are trademarks of their respective owners. Microsoft and Word are
+trademarks of Microsoft Corporation.
+
+LabelAxis is not affiliated with, sponsored by or endorsed by any of these companies. Brand names
+and product codes are used only to say which label sheets a layout fits. The sheet measurements
+come from the figures each maker publishes (through Microsoft Word's label list or the maker's
+own templates); no maker's template files are included.
+
 ## Licence
 
 MIT, see [`LICENSE`](LICENSE). Bundled libraries keep their own licences (see
